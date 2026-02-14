@@ -5,6 +5,8 @@
         total: {{ $matches->count() }},
         perView: 1,
         timer: null,
+        touchStartX: null,
+        touchStartY: null,
         get maxIndex() {
             return Math.max(0, this.total - this.perView);
         },
@@ -33,6 +35,34 @@
             if (!this.timer) return;
             clearInterval(this.timer);
             this.timer = null;
+        },
+        onTouchStart(event) {
+            const touch = event.touches?.[0];
+            if (!touch) return;
+            this.touchStartX = touch.clientX;
+            this.touchStartY = touch.clientY;
+        },
+        onTouchEnd(event) {
+            if (this.touchStartX === null || this.touchStartY === null) return;
+
+            const touch = event.changedTouches?.[0];
+            if (!touch) return;
+
+            const deltaX = touch.clientX - this.touchStartX;
+            const deltaY = touch.clientY - this.touchStartY;
+
+            this.touchStartX = null;
+            this.touchStartY = null;
+
+            if (Math.abs(deltaX) < 35 || Math.abs(deltaX) <= Math.abs(deltaY)) {
+                return;
+            }
+
+            if (deltaX < 0) {
+                this.next();
+            } else {
+                this.prev();
+            }
         },
         init() {
             this.updatePerView();
@@ -71,13 +101,45 @@
             Aucun match disponible pour le moment.
         </div>
     @else
-        <div class="overflow-hidden">
+        <div
+            class="overflow-hidden"
+            @touchstart.passive="onTouchStart($event)"
+            @touchend.passive="onTouchEnd($event)"
+        >
             <div class="flex gap-3 transition-transform duration-500 ease-out" :style="`transform: translateX(-${index * (100 / perView)}%);`">
                 @foreach ($matches as $match)
                     @php
-                        $teams = $component->resolveCardTeams($match);
-                        $teamA = $teams['left'];
-                        $teamB = $teams['right'];
+                        $teamA = null;
+                        $teamB = null;
+
+                        if ($match->relationLoaded('teams') && $match->teams->isNotEmpty()) {
+                            $home = $match->teams->firstWhere('side', 'home');
+                            $away = $match->teams->firstWhere('side', 'away');
+                            $firstTeam = $match->teams->first();
+                            $secondTeam = $match->teams->skip(1)->first();
+
+                            $teamA = $home?->team?->name ?? $firstTeam?->team?->name;
+                            $teamB = $away?->team?->name ?? $secondTeam?->team?->name;
+                        }
+
+                        if (!$teamA || !$teamB) {
+                            $parts = preg_split('/\s+(?:vs|x)\s+/i', (string) $match->title, 2);
+
+                            if (is_array($parts) && count($parts) === 2) {
+                                $teamA = trim((string) $parts[0]) !== '' ? trim((string) $parts[0]) : 'ERAH';
+                                $teamB = trim((string) $parts[1]) !== '' ? trim((string) $parts[1]) : 'Opponent';
+                            } else {
+                                $teamA = 'ERAH';
+                                $teamB = trim((string) $match->title) !== '' ? (string) $match->title : 'Opponent';
+                            }
+                        }
+
+                        if (str_contains(strtolower((string) $teamB), 'erah') && !str_contains(strtolower((string) $teamA), 'erah')) {
+                            [$teamA, $teamB] = [$teamB, $teamA];
+                        }
+
+                        $teamA = trim((string) $teamA) !== '' ? (string) $teamA : 'ERAH';
+                        $teamB = trim((string) $teamB) !== '' ? (string) $teamB : 'Opponent';
                         $status = $match->status?->value ?? (string) $match->status;
                         $statusStyle = match ($status) {
                             'OPEN' => 'border-success-500/30 bg-success-500/15 text-success-300',
@@ -103,12 +165,14 @@
                             </div>
 
                             <div class="relative z-10 mt-4 rounded-xl border border-gray-700/70 bg-gray-900/50 p-3">
-                                <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+                                <div class="flex flex-col gap-2">
                                     <div class="rounded-lg border border-gray-700 bg-gray-800/60 px-2 py-2 text-center">
                                         <p class="mb-0.5 text-[10px] uppercase tracking-wide text-gray-400">Equipe A</p>
                                         <p class="line-clamp-1 text-sm font-semibold text-white/90">{{ $teamA }}</p>
                                     </div>
-                                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-500/40 bg-brand-500/20 text-xs font-bold text-brand-200 shadow-[0_0_16px_rgba(70,95,255,0.5)]">VS</span>
+
+                                    <span class="mx-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-500/40 bg-brand-500/20 text-xs font-bold text-brand-200 shadow-[0_0_16px_rgba(70,95,255,0.5)]">VS</span>
+
                                     <div class="rounded-lg border border-gray-700 bg-gray-800/60 px-2 py-2 text-center">
                                         <p class="mb-0.5 text-[10px] uppercase tracking-wide text-gray-400">Adversaire</p>
                                         <p class="line-clamp-1 text-sm font-semibold text-white/90">{{ $teamB }}</p>

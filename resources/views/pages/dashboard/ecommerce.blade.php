@@ -6,7 +6,7 @@
       <x-ecommerce.ecommerce-metrics />
       <x-ecommerce.monthly-sale />
     </div>
-    <div class="col-span-12 xl:col-span-5">
+    <div class="col-span-12 xl:col-span-5 xl:self-stretch">
         <x-ecommerce.monthly-target />
     </div>
 

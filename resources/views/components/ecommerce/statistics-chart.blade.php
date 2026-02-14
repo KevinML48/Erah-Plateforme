@@ -75,9 +75,9 @@
             <div class="flex gap-3 transition-transform duration-500 ease-out" :style="`transform: translateX(-${index * (100 / perView)}%);`">
                 @foreach ($matches as $match)
                     @php
-                        $parts = preg_split('/\s+vs\s+/i', (string) $match->title, 2);
-                        $teamA = trim($parts[0] ?? 'ERAH');
-                        $teamB = trim($parts[1] ?? 'Opponent');
+                        $teams = $component->resolveCardTeams($match);
+                        $teamA = $teams['left'];
+                        $teamB = $teams['right'];
                         $status = $match->status?->value ?? (string) $match->status;
                         $statusStyle = match ($status) {
                             'OPEN' => 'border-success-500/30 bg-success-500/15 text-success-300',
@@ -105,10 +105,12 @@
                             <div class="relative z-10 mt-4 rounded-xl border border-gray-700/70 bg-gray-900/50 p-3">
                                 <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
                                     <div class="rounded-lg border border-gray-700 bg-gray-800/60 px-2 py-2 text-center">
+                                        <p class="mb-0.5 text-[10px] uppercase tracking-wide text-gray-400">Equipe A</p>
                                         <p class="line-clamp-1 text-sm font-semibold text-white/90">{{ $teamA }}</p>
                                     </div>
                                     <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-brand-500/40 bg-brand-500/20 text-xs font-bold text-brand-200 shadow-[0_0_16px_rgba(70,95,255,0.5)]">VS</span>
                                     <div class="rounded-lg border border-gray-700 bg-gray-800/60 px-2 py-2 text-center">
+                                        <p class="mb-0.5 text-[10px] uppercase tracking-wide text-gray-400">Adversaire</p>
                                         <p class="line-clamp-1 text-sm font-semibold text-white/90">{{ $teamB }}</p>
                                     </div>
                                 </div>
@@ -153,4 +155,3 @@
         @endif
     @endif
 </div>
-

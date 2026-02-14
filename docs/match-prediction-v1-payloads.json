@@ -1,0 +1,20 @@
+{
+  "store_match": {
+    "game": "VALORANT",
+    "title": "ERAH vs TEAM X",
+    "starts_at": "2026-02-20 21:00:00",
+    "status": "DRAFT",
+    "points_reward": 100
+  },
+  "update_match": {
+    "title": "ERAH vs TEAM Y",
+    "starts_at": "2026-02-21 20:30:00",
+    "points_reward": 120
+  },
+  "place_prediction": {
+    "prediction": "WIN"
+  },
+  "complete_match": {
+    "result": "WIN"
+  }
+}

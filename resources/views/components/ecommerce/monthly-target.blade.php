@@ -1,81 +1,103 @@
-<div class="rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.03]">
-    <div class="shadow-default rounded-2xl bg-white px-5 pb-11 pt-5 dark:bg-gray-900 sm:px-6 sm:pt-6">
-        <div class="flex justify-between">
-            <div>
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
-                    Monthly Target
-                </h3>
-                <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
-                    Target you’ve set for each month
-                </p>
+﻿<div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+    <div class="mb-5 flex items-start justify-between gap-3">
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Match a parier</h3>
+            <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">Prochain match ERAH disponible au pronostic</p>
+        </div>
+        <x-common.dropdown-menu />
+    </div>
+
+    @if ($targetMatch)
+        @php
+            $startsAt = $targetMatch->starts_at;
+            $hoursToStart = $startsAt ? now()->diffInHours($startsAt, false) : null;
+            $minutesToStart = $startsAt ? now()->diffInMinutes($startsAt, false) : null;
+
+            $status = $targetMatch->status?->value ?? 'N/A';
+            $statusClasses = match ($status) {
+                'OPEN' => 'border-success-500/30 bg-success-500/15 text-success-300',
+                'LOCKED' => 'border-warning-500/30 bg-warning-500/15 text-warning-300',
+                'COMPLETED' => 'border-gray-500/30 bg-gray-500/15 text-gray-300',
+                default => 'border-brand-500/30 bg-brand-500/15 text-brand-300',
+            };
+
+            $urgencyPercent = 0;
+            if ($hoursToStart !== null) {
+                $urgencyPercent = max(5, min(100, (int) round(100 - ((max($hoursToStart, 0) / 72) * 100))));
+            }
+
+            $titleParts = preg_split('/\s+vs\s+/i', (string) $targetMatch->title, 2);
+            $teamA = trim($titleParts[0] ?? 'ERAH');
+            $teamB = trim($titleParts[1] ?? 'Adversaire');
+
+            $windowLabel = 'Pronostic ouvert';
+            if ($minutesToStart !== null && $minutesToStart < 0) {
+                $windowLabel = 'Demarrage imminent';
+            }
+            if ($status === 'LOCKED') {
+                $windowLabel = 'Pronostic verrouille';
+            }
+            if ($status === 'COMPLETED') {
+                $windowLabel = 'Match termine';
+            }
+        @endphp
+
+        <div class="relative overflow-hidden rounded-2xl border border-gray-700 bg-gradient-to-br from-gray-900/90 via-gray-900/65 to-brand-500/10 p-4 sm:p-5">
+            <div class="pointer-events-none absolute -top-20 -right-24 h-56 w-56 rounded-full bg-brand-500/15 blur-3xl"></div>
+            <div class="pointer-events-none absolute -bottom-24 -left-20 h-56 w-56 rounded-full bg-success-500/10 blur-3xl"></div>
+
+            <div class="relative z-10 mb-4 flex flex-wrap items-center justify-between gap-2">
+                <div class="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/15 px-3 py-1 text-theme-xs font-medium text-brand-300">
+                    <span class="inline-block h-2 w-2 rounded-full bg-brand-400"></span>
+                    {{ $targetMatch->game }}
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex rounded-full border px-2.5 py-1 text-theme-xs font-medium {{ $statusClasses }}">{{ $status }}</span>
+                    <span class="inline-flex rounded-full border border-success-500/30 bg-success-500/15 px-2.5 py-1 text-theme-xs font-medium text-success-300">+{{ number_format((int) $targetMatch->points_reward) }} pts</span>
+                </div>
             </div>
-            <!-- Dropdown Menu -->
-            <x-common.dropdown-menu />
-            <!-- End Dropdown Menu -->
 
+            <div class="relative z-10 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+                <div class="rounded-xl border border-gray-700/80 bg-gray-900/50 p-3 text-center sm:text-left">
+                    <p class="text-theme-xs uppercase tracking-wide text-gray-400">Equipe</p>
+                    <p class="mt-1 text-base font-semibold text-white/95">{{ $teamA }}</p>
+                </div>
+
+                <div class="flex items-center justify-center">
+                    <span class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-brand-500/40 bg-brand-500/20 text-sm font-bold text-brand-200 shadow-[0_0_24px_rgba(70,95,255,0.35)]">VS</span>
+                </div>
+
+                <div class="rounded-xl border border-gray-700/80 bg-gray-900/50 p-3 text-center sm:text-left">
+                    <p class="text-theme-xs uppercase tracking-wide text-gray-400">Equipe</p>
+                    <p class="mt-1 text-base font-semibold text-white/95">{{ $teamB }}</p>
+                </div>
+            </div>
+
+            <div class="relative z-10 mt-4 grid gap-3 lg:grid-cols-[1fr_auto] lg:items-end">
+                <div class="rounded-xl border border-gray-700/80 bg-gray-900/50 p-3">
+                    <div class="mb-2 flex items-center justify-between text-theme-xs text-gray-300">
+                        <span>Debut: {{ $startsAt?->format('d/m/Y H:i') }}</span>
+                        <span>{{ $windowLabel }}</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-gray-800">
+                        <div class="h-2 rounded-full bg-brand-500 transition-all" style="width: {{ $urgencyPercent }}%"></div>
+                    </div>
+                    <p class="mt-2 text-theme-xs text-gray-400">Intensite: {{ $urgencyPercent }}%</p>
+                </div>
+
+                <a
+                    href="{{ route('matches.show', $targetMatch) }}"
+                    class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-500 px-5 text-theme-sm font-medium text-white hover:bg-brand-600"
+                >
+                    Parier maintenant
+                </a>
+            </div>
         </div>
-        <div class="relative max-h-[195px]">
-            {{-- Chart --}}
-            <div id="chartTwo" class="h-full"></div>
-            <span class="absolute left-1/2 top-[85%] -translate-x-1/2 -translate-y-[85%] rounded-full bg-success-50 px-3 py-1 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">+10%</span>
+    @else
+        <div class="rounded-xl border border-dashed border-gray-700 bg-gray-800/40 p-5 text-center">
+            <p class="text-theme-sm font-medium text-gray-200">Aucun match a parier pour le moment.</p>
+            <p class="mt-1 text-theme-xs text-gray-400">Les prochains matchs apparaitront automatiquement ici.</p>
         </div>
-        <p class="mx-auto mt-1.5 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
-            You earn $3287 today, it's higher than last month. Keep up your good work!
-        </p>
-    </div>
-
-    <div class="flex items-center justify-center gap-5 px-6 py-3.5 sm:gap-8 sm:py-5">
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                Target
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                $20K
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.26816 13.6632C7.4056 13.8192 7.60686 13.9176 7.8311 13.9176C7.83148 13.9176 7.83187 13.9176 7.83226 13.9176C8.02445 13.9178 8.21671 13.8447 8.36339 13.6981L12.3635 9.70076C12.6565 9.40797 12.6567 8.9331 12.3639 8.6401C12.0711 8.34711 11.5962 8.34694 11.3032 8.63973L8.5811 11.36L8.5811 2.5C8.5811 2.08579 8.24531 1.75 7.8311 1.75C7.41688 1.75 7.0811 2.08579 7.0811 2.5L7.0811 11.3556L4.36354 8.63975C4.07055 8.34695 3.59568 8.3471 3.30288 8.64009C3.01008 8.93307 3.01023 9.40794 3.30321 9.70075L7.26816 13.6632Z"
-                        fill="#D92D20" />
-                </svg>
-            </p>
-        </div>
-
-        <div class="h-7 w-px bg-gray-200 dark:bg-gray-800"></div>
-
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                Revenue
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                $20K
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                        fill="#039855" />
-                </svg>
-            </p>
-        </div>
-
-        <div class="h-7 w-px bg-gray-200 dark:bg-gray-800"></div>
-
-        <div>
-            <p class="mb-1 text-center text-theme-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                Today
-            </p>
-            <p
-                class="flex items-center justify-center gap-1 text-base font-semibold text-gray-800 dark:text-white/90 sm:text-lg">
-                $20K
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M7.60141 2.33683C7.73885 2.18084 7.9401 2.08243 8.16435 2.08243C8.16475 2.08243 8.16516 2.08243 8.16556 2.08243C8.35773 2.08219 8.54998 2.15535 8.69664 2.30191L12.6968 6.29924C12.9898 6.59203 12.9899 7.0669 12.6971 7.3599C12.4044 7.6529 11.9295 7.65306 11.6365 7.36027L8.91435 4.64004L8.91435 13.5C8.91435 13.9142 8.57856 14.25 8.16435 14.25C7.75013 14.25 7.41435 13.9142 7.41435 13.5L7.41435 4.64442L4.69679 7.36025C4.4038 7.65305 3.92893 7.6529 3.63613 7.35992C3.34333 7.06693 3.34348 6.59206 3.63646 6.29926L7.60141 2.33683Z"
-                        fill="#039855" />
-                </svg>
-            </p>
-        </div>
-    </div>
+    @endif
 </div>
-

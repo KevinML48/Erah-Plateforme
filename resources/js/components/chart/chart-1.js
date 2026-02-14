@@ -4,12 +4,36 @@ export const initChartOne = () => {
     const chartElement = document.querySelector('#chartOne');
     if (!chartElement) return;
 
+    const labelsData = chartElement.getAttribute('data-chart-labels');
+    const gainsData = chartElement.getAttribute('data-chart-gains');
+    const lossesData = chartElement.getAttribute('data-chart-losses');
+
+    const dynamicLabels = labelsData ? JSON.parse(labelsData) : null;
+    const dynamicGains = gainsData ? JSON.parse(gainsData) : null;
+    const dynamicLosses = lossesData ? JSON.parse(lossesData) : null;
+
+    const hasDynamicPointsData =
+        Array.isArray(dynamicLabels) &&
+        Array.isArray(dynamicGains) &&
+        Array.isArray(dynamicLosses);
+
     const chartOneOptions = {
-        series: [{
-            name: "Sales",
-            data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
-        },],
-        colors: ["#465fff"],
+        series: hasDynamicPointsData
+            ? [
+                {
+                    name: "Points gagnes",
+                    data: dynamicGains,
+                },
+                {
+                    name: "Points perdus",
+                    data: dynamicLosses,
+                },
+            ]
+            : [{
+                name: "Sales",
+                data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+            }],
+        colors: hasDynamicPointsData ? ["#12B76A", "#F04438"] : ["#465fff"],
         chart: {
             fontFamily: "Outfit, sans-serif",
             type: "bar",
@@ -35,7 +59,7 @@ export const initChartOne = () => {
             colors: ["transparent"],
         },
         xaxis: {
-            categories: [
+            categories: hasDynamicPointsData ? dynamicLabels : [
                 "Jan",
                 "Feb",
                 "Mar",
@@ -85,7 +109,7 @@ export const initChartOne = () => {
             },
             y: {
                 formatter: function (val) {
-                    return val;
+                    return hasDynamicPointsData ? `${val} pts` : val;
                 },
             },
         },

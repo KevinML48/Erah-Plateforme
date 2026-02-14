@@ -6,7 +6,10 @@ class MenuHelper
 {
     public static function getMainNavItems()
     {
-        return [
+        $user = request()->user();
+        $isAdmin = $user?->isAdmin() ?? false;
+
+        $items = [
             [
                 'icon' => 'dashboard',
                 'name' => 'Dashboard',
@@ -23,6 +26,32 @@ class MenuHelper
                 'icon' => 'user-profile',
                 'name' => 'User Profile',
                 'path' => '/profile',
+            ],
+            [
+                'icon' => 'task',
+                'name' => 'Ranks',
+                'path' => '/ranks',
+            ],
+            [
+                'icon' => 'charts',
+                'name' => 'LeaderBoard',
+                'subItems' => [
+                    ['name' => 'All-time', 'path' => '/leaderboard/all-time'],
+                    ['name' => 'Weekly', 'path' => '/leaderboard/weekly'],
+                    ['name' => 'Monthly', 'path' => '/leaderboard/monthly'],
+                ],
+            ],
+            [
+                'icon' => 'forms',
+                'name' => 'Points',
+                'subItems' => [
+                    ['name' => 'Mon activite', 'path' => '/points/activity'],
+                ],
+            ],
+            [
+                'icon' => 'ecommerce',
+                'name' => 'Rewards',
+                'path' => '/rewards',
             ],
             [
                 'name' => 'Forms',
@@ -47,6 +76,22 @@ class MenuHelper
                 ],
             ],
         ];
+
+        if ($isAdmin) {
+            $items[] = [
+                'icon' => 'task',
+                'name' => 'Administration',
+                'subItems' => [
+                    ['name' => 'Matchs Admin', 'path' => '/admin/matches'],
+                    ['name' => 'Points Admin', 'path' => '/admin/points'],
+                    ['name' => 'Metrics Admin', 'path' => '/admin/points/metrics'],
+                    ['name' => 'Rewards Admin', 'path' => '/admin/rewards'],
+                    ['name' => 'Redemptions Admin', 'path' => '/admin/redemptions'],
+                ],
+            ];
+        }
+
+        return $items;
     }
 
     public static function getOthersItems()

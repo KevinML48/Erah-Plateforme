@@ -3,9 +3,9 @@
     'desc' => '',
 ])
 
-<div {{ $attributes->merge(['class' => 'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]']) }}>
+<div {{ $attributes->merge(['class' => 'overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]']) }}>
     <!-- Card Header -->
-    <div class="px-6 py-5">
+    <div class="px-4 py-4 sm:px-6 sm:py-5">
         <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
             {{ $title }}
         </h3>
@@ -17,8 +17,8 @@
     </div>
 
     <!-- Card Body -->
-    <div class="p-4 border-t border-gray-100 dark:border-gray-800 sm:p-6">
-        <div class="space-y-6">
+    <div class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
+        <div class="space-y-4 sm:space-y-6">
             {{ $slot }}
         </div>
     </div>

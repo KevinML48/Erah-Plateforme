@@ -13,9 +13,12 @@ class ProfileController extends Controller
 {
     public function show(): View
     {
+        $user = $this->resolveUser();
+        $user->loadMissing('rank');
+
         return view('pages.profile', [
             'title' => 'Profile',
-            'user' => $this->resolveUser(),
+            'user' => $user,
         ]);
     }
 

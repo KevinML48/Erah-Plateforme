@@ -1,11 +1,11 @@
 @props(['pageTitle' => 'Page'])
 
-<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">
+<div class="mb-5 flex flex-wrap items-start justify-between gap-2 sm:mb-6 sm:items-center sm:gap-3">
+    <h2 class="max-w-full break-words pr-2 text-lg font-semibold text-gray-800 dark:text-white/90 sm:text-xl">
         {{ $pageTitle }}
     </h2>
-    <nav>
-        <ol class="flex items-center gap-1.5">
+    <nav class="w-full sm:w-auto">
+        <ol class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm">
             <li>
                 <a
                     class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"

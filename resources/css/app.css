@@ -191,6 +191,12 @@
   body {
     @apply relative font-normal font-outfit z-1 bg-gray-50;
   }
+  img,
+  svg,
+  video,
+  canvas {
+    @apply max-w-full;
+  }
 }
 
 @utility menu-item {
@@ -875,8 +881,33 @@ pre[class*='language-'] {
     }
 }
 
+@layer utilities {
+  .mobile-fluid {
+    @apply w-full min-w-0;
+  }
+
+  .table-responsive {
+    @apply max-w-full overflow-x-auto custom-scrollbar;
+  }
+
+  .table-compact th,
+  .table-compact td {
+    @apply px-3 py-3 sm:px-6 sm:py-4;
+  }
+
+  .form-stack-mobile {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4;
+  }
+}
+
 @media screen and (max-width: 525px) {
   .flatpickr-calendar.static {
     margin-right: -60px !important;
   }
+}
+
+/* Force a visible calendar icon on dark datetime-local inputs */
+.dark .admin-datetime-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 1;
 }

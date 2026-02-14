@@ -14,6 +14,10 @@
       <x-ecommerce.statistics-chart />
     </div>
 
+    <div class="col-span-12">
+      <x-rank.available-ranks />
+    </div>
+
     <div class="col-span-12 xl:col-span-5">
       <x-ecommerce.customer-demographic />
     </div>

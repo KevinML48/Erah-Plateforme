@@ -4,17 +4,21 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserStatus;
 use App\Enums\UserRole;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -37,6 +41,7 @@ class User extends Authenticatable
         'x_url',
         'linkedin',
         'instagram',
+        'status',
         'password',
     ];
 
@@ -64,6 +69,7 @@ class User extends Authenticatable
             'rank_id' => 'integer',
             'is_admin' => 'boolean',
             'role' => UserRole::class,
+            'status' => UserStatus::class,
         ];
     }
 
@@ -95,6 +101,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin || (bool) $this->is_admin;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() !== 'admin') {
+            return false;
+        }
+
+        return $this->hasPermissionTo('admin.access')
+            || $this->hasAnyRole(['super_admin', 'admin', 'moderator', 'logistics', 'analyst']);
     }
 
     public function getNextRank(): ?Rank

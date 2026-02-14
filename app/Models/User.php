@@ -37,10 +37,6 @@ class User extends Authenticatable
         'x_url',
         'linkedin',
         'instagram',
-        'points_balance',
-        'rank_id',
-        'is_admin',
-        'role',
         'password',
     ];
 

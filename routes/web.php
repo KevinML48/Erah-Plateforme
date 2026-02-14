@@ -70,10 +70,10 @@ Route::get('/bar-chart', function () {
 
 // authentication pages
 Route::get('/signin', [AuthController::class, 'showSignIn'])->name('signin');
-Route::post('/signin', [AuthController::class, 'signIn'])->name('signin.store');
+Route::post('/signin', [AuthController::class, 'signIn'])->middleware('throttle:auth')->name('signin.store');
 
 Route::get('/signup', [AuthController::class, 'showSignUp'])->name('signup');
-Route::post('/signup', [AuthController::class, 'signUp'])->name('signup.store');
+Route::post('/signup', [AuthController::class, 'signUp'])->middleware('throttle:auth')->name('signup.store');
 
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('auth.redirect');
 Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('auth.callback');
@@ -117,28 +117,42 @@ Route::middleware('auth')->group(function (): void {
     // user matches & predictions
     Route::get('/matches', [MatchController::class, 'index'])->name('matches.index');
     Route::get('/matches/{match}', [MatchController::class, 'show'])->name('matches.show');
-    Route::post('/matches/{match}/predictions', [PredictionController::class, 'store'])->name('matches.predictions.store');
+    Route::post('/matches/{match}/predictions', [PredictionController::class, 'store'])
+        ->middleware('throttle:prediction-create')
+        ->name('matches.predictions.store');
     Route::get('/me/predictions', [PredictionController::class, 'me'])->name('me.predictions.index');
-    Route::post('/matches/{match}/tickets', [TicketController::class, 'store'])->name('matches.tickets.store');
+    Route::post('/matches/{match}/tickets', [TicketController::class, 'store'])
+        ->middleware('throttle:ticket-create')
+        ->name('matches.tickets.store');
     Route::get('/me/tickets', [TicketController::class, 'me'])->name('me.tickets.index');
     Route::get('/me/tickets/{ticket}', [TicketController::class, 'show'])->name('me.tickets.show');
-    Route::post('/rewards/{reward}/redeem', [RedemptionController::class, 'store'])->name('rewards.redeem');
+    Route::post('/rewards/{reward}/redeem', [RedemptionController::class, 'store'])
+        ->middleware('throttle:reward-redeem')
+        ->name('rewards.redeem');
     Route::get('/me/redemptions', [RedemptionController::class, 'myIndex'])->name('me.redemptions.index');
     Route::post('/me/redemptions/{redemption}/cancel', [RedemptionController::class, 'cancel'])->name('me.redemptions.cancel');
 
     // admin matches management
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function (): void {
         Route::get('/points', [AdminPointsController::class, 'index'])->name('points.index');
-        Route::post('/points', [AdminPointsController::class, 'store'])->name('points.store');
+        Route::post('/points', [AdminPointsController::class, 'store'])
+            ->middleware('throttle:admin-critical')
+            ->name('points.store');
         Route::get('/points/metrics', [AdminPointsController::class, 'metrics'])->name('points.metrics');
         Route::get('/rewards', [AdminRewardController::class, 'index'])->name('rewards.index');
         Route::post('/rewards', [AdminRewardController::class, 'store'])->name('rewards.store');
         Route::put('/rewards/{reward}', [AdminRewardController::class, 'update'])->name('rewards.update');
         Route::delete('/rewards/{reward}', [AdminRewardController::class, 'destroy'])->name('rewards.delete');
         Route::get('/redemptions', [AdminRedemptionController::class, 'index'])->name('redemptions.index');
-        Route::post('/redemptions/{redemption}/approve', [AdminRedemptionController::class, 'approve'])->name('redemptions.approve');
-        Route::post('/redemptions/{redemption}/reject', [AdminRedemptionController::class, 'reject'])->name('redemptions.reject');
-        Route::post('/redemptions/{redemption}/ship', [AdminRedemptionController::class, 'ship'])->name('redemptions.ship');
+        Route::post('/redemptions/{redemption}/approve', [AdminRedemptionController::class, 'approve'])
+            ->middleware('throttle:admin-critical')
+            ->name('redemptions.approve');
+        Route::post('/redemptions/{redemption}/reject', [AdminRedemptionController::class, 'reject'])
+            ->middleware('throttle:admin-critical')
+            ->name('redemptions.reject');
+        Route::post('/redemptions/{redemption}/ship', [AdminRedemptionController::class, 'ship'])
+            ->middleware('throttle:admin-critical')
+            ->name('redemptions.ship');
 
         Route::get('/matches', [AdminMatchController::class, 'index'])->name('matches.index');
         Route::post('/matches', [AdminMatchController::class, 'store'])->name('matches.store');
@@ -147,8 +161,12 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/matches/{match}/lock', [AdminMatchController::class, 'lock'])->name('matches.lock');
         Route::post('/matches/{match}/live', [AdminMatchController::class, 'live'])->name('matches.live');
         Route::post('/matches/{match}/cancel', [AdminMatchController::class, 'cancel'])->name('matches.cancel');
-        Route::post('/matches/{match}/complete', [AdminMatchController::class, 'complete'])->name('matches.complete');
-        Route::post('/matches/{match}/settle', [AdminMatchController::class, 'settle'])->name('matches.settle');
+        Route::post('/matches/{match}/complete', [AdminMatchController::class, 'complete'])
+            ->middleware('throttle:admin-critical')
+            ->name('matches.complete');
+        Route::post('/matches/{match}/settle', [AdminMatchController::class, 'settle'])
+            ->middleware('throttle:admin-critical')
+            ->name('matches.settle');
         Route::get('/matches/{match}/tickets', [AdminMatchController::class, 'tickets'])->name('matches.tickets');
 
         Route::post('/matches/{match}/markets', [AdminMarketController::class, 'store'])->name('markets.store');
@@ -156,11 +174,12 @@ Route::middleware('auth')->group(function (): void {
         Route::post('/markets/{market}/options', [AdminMarketController::class, 'storeOption'])->name('markets.options.store');
         Route::put('/market-options/{option}', [AdminMarketController::class, 'updateOption'])->name('markets.options.update');
         Route::post('/markets/{market}/lock', [AdminMarketController::class, 'lock'])->name('markets.lock');
-        Route::post('/markets/{market}/settle', [AdminMarketController::class, 'settle'])->name('markets.settle');
+        Route::post('/markets/{market}/settle', [AdminMarketController::class, 'settle'])
+            ->middleware('throttle:admin-critical')
+            ->name('markets.settle');
         Route::get('/audit', [AdminAuditController::class, 'index'])->name('audit.index');
     });
 });
-
 
 
 

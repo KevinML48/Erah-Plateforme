@@ -15,14 +15,16 @@ class AdminAuditLog extends Model
         'action',
         'entity_type',
         'entity_id',
-        'payload_json',
+        'metadata_json',
+        'ip',
+        'user_agent',
         'created_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'payload_json' => 'array',
+            'metadata_json' => 'array',
             'created_at' => 'datetime',
         ];
     }
@@ -32,4 +34,3 @@ class AdminAuditLog extends Model
         return $this->belongsTo(User::class, 'actor_user_id');
     }
 }
-

@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\DB;
 class MatchService
 {
     public function __construct(
-        private readonly PointsAwardingService $pointsAwardingService
+        private readonly PointsAwardingService $pointsAwardingService,
+        private readonly AdminAuditService $adminAuditService
     ) {
     }
 
@@ -36,7 +37,17 @@ class MatchService
         ]);
         $payload['created_by'] = $admin->id;
 
-        return EsportMatch::query()->create($payload);
+        $match = EsportMatch::query()->create($payload);
+
+        $this->adminAuditService->log(
+            actor: $admin,
+            action: 'match.create',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['after' => $match->toArray()]
+        );
+
+        return $match;
     }
 
     public function updateMatch(EsportMatch $match, array $data): EsportMatch
@@ -57,8 +68,16 @@ class MatchService
             'points_reward',
         ]);
 
+        $before = $match->toArray();
         $match->fill($payload);
         $match->save();
+        $this->adminAuditService->log(
+            actor: auth()->user(),
+            action: 'match.update',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['before' => $before, 'after' => $match->toArray()]
+        );
 
         return $match->refresh();
     }
@@ -72,6 +91,13 @@ class MatchService
         $match->status = MatchStatus::Open;
         $match->predictions_locked_at = null;
         $match->save();
+        $this->adminAuditService->log(
+            actor: auth()->user(),
+            action: 'match.open',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['status' => $match->status->value]
+        );
 
         return $match->refresh();
     }
@@ -89,6 +115,13 @@ class MatchService
         $match->status = MatchStatus::Locked;
         $match->predictions_locked_at = now();
         $match->save();
+        $this->adminAuditService->log(
+            actor: auth()->user(),
+            action: 'match.lock',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['status' => $match->status->value]
+        );
 
         return $match->refresh();
     }
@@ -120,6 +153,16 @@ class MatchService
             $lockedMatch->save();
 
             $this->pointsAwardingService->awardPointsForMatch($lockedMatch);
+            $this->adminAuditService->log(
+                actor: auth()->user(),
+                action: 'match.complete',
+                entityType: 'match',
+                entityId: (int) $lockedMatch->id,
+                metadata: [
+                    'result' => $lockedMatch->result?->value,
+                    'status' => $lockedMatch->status->value,
+                ]
+            );
         });
 
         return $match->refresh();
@@ -134,6 +177,13 @@ class MatchService
         $match->status = MatchStatus::Live;
         $match->predictions_locked_at = $match->predictions_locked_at ?? now();
         $match->save();
+        $this->adminAuditService->log(
+            actor: auth()->user(),
+            action: 'match.live',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['status' => $match->status->value]
+        );
 
         return $match->refresh();
     }
@@ -147,6 +197,13 @@ class MatchService
         $match->status = MatchStatus::Cancelled;
         $match->completed_at = now();
         $match->save();
+        $this->adminAuditService->log(
+            actor: auth()->user(),
+            action: 'match.cancel',
+            entityType: 'match',
+            entityId: (int) $match->id,
+            metadata: ['status' => $match->status->value]
+        );
 
         return $match->refresh();
     }

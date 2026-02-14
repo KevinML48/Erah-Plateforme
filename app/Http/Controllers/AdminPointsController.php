@@ -8,6 +8,7 @@ use App\Exceptions\InsufficientPointsException;
 use App\Http\Requests\AdminAdjustPointsRequest;
 use App\Models\PointLog;
 use App\Models\User;
+use App\Services\AdminAuditService;
 use App\Services\PointService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -25,8 +26,11 @@ class AdminPointsController extends Controller
         ]);
     }
 
-    public function store(AdminAdjustPointsRequest $request, PointService $pointService): RedirectResponse
-    {
+    public function store(
+        AdminAdjustPointsRequest $request,
+        PointService $pointService,
+        AdminAuditService $auditService
+    ): RedirectResponse {
         $this->authorize('manage-points');
 
         $validated = $request->validated();
@@ -70,6 +74,18 @@ class AdminPointsController extends Controller
             'reason' => $reason,
             'idempotency_key' => $idempotencyKey,
         ]);
+
+        $auditService->log(
+            actor: $request->user(),
+            action: 'points.adjust',
+            entityType: 'user',
+            entityId: (int) $targetUser->id,
+            metadata: [
+                'amount' => $amount,
+                'reason' => $reason,
+                'idempotency_key' => $idempotencyKey,
+            ]
+        );
 
         return redirect()
             ->route('admin.points.index')

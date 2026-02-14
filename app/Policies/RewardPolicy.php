@@ -10,7 +10,6 @@ class RewardPolicy
 {
     public function manageRewards(User $user, ?Reward $reward = null): bool
     {
-        return $user->isAdmin();
+        return $user->can('rewards.manage') || $user->isAdmin();
     }
 }
-

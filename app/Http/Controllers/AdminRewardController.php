@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRewardRequest;
 use App\Http\Requests\UpdateRewardRequest;
-use App\Models\AdminAuditLog;
 use App\Models\Reward;
+use App\Services\AdminAuditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +16,8 @@ class AdminRewardController extends Controller
 {
     public function index(Request $request): JsonResponse|View
     {
+        $this->authorize('manage-rewards');
+
         $rewards = Reward::query()
             ->when($request->filled('is_active'), function ($query) use ($request): void {
                 $query->where('is_active', filter_var($request->input('is_active'), FILTER_VALIDATE_BOOL));
@@ -33,20 +35,22 @@ class AdminRewardController extends Controller
         return response()->json($rewards);
     }
 
-    public function store(StoreRewardRequest $request): JsonResponse|RedirectResponse
+    public function store(StoreRewardRequest $request, AdminAuditService $auditService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-rewards');
+
         $reward = Reward::query()->create(array_merge(
             $request->validated(),
             ['created_by' => $request->user()?->id]
         ));
 
-        AdminAuditLog::query()->create([
-            'actor_user_id' => $request->user()?->id,
-            'action' => 'reward.create',
-            'entity_type' => 'reward',
-            'entity_id' => (int) $reward->id,
-            'payload_json' => $reward->toArray(),
-        ]);
+        $auditService->log(
+            actor: $request->user(),
+            action: 'reward.create',
+            entityType: 'reward',
+            entityId: (int) $reward->id,
+            metadata: ['after' => $reward->toArray()]
+        );
 
         if (!$request->expectsJson()) {
             return redirect()->route('admin.rewards.index')->with('status', 'Reward created.');
@@ -58,18 +62,38 @@ class AdminRewardController extends Controller
         ], 201);
     }
 
-    public function update(UpdateRewardRequest $request, Reward $reward): JsonResponse|RedirectResponse
-    {
+    public function update(
+        UpdateRewardRequest $request,
+        Reward $reward,
+        AdminAuditService $auditService
+    ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-rewards');
+
+        $before = $reward->only([
+            'name',
+            'slug',
+            'description',
+            'points_cost',
+            'stock',
+            'is_active',
+            'image_url',
+            'starts_at',
+            'ends_at',
+        ]);
+
         $reward->fill($request->validated());
         $reward->save();
 
-        AdminAuditLog::query()->create([
-            'actor_user_id' => $request->user()?->id,
-            'action' => 'reward.update',
-            'entity_type' => 'reward',
-            'entity_id' => (int) $reward->id,
-            'payload_json' => $request->validated(),
-        ]);
+        $auditService->log(
+            actor: $request->user(),
+            action: 'reward.update',
+            entityType: 'reward',
+            entityId: (int) $reward->id,
+            metadata: [
+                'before' => $before,
+                'after' => $reward->only(array_keys($before)),
+            ]
+        );
 
         if (!$request->expectsJson()) {
             return redirect()->route('admin.rewards.index')->with('status', 'Reward updated.');
@@ -81,17 +105,23 @@ class AdminRewardController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, Reward $reward): JsonResponse|RedirectResponse
-    {
+    public function destroy(
+        Request $request,
+        Reward $reward,
+        AdminAuditService $auditService
+    ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-rewards');
+
+        $snapshot = $reward->toArray();
         $reward->delete();
 
-        AdminAuditLog::query()->create([
-            'actor_user_id' => $request->user()?->id,
-            'action' => 'reward.delete',
-            'entity_type' => 'reward',
-            'entity_id' => (int) $reward->id,
-            'payload_json' => null,
-        ]);
+        $auditService->log(
+            actor: $request->user(),
+            action: 'reward.delete',
+            entityType: 'reward',
+            entityId: (int) $reward->id,
+            metadata: ['before' => $snapshot]
+        );
 
         if (!$request->expectsJson()) {
             return redirect()->route('admin.rewards.index')->with('status', 'Reward deleted.');

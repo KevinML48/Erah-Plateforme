@@ -9,7 +9,6 @@ use App\Exceptions\OutOfStockException;
 use App\Exceptions\RedemptionAlreadyProcessedException;
 use App\Exceptions\RedemptionNotAllowedException;
 use App\Exceptions\RewardNotAvailableException;
-use App\Models\AdminAuditLog;
 use App\Models\Reward;
 use App\Models\RewardRedemption;
 use App\Models\User;
@@ -19,7 +18,8 @@ use Illuminate\Support\Facades\DB;
 class RedemptionService
 {
     public function __construct(
-        private readonly PointService $pointService
+        private readonly PointService $pointService,
+        private readonly AdminAuditService $adminAuditService
     ) {
     }
 
@@ -248,12 +248,12 @@ class RedemptionService
 
     private function logAdminAction(User $actor, string $action, string $entityType, int $entityId, array $payload): void
     {
-        AdminAuditLog::query()->create([
-            'actor_user_id' => $actor->id,
-            'action' => $action,
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-            'payload_json' => $payload,
-        ]);
+        $this->adminAuditService->log(
+            actor: $actor,
+            action: $action,
+            entityType: $entityType,
+            entityId: $entityId,
+            metadata: $payload
+        );
     }
 }

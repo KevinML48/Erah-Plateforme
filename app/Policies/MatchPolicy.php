@@ -10,6 +10,6 @@ class MatchPolicy
 {
     public function manageMatch(User $user, ?EsportMatch $match = null): bool
     {
-        return $user->isAdmin();
+        return $user->can('matches.manage') || $user->can('settlements.manage') || $user->isAdmin();
     }
 }

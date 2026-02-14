@@ -46,6 +46,8 @@ class AdminMatchController extends Controller
 
     public function store(StoreMatchRequest $request, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         $admin = $request->user();
         abort_unless($admin, 401);
 
@@ -63,6 +65,8 @@ class AdminMatchController extends Controller
 
     public function update(UpdateMatchRequest $request, EsportMatch $match, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->updateMatch($match, $request->validated());
         } catch (MatchAlreadyCompletedException $exception) {
@@ -85,6 +89,8 @@ class AdminMatchController extends Controller
 
     public function open(EsportMatch $match, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->openPredictions($match);
         } catch (MatchAlreadyCompletedException $exception) {
@@ -107,6 +113,8 @@ class AdminMatchController extends Controller
 
     public function lock(EsportMatch $match, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->lockPredictions($match);
         } catch (MatchAlreadyCompletedException|MatchNotOpenException $exception) {
@@ -132,6 +140,8 @@ class AdminMatchController extends Controller
         EsportMatch $match,
         MatchService $matchService
     ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->completeMatchWithResult(
                 match: $match,
@@ -157,6 +167,8 @@ class AdminMatchController extends Controller
 
     public function settle(SettleMatchRequest $request, EsportMatch $match, SettlementService $settlementService): JsonResponse
     {
+        $this->authorize('manage-market');
+
         $settlementService->settleMatch(
             match: $match,
             marketResults: (array) $request->input('markets', []),
@@ -170,6 +182,8 @@ class AdminMatchController extends Controller
 
     public function live(EsportMatch $match, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->setLive($match);
         } catch (MatchAlreadyCompletedException $exception) {
@@ -192,6 +206,8 @@ class AdminMatchController extends Controller
 
     public function cancel(EsportMatch $match, MatchService $matchService): JsonResponse|RedirectResponse
     {
+        $this->authorize('manage-match');
+
         try {
             $updated = $matchService->cancelMatch($match);
         } catch (MatchAlreadyCompletedException $exception) {
@@ -214,6 +230,8 @@ class AdminMatchController extends Controller
 
     public function tickets(EsportMatch $match): JsonResponse
     {
+        $this->authorize('manage-match');
+
         $tickets = Ticket::query()
             ->with(['user:id,name,email', 'selections.option:id,label,key', 'selections.market:id,name,code'])
             ->where('match_id', $match->id)

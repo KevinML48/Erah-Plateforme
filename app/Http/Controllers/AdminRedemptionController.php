@@ -18,6 +18,8 @@ class AdminRedemptionController extends Controller
 {
     public function index(Request $request): JsonResponse|View
     {
+        $this->authorize('manage-redemptions');
+
         $redemptions = RewardRedemption::query()
             ->with(['user:id,name,email', 'reward:id,name,slug,points_cost'])
             ->when($request->filled('status'), function ($query) use ($request): void {
@@ -41,6 +43,8 @@ class AdminRedemptionController extends Controller
         RewardRedemption $redemption,
         RedemptionService $redemptionService
     ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-redemptions');
+
         try {
             $updated = $redemptionService->approveRedemption($request->user(), $redemption);
         } catch (RedemptionNotAllowedException|RedemptionAlreadyProcessedException $exception) {
@@ -65,6 +69,8 @@ class AdminRedemptionController extends Controller
         RewardRedemption $redemption,
         RedemptionService $redemptionService
     ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-redemptions');
+
         try {
             $updated = $redemptionService->rejectRedemption(
                 admin: $request->user(),
@@ -93,6 +99,8 @@ class AdminRedemptionController extends Controller
         RewardRedemption $redemption,
         RedemptionService $redemptionService
     ): JsonResponse|RedirectResponse {
+        $this->authorize('manage-redemptions');
+
         try {
             $updated = $redemptionService->markShipped(
                 admin: $request->user(),

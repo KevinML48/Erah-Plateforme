@@ -10,13 +10,15 @@ use App\Models\AuditLog;
 use App\Models\EsportMatch;
 use App\Models\Market;
 use App\Models\MarketOption;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class SettlementService
 {
     public function __construct(
-        private readonly TicketReconciliationService $reconciliationService
+        private readonly TicketReconciliationService $reconciliationService,
+        private readonly AdminAuditService $adminAuditService
     ) {
     }
 
@@ -88,6 +90,16 @@ class SettlementService
                     'status' => $lockedMarket->status->value,
                 ],
             ]);
+            $this->adminAuditService->log(
+                actor: $this->resolveActor($actorUserId),
+                action: 'market.settle',
+                entityType: 'market',
+                entityId: (int) $lockedMarket->id,
+                metadata: [
+                    'winner_option_id' => $winnerOptionId,
+                    'status' => $lockedMarket->status->value,
+                ]
+            );
 
             $this->reconciliationService->reconcileTicketsForMarket((int) $lockedMarket->id);
             $this->markMatchCompletedIfAllMarketsSettled((int) $lockedMarket->match_id);
@@ -131,7 +143,23 @@ class SettlementService
                 'entity_id' => (int) $match->id,
                 'payload_json' => ['markets_count' => count($marketResults)],
             ]);
+            $this->adminAuditService->log(
+                actor: $this->resolveActor($actorUserId),
+                action: 'match.settle_bulk',
+                entityType: 'match',
+                entityId: (int) $match->id,
+                metadata: ['markets_count' => count($marketResults)]
+            );
         });
+    }
+
+    private function resolveActor(?int $actorUserId): ?User
+    {
+        if ($actorUserId === null) {
+            return null;
+        }
+
+        return User::query()->find($actorUserId);
     }
 
     private function markMatchCompletedIfAllMarketsSettled(int $matchId): void
@@ -154,4 +182,3 @@ class SettlementService
             ]);
     }
 }
-

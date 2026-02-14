@@ -10,12 +10,14 @@ class PointLogPolicy
 {
     public function view(User $user, PointLog $pointLog): bool
     {
-        return (int) $pointLog->user_id === (int) $user->id || $user->can('manage-points');
+        return (int) $pointLog->user_id === (int) $user->id
+            || $user->can('points.adjust')
+            || $user->can('users.view')
+            || $user->isAdmin();
     }
 
     public function viewAny(User $user): bool
     {
-        return (bool) $user;
+        return $user->can('points.adjust') || $user->can('users.view') || $user->isAdmin();
     }
 }
-

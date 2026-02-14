@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\AuditLog;
+use App\Models\AdminAuditLog;
 use Illuminate\Http\JsonResponse;
 
 class AdminAuditController extends Controller
 {
     public function index(): JsonResponse
     {
-        $logs = AuditLog::query()
+        $this->authorize('viewAny', AdminAuditLog::class);
+
+        $logs = AdminAuditLog::query()
             ->with('actor:id,name,email')
             ->orderByDesc('id')
             ->paginate(100);
@@ -18,4 +20,3 @@ class AdminAuditController extends Controller
         return response()->json($logs);
     }
 }
-

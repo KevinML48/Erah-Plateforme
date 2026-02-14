@@ -10,7 +10,7 @@ class RedemptionPolicy
 {
     public function manageRedemptions(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->can('redemptions.manage') || $user->isAdmin();
     }
 
     public function cancelOwnRedemption(User $user, RewardRedemption $redemption): bool
@@ -18,4 +18,3 @@ class RedemptionPolicy
         return $redemption->user_id === $user->id && $redemption->canCancel();
     }
 }
-

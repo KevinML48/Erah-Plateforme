@@ -7,6 +7,8 @@ use App\Models\PointLog;
 use App\Models\EsportMatch;
 use App\Models\Reward;
 use App\Models\RewardRedemption;
+use App\Models\AdminAuditLog;
+use App\Policies\AdminAuditLogPolicy;
 use App\Policies\MatchPolicy;
 use App\Policies\PointLogPolicy;
 use App\Policies\RedemptionPolicy;
@@ -43,16 +45,17 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('discord', DiscordProvider::class);
         });
 
-        Gate::define('manage-points', fn (?User $user): bool => (bool) ($user?->isAdmin()));
-        Gate::define('manage-match', fn (?User $user): bool => (bool) ($user?->isAdmin()));
-        Gate::define('manage-market', fn (?User $user): bool => (bool) ($user?->isAdmin()));
-        Gate::define('manage-rewards', fn (?User $user): bool => (bool) ($user?->isAdmin()));
-        Gate::define('manage-redemptions', fn (?User $user): bool => (bool) ($user?->isAdmin()));
+        Gate::define('manage-points', fn (?User $user): bool => (bool) ($user?->can('points.adjust') || $user?->isAdmin()));
+        Gate::define('manage-match', fn (?User $user): bool => (bool) ($user?->can('matches.manage') || $user?->isAdmin()));
+        Gate::define('manage-market', fn (?User $user): bool => (bool) ($user?->can('settlements.manage') || $user?->can('matches.manage') || $user?->isAdmin()));
+        Gate::define('manage-rewards', fn (?User $user): bool => (bool) ($user?->can('rewards.manage') || $user?->isAdmin()));
+        Gate::define('manage-redemptions', fn (?User $user): bool => (bool) ($user?->can('redemptions.manage') || $user?->isAdmin()));
 
         Gate::policy(PointLog::class, PointLogPolicy::class);
         Gate::policy(EsportMatch::class, MatchPolicy::class);
         Gate::policy(Reward::class, RewardPolicy::class);
         Gate::policy(RewardRedemption::class, RedemptionPolicy::class);
+        Gate::policy(AdminAuditLog::class, AdminAuditLogPolicy::class);
 
         View::composer('*', function ($view): void {
             static $resolvedUser = null;

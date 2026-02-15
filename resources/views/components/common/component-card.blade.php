@@ -3,21 +3,21 @@
     'desc' => '',
 ])
 
-<div {{ $attributes->merge(['class' => 'overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]']) }}>
+<div {{ $attributes->merge(['class' => 'premium-card']) }}>
     <!-- Card Header -->
     <div class="px-4 py-4 sm:px-6 sm:py-5">
-        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">
+        <h3 class="premium-title text-base">
             {{ $title }}
         </h3>
         @if($desc)
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p class="premium-subtitle mt-1 text-sm">
                 {{ $desc }}
             </p>
         @endif
     </div>
 
     <!-- Card Body -->
-    <div class="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
+    <div class="border-t border-brand-500/15 p-4 sm:p-6">
         <div class="space-y-4 sm:space-y-6">
             {{ $slot }}
         </div>

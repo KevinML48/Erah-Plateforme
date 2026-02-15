@@ -305,6 +305,50 @@
     @apply bg-gray-200 rounded-full dark:bg-gray-700;
   }
 }
+
+@layer utilities {
+  .premium-shell {
+    @apply relative overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-gray-900 via-[#101b38] to-gray-900 shadow-theme-xl;
+  }
+
+  .premium-shell::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-20;
+    background-image: linear-gradient(to right, rgba(70, 95, 255, 0.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(70, 95, 255, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .premium-card {
+    @apply relative overflow-hidden rounded-2xl border border-brand-500/25 bg-gradient-to-br from-gray-900/95 via-[#101a34] to-gray-900/90 shadow-theme-lg;
+  }
+
+  .premium-card::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-30;
+    background: radial-gradient(circle at top right, rgba(70, 95, 255, 0.22), transparent 48%);
+  }
+
+  .premium-chip {
+    @apply inline-flex items-center rounded-full border border-brand-500/35 bg-brand-500/15 px-3 py-1 text-xs font-medium text-brand-200;
+  }
+
+  .premium-btn {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-400;
+  }
+
+  .premium-btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg border border-gray-700 bg-gray-900/30 px-4 py-2 text-sm font-semibold text-gray-200 transition hover:border-brand-500/40 hover:text-brand-300;
+  }
+
+  .premium-title {
+    @apply text-xl font-semibold tracking-tight text-white/95;
+  }
+
+  .premium-subtitle {
+    @apply text-sm text-gray-300;
+  }
+}
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #344054;
 }

@@ -1,14 +1,14 @@
 @props(['pageTitle' => 'Page'])
 
-<div class="mb-5 flex flex-wrap items-start justify-between gap-2 sm:mb-6 sm:items-center sm:gap-3">
-    <h2 class="max-w-full break-words pr-2 text-lg font-semibold text-gray-800 dark:text-white/90 sm:text-xl">
+<div class="premium-shell mb-5 flex flex-wrap items-start justify-between gap-2 px-4 py-4 sm:mb-6 sm:items-center sm:gap-3 sm:px-6">
+    <h2 class="max-w-full break-words pr-2 text-lg font-semibold text-white sm:text-xl">
         {{ $pageTitle }}
     </h2>
     <nav class="w-full sm:w-auto">
         <ol class="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm">
             <li>
                 <a
-                    class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
+                    class="inline-flex items-center gap-1.5 text-sm text-gray-300"
                     href="{{ url('/') }}"
                 >
                     Home
@@ -30,7 +30,7 @@
                     </svg>
                 </a>
             </li>
-            <li class="text-sm text-gray-800 dark:text-white/90">
+            <li class="text-sm text-white/90">
                 {{ $pageTitle }}
             </li>
         </ol>

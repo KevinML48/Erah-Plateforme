@@ -3,13 +3,13 @@
 @section('content')
     <x-common.page-breadcrumb pageTitle="Vos missions" />
 
-    <div class="mb-4 flex justify-end">
-        <a href="{{ route('profile', ['edit' => 'info']) }}" class="rounded-lg border border-brand-500/30 bg-brand-500/15 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-500/25">
-            Edit profil
-        </a>
-    </div>
-
     <div class="space-y-6">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('missions.index') }}" class="premium-btn-ghost">Toutes les missions</a>
+            <a href="{{ route('me.missions.progression') }}" class="inline-flex items-center justify-center rounded-lg bg-warning-500 px-4 py-2 text-sm font-semibold text-white">En cours</a>
+            <a href="{{ route('me.missions.history') }}" class="premium-btn-ghost">Missions finies</a>
+        </div>
+
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             @forelse ($missions as $mission)
                 @php($progress = $mission->user_progress ?? [])

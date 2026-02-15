@@ -3,13 +3,35 @@
 @section('content')
     <x-common.page-breadcrumb pageTitle="Missions" />
 
-    <div class="mb-4 flex justify-end">
-        <a href="{{ route('profile', ['edit' => 'info']) }}" class="rounded-lg border border-brand-500/30 bg-brand-500/15 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-500/25">
-            Edit profil
-        </a>
-    </div>
-
     <div class="space-y-6">
+        @php
+            $missionCollection = collect($missions->items());
+            $inProgressCount = $missionCollection->filter(fn ($m) => (bool) data_get($m, 'user_progress.is_started') && !(bool) data_get($m, 'user_progress.is_completed'))->count();
+            $completedCount = $missionCollection->filter(fn ($m) => (bool) data_get($m, 'user_progress.is_completed'))->count();
+            $totalPotential = $missionCollection->sum(fn ($m) => (int) $m->points_reward);
+        @endphp
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div class="rounded-xl border border-warning-500/25 bg-gray-900/60 p-4">
+                <p class="text-xs text-gray-300">Missions en cours</p>
+                <p class="mt-1 text-xl font-semibold text-warning-400">{{ $inProgressCount }}</p>
+            </div>
+            <div class="rounded-xl border border-success-500/25 bg-gray-900/60 p-4">
+                <p class="text-xs text-gray-300">Missions completees (periode)</p>
+                <p class="mt-1 text-xl font-semibold text-success-400">{{ $completedCount }}</p>
+            </div>
+            <div class="rounded-xl border border-brand-500/25 bg-gray-900/60 p-4">
+                <p class="text-xs text-gray-300">Potentiel total visible</p>
+                <p class="mt-1 text-xl font-semibold text-brand-300">+{{ number_format($totalPotential) }} pts</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('missions.index') }}" class="premium-btn">Toutes les missions</a>
+            <a href="{{ route('me.missions.progression') }}" class="premium-btn-ghost">En cours</a>
+            <a href="{{ route('me.missions.history') }}" class="premium-btn-ghost">Missions finies</a>
+        </div>
+
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             @forelse ($missions as $mission)
                 @php($progress = $mission->user_progress ?? [])

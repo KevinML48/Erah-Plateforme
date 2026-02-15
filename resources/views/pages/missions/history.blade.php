@@ -3,13 +3,14 @@
 @section('content')
     <x-common.page-breadcrumb pageTitle="Missions finies" />
 
-    <div class="mb-4 flex justify-end">
-        <a href="{{ route('profile', ['edit' => 'info']) }}" class="rounded-lg border border-brand-500/30 bg-brand-500/15 px-4 py-2 text-sm font-medium text-brand-300 hover:bg-brand-500/25">
-            Edit profil
-        </a>
-    </div>
+    <div class="space-y-4">
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('missions.index') }}" class="premium-btn-ghost">Toutes les missions</a>
+            <a href="{{ route('me.missions.progression') }}" class="premium-btn-ghost">En cours</a>
+            <a href="{{ route('me.missions.history') }}" class="inline-flex items-center justify-center rounded-lg bg-success-500 px-4 py-2 text-sm font-semibold text-white">Missions finies</a>
+        </div>
 
-    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div class="border-b border-gray-100 px-5 py-4 dark:border-gray-800">
             <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">Missions terminees</h3>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Historique de tes missions validees automatiquement.</p>
@@ -41,6 +42,7 @@
 
         <div class="border-t border-gray-100 px-5 py-4 dark:border-gray-800">
             {{ $history->links() }}
+        </div>
         </div>
     </div>
 @endsection

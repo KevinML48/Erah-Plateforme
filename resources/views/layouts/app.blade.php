@@ -131,6 +131,7 @@
             @include('layouts.app-header')
             <!-- app header end -->
             <div class="mx-auto w-full max-w-(--breakpoint-2xl) p-3 sm:p-4 md:p-6">
+                <x-common.flash-stack />
                 @yield('content')
             </div>
         </div>

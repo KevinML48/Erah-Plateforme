@@ -10,6 +10,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -96,6 +97,21 @@ class User extends Authenticatable implements FilamentUser
     public function rewardRedemptions(): HasMany
     {
         return $this->hasMany(RewardRedemption::class);
+    }
+
+    public function missionProgress(): HasMany
+    {
+        return $this->hasMany(MissionProgress::class);
+    }
+
+    public function userEvents(): HasMany
+    {
+        return $this->hasMany(UserEvent::class);
+    }
+
+    public function streak(): HasOne
+    {
+        return $this->hasOne(UserStreak::class);
     }
 
     public function isAdmin(): bool

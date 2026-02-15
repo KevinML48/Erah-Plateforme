@@ -23,11 +23,6 @@ class MenuHelper
                 'path' => '/calendar',
             ],
             [
-                'icon' => 'user-profile',
-                'name' => 'User Profile',
-                'path' => '/profile',
-            ],
-            [
                 'icon' => 'task',
                 'name' => 'Ranks',
                 'path' => '/ranks',

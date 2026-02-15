@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\AccountDeletionService;
 use App\Services\EventTrackingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -92,6 +94,39 @@ class ProfileController extends Controller
         }
 
         return back()->with('status', 'profile-updated');
+    }
+
+    public function destroy(Request $request, AccountDeletionService $accountDeletionService): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user !== null, 401);
+
+        $hasOAuthLinked = !empty($user->google_id) || !empty($user->discord_id);
+
+        if ($hasOAuthLinked && !$request->filled('password')) {
+            $request->validate([
+                'delete_confirmation' => ['required', 'in:SUPPRIMER'],
+            ], [
+                'delete_confirmation.in' => 'Tape SUPPRIMER pour confirmer la suppression.',
+            ]);
+        } else {
+            $request->validate([
+                'password' => ['required', 'current_password'],
+            ]);
+        }
+
+        $avatarPath = $this->extractPublicStoragePath($user->avatar_url);
+        if ($avatarPath) {
+            Storage::disk('public')->delete($avatarPath);
+        }
+
+        $accountDeletionService->purge($user);
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('signin')->with('status', 'account-deleted');
     }
 
     private function resolveUser(): User

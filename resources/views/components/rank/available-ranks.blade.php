@@ -123,12 +123,4 @@
         </div>
     </x-common.component-card>
 
-    <div class="flex flex-wrap gap-3">
-        <x-ui.button type="button" onclick="window.location.href='{{ route('dashboard') }}'">
-            Aller au dashboard
-        </x-ui.button>
-        <x-ui.button type="button" variant="outline" onclick="window.location.href='{{ route('profile') }}'">
-            Voir mon profil
-        </x-ui.button>
-    </div>
 </div>

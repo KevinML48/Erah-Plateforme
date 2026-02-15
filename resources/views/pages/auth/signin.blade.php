@@ -29,15 +29,22 @@
                                 {{ session('auth_error') }}
                             </div>
                         @endif
+                        @if (session('status') === 'account-deleted')
+                            <div class="mb-4 rounded-lg border border-success-300 bg-success-50 px-4 py-3 text-sm text-success-700">
+                                Ton compte a ete supprime avec succes.
+                            </div>
+                        @endif
                         @if ($errors->any())
                             <div class="mb-4 rounded-lg border border-error-300 bg-error-50 px-4 py-3 text-sm text-error-700">
                                 {{ $errors->first() }}
                             </div>
                         @endif
                         <div>
+                            <p class="mb-3 text-xs font-medium tracking-wide text-gray-500 uppercase dark:text-gray-400">Continue with</p>
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
                                 <a href="{{ route('auth.redirect', ['provider' => 'google']) }}"
-                                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+                                    aria-label="Sign in with Google"
+                                    class="inline-flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-theme-xs transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:text-gray-900 dark:border-gray-700 dark:bg-white/5 dark:text-white/90 dark:hover:border-brand-500/40 dark:hover:bg-white/10">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <path
@@ -56,13 +63,12 @@
                                     Sign in with Google
                                 </a>
                                 <a href="{{ route('auth.redirect', ['provider' => 'discord']) }}"
-                                    class="inline-flex items-center justify-center gap-3 rounded-lg bg-gray-100 px-7 py-3 text-sm font-normal text-gray-700 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
-                                    <svg width="21" class="fill-current" height="20" viewBox="0 0 21 20"
-                                        fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M15.6705 1.875H18.4272L12.4047 8.75833L19.4897 18.125H13.9422L9.59717 12.4442L4.62554 18.125H1.86721L8.30887 10.7625L1.51221 1.875H7.20054L11.128 7.0675L15.6705 1.875ZM14.703 16.475H16.2305L6.37054 3.43833H4.73137L14.703 16.475Z" />
+                                    aria-label="Sign in with Discord"
+                                    class="inline-flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 shadow-theme-xs transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:text-gray-900 dark:border-gray-700 dark:bg-white/5 dark:text-white/90 dark:hover:border-brand-500/40 dark:hover:bg-white/10">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path fill="#5865F2" d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.211.375-.444.864-.608 1.249a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.249.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.369a.07.07 0 0 0-.032.027C.533 9.046-.321 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 6.001 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.077.077 0 0 0-.041-.106 13.11 13.11 0 0 1-1.872-.892.077.077 0 0 1-.008-.127c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.099.246.197.373.291a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.04.107c.36.698.772 1.363 1.225 1.993a.076.076 0 0 0 .084.028 19.88 19.88 0 0 0 6.002-3.03.077.077 0 0 0 .03-.056c.5-5.177-.838-9.673-3.549-13.66a.061.061 0 0 0-.031-.028Z"/>
+                                        <path fill="#fff" d="M8.02 14.667c-1.182 0-2.157-1.085-2.157-2.419 0-1.334.955-2.419 2.157-2.419 1.212 0 2.177 1.095 2.157 2.419 0 1.334-.955 2.419-2.157 2.419Zm7.974 0c-1.182 0-2.157-1.085-2.157-2.419 0-1.334.955-2.419 2.157-2.419 1.212 0 2.177 1.095 2.157 2.419 0 1.334-.945 2.419-2.157 2.419Z"/>
                                     </svg>
-
                                     Sign in with Discord
                                 </a>
                             </div>

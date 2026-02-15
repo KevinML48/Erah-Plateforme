@@ -33,6 +33,7 @@ Route::get('/calendar', function () {
 // profile pages
 Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+Route::delete('/profile', [ProfileController::class, 'destroy'])->middleware('auth')->name('profile.destroy');
 Route::get('/profile/rank', [RankExampleController::class, 'show'])->name('profile.rank.show');
 Route::get('/ranks', function () {
     return view('pages.ranks.index', ['title' => 'Ranks']);

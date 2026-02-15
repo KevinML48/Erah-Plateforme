@@ -385,6 +385,27 @@
   .dark .premium-card .border-gray-300 {
     border-color: rgba(117, 146, 255, 0.24) !important;
   }
+
+  /* Global readability guard for dark interface across all pages/components */
+  .dark .theme-content {
+    color: #e5e7eb;
+  }
+
+  .dark .theme-content .text-black,
+  .dark .theme-content .text-gray-900,
+  .dark .theme-content .text-gray-800 {
+    color: #f3f4f6 !important;
+  }
+
+  .dark .theme-content .text-gray-700,
+  .dark .theme-content .text-gray-600 {
+    color: #d1d5db !important;
+  }
+
+  .dark .theme-content .text-gray-500,
+  .dark .theme-content .text-gray-400 {
+    color: #9ca3af !important;
+  }
 }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
   background-color: #344054;

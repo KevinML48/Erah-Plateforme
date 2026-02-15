@@ -27,16 +27,16 @@
 
     <div class="flex items-end justify-between mt-5">
         <div>
-            <span class="text-sm text-gray-500 dark:text-gray-400">Points (Mon solde)</span>
-            <h4 class="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">{{ number_format((int) $currentUserPoints) }}</h4>
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Rang actuel: <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $currentRankName }}</span>
+            <span class="text-sm text-gray-300">Points (Mon solde)</span>
+            <h4 class="mt-2 text-title-sm font-bold text-white">{{ number_format((int) $currentUserPoints) }}</h4>
+            <p class="mt-1 text-xs text-gray-300">
+                Rang actuel: <span class="font-semibold text-white">{{ $currentRankName }}</span>
             </p>
         </div>
 
         @if (!is_null($totalPlatformPoints))
             <span
-                class="flex items-center gap-1 rounded-full bg-brand-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"
+                class="flex items-center gap-1 rounded-full bg-brand-500/15 py-0.5 pl-2 pr-2.5 text-sm font-medium text-brand-300"
             >
                 Total plateforme: {{ number_format((int) $totalPlatformPoints) }}
             </span>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="mt-4">
-        <div class="mb-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+        <div class="mb-1 flex items-center justify-between text-xs text-gray-300">
             <span>Progression</span>
             <span>
                 {{ (int) $progressToNextRank }}%

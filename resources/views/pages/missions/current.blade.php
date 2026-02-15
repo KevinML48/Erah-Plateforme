@@ -13,7 +13,7 @@
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             @forelse ($missions as $mission)
                 @php($progress = $mission->user_progress ?? [])
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] card-3d animate-fade-up">
                     <div class="flex items-start justify-between gap-3">
                         <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">{{ $mission->title }}</h3>
                         <span class="inline-flex rounded-full border border-warning-500/30 bg-warning-500/15 px-3 py-1 text-xs font-medium text-warning-300">En cours</span>

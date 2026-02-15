@@ -3,7 +3,7 @@
     'desc' => '',
 ])
 
-<div {{ $attributes->merge(['class' => 'premium-card']) }}>
+<div {{ $attributes->merge(['class' => 'premium-card card-3d animate-fade-up']) }}>
     <!-- Card Header -->
     <div class="px-4 py-4 sm:px-6 sm:py-5">
         <h3 class="premium-title text-base">

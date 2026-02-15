@@ -27,6 +27,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'content.manage',
             'settings.manage',
             'audit.view',
+            'missions.manage',
+            'missions.view_progress',
+            'claims.view',
         ];
 
         foreach ($permissions as $permission) {
@@ -47,6 +50,9 @@ class RolesAndPermissionsSeeder extends Seeder
                 'content.manage',
                 'settings.manage',
                 'audit.view',
+                'missions.manage',
+                'missions.view_progress',
+                'claims.view',
             ],
             'moderator' => [
                 'admin.access',
@@ -55,6 +61,9 @@ class RolesAndPermissionsSeeder extends Seeder
                 'settlements.manage',
                 'content.manage',
                 'audit.view',
+                'missions.manage',
+                'missions.view_progress',
+                'claims.view',
             ],
             'logistics' => [
                 'admin.access',
@@ -66,6 +75,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'admin.access',
                 'users.view',
                 'audit.view',
+                'missions.view_progress',
+                'claims.view',
             ],
         ];
 

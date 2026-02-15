@@ -21,4 +21,12 @@
         <x-profile.personal-info-card :user="$user" />
         <x-profile.address-card :user="$user" />
     </div>
+
+    @if (request()->query('edit') === 'info')
+        <script>
+            window.addEventListener('load', function () {
+                window.dispatchEvent(new CustomEvent('open-profile-info-modal'));
+            });
+        </script>
+    @endif
 @endsection

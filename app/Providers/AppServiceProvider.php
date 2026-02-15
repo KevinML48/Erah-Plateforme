@@ -50,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-market', fn (?User $user): bool => (bool) ($user?->can('settlements.manage') || $user?->can('matches.manage') || $user?->isAdmin()));
         Gate::define('manage-rewards', fn (?User $user): bool => (bool) ($user?->can('rewards.manage') || $user?->isAdmin()));
         Gate::define('manage-redemptions', fn (?User $user): bool => (bool) ($user?->can('redemptions.manage') || $user?->isAdmin()));
+        Gate::define('manage-missions', fn (?User $user): bool => (bool) ($user?->can('missions.manage') || $user?->isAdmin()));
 
         Gate::policy(PointLog::class, PointLogPolicy::class);
         Gate::policy(EsportMatch::class, MatchPolicy::class);

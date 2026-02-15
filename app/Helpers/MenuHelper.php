@@ -49,6 +49,15 @@ class MenuHelper
                 ],
             ],
             [
+                'icon' => 'task',
+                'name' => 'Missions',
+                'subItems' => [
+                    ['name' => 'Missions disponibles', 'path' => '/missions'],
+                    ['name' => 'Vos missions', 'path' => '/me/missions/progression'],
+                    ['name' => 'Missions finies', 'path' => '/me/missions/history'],
+                ],
+            ],
+            [
                 'icon' => 'ecommerce',
                 'name' => 'Rewards',
                 'path' => '/rewards',

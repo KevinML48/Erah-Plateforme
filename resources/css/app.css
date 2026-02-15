@@ -308,7 +308,7 @@
 
 @layer utilities {
   .premium-card {
-    @apply overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-[#0f1a36] via-[#101f3f] to-[#0d1833] shadow-theme-lg;
+    @apply overflow-hidden rounded-2xl border border-brand-500/20 bg-gradient-to-br from-[#132248] via-[#132a57] to-[#101e43] shadow-theme-lg;
   }
 
   .premium-shell {
@@ -333,6 +333,10 @@
 
   .premium-subtitle {
     @apply text-sm text-gray-300;
+  }
+
+  .premium-readable {
+    @apply text-gray-100;
   }
 
   .card-3d {
@@ -360,6 +364,26 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  .dark .premium-card .text-gray-900,
+  .dark .premium-card .text-gray-800 {
+    color: #f3f4f6 !important;
+  }
+
+  .dark .premium-card .text-gray-700,
+  .dark .premium-card .text-gray-600 {
+    color: #d1d5db !important;
+  }
+
+  .dark .premium-card .text-gray-500,
+  .dark .premium-card .text-gray-400 {
+    color: #9ca3af !important;
+  }
+
+  .dark .premium-card .border-gray-200,
+  .dark .premium-card .border-gray-300 {
+    border-color: rgba(117, 146, 255, 0.24) !important;
   }
 }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {

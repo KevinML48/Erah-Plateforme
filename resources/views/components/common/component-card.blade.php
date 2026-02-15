@@ -17,7 +17,7 @@
     </div>
 
     <!-- Card Body -->
-    <div class="border-t border-brand-500/15 p-4 sm:p-6">
+    <div class="premium-readable border-t border-brand-500/15 p-4 sm:p-6">
         <div class="space-y-4 sm:space-y-6">
             {{ $slot }}
         </div>

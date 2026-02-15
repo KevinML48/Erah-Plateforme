@@ -8,7 +8,7 @@
     />
 
     <div
-      class="premium-card card-3d animate-fade-up p-5 md:p-6"
+      class="premium-card premium-readable card-3d animate-fade-up p-5 md:p-6"
     >
       <div
         class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800"

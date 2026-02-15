@@ -6,7 +6,7 @@
     'totalPlatformPoints' => null,
 ])
 
-<div {{ $attributes->merge(['class' => 'premium-card card-3d animate-fade-up p-5 md:p-6']) }}>
+<div {{ $attributes->merge(['class' => 'premium-card premium-readable card-3d animate-fade-up p-5 md:p-6']) }}>
     <div class="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
         <svg
             class="fill-gray-800 dark:fill-white/90"

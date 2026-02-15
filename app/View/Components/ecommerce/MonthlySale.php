@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\Component;
 
 class MonthlySale extends Component
@@ -45,15 +46,19 @@ class MonthlySale extends Component
 
         $startOfYear = Carbon::now()->startOfYear();
 
+        $monthExpression = DB::connection()->getDriverName() === 'sqlite'
+            ? "CAST(strftime('%m', created_at) AS INTEGER)"
+            : 'MONTH(created_at)';
+
         /** @var \Illuminate\Support\Collection<int, object> $rows */
         $rows = PointLog::query()
-            ->selectRaw('MONTH(created_at) as month_num')
+            ->selectRaw("{$monthExpression} as month_num")
             ->selectRaw('SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) as gained_points')
             ->selectRaw('SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END) as lost_points')
             ->where('user_id', $user->id)
             ->where('created_at', '>=', $startOfYear)
-            ->groupByRaw('MONTH(created_at)')
-            ->orderByRaw('MONTH(created_at)')
+            ->groupByRaw($monthExpression)
+            ->orderByRaw($monthExpression)
             ->get();
 
         foreach ($rows as $row) {

@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminRedemptionController;
 use App\Http\Controllers\AdminRewardController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\MissionController;
 use App\Http\Controllers\PointActivityController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\ProfileController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\TicketController;
 // dashboard pages
 Route::get('/', function () {
     return view('pages.dashboard.ecommerce', ['title' => 'E-commerce Dashboard']);
-})->name('dashboard');
+})->middleware('track.page-view')->name('dashboard');
 
 // calender pages
 Route::get('/calendar', function () {
@@ -105,13 +106,13 @@ Route::get('/videos', function () {
 })->name('videos');
 
 // leaderboard endpoints
-Route::get('/leaderboard/all-time', [LeaderboardController::class, 'allTime'])->name('leaderboard.all-time');
-Route::get('/leaderboard/weekly', [LeaderboardController::class, 'weekly'])->name('leaderboard.weekly');
-Route::get('/leaderboard/monthly', [LeaderboardController::class, 'monthly'])->name('leaderboard.monthly');
-Route::get('/rewards', [RewardController::class, 'index'])->name('rewards.index');
-Route::get('/rewards/{slug}', [RewardController::class, 'show'])->name('rewards.show');
+Route::get('/leaderboard/all-time', [LeaderboardController::class, 'allTime'])->middleware('track.page-view')->name('leaderboard.all-time');
+Route::get('/leaderboard/weekly', [LeaderboardController::class, 'weekly'])->middleware('track.page-view')->name('leaderboard.weekly');
+Route::get('/leaderboard/monthly', [LeaderboardController::class, 'monthly'])->middleware('track.page-view')->name('leaderboard.monthly');
+Route::get('/rewards', [RewardController::class, 'index'])->middleware('track.page-view')->name('rewards.index');
+Route::get('/rewards/{slug}', [RewardController::class, 'show'])->middleware('track.page-view')->name('rewards.show');
 
-Route::middleware('auth')->group(function (): void {
+Route::middleware(['auth', 'track.page-view'])->group(function (): void {
     Route::get('/points/activity', [PointActivityController::class, 'index'])->name('points.activity');
 
     // user matches & predictions
@@ -126,6 +127,10 @@ Route::middleware('auth')->group(function (): void {
         ->name('matches.tickets.store');
     Route::get('/me/tickets', [TicketController::class, 'me'])->name('me.tickets.index');
     Route::get('/me/tickets/{ticket}', [TicketController::class, 'show'])->name('me.tickets.show');
+    Route::get('/missions', [MissionController::class, 'index'])->name('missions.index');
+    Route::get('/me/missions/progression', [MissionController::class, 'progression'])->name('me.missions.progression');
+    Route::get('/missions/{slug}', [MissionController::class, 'show'])->name('missions.show');
+    Route::get('/me/missions/history', [MissionController::class, 'history'])->name('me.missions.history');
     Route::post('/rewards/{reward}/redeem', [RedemptionController::class, 'store'])
         ->middleware('throttle:reward-redeem')
         ->name('rewards.redeem');
@@ -180,10 +185,3 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/audit', [AdminAuditController::class, 'index'])->name('audit.index');
     });
 });
-
-
-
-
-
-
-

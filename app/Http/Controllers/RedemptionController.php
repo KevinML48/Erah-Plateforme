@@ -11,6 +11,7 @@ use App\Exceptions\RewardNotAvailableException;
 use App\Http\Requests\RedeemRewardRequest;
 use App\Models\Reward;
 use App\Models\RewardRedemption;
+use App\Services\EventTrackingService;
 use App\Services\RedemptionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,8 @@ class RedemptionController extends Controller
     public function store(
         RedeemRewardRequest $request,
         Reward $reward,
-        RedemptionService $redemptionService
+        RedemptionService $redemptionService,
+        EventTrackingService $eventTrackingService
     ): JsonResponse {
         $user = $request->user();
         abort_unless($user, 401);
@@ -34,6 +36,11 @@ class RedemptionController extends Controller
         } catch (RewardNotAvailableException|OutOfStockException|InsufficientPointsException $exception) {
             return response()->json(['message' => $exception->getMessage()], 422);
         }
+
+        $eventTrackingService->trackAction($user, 'reward_redeemed', [
+            'reward_id' => $reward->id,
+            'redemption_id' => $redemption->id,
+        ]);
 
         return response()->json([
             'message' => 'Redemption created.',
@@ -78,4 +85,3 @@ class RedemptionController extends Controller
         ]);
     }
 }
-

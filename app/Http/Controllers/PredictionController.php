@@ -10,6 +10,7 @@ use App\Exceptions\PredictionAlreadyExistsException;
 use App\Http\Requests\PlacePredictionRequest;
 use App\Models\EsportMatch;
 use App\Models\Prediction;
+use App\Services\EventTrackingService;
 use App\Services\PredictionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,8 @@ class PredictionController extends Controller
     public function store(
         PlacePredictionRequest $request,
         EsportMatch $match,
-        PredictionService $predictionService
+        PredictionService $predictionService,
+        EventTrackingService $eventTrackingService
     ): JsonResponse {
         $user = $request->user();
         abort_unless($user, 401);
@@ -40,6 +42,11 @@ class PredictionController extends Controller
                 'message' => $exception->getMessage(),
             ], 422);
         }
+
+        $eventTrackingService->trackAction($user, 'prediction_created', [
+            'match_id' => $match->id,
+            'prediction_id' => $prediction->id,
+        ]);
 
         if (!$request->expectsJson()) {
             return redirect()

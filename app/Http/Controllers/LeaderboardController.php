@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Services\EventTrackingService;
 use App\Services\LeaderboardService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -12,7 +13,8 @@ use Illuminate\Http\Request;
 class LeaderboardController extends Controller
 {
     public function __construct(
-        private readonly LeaderboardService $leaderboardService
+        private readonly LeaderboardService $leaderboardService,
+        private readonly EventTrackingService $eventTrackingService
     ) {
     }
 
@@ -25,6 +27,9 @@ class LeaderboardController extends Controller
             rawEntries: $this->leaderboardService->getAllTimeLeaderboard($limit, $search),
         );
         $user = $request->user();
+        if ($user) {
+            $this->eventTrackingService->trackAction($user, 'leaderboard_viewed', ['type' => 'all_time']);
+        }
         $position = $user ? $this->leaderboardService->getUserRankPosition($user, 'all_time') : null;
 
         if ($request->expectsJson()) {
@@ -56,6 +61,9 @@ class LeaderboardController extends Controller
             rawEntries: $this->leaderboardService->getWeeklyLeaderboard($limit, $search),
         );
         $user = $request->user();
+        if ($user) {
+            $this->eventTrackingService->trackAction($user, 'leaderboard_viewed', ['type' => 'weekly']);
+        }
         $position = $user ? $this->leaderboardService->getUserRankPosition($user, 'weekly') : null;
 
         if ($request->expectsJson()) {
@@ -87,6 +95,9 @@ class LeaderboardController extends Controller
             rawEntries: $this->leaderboardService->getMonthlyLeaderboard($limit, $search),
         );
         $user = $request->user();
+        if ($user) {
+            $this->eventTrackingService->trackAction($user, 'leaderboard_viewed', ['type' => 'monthly']);
+        }
         $position = $user ? $this->leaderboardService->getUserRankPosition($user, 'monthly') : null;
 
         if ($request->expectsJson()) {

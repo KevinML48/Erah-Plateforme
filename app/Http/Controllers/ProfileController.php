@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\EventTrackingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -22,7 +23,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request, EventTrackingService $eventTrackingService): RedirectResponse
     {
         $user = $this->resolveUser();
 
@@ -85,6 +86,9 @@ class ProfileController extends Controller
 
         if (!empty($payload)) {
             $user->update($payload);
+            $eventTrackingService->trackAction($user, 'onboarding_step_completed', [
+                'step' => 'profile_updated',
+            ]);
         }
 
         return back()->with('status', 'profile-updated');

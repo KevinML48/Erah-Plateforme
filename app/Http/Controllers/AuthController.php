@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\LoginTrackingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,11 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly LoginTrackingService $loginTrackingService
+    ) {
+    }
+
     public function showSignIn(): View
     {
         return view('pages.auth.signin', ['title' => 'Sign In']);
@@ -37,6 +43,9 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+        if ($user = $request->user()) {
+            $this->loginTrackingService->onSuccessfulLogin($user);
+        }
 
         return redirect()->route('dashboard');
     }
@@ -60,8 +69,8 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $this->loginTrackingService->onSuccessfulLogin($user);
 
         return redirect()->route('dashboard');
     }
 }
-

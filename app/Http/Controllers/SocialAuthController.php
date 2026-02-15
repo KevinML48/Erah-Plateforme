@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\EventTrackingService;
+use App\Services\LoginTrackingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +14,12 @@ use Throwable;
 
 class SocialAuthController extends Controller
 {
+    public function __construct(
+        private readonly EventTrackingService $eventTrackingService,
+        private readonly LoginTrackingService $loginTrackingService
+    ) {
+    }
+
     public function redirect(string $provider): RedirectResponse
     {
         abort_unless($this->isSupportedProvider($provider), 404);
@@ -80,6 +88,13 @@ class SocialAuthController extends Controller
 
         Auth::login($user, true);
         $request->session()->regenerate();
+        $this->loginTrackingService->onSuccessfulLogin($user);
+
+        if ($provider === 'discord') {
+            $this->eventTrackingService->trackAction($user, 'discord_linked', [
+                'discord_id' => $providerId,
+            ]);
+        }
 
         return redirect()->route('dashboard');
     }
@@ -98,4 +113,3 @@ class SocialAuthController extends Controller
         return in_array($provider, ['google', 'discord'], true);
     }
 }
-

@@ -1,0 +1,201 @@
+<?php
+
+use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\TestConsole\AdminGiftConsoleController;
+use App\Http\Controllers\TestConsole\AdminMissionConsoleController;
+use App\Http\Controllers\TestConsole\RankingConsoleController;
+use App\Http\Controllers\TestConsole\UsersConsoleController;
+use App\Http\Controllers\TestConsole\WalletsConsoleController;
+use App\Http\Controllers\Web\Admin\AdminMatchController;
+use App\Http\Controllers\Web\Admin\AdminWalletController;
+use App\Http\Controllers\Web\Admin\ClipsAdminController;
+use App\Http\Controllers\Web\BetPageController;
+use App\Http\Controllers\Web\ClipsPageController;
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\DuelsPageController;
+use App\Http\Controllers\Web\GiftPageController;
+use App\Http\Controllers\Web\LeaderboardPageController;
+use App\Http\Controllers\Web\MatchPageController;
+use App\Http\Controllers\Web\MissionPageController;
+use App\Http\Controllers\Web\NotificationsPageController;
+use App\Http\Controllers\Web\OnboardingController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\PublicProfileController;
+use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\DevConsoleController;
+use App\Http\Controllers\Web\WalletPageController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
+});
+
+require __DIR__.'/auth.php';
+
+Route::prefix('dev')->middleware(['web', 'local.only'])->group(function (): void {
+    Route::get('/', [DevConsoleController::class, 'index'])->name('dev.index');
+    Route::get('/routes', [DevConsoleController::class, 'routes'])->name('dev.routes');
+    Route::get('/data', [DevConsoleController::class, 'data'])->name('dev.data');
+    Route::post('/db/reset', [DevConsoleController::class, 'dbReset'])->name('dev.db.reset');
+    Route::post('/seed', [DevConsoleController::class, 'seed'])->name('dev.seed');
+    Route::post('/impersonate', [DevConsoleController::class, 'impersonate'])->name('dev.impersonate');
+    Route::post('/jobs/dispatch', [DevConsoleController::class, 'dispatchJob'])->name('dev.jobs.dispatch');
+    Route::get('/logs', [DevConsoleController::class, 'logs'])->name('dev.logs');
+    Route::get('/api', [DevConsoleController::class, 'api'])->name('dev.api');
+    Route::post('/api/token', [DevConsoleController::class, 'apiToken'])->name('dev.api.token');
+});
+
+Route::middleware('throttle:social-auth')->group(function () {
+    Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirect'])
+        ->defaults('provider', 'google');
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'callback'])
+        ->defaults('provider', 'google');
+
+    Route::get('/auth/discord/redirect', [SocialAuthController::class, 'redirect'])
+        ->defaults('provider', 'discord');
+    Route::get('/auth/discord/callback', [SocialAuthController::class, 'callback'])
+        ->defaults('provider', 'discord');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', fn () => redirect()->route('dashboard'));
+
+    Route::prefix('console')->group(function () {
+        Route::get('/', fn () => redirect()->route('dashboard'));
+
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
+        Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding');
+        Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
+
+        Route::get('/users', [UsersConsoleController::class, 'index'])->name('users.index');
+        Route::post('/users/role', [UsersConsoleController::class, 'updateRole'])
+            ->middleware('admin')
+            ->name('users.role.update');
+
+        Route::get('/ranking', [RankingConsoleController::class, 'index'])->name('ranking.index');
+        Route::post('/ranking/grant', [RankingConsoleController::class, 'grant'])
+            ->middleware(['admin', 'throttle:points-grant'])
+            ->name('ranking.grant');
+
+        Route::get('/wallets', [WalletsConsoleController::class, 'index'])->name('wallets.index');
+        Route::post('/wallets/grant-bet', [WalletsConsoleController::class, 'grantBet'])
+            ->middleware(['admin', 'throttle:points-grant'])
+            ->name('wallets.grant-bet');
+        Route::post('/wallets/grant-reward', [WalletsConsoleController::class, 'grantReward'])
+            ->middleware(['admin', 'throttle:points-grant'])
+            ->name('wallets.grant-reward');
+
+        Route::get('/matches', [MatchPageController::class, 'index'])->name('matches.index');
+        Route::get('/matches/{matchId}', [MatchPageController::class, 'show'])->name('matches.show');
+        Route::post('/matches/{matchId}/bets', [MatchPageController::class, 'placeBet'])
+            ->middleware('throttle:bets-place')
+            ->name('matches.bets.store');
+
+        Route::get('/bets', [BetPageController::class, 'index'])->name('bets.index');
+        Route::delete('/bets/{betId}', [BetPageController::class, 'cancel'])
+            ->middleware('throttle:bets-place')
+            ->name('bets.cancel');
+
+        Route::get('/wallet', [WalletPageController::class, 'index'])->name('wallet.index');
+
+        Route::get('/clips', [ClipsPageController::class, 'index'])->name('clips.index');
+        Route::get('/clips/favorites', [ClipsPageController::class, 'favorites'])->name('clips.favorites');
+        Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])->name('clips.show');
+        Route::post('/clips/{clipId}/like', [ClipsPageController::class, 'like'])->name('clips.like');
+        Route::post('/clips/{clipId}/unlike', [ClipsPageController::class, 'unlike'])->name('clips.unlike');
+        Route::post('/clips/{clipId}/favorite', [ClipsPageController::class, 'favorite'])->name('clips.favorite');
+        Route::post('/clips/{clipId}/unfavorite', [ClipsPageController::class, 'unfavorite'])->name('clips.unfavorite');
+        Route::post('/clips/{clipId}/comments', [ClipsPageController::class, 'comment'])->name('clips.comment');
+        Route::delete('/clips/{clipId}/comments/{commentId}', [ClipsPageController::class, 'deleteComment'])->name('clips.comment.delete');
+        Route::post('/clips/{clipId}/share', [ClipsPageController::class, 'share'])->name('clips.share');
+
+        Route::get('/leaderboards/me', [LeaderboardPageController::class, 'me'])->name('leaderboards.me');
+        Route::get('/leaderboards', [LeaderboardPageController::class, 'index'])->name('leaderboards.index');
+        Route::get('/leaderboards/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('leaderboards.show');
+
+        Route::get('/missions', [MissionPageController::class, 'index'])->name('missions.index');
+        Route::post('/missions/generate/daily', [AdminMissionConsoleController::class, 'generateDaily'])
+            ->middleware('admin')
+            ->name('missions.generate.daily');
+        Route::post('/missions/generate/weekly', [AdminMissionConsoleController::class, 'generateWeekly'])
+            ->middleware('admin')
+            ->name('missions.generate.weekly');
+
+        Route::get('/gifts', [GiftPageController::class, 'index'])->name('gifts.index');
+        Route::get('/gifts/redemptions', [GiftPageController::class, 'redemptions'])->name('gifts.redemptions');
+        Route::get('/reward-wallet', [GiftPageController::class, 'wallet'])->name('gifts.wallet');
+        Route::get('/gifts/{giftId}', [GiftPageController::class, 'show'])->name('gifts.show');
+        Route::post('/gifts/{giftId}/redeem', [GiftPageController::class, 'redeem'])
+            ->middleware('throttle:gifts-redeem')
+            ->name('gifts.redeem');
+
+        Route::get('/notifications', [NotificationsPageController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/read-all', [NotificationsPageController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/notifications/{notificationId}/read', [NotificationsPageController::class, 'read'])->name('notifications.read');
+        Route::get('/notifications/preferences', [NotificationsPageController::class, 'preferences'])->name('notifications.preferences');
+        Route::post('/notifications/preferences', [NotificationsPageController::class, 'updatePreferences'])->name('notifications.preferences.update');
+
+        Route::get('/duels', [DuelsPageController::class, 'index'])->name('duels.index');
+        Route::get('/duels/create', [DuelsPageController::class, 'create'])->name('duels.create');
+        Route::post('/duels', [DuelsPageController::class, 'store'])->name('duels.store');
+        Route::post('/duels/{duelId}/accept', [DuelsPageController::class, 'accept'])->name('duels.accept');
+        Route::post('/duels/{duelId}/refuse', [DuelsPageController::class, 'refuse'])->name('duels.refuse');
+
+        Route::get('/profile', ProfileController::class)->name('profile.show');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
+        Route::get('/settings', SettingsController::class)->name('settings.index');
+
+        Route::middleware('admin')->prefix('admin')->group(function () {
+            Route::get('/clips', [ClipsAdminController::class, 'index'])->name('admin.clips.index');
+            Route::get('/clips/create', [ClipsAdminController::class, 'create'])->name('admin.clips.create');
+            Route::post('/clips', [ClipsAdminController::class, 'store'])->name('admin.clips.store');
+            Route::get('/clips/{clipId}/edit', [ClipsAdminController::class, 'edit'])->name('admin.clips.edit');
+            Route::put('/clips/{clipId}', [ClipsAdminController::class, 'update'])->name('admin.clips.update');
+            Route::post('/clips/{clipId}/publish', [ClipsAdminController::class, 'publish'])->name('admin.clips.publish');
+            Route::post('/clips/{clipId}/unpublish', [ClipsAdminController::class, 'unpublish'])->name('admin.clips.unpublish');
+            Route::delete('/clips/{clipId}', [ClipsAdminController::class, 'destroy'])->name('admin.clips.destroy');
+
+            Route::get('/matches', [AdminMatchController::class, 'index'])->name('admin.matches.index');
+            Route::get('/matches/create', [AdminMatchController::class, 'create'])->name('admin.matches.create');
+            Route::post('/matches', [AdminMatchController::class, 'store'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.store');
+            Route::get('/matches/{matchId}/edit', [AdminMatchController::class, 'edit'])->name('admin.matches.edit');
+            Route::put('/matches/{matchId}', [AdminMatchController::class, 'update'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.update');
+            Route::get('/matches/{matchId}/manage', [AdminMatchController::class, 'manage'])->name('admin.matches.manage');
+            Route::post('/matches/{matchId}/status', [AdminMatchController::class, 'updateStatus'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.status');
+            Route::post('/matches/{matchId}/result', [AdminMatchController::class, 'setResult'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.result');
+            Route::post('/matches/{matchId}/settle', [AdminMatchController::class, 'settle'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.settle');
+
+            Route::get('/wallets/grant', [AdminWalletController::class, 'create'])->name('admin.wallets.grant.create');
+            Route::post('/wallets/grant', [AdminWalletController::class, 'store'])
+                ->middleware('throttle:points-grant')
+                ->name('admin.wallets.grant.store');
+
+            Route::get('/gifts', [AdminGiftConsoleController::class, 'index'])->name('admin.gifts.index');
+            Route::post('/gifts', [AdminGiftConsoleController::class, 'store'])->name('admin.gifts.store');
+            Route::put('/gifts/{giftId}', [AdminGiftConsoleController::class, 'update'])->name('admin.gifts.update');
+            Route::delete('/gifts/{giftId}', [AdminGiftConsoleController::class, 'destroy'])->name('admin.gifts.destroy');
+            Route::post('/redemptions/{redemptionId}/approve', [AdminGiftConsoleController::class, 'approve'])->name('admin.redemptions.approve');
+            Route::post('/redemptions/{redemptionId}/reject', [AdminGiftConsoleController::class, 'reject'])->name('admin.redemptions.reject');
+            Route::post('/redemptions/{redemptionId}/ship', [AdminGiftConsoleController::class, 'ship'])->name('admin.redemptions.ship');
+            Route::post('/redemptions/{redemptionId}/deliver', [AdminGiftConsoleController::class, 'deliver'])->name('admin.redemptions.deliver');
+
+            Route::get('/missions', [AdminMissionConsoleController::class, 'index'])->name('admin.missions.index');
+            Route::post('/missions', [AdminMissionConsoleController::class, 'storeTemplate'])->name('admin.missions.store');
+            Route::put('/missions/{templateId}', [AdminMissionConsoleController::class, 'updateTemplate'])->name('admin.missions.update');
+            Route::delete('/missions/{templateId}', [AdminMissionConsoleController::class, 'destroyTemplate'])->name('admin.missions.destroy');
+        });
+    });
+});

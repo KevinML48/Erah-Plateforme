@@ -58,11 +58,15 @@ class MatchPageController extends Controller
             ->findOrFail($matchId);
 
         $user = auth()->user();
-        $myBet = Bet::query()
-            ->where('user_id', $user->id)
-            ->where('match_id', $match->id)
-            ->latest('id')
-            ->first();
+        $myBet = null;
+
+        if ($user) {
+            $myBet = Bet::query()
+                ->where('user_id', $user->id)
+                ->where('match_id', $match->id)
+                ->latest('id')
+                ->first();
+        }
 
         return view('pages.matches.show', [
             'match' => $match,

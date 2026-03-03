@@ -3,23 +3,33 @@
 @section('title', 'Clips favoris')
 
 @section('content')
+    @php
+        $isPublicApp = request()->routeIs('app.*');
+        $indexRouteName = $isPublicApp ? 'app.clips.index' : 'clips.index';
+        $showRouteName = $isPublicApp ? 'app.clips.show' : 'clips.show';
+    @endphp
+
     <section class="section">
         <h1>Mes clips favoris</h1>
-        <p><a href="{{ route('clips.index') }}">Retour aux clips</a></p>
+        <div class="actions">
+            <x-ui.button :href="route($indexRouteName)" variant="secondary" magnetic>Retour aux clips</x-ui.button>
+        </div>
 
         @if(($clips ?? null) && $clips->count())
-            <ul>
+            <div class="grid grid-3">
                 @foreach($clips as $clip)
-                    <li>
-                        <a href="{{ route('clips.show', $clip->slug) }}">{{ $clip->title }}</a>
-                        <span class="meta">{{ optional($clip->published_at)->format('Y-m-d') }}</span>
-                    </li>
+                    <x-ui.card :title="$clip->title" subtitle="Favori">
+                        <p class="meta">Publication: {{ optional($clip->published_at)->format('Y-m-d') ?: 'N/A' }}</p>
+                        <div class="actions">
+                            <x-ui.button :href="route($showRouteName, $clip->slug)" variant="outline" size="sm">Voir clip</x-ui.button>
+                        </div>
+                    </x-ui.card>
                 @endforeach
-            </ul>
+            </div>
 
             <div class="actions">{{ $clips->links() }}</div>
         @else
-            <p class="meta">Aucun favori.</p>
+            <x-ui.empty-state title="Aucun favori" message="Ajoutez des clips en favoris depuis la liste clips." />
         @endif
     </section>
 @endsection

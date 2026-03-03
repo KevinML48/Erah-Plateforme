@@ -6,8 +6,8 @@
 	<title>ERAH Esport</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="ERAH Esport est une association basÃ©e Ã  Mende (LozÃ¨re), spÃ©cialisÃ©e dans la compÃ©tition et la promotion du gaming local et national.">
-	<meta name="keywords" content="ERAH Esport, esport LozÃ¨re, esport Mende, club esport, gaming, compÃ©titions esport, Ã©vÃ©nements esport, association esport, tournois gaming, sport Ã©lectronique">
+	<meta name="description" content="ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.">
+	<meta name="keywords" content="ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique">
 	<meta name="author" content="ERAH Esport">
 
   <!-- Favicon -->
@@ -31,17 +31,17 @@
   }
   </script>
 
-  <!-- PrÃ©connexion & polices Google -->
+  <!-- Préconnexion & polices Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Big+Shoulders+Display:wght@100..900&display=swap" rel="stylesheet">
 
-  <!-- CSS critiques (appliquÃ©s immÃ©diatement) -->
+  <!-- CSS critiques (appliqués immédiatement) -->
   <link rel="stylesheet" href="/template/assets/css/helper.css">
   <link rel="stylesheet" href="/template/assets/css/theme.css">
   <link rel="stylesheet" href="/template/assets/css/theme-light.css">
 
-  <!-- PrÃ©chargement CSS moins critiques -->
+  <!-- Préchargement CSS moins critiques -->
   <link rel="preload" href="/template/assets/vendor/fontawesome/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="/template/assets/vendor/fancybox/css/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="/template/assets/vendor/swiper/css/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -93,7 +93,7 @@
 		padding-right: 0.75em;
 	}
 
-	/* Bandeau cookies stylÃ© */
+	/* Bandeau cookies stylé */
 #cookie-banner {
   position: fixed;
   bottom: 20px;
@@ -122,7 +122,7 @@
   to { opacity: 1; }
 }
 
-/* Boutons stylÃ©s */
+/* Boutons stylés */
 #cookie-banner button {
   border: none;
   padding: 10px 18px;
@@ -216,18 +216,22 @@
 
 										<li><a href="about.html">A propos</a></li>
 
-										<li><a href="boutique.html">Boutique</a></li>
+										@auth
+											<li><a href="{{ route('app.profile') }}">Profil</a></li>
+										@else
+											<li><a href="{{ route('login') }}">Profil</a></li>
+										@endauth
 
 										<li class="tt-submenu-wrap tt-submenu-master">
 											<div class="tt-submenu-trigger">
-												<a href="#">Ã‰quipes</a>
+												<a href="#">Équipes</a>
 											</div>
 											<div class="tt-submenu">
 												<ul class="tt-submenu-list">
 
 													<li><a href="valorant-VCL.html">Valorant VCL</a></li>
 													<li><a href="staff.html">Staff ERAH</a></li>
-													<li><a href="medical.html">MÃ©dical</a></li>
+													<li><a href="medical.html">Médical</a></li>
 
 												</ul>
 											</div>
@@ -241,14 +245,16 @@
 												<ul class="tt-submenu-list">
 
 													<li><a href="galerie-photos.html">Galerie Photo</a></li>
-													<li><a href="galerie-video.html">Galerie VidÃ©o</a></li>
-													<li><a href="evenement.html">Nos Ã©vÃ©nements</a></li>
+													<li><a href="galerie-video.html">Galerie Vidéo</a></li>
+													<li><a href="evenement.html">Nos événements</a></li>
 													<li><a href="nos-stages.html">Nos stages</a></li>
 
 												</ul>
 											</div>
 										</li>
 
+
+										<li><a href="/app">Plateforme</a></li>
 
 										<li><a href="mende.html">Mende</a></li>
 
@@ -284,10 +290,17 @@
 
 
 
-					<a href="boutique.html"
-						class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
-						<span data-hover="Boutique">Boutique</span>
-					</a>
+					@auth
+						<a href="{{ route('app.profile') }}"
+							class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
+							<span data-hover="Mon profil">Mon profil</span>
+						</a>
+					@else
+						<a href="{{ route('login') }}"
+							class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
+							<span data-hover="Connexion">Connexion</span>
+						</a>
+					@endauth
 
 
 
@@ -317,7 +330,7 @@
 
 				<div class="ph-video ph-video-cover-1">
   <div class="ph-video-inner">
-    <!-- VidÃ©o avec poster lÃ©ger -->
+    <!-- Vidéo avec poster léger -->
 <video id="hero-video"
        loop
        muted
@@ -338,7 +351,7 @@
 						<div class="ph-caption-inner">
 							<h1 class="ph-caption-title">ERAH<br> Esport</h1>
 							<div class="ph-caption-description max-width-700">
-								ERAH, câ€™est une chance de<br> rÃ©ussir dans lâ€™esport
+								ERAH, c’est une chance de<br> réussir dans l’esport
 							</div>
 						</div>
 					</div>
@@ -350,7 +363,7 @@
 							<div class="ph-caption-inner">
 								<h1 class="ph-caption-title">ERAH<br> Esport</h1>
 								<div class="ph-caption-description max-width-700">
-									ERAH, câ€™est une chance de<br> rÃ©ussir dans lâ€™esport
+									ERAH, c’est une chance de<br> réussir dans l’esport
 								</div>
 							</div>
 						</div>
@@ -410,7 +423,7 @@
 									id="textcircle"></path>
 							</defs>
 							<text dy="30">
-								<textPath xlink:href="#textcircle">Explorez DÃ©fiez Brillez Soutenez ERAH -</textPath>
+								<textPath xlink:href="#textcircle">Explorez Défiez Brillez Soutenez ERAH -</textPath>
 							</text>
 						</svg>
 					</a>
@@ -433,7 +446,7 @@
 								</div>
 
 								<div class="tt-text-uppercase margin-top-30 tt-text-reveal">
-									ERAH Esport<br> un club compÃ©titif basÃ© Ã  Mende
+									ERAH Esport<br> un club compétitif basé à Mende
 								</div>
 
 							</div>
@@ -442,8 +455,8 @@
 							<div class="tt-col-lg-7 tt-align-self-center">
 
 								<div class="text-xxlg font-500 tt-text-reveal">
-									Nous sommes un club esport en dÃ©veloppement sur Valorant, avec une Ã©quipe trÃ¨s
-									compÃ©titive
+									Nous sommes un club esport en développement sur Valorant, avec une équipe très
+									compétitive
 								</div>
 
 								<a href="about.html"
@@ -460,8 +473,8 @@
 					<div class="tt-section-inner tt-wrap">
 
 						<div class="tt-heading tt-heading-xxxlg tt-heading-center">
-							<h2 class="tt-heading-title tt-text-reveal">Ã‰quipes ERAH</h2>
-							<p class="max-width-500 tt-text-uppercase tt-text-reveal">DÃ©couvrez nos Ã©quipes</p>
+							<h2 class="tt-heading-title tt-text-reveal">Équipes ERAH</h2>
+							<p class="max-width-500 tt-text-uppercase tt-text-reveal">Découvrez nos équipes</p>
 						</div>
 
 					</div>
@@ -522,7 +535,7 @@
           </div>
         </a>
 
-        <!-- MÃ‰DICAL -->
+        <!-- MÉDICAL -->
         <a href="medical.html" class="pcli-item tt-anim-fadeinup" data-cursor="Go !">
           <div class="pcli-item-inner">
             <div class="pcli-col pcli-col-image">
@@ -540,7 +553,7 @@
             </div>
             <div class="pcli-col pcli-col-caption">
               <div class="pcli-caption">
-                <h2 class="pcli-title">MÃ©dical</h2>
+                <h2 class="pcli-title">Médical</h2>
                 <div class="pcli-categories">
                   <div class="pcli-category">ERAH</div>
                 </div>
@@ -561,7 +574,7 @@
 						<div class="tt-heading tt-heading-xxxlg tt-heading-center">
 							<h2 class="tt-heading-title tt-text-reveal">Vos avis comptent</h2>
 							<p class="max-width-500 tt-text-uppercase tt-text-reveal">
-								Vos avis reflÃ¨tent notre passion commune. <strong>Merci dâ€™Ãªtre lÃ , tout
+								Vos avis reflètent notre passion commune. <strong>Merci d’être là, tout
 									simplement.</strong>
 							</p>
 						</div>
@@ -578,7 +591,7 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>meilleur club et je pÃ¨se mes mots</strong></em>
+											<em><strong>meilleur club et je pèse mes mots</strong></em>
 										</div>
 										<div class="tt-stte-subtext">
 											<a href="https://x.com/Hermes_vlr/status/2003525435775467839?s=20" class="tt-link"
@@ -593,7 +606,7 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>Enfin une structure qui cesse dâ€™afficher des ambitions
+											<em><strong>Enfin une structure qui cesse d’afficher des ambitions
 													impossibles au vu de ses moyens et qui assume pleinement la
 													formation ðŸ™</strong></em>
 										</div>
@@ -610,11 +623,11 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>Le programme dâ€™ERAH semble vraiment bien
-													structurÃ©.</strong></em><br><br>
+											<em><strong>Le programme d’ERAH semble vraiment bien
+													structuré.</strong></em><br><br>
 											<em><strong>Former des joueuses de niveau Diamant/Ascendant et les faire
-													Ã©voluer dans deux Ã©quipes en tandem pourrait, Ã  long terme,
-													renforcer la rÃ©putation dâ€™ERAH en tant que centre de
+													évoluer dans deux équipes en tandem pourrait, à long terme,
+													renforcer la réputation d’ERAH en tant que centre de
 													formation.</strong></em>
 										</div>
 										<div class="tt-stte-subtext">
@@ -630,10 +643,10 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>Je tiens Ã  vous dire que câ€™est vraiment une structure dont
-													jâ€™aime suivre lâ€™avancÃ©e.</strong> Je le dis sincÃ¨rement : vous Ãªtes
-												lâ€™avenir de lâ€™esport en France, et il est tout Ã  fait normal de soutenir
-												des projets comme le vÃ´tre !</em>
+											<em><strong>Je tiens à vous dire que c’est vraiment une structure dont
+													j’aime suivre l’avancée.</strong> Je le dis sincèrement : vous êtes
+												l’avenir de l’esport en France, et il est tout à fait normal de soutenir
+												des projets comme le vôtre !</em>
 										</div>
 										<div class="tt-stte-subtext">
 											<a href="https://x.com/Pikaliplay" class="tt-link" target="_blank"
@@ -648,9 +661,9 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>Je nâ€™ai aucun regret dâ€™avoir jouÃ© sous les couleurs de cette
-													structure !</strong> Merci encore pour la confiance et lâ€™opportunitÃ©
-												qui mâ€™ont Ã©tÃ© offertes !</em>
+											<em><strong>Je n’ai aucun regret d’avoir joué sous les couleurs de cette
+													structure !</strong> Merci encore pour la confiance et l’opportunité
+												qui m’ont été offertes !</em>
 										</div>
 										<div class="tt-stte-subtext">
 											<a href="https://x.com/GuiltyObiwan/status/1873956565222645773"
@@ -665,10 +678,10 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em>Heureux dâ€™avoir pu contribuer Ã  monter le pÃ´le Valorant chez ERAH et dâ€™y
+											<em>Heureux d’avoir pu contribuer à monter le pôle Valorant chez ERAH et d’y
 												voir des personnes de valeur le faire progresser, que ce soient nos cinq
-												joueurs ou le staff. <strong>Big up Ã  tous ceux qui sont passÃ©s chez
-													nous : vous avez chacun fait Ã©voluer le projet Ã  votre maniÃ¨re
+												joueurs ou le staff. <strong>Big up à tous ceux qui sont passés chez
+													nous : vous avez chacun fait évoluer le projet à votre manière
 													!</strong></em>
 										</div>
 										<div class="tt-stte-subtext">
@@ -684,8 +697,8 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em><strong>Une fiertÃ© dâ€™avoir eu la possibilitÃ© de reprÃ©senter vos couleurs
-													!</strong> Merci pour le soutien, lâ€™encouragement et pour mâ€™avoir
+											<em><strong>Une fierté d’avoir eu la possibilité de représenter vos couleurs
+													!</strong> Merci pour le soutien, l’encouragement et pour m’avoir
 												ouvert les yeux !</em>
 										</div>
 										<div class="tt-stte-subtext">
@@ -701,8 +714,8 @@
 									<div class="tt-stte-card-counter"></div>
 									<div class="tt-stte-card-caption">
 										<div class="tt-stte-text">
-											<em>Je remercie chaque personne qui a cru au projet, de prÃ¨s ou de loin.
-												<strong>Sans vous, rien nâ€™aurait Ã©tÃ© possible.</strong></em>
+											<em>Je remercie chaque personne qui a cru au projet, de près ou de loin.
+												<strong>Sans vous, rien n’aurait été possible.</strong></em>
 										</div>
 										<div class="tt-stte-subtext">
 											<a href="https://x.com/YusohFR/status/1873756595404124668" class="tt-link"
@@ -784,7 +797,7 @@
 								<div class="tt-accordion-heading">
 									<div class="tt-ac-head cursor-alter">
 										<div class="tt-ac-head-inner">
-											<h4 class="tt-ac-head-title">OÃ¹ est situÃ© le club ERAH Esport ?</h4>
+											<h4 class="tt-ac-head-title">Où est situé le club ERAH Esport ?</h4>
 										</div>
 									</div>
 									<div class="tt-accordion-caret">
@@ -798,8 +811,8 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Notre club est basÃ© Ã  <a href="/mende.html" class="tt-link">Mende</a>, en LozÃ¨re
-										(48), au cÅ“ur de lâ€™Occitanie.</p>
+									<p>Notre club est basé à <a href="/mende.html" class="tt-link">Mende</a>, en Lozère
+										(48), au cœur de l’Occitanie.</p>
 								</div>
 							</div>
 
@@ -807,7 +820,7 @@
 								<div class="tt-accordion-heading">
 									<div class="tt-ac-head cursor-alter">
 										<div class="tt-ac-head-inner">
-											<h4 class="tt-ac-head-title">Quelles sont les Ã©quipes actives au sein d'ERAH
+											<h4 class="tt-ac-head-title">Quelles sont les équipes actives au sein d'ERAH
 												Esport ?</h4>
 										</div>
 									</div>
@@ -822,9 +835,9 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Nous disposons actuellement d'une Ã©quipe principale :</p>
+									<p>Nous disposons actuellement d'une équipe principale :</p>
 									<ul>
-										<li>Une Ã©quipe VCL (Valorant Roster CompÃ©titif), engagÃ©e dans les <a
+										<li>Une équipe VCL (Valorant Roster Compétitif), engagée dans les <a
 												href="https://tracker.gg/valorant/premier/teams/f698836f-cfac-4872-bf2f-9bfaaeeefc25/matches"
 												class="tt-link" target="_blank" rel="noopener noreferrer">tournois et
 												ligues de haut niveau</a>.</li>
@@ -836,7 +849,7 @@
 								<div class="tt-accordion-heading">
 									<div class="tt-ac-head cursor-alter">
 										<div class="tt-ac-head-inner">
-											<h4 class="tt-ac-head-title">Dans quelle ligue ou compÃ©tition Ã©volue ERAH
+											<h4 class="tt-ac-head-title">Dans quelle ligue ou compétition évolue ERAH
 												Esport ?</h4>
 										</div>
 									</div>
@@ -851,7 +864,7 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Notre structure Ã©volue dÃ©sormais uniquement dans le circuit VCL, une ligue compÃ©titive officielle de Valorant.</p>
+									<p>Notre structure évolue désormais uniquement dans le circuit VCL, une ligue compétitive officielle de Valorant.</p>
 								</div>
 							</div>
 
@@ -874,8 +887,8 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Nous recrutons ponctuellement, selon les besoins de nos Ã©quipes ou de nos
-										projets. Suivez-nous sur nos rÃ©seaux pour ne rien manquer.</p>
+									<p>Nous recrutons ponctuellement, selon les besoins de nos équipes ou de nos
+										projets. Suivez-nous sur nos réseaux pour ne rien manquer.</p>
 								</div>
 							</div>
 
@@ -883,7 +896,7 @@
 								<div class="tt-accordion-heading">
 									<div class="tt-ac-head cursor-alter">
 										<div class="tt-ac-head-inner">
-											<h4 class="tt-ac-head-title">Est-ce que vous participez Ã  des Ã©vÃ©nements
+											<h4 class="tt-ac-head-title">Est-ce que vous participez à des événements
 												physiques (LAN, salons, etc.) ?</h4>
 										</div>
 									</div>
@@ -898,10 +911,10 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Oui ! <strong>ERAH Esport est prÃ©sent lors de plusieurs Ã©vÃ©nements IRL comme la
+									<p>Oui ! <strong>ERAH Esport est présent lors de plusieurs événements IRL comme la
 											<a href="hoplan-2025.html" class="tt-link" target="_blank"
 												rel="noopener noreferrer">Gamers Assembly, HopLAN, Espot
-												Paris</a></strong>, et organise aussi des bootcamps et des confÃ©rences, tout en participant Ã  divers Ã©vÃ©nements.</p>
+												Paris</a></strong>, et organise aussi des bootcamps et des conférences, tout en participant à divers événements.</p>
 								</div>
 							</div>
 
@@ -927,8 +940,8 @@
 									<p>Oui, <strong><a
 												href="https://www.journal-officiel.gouv.fr/pages/associations-detail-annonce/?q.id=id:202300481173"
 												class="tt-link" target="_blank" rel="noopener noreferrer">ERAH Esport
-												est une association loi 1901</a></strong>, Ã  but non lucratif,
-										structurÃ©e autour de valeurs humaines et dâ€™un projet de dÃ©veloppement
+												est une association loi 1901</a></strong>, à but non lucratif,
+										structurée autour de valeurs humaines et d’un projet de développement
 										professionnel.</p>
 								</div>
 							</div>
@@ -937,7 +950,7 @@
 								<div class="tt-accordion-heading">
 									<div class="tt-ac-head cursor-alter">
 										<div class="tt-ac-head-inner">
-											<h4 class="tt-ac-head-title">Comment suivre vos compÃ©titions ou vos annonces
+											<h4 class="tt-ac-head-title">Comment suivre vos compétitions ou vos annonces
 												?</h4>
 										</div>
 									</div>
@@ -952,9 +965,9 @@
 									</div>
 								</div>
 								<div class="tt-accordion-content max-width-1000">
-									<p>Nous communiquons activement via nos rÃ©seaux sociaux, notre site web, ainsi que
+									<p>Nous communiquons activement via nos réseaux sociaux, notre site web, ainsi que
 										sur notre serveur <a href="https://discord.gg/pfnptbTb">Discord</a>.</p>
-									<p><em><u>Nâ€™hÃ©sitez pas Ã  nous suivre sur nos rÃ©seaux !</u></em></p>
+									<p><em><u>N’hésitez pas à nous suivre sur nos réseaux !</u></em></p>
 								</div>
 							</div>
 
@@ -968,7 +981,7 @@
 				<br>
 
 				<div class="tt-heading tt-heading-xxxlg tt-heading-center" style="margin-bottom: -10px;">
-					<h3 class="tt-heading-subtitle tt-text-reveal">PrÃ©sentation ERAH</h3>
+					<h3 class="tt-heading-subtitle tt-text-reveal">Présentation ERAH</h3>
 				</div>
 
 
@@ -980,7 +993,7 @@
 
 						<div class="tt-clipper">
 							<a data-fancybox href="https://youtu.be/MCh7wI7gMOU"
-								data-caption="Erah Esport" class="tt-clipper-inner" data-cursor="Play" aria-label="VidÃ©o YouTube : Erah Esport">
+								data-caption="Erah Esport" class="tt-clipper-inner" data-cursor="Play" aria-label="Vidéo YouTube : Erah Esport">
 
 
 								<div class="tt-clipper-bg">
@@ -1010,7 +1023,7 @@
 						<div class="tt-heading tt-heading-xxxlg tt-heading-center">
 							<h2 class="tt-heading-title tt-text-reveal" style="font-style: normal;">Notre parcours</h2>
 							<p class="max-width-500 tt-text-uppercase tt-text-reveal">
-								Depuis 2024, nous offrons Ã  n'importe qui de vivre une expÃ©rience compÃ©titive Ã  haut
+								Depuis 2024, nous offrons à n'importe qui de vivre une expérience compétitive à haut
 								niveau.
 							</p>
 						</div>
@@ -1132,8 +1145,8 @@
 							<h3 class="tt-heading-subtitle tt-text-reveal">Valorant</h3>
 							<h2 class="tt-heading-title tt-text-reveal" style="font-style: normal;">Performances</h2>
 							<p class="max-width-500 tt-text-uppercase tt-text-reveal">
-								DÃ©couvrez toutes nos<br>
-								performances depuis nos dÃ©buts
+								Découvrez toutes nos<br>
+								performances depuis nos débuts
 							</p>
 						</div>
 
@@ -1167,7 +1180,7 @@
 										<h4 class="tt-avlist-title">Contenders League</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
-										<div class="tt-avlist-description">Champions â€“ MontÃ©e en VCL</div>
+										<div class="tt-avlist-description">Champions – Montée en VCL</div>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-info">
 										<div class="tt-avlist-info">2024</div>
@@ -1178,7 +1191,7 @@
 							<div class="tt-avlist-item cursor-alter tt-anim-fadeinup">
 								<div class="tt-avlist-item-inner">
 									<div class="tt-avlist-col tt-avlist-col-title">
-										<h4 class="tt-avlist-title">Open Tour France â€“ Division 2</h4>
+										<h4 class="tt-avlist-title">Open Tour France – Division 2</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
 										<div class="tt-avlist-description">Double Top 1</div>
@@ -1208,7 +1221,7 @@
 							<div class="tt-avlist-item cursor-alter tt-anim-fadeinup">
 								<div class="tt-avlist-item-inner">
 									<div class="tt-avlist-col tt-avlist-col-title">
-										<h4 class="tt-avlist-title">Europe â€“ BO6</h4>
+										<h4 class="tt-avlist-title">Europe – BO6</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
 										<div class="tt-avlist-description">Top 16</div>
@@ -1222,7 +1235,7 @@
 							<div class="tt-avlist-item cursor-alter tt-anim-fadeinup">
 								<div class="tt-avlist-item-inner">
 									<div class="tt-avlist-col tt-avlist-col-title">
-										<h4 class="tt-avlist-title">France â€“ MW3</h4>
+										<h4 class="tt-avlist-title">France – MW3</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
 										<div class="tt-avlist-description">Top 2</div>
@@ -1278,7 +1291,7 @@
 							<div class="tt-avlist-item cursor-alter tt-anim-fadeinup">
 								<div class="tt-avlist-item-inner">
 									<div class="tt-avlist-col tt-avlist-col-title">
-										<h4 class="tt-avlist-title">HopLan â€“ Strasbourg</h4>
+										<h4 class="tt-avlist-title">HopLan – Strasbourg</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
 										<div class="tt-avlist-description">Top 3</div>
@@ -1292,7 +1305,7 @@
 							<div class="tt-avlist-item cursor-alter tt-anim-fadeinup">
 								<div class="tt-avlist-item-inner">
 									<div class="tt-avlist-col tt-avlist-col-title">
-										<h4 class="tt-avlist-title">Alsace Arena â€“ Call of Duty</h4>
+										<h4 class="tt-avlist-title">Alsace Arena – Call of Duty</h4>
 									</div>
 									<div class="tt-avlist-col tt-avlist-col-description">
 										<div class="tt-avlist-description">Top 4</div>
@@ -1342,10 +1355,10 @@
 					<div class="tt-section-inner tt-wrap max-width-1800">
 
 						<div class="tt-heading tt-heading-lg tt-heading-center margin-bottom-100">
-							<h2 class="tt-heading-title tt-text-reveal" style="font-style: normal;">DerniÃ¨res VidÃ©os
+							<h2 class="tt-heading-title tt-text-reveal" style="font-style: normal;">Dernières Vidéos
 							</h2>
 							<p class="max-width-500 tt-anim-fadeinup text-muted">
-								Retrouvez ici nos derniÃ¨res vidÃ©os publiÃ©es sur YouTube et plongez dans nos moments
+								Retrouvez ici nos dernières vidéos publiées sur YouTube et plongez dans nos moments
 								forts en images.
 							</p>
 						</div>
@@ -1365,7 +1378,7 @@
     allowfullscreen 
     loading="lazy" 
     frameborder="0"
-    title="VidÃ©o YouTube : PrÃ©sentation ERAH Esport">
+    title="Vidéo YouTube : Présentation ERAH Esport">
 </iframe>
 
 								</div>
@@ -1382,7 +1395,7 @@
     allowfullscreen 
     loading="lazy" 
     frameborder="0"
-    title="VidÃ©o YouTube : PrÃ©sentation ERAH Esport - HopLan 2025">
+    title="Vidéo YouTube : Présentation ERAH Esport - HopLan 2025">
 </iframe>
 
 								</div>
@@ -1399,7 +1412,7 @@
     allowfullscreen 
     loading="lazy" 
     frameborder="0"
-    title="VidÃ©o YouTube : PrÃ©sentation ERAH Esport - Valorant Story">
+    title="Vidéo YouTube : Présentation ERAH Esport - Valorant Story">
 </iframe>
 
 
@@ -1423,7 +1436,7 @@
 
 				<div class="tt-heading tt-heading-lg tt-heading-center margin-bottom-120">
 					<h2 class="tt-heading-title tt-text-reveal" style="font-style: normal;">Ils nous font confiance</h2>
-					<p class="max-width-500 tt-anim-fadeinup text-muted">DÃ©couvrez nos partenaires et collaborateurs</p>
+					<p class="max-width-500 tt-anim-fadeinup text-muted">Découvrez nos partenaires et collaborateurs</p>
 				</div>
 
 
@@ -1515,7 +1528,7 @@
 								<li><a href="https://www.linkedin.com/company/erah-association/" class="tt-link"
 										target="_blank" rel="noopener">LinkedIn</a></li>
 
-                                <li><a href="mentions-legales.html" class="tt-link">Mentions LÃ©gales</a></li>
+                                <li><a href="mentions-legales.html" class="tt-link">Mentions Légales</a></li>
 							</ul>
 						</div>
 					</div>
@@ -1528,7 +1541,7 @@
               <li><a href="mende.html" class="tt-link">Mende</a></li>
               <li><a href="boutique.html" class="tt-link">Boutique</a></li>
               <li><a href="contact.html" class="tt-link">Contact</a></li>
-              <li><a href="#" id="manage-cookies" class="tt-link">GÃ©rer mes cookies</a></li>
+              <li><a href="#" id="manage-cookies" class="tt-link">Gérer mes cookies</a></li>
             </ul>
           </div>
         </div>

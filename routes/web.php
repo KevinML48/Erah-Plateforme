@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\App\ShortcutController;
 use App\Http\Controllers\TestConsole\AdminGiftConsoleController;
 use App\Http\Controllers\TestConsole\AdminMissionConsoleController;
 use App\Http\Controllers\TestConsole\RankingConsoleController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
+use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
+use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
 use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
@@ -25,12 +28,6 @@ use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
-});
 
 require __DIR__.'/auth.php';
 
@@ -57,6 +54,35 @@ Route::middleware('throttle:social-auth')->group(function () {
         ->defaults('provider', 'discord');
     Route::get('/auth/discord/callback', [SocialAuthController::class, 'callback'])
         ->defaults('provider', 'discord');
+});
+
+Route::prefix('app')->group(function () {
+    Route::get('/', [LeaderboardPageController::class, 'index'])->name('marketing.platform');
+    Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
+    Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('app.leaderboards.show');
+    Route::get('/clips', [ClipsPageController::class, 'index'])->name('app.clips.index');
+    Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])->name('app.clips.show');
+    Route::get('/matchs', [MatchPageController::class, 'index'])->name('app.matches.index');
+    Route::get('/matchs/{matchId}', [MatchPageController::class, 'show'])->name('app.matches.show');
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
+        Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
+        Route::get('/duels', [DuelsPageController::class, 'index'])->name('app.duels.index');
+        Route::get('/paris', [BetPageController::class, 'index'])->name('app.bets.index');
+        Route::delete('/paris/{betId}', [BetPageController::class, 'cancel'])
+            ->middleware('throttle:bets-place')
+            ->name('app.bets.cancel');
+        Route::post('/matchs/{matchId}/paris', [MatchPageController::class, 'placeBet'])
+            ->middleware('throttle:bets-place')
+            ->name('app.matches.bets.store');
+        Route::get('/favoris', [ClipsPageController::class, 'favorites'])->name('app.clips.favorites');
+        Route::get('/notifications', [NotificationsPageController::class, 'index'])->name('app.notifications.index');
+        Route::get('/profil', ProfileController::class)->name('app.profile');
+        Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
+        Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
+        Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
+    });
 });
 
 Route::middleware('auth')->group(function () {
@@ -199,3 +225,20 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+
+Route::view('/', 'marketing.index')->name('marketing.index');
+Route::view('/index.html', 'marketing.index');
+Route::view('/faq', 'marketing.faq')->name('marketing.faq');
+Route::view('/faq.html', 'marketing.faq');
+Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');
+Route::post('/contact', [MarketingContactController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('marketing.contact.submit');
+
+Route::get('/{slug}.html', MarketingPageController::class)
+    ->where('slug', '(?!app$|console$|dev$|api$|index$|contact$)[A-Za-z0-9\-]+')
+    ->name('marketing.page.html');
+
+Route::get('/{slug}', MarketingPageController::class)
+    ->where('slug', '(?!app$|console$|dev$|api$|index$|contact$)[A-Za-z0-9\-]+')
+    ->name('marketing.page');

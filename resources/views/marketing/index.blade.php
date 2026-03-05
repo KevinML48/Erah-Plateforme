@@ -187,138 +187,7 @@
 		</div>
 
 
-		<header id="tt-header" class="tt-header-alter tt-header-scroll tt-header-filled">
-			<div class="tt-header-inner tt-noise">
-
-				<div class="tt-header-col tt-header-col-left">
-
-					<div class="tt-logo">
-						<a href="index.html" class="tt-magnetic-item">
-							<img src="/template/assets/img/logo.png" class="tt-logo-light" alt="Logo">
-							<img src="/template/assets/img/logo.png" class="tt-logo-dark" alt="Logo">
-						</a>
-					</div>
-
-
-				</div>
-
-				<div class="tt-header-col tt-header-col-center">
-
-					<nav class="tt-main-menu tt-m-menu-center">
-						<div class="tt-main-menu-holder">
-							<div class="tt-main-menu-inner">
-								<div class="tt-main-menu-content">
-
-
-									<ul class="tt-main-menu-list">
-
-										<li><a href="index.html">Accueil</a></li>
-
-										<li><a href="about.html">A propos</a></li>
-
-										@auth
-											<li><a href="{{ route('app.profile') }}">Profil</a></li>
-										@else
-											<li><a href="{{ route('login') }}">Profil</a></li>
-										@endauth
-
-										<li class="tt-submenu-wrap tt-submenu-master">
-											<div class="tt-submenu-trigger">
-												<a href="#">Équipes</a>
-											</div>
-											<div class="tt-submenu">
-												<ul class="tt-submenu-list">
-
-													<li><a href="valorant-VCL.html">Valorant VCL</a></li>
-													<li><a href="staff.html">Staff ERAH</a></li>
-													<li><a href="medical.html">Médical</a></li>
-
-												</ul>
-											</div>
-										</li>
-
-										<li class="tt-submenu-wrap tt-submenu-master">
-											<div class="tt-submenu-trigger">
-												<a href="#">Contenu</a>
-											</div>
-											<div class="tt-submenu">
-												<ul class="tt-submenu-list">
-
-													<li><a href="galerie-photos.html">Galerie Photo</a></li>
-													<li><a href="galerie-video.html">Galerie Vidéo</a></li>
-													<li><a href="evenement.html">Nos événements</a></li>
-													<li><a href="nos-stages.html">Nos stages</a></li>
-
-												</ul>
-											</div>
-										</li>
-
-
-										<li><a href="/app">Plateforme</a></li>
-
-										<li><a href="mende.html">Mende</a></li>
-
-										<li><a href="contact.html">Postuler</a></li>
-
-									</ul>
-
-
-								</div>
-							</div>
-						</div>
-
-					</nav>
-
-
-				</div>
-
-				<div class="tt-header-col tt-header-col-right">
-
-
-					<div id="tt-m-menu-toggle-btn-wrap">
-						<div class="tt-m-menu-toggle-btn-text">
-							<span class="tt-m-menu-text-menu">Menu</span>
-							<span class="tt-m-menu-text-close">Close</span>
-						</div>
-						<div class="tt-m-menu-toggle-btn-holder">
-							<a href="#" class="tt-m-menu-toggle-btn" aria-label="Ouvrir le menu">
-    <span></span>
-</a>
-
-						</div>
-					</div>
-
-
-
-					@auth
-						<a href="{{ route('app.profile') }}"
-							class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
-							<span data-hover="Mon profil">Mon profil</span>
-						</a>
-					@else
-						<a href="{{ route('login') }}"
-							class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
-							<span data-hover="Connexion">Connexion</span>
-						</a>
-					@endauth
-
-
-
-					<div class="tt-style-switch">
-						<div class="tt-style-switch-inner tt-magnetic-item">
-							<div class="tt-stsw-light">
-								<i class="fas fa-sun"></i>
-							</div>
-							<div class="tt-stsw-dark">
-								<i class="fas fa-moon"></i>
-							</div>
-						</div>
-					</div>
-
-
-				</div>
-			</div>
-		</header>
+		@include('marketing.partials.header')
 
 
 		<div id="tt-content-wrap">
@@ -1540,6 +1409,11 @@
               <li><a href="nos-stages.html" class="tt-link">Nos Stages</a></li>
               <li><a href="mende.html" class="tt-link">Mende</a></li>
               <li><a href="boutique.html" class="tt-link">Boutique</a></li>
+              @auth
+                <li><a href="{{ route('app.profile') }}" class="tt-link">Mon profil</a></li>
+              @else
+                <li><a href="{{ route('login') }}" class="tt-link">Se connecter</a></li>
+              @endauth
               <li><a href="contact.html" class="tt-link">Contact</a></li>
               <li><a href="#" id="manage-cookies" class="tt-link">Gérer mes cookies</a></li>
             </ul>

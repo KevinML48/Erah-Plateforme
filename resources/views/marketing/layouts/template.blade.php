@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="/template/assets/css/helper.css">
   <link rel="stylesheet" href="/template/assets/css/theme.css">
   <link rel="stylesheet" href="/template/assets/css/theme-light.css">
+  <link rel="stylesheet" href="/template/assets/css/platform-responsive.css">
 
   <link rel="preload" href="/template/assets/vendor/fontawesome/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="/template/assets/vendor/fancybox/css/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -56,7 +57,15 @@
     .tt-alert { margin-bottom: 10px; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); }
     .tt-alert-success { background: rgba(24, 110, 59, .22); color: #d9ffe8; }
     .tt-alert-danger { background: rgba(173, 41, 41, .25); color: #ffe1e1; }
+    .tt-toast-stack { position: fixed; top: 92px; right: 16px; width: min(420px, calc(100vw - 24px)); display: grid; gap: 10px; z-index: 2000; pointer-events: none; }
+    .tt-toast { margin: 0; box-shadow: 0 10px 28px rgba(0, 0, 0, .35); backdrop-filter: blur(4px); pointer-events: auto; transition: opacity .2s ease, transform .2s ease; }
+    .tt-toast.toast-leaving { opacity: 0; transform: translateY(-8px); }
+    .tt-toast-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .tt-toast-close { background: transparent; border: 0; color: inherit; font-size: 18px; line-height: 1; cursor: pointer; opacity: .8; }
+    .tt-toast-close:hover { opacity: 1; }
+    .tt-toast ul { margin: 8px 0 0; padding-left: 18px; }
     .tt-hidden-honeypot { position: absolute !important; left: -9999px !important; opacity: 0 !important; pointer-events: none !important; }
+    @media (max-width: 991.98px) { .tt-toast-stack { top: 82px; right: 10px; width: calc(100vw - 20px); } }
   </style>
 
   @yield('head_extra')
@@ -83,25 +92,40 @@
     @include('marketing.partials.header')
 
     <div id="tt-content-wrap">
-      @if (session('success') || session('error') || $errors->any())
-        <div class="tt-section padding-top-20 padding-bottom-20">
-          <div class="tt-section-inner tt-wrap">
-            @if (session('success'))
-              <div class="tt-alert tt-alert-success">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-              <div class="tt-alert tt-alert-danger">{{ session('error') }}</div>
-            @endif
-            @if ($errors->any())
-              <div class="tt-alert tt-alert-danger">
-                <ul style="margin: 0; padding-left: 18px;">
-                  @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                  @endforeach
-                </ul>
+      @php($hideGlobalAlerts = trim($__env->yieldContent('hide_global_alerts', '0')) === '1')
+      @if (!$hideGlobalAlerts && (session('success') || session('error') || $errors->any()))
+        <div class="tt-toast-stack" id="tt-toast-stack" aria-live="polite">
+          @if (session('success'))
+            <div class="tt-alert tt-alert-success tt-toast" role="status">
+              <div class="tt-toast-head">
+                <strong>Succes</strong>
+                <button type="button" class="tt-toast-close" data-toast-close aria-label="Fermer">&times;</button>
               </div>
-            @endif
-          </div>
+              <div>{{ session('success') }}</div>
+            </div>
+          @endif
+          @if (session('error'))
+            <div class="tt-alert tt-alert-danger tt-toast" role="alert">
+              <div class="tt-toast-head">
+                <strong>Erreur</strong>
+                <button type="button" class="tt-toast-close" data-toast-close aria-label="Fermer">&times;</button>
+              </div>
+              <div>{{ session('error') }}</div>
+            </div>
+          @endif
+          @if ($errors->any())
+            <div class="tt-alert tt-alert-danger tt-toast" role="alert">
+              <div class="tt-toast-head">
+                <strong>Verification</strong>
+                <button type="button" class="tt-toast-close" data-toast-close aria-label="Fermer">&times;</button>
+              </div>
+              <ul>
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
         </div>
       @endif
 
@@ -110,6 +134,62 @@
 
     @include('marketing.partials.footer')
   </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var stack = document.getElementById('tt-toast-stack');
+      if (!stack) {
+      } else {
+        var removeToast = function (toast) {
+          if (!toast) {
+            return;
+          }
+
+          toast.classList.add('toast-leaving');
+          window.setTimeout(function () {
+            toast.remove();
+            if (!stack.querySelector('.tt-toast')) {
+              stack.remove();
+            }
+          }, 180);
+        };
+
+        stack.querySelectorAll('[data-toast-close]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            removeToast(button.closest('.tt-toast'));
+          });
+        });
+
+        window.setTimeout(function () {
+          stack.querySelectorAll('.tt-toast').forEach(function (toast) {
+            removeToast(toast);
+          });
+        }, 5200);
+      }
+
+      var isMobile = window.matchMedia('(max-width: 1199.98px)').matches;
+      if (!isMobile) {
+        return;
+      }
+
+      var mobileToggle = document.querySelector('.tt-m-menu-toggle-btn');
+      var mobileMenuHolder = document.querySelector('.tt-main-menu-holder');
+      if (!mobileToggle || !mobileMenuHolder) {
+        return;
+      }
+
+      mobileMenuHolder.querySelectorAll('a[href]').forEach(function (link) {
+        var href = (link.getAttribute('href') || '').trim();
+        if (href === '' || href === '#') {
+          return;
+        }
+
+        link.addEventListener('click', function () {
+          mobileToggle.click();
+        });
+      });
+    });
+  </script>
 
   @yield('page_scripts')
 </body>

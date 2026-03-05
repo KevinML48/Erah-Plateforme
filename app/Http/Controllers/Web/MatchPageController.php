@@ -22,6 +22,22 @@ class MatchPageController extends Controller
     {
         $tab = (string) $request->query('tab', 'upcoming');
 
+        $tabCounts = [
+            'upcoming' => EsportMatch::query()
+                ->whereIn('status', [EsportMatch::STATUS_SCHEDULED, EsportMatch::STATUS_LOCKED])
+                ->count(),
+            'live' => EsportMatch::query()
+                ->where('status', EsportMatch::STATUS_LIVE)
+                ->count(),
+            'finished' => EsportMatch::query()
+                ->whereIn('status', [
+                    EsportMatch::STATUS_FINISHED,
+                    EsportMatch::STATUS_SETTLED,
+                    EsportMatch::STATUS_CANCELLED,
+                ])
+                ->count(),
+        ];
+
         $query = EsportMatch::query()->withCount('bets');
 
         if ($tab === 'live') {
@@ -45,6 +61,8 @@ class MatchPageController extends Controller
         return view('pages.matches.index', [
             'tab' => $tab,
             'matches' => $query->paginate(12)->withQueryString(),
+            'tabCounts' => $tabCounts,
+            'totalMatches' => array_sum($tabCounts),
         ]);
     }
 
@@ -68,12 +86,22 @@ class MatchPageController extends Controller
                 ->first();
         }
 
+        $relatedMatches = EsportMatch::query()
+            ->whereKeyNot($match->id)
+            ->withCount('bets')
+            ->orderByRaw("case when status in ('scheduled', 'locked', 'live') then 0 else 1 end")
+            ->orderBy('starts_at')
+            ->orderByDesc('id')
+            ->limit(4)
+            ->get();
+
         return view('pages.matches.show', [
             'match' => $match,
             'options' => $this->resolveWinnerOptions($match),
             'myBet' => $myBet,
             'walletBalance' => (int) ($user->wallet?->balance ?? config('betting.wallet.initial_balance', 1000)),
             'betIsOpen' => $this->isBettingOpen($match),
+            'relatedMatches' => $relatedMatches,
         ]);
     }
 

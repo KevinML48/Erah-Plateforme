@@ -23,12 +23,23 @@ class AdminUserSeeder extends Seeder
                 ]
             );
 
+            $platformAdmin = User::query()->updateOrCreate(
+                ['email' => env('PLATFORM_ADMIN_EMAIL', 'admingmail.com')],
+                [
+                    'name' => 'Platform Admin',
+                    'password' => Hash::make(env('PLATFORM_ADMIN_PASSWORD', '12345678')),
+                    'role' => User::ROLE_ADMIN,
+                    'email_verified_at' => now(),
+                ]
+            );
+
             app(StoreAuditLogAction::class)->execute(
                 action: 'seed.admin_user.upserted',
                 actor: $admin,
                 target: $admin,
                 context: [
                     'seed_class' => self::class,
+                    'platform_admin_id' => $platformAdmin->id,
                 ],
             );
         });

@@ -22,6 +22,11 @@
                         <li><a class="tt-link" href="/nos-stages">Nos stages</a></li>
                         <li><a class="tt-link" href="/mende">Mende</a></li>
                         <li><a class="tt-link" href="/boutique">Boutique</a></li>
+                        @auth
+                            <li><a class="tt-link" href="{{ route('app.profile') }}">Mon profil</a></li>
+                        @else
+                            <li><a class="tt-link" href="{{ route('login') }}">Se connecter</a></li>
+                        @endauth
                         <li><a class="tt-link" href="/contact">Contact</a></li>
                         <li><a href="#" id="manage-cookies" class="tt-link">Gérer mes cookies</a></li>
                     </ul>
@@ -74,3 +79,4 @@
         </svg>
     </div>
 </a>
+

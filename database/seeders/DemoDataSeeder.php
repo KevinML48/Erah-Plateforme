@@ -122,6 +122,102 @@ class DemoDataSeeder extends Seeder
                 'bio' => 'Jeune talent, progression rapide en ladder.',
                 'avatar_path' => 'https://picsum.photos/seed/erah-user-maya/240/240',
             ],
+            'aiden' => [
+                'name' => 'Aiden Wolf',
+                'email' => 'aiden.wolf@erah.local',
+                'bio' => 'Leader vocal, aime controler le tempo du match.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-aiden/240/240',
+            ],
+            'sara' => [
+                'name' => 'Sara Drift',
+                'email' => 'sara.drift@erah.local',
+                'bio' => 'Aim laser et adaptation rapide en clutch.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-sara/240/240',
+            ],
+            'leo' => [
+                'name' => 'Leo Zenith',
+                'email' => 'leo.zenith@erah.local',
+                'bio' => 'Joueur polyvalent avec excellent sens du timing.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-leo/240/240',
+            ],
+            'nina' => [
+                'name' => 'Nina Flux',
+                'email' => 'nina.flux@erah.local',
+                'bio' => 'Specialiste des retakes et des executions propres.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-nina/240/240',
+            ],
+            'tom' => [
+                'name' => 'Tom Viper',
+                'email' => 'tom.viper@erah.local',
+                'bio' => 'Entry agresif, toujours en premiere ligne.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-tom/240/240',
+            ],
+            'clara' => [
+                'name' => 'Clara Echo',
+                'email' => 'clara.echo@erah.local',
+                'bio' => 'Support smart utilitaire et bons calls macro.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-clara/240/240',
+            ],
+            'hugo' => [
+                'name' => 'Hugo Prime',
+                'email' => 'hugo.prime@erah.local',
+                'bio' => 'Main rifle, stable et regulier sur le long terme.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-hugo/240/240',
+            ],
+            'ines' => [
+                'name' => 'Ines Spark',
+                'email' => 'ines.spark@erah.local',
+                'bio' => 'Aime les duels techniques et les rounds lents.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-ines/240/240',
+            ],
+            'alex' => [
+                'name' => 'Alex Comet',
+                'email' => 'alex.comet@erah.local',
+                'bio' => 'Progression constante avec un style discipline.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-alex/240/240',
+            ],
+            'jade' => [
+                'name' => 'Jade Orbit',
+                'email' => 'jade.orbit@erah.local',
+                'bio' => 'Bonne lecture de jeu et sens du positionnement.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-jade/240/240',
+            ],
+            'nora' => [
+                'name' => 'Nora Blaze',
+                'email' => 'nora.blaze@erah.local',
+                'bio' => 'Main lurk, prend les timings faibles a la perfection.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-nora/240/240',
+            ],
+            'isaac' => [
+                'name' => 'Isaac Volt',
+                'email' => 'isaac.volt@erah.local',
+                'bio' => 'Joueur equipe, fort sur les retakes coordonnes.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-isaac/240/240',
+            ],
+            'paul' => [
+                'name' => 'Paul Rift',
+                'email' => 'paul.rift@erah.local',
+                'bio' => 'Rookie motive, grind quotidien en ladder.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-paul/240/240',
+            ],
+            'emma' => [
+                'name' => 'Emma Pulse',
+                'email' => 'emma.pulse@erah.local',
+                'bio' => 'Aime travailler la mecanique pure en deathmatch.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-emma/240/240',
+            ],
+            'yanis' => [
+                'name' => 'Yanis Crow',
+                'email' => 'yanis.crow@erah.local',
+                'bio' => 'Profil tactique, progression lente mais solide.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-yanis/240/240',
+            ],
+            'chloe' => [
+                'name' => 'Chloe Mist',
+                'email' => 'chloe.mist@erah.local',
+                'bio' => 'Nouvelle recrue avec objectif top ladder.',
+                'avatar_path' => 'https://picsum.photos/seed/erah-user-chloe/240/240',
+            ],
         ];
 
         $password = (string) env('DEMO_USER_PASSWORD', 'Password123!');
@@ -260,6 +356,22 @@ class DemoDataSeeder extends Seeder
             'yuna' => 330,
             'ryan' => 180,
             'maya' => 80,
+            'aiden' => 1540,
+            'sara' => 1470,
+            'leo' => 1290,
+            'nina' => 1035,
+            'tom' => 840,
+            'clara' => 690,
+            'hugo' => 470,
+            'ines' => 390,
+            'alex' => 280,
+            'jade' => 230,
+            'nora' => 145,
+            'isaac' => 110,
+            'paul' => 95,
+            'emma' => 55,
+            'yanis' => 35,
+            'chloe' => 10,
         ];
 
         $xpPoints = [
@@ -271,6 +383,22 @@ class DemoDataSeeder extends Seeder
             'yuna' => 1300,
             'ryan' => 900,
             'maya' => 500,
+            'aiden' => 3900,
+            'sara' => 3650,
+            'leo' => 3400,
+            'nina' => 2950,
+            'tom' => 2750,
+            'clara' => 2450,
+            'hugo' => 2100,
+            'ines' => 1880,
+            'alex' => 1620,
+            'jade' => 1320,
+            'nora' => 1120,
+            'isaac' => 980,
+            'paul' => 760,
+            'emma' => 560,
+            'yanis' => 420,
+            'chloe' => 320,
         ];
 
         $addPoints = app(AddPointsAction::class);
@@ -559,48 +687,137 @@ class DemoDataSeeder extends Seeder
         $refuseDuel = app(RefuseDuelAction::class);
         $expireDuel = app(ExpireDuelAction::class);
 
-        $pending = $createDuel->execute(
-            challenger: $users['one'],
-            challengedUserId: $users['noah']->id,
-            idempotencyKey: 'seed-duel-pending-v1',
-            message: 'Prend ta revanche ce soir ?',
-            expiresInMinutes: 240,
-        );
+        $duelDefinitions = [
+            [
+                'key' => 'seed-duel-pending-v1',
+                'challenger' => 'one',
+                'challenged' => 'noah',
+                'message' => 'Prend ta revanche ce soir ?',
+                'expires' => 240,
+                'result' => 'pending',
+            ],
+            [
+                'key' => 'seed-duel-pending-v2',
+                'challenger' => 'noah',
+                'challenged' => 'one',
+                'message' => 'Match retour immediat ?',
+                'expires' => 360,
+                'result' => 'pending',
+            ],
+            [
+                'key' => 'seed-duel-pending-v3',
+                'challenger' => 'zoe',
+                'challenged' => 'marco',
+                'message' => 'Duel sniper only.',
+                'expires' => 420,
+                'result' => 'pending',
+            ],
+            [
+                'key' => 'seed-duel-pending-v4',
+                'challenger' => 'maya',
+                'challenged' => 'lina',
+                'message' => 'BO1 test de setup.',
+                'expires' => 520,
+                'result' => 'pending',
+            ],
+            [
+                'key' => 'seed-duel-accepted-v1',
+                'challenger' => 'marco',
+                'challenged' => 'zoe',
+                'message' => 'Best of 3 en custom.',
+                'expires' => 180,
+                'result' => 'accepted',
+            ],
+            [
+                'key' => 'seed-duel-accepted-v2',
+                'challenger' => 'lina',
+                'challenged' => 'ryan',
+                'message' => 'Analyse + duel macro.',
+                'expires' => 200,
+                'result' => 'accepted',
+            ],
+            [
+                'key' => 'seed-duel-accepted-v3',
+                'challenger' => 'one',
+                'challenged' => 'yuna',
+                'message' => 'Rifles only, map courte.',
+                'expires' => 300,
+                'result' => 'accepted',
+            ],
+            [
+                'key' => 'seed-duel-refused-v1',
+                'challenger' => 'yuna',
+                'challenged' => 'ryan',
+                'message' => 'On lance le duel maintenant ?',
+                'expires' => 180,
+                'result' => 'refused',
+            ],
+            [
+                'key' => 'seed-duel-refused-v2',
+                'challenger' => 'noah',
+                'challenged' => 'maya',
+                'message' => 'Session late night ?',
+                'expires' => 240,
+                'result' => 'refused',
+            ],
+            [
+                'key' => 'seed-duel-expired-v1',
+                'challenger' => 'lina',
+                'challenged' => 'maya',
+                'message' => 'Tu as 5 minutes pour accepter.',
+                'expires' => 5,
+                'result' => 'expired',
+            ],
+            [
+                'key' => 'seed-duel-expired-v2',
+                'challenger' => 'zoe',
+                'challenged' => 'one',
+                'message' => 'Mini duel warmup avant scrim.',
+                'expires' => 5,
+                'result' => 'expired',
+            ],
+            [
+                'key' => 'seed-duel-expired-v3',
+                'challenger' => 'ryan',
+                'challenged' => 'marco',
+                'message' => 'Duel tactique sans vocal.',
+                'expires' => 5,
+                'result' => 'expired',
+            ],
+        ];
 
-        $accepted = $createDuel->execute(
-            challenger: $users['marco'],
-            challengedUserId: $users['zoe']->id,
-            idempotencyKey: 'seed-duel-accepted-v1',
-            message: 'Best of 3 en custom.',
-            expiresInMinutes: 180,
-        );
-        $acceptDuel->execute($users['zoe'], $accepted['duel']->id);
+        foreach ($duelDefinitions as $definition) {
+            $created = $createDuel->execute(
+                challenger: $users[$definition['challenger']],
+                challengedUserId: $users[$definition['challenged']]->id,
+                idempotencyKey: $definition['key'],
+                message: $definition['message'],
+                expiresInMinutes: $definition['expires'],
+            );
 
-        $refused = $createDuel->execute(
-            challenger: $users['yuna'],
-            challengedUserId: $users['ryan']->id,
-            idempotencyKey: 'seed-duel-refused-v1',
-            message: 'On lance le duel maintenant ?',
-            expiresInMinutes: 180,
-        );
-        $refuseDuel->execute($users['ryan'], $refused['duel']->id);
+            $duelId = (int) $created['duel']->id;
+            $result = (string) $definition['result'];
 
-        $expired = $createDuel->execute(
-            challenger: $users['lina'],
-            challengedUserId: $users['maya']->id,
-            idempotencyKey: 'seed-duel-expired-v1',
-            message: 'Tu as 5 minutes pour accepter.',
-            expiresInMinutes: 5,
-        );
+            if ($result === 'accepted') {
+                $acceptDuel->execute($users[$definition['challenged']], $duelId);
+                continue;
+            }
 
-        $expiredDuel = Duel::query()->find($expired['duel']->id);
-        if ($expiredDuel && $expiredDuel->status === Duel::STATUS_PENDING) {
-            $expiredDuel->expires_at = now()->subMinutes(10);
-            $expiredDuel->save();
+            if ($result === 'refused') {
+                $refuseDuel->execute($users[$definition['challenged']], $duelId);
+                continue;
+            }
+
+            if ($result === 'expired') {
+                $expiredDuel = Duel::query()->find($duelId);
+                if ($expiredDuel && $expiredDuel->status === Duel::STATUS_PENDING) {
+                    $expiredDuel->expires_at = now()->subMinutes(10);
+                    $expiredDuel->save();
+                }
+
+                $expireDuel->execute($duelId);
+            }
         }
-
-        $expireDuel->execute($expired['duel']->id);
-        $expireDuel->execute($pending['duel']->id);
     }
 
     /**

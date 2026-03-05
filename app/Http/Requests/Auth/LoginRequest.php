@@ -27,9 +27,27 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => [
+                'required',
+                'string',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $email = Str::lower(trim((string) $value));
+                    $isEmail = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+
+                    if (! $isEmail && $email !== 'admingmail.com') {
+                        $fail('The '.$attribute.' field must be a valid email address.');
+                    }
+                },
+            ],
             'password' => ['required', 'string'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => Str::lower(trim((string) $this->input('email'))),
+        ]);
     }
 
     /**

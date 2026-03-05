@@ -22,7 +22,9 @@ class ClipsPageController extends Controller
     public function index(Request $request): View
     {
         $sort = $request->query('sort', 'recent');
-        $query = Clip::query()->published();
+        $query = Clip::query()
+            ->published()
+            ->with('createdBy:id,name');
 
         if ($sort === 'popular') {
             $query
@@ -38,16 +40,22 @@ class ClipsPageController extends Controller
         $clipIds = $clips->getCollection()->pluck('id')->all();
         $userId = auth()->id();
 
-        $likedIds = ClipLike::query()
-            ->where('user_id', $userId)
-            ->whereIn('clip_id', $clipIds)
-            ->pluck('clip_id')
-            ->all();
-        $favoriteIds = ClipFavorite::query()
-            ->where('user_id', $userId)
-            ->whereIn('clip_id', $clipIds)
-            ->pluck('clip_id')
-            ->all();
+        $likedIds = [];
+        $favoriteIds = [];
+
+        if ($userId !== null && count($clipIds) > 0) {
+            $likedIds = ClipLike::query()
+                ->where('user_id', $userId)
+                ->whereIn('clip_id', $clipIds)
+                ->pluck('clip_id')
+                ->all();
+
+            $favoriteIds = ClipFavorite::query()
+                ->where('user_id', $userId)
+                ->whereIn('clip_id', $clipIds)
+                ->pluck('clip_id')
+                ->all();
+        }
 
         return view('pages.clips.index', [
             'clips' => $clips,
@@ -61,6 +69,7 @@ class ClipsPageController extends Controller
     {
         $clip = Clip::query()
             ->published()
+            ->with('createdBy:id,name')
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -85,13 +94,15 @@ class ClipsPageController extends Controller
         $userId = auth()->id();
         $clips = Clip::query()
             ->published()
+            ->with('createdBy:id,name')
             ->whereIn('id', function ($query) use ($userId) {
                 $query->select('clip_id')
                     ->from('clip_favorites')
                     ->where('user_id', $userId);
             })
             ->orderByDesc('published_at')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         return view('pages.clips.favorites', [
             'clips' => $clips,

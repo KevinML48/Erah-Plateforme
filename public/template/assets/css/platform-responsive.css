@@ -1,0 +1,176 @@
+/* Global responsive and UX enhancements for platform pages */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
+}
+
+#tt-content-wrap {
+    overflow-x: clip;
+}
+
+.tt-form-control {
+    width: 100%;
+    max-width: 100%;
+}
+
+.tt-main-menu-holder {
+    overscroll-behavior: contain;
+}
+
+@media (pointer: coarse) {
+    #magic-cursor {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1399.98px) {
+    .tt-wrap {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .ph-caption-title {
+        font-size: clamp(58px, 8vw, 118px);
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .tt-wrap {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    #tt-header .tt-header-inner {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .tt-main-menu-holder {
+        max-height: calc(100vh - 86px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tt-main-menu-list > li > a {
+        font-size: clamp(22px, 5.8vw, 38px);
+        line-height: 1.08;
+    }
+
+    .tt-main-menu .tt-submenu-list a {
+        font-size: 15px;
+    }
+
+    .tt-scroll-down {
+        display: none;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .tt-wrap {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .ph-caption-title {
+        font-size: clamp(40px, 11vw, 72px) !important;
+        line-height: .95;
+    }
+
+    .ph-caption-description {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .tt-btn-group {
+        width: 100%;
+        display: grid;
+        gap: 8px;
+    }
+
+    .tt-btn-group .tt-btn {
+        width: 100%;
+    }
+
+    .tt-pagination {
+        row-gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tt-pagination .tt-pagin-numbers {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        max-width: 100%;
+        padding-bottom: 4px;
+    }
+
+    .tt-pagination .tt-pagin-item {
+        min-width: 42px;
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .duel-toolbar .tt-btn,
+    .match-toolbar .tt-btn,
+    .lb-console-actions .tt-btn,
+    .notif-toolbar-actions .tt-btn,
+    .pref-footer-actions .tt-btn,
+    .wallet-search-form .tt-btn,
+    .tx-toolbar-top .tt-btn,
+    .clip-engagement-actions .tt-btn {
+        width: 100%;
+    }
+
+    .duel-filter-row,
+    .match-tabs,
+    .lb-switch,
+    .notif-state-tabs,
+    .notif-category-tabs,
+    .wallet-direction-tabs,
+    .wallet-type-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        max-width: 100%;
+    }
+
+    .duel-filter-row > *,
+    .match-tabs > *,
+    .lb-switch > *,
+    .notif-state-tabs > *,
+    .notif-category-tabs > *,
+    .wallet-direction-tabs > *,
+    .wallet-type-tabs > * {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .tt-wrap {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .tt-main-menu-list > li > a {
+        font-size: clamp(22px, 7vw, 32px);
+    }
+
+    .tt-main-menu .tt-submenu-list a {
+        font-size: 14px;
+    }
+
+    .tt-alert {
+        padding: 12px 14px;
+    }
+}

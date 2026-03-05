@@ -41,15 +41,44 @@ class LeaderboardPageController extends Controller
         ]);
     }
 
-    public function index(): View
+    public function index(LeaderboardQuery $leaderboardQuery): View
     {
         $leagues = League::query()
             ->active()
             ->orderBy('sort_order')
             ->get();
 
+        $leagueCards = $leagues->map(function (League $league) use ($leaderboardQuery) {
+            $payload = $leaderboardQuery->execute($league->key, 100);
+            $entries = collect($payload['entries'] ?? []);
+            $topEntry = $entries->first();
+
+            return [
+                'id' => (int) $league->id,
+                'key' => (string) $league->key,
+                'name' => (string) $league->name,
+                'min_rank_points' => (int) $league->min_rank_points,
+                'players_count' => (int) $entries->count(),
+                'top_name' => (string) ($topEntry['name'] ?? ''),
+                'top_rank_points' => (int) ($topEntry['total_rank_points'] ?? 0),
+                'average_rank_points' => $entries->count() > 0
+                    ? (int) round((float) $entries->avg('total_rank_points'))
+                    : 0,
+            ];
+        })->values();
+
+        $totalPlayers = (int) $leagueCards->sum('players_count');
+        $bestLeague = $leagueCards->sortByDesc('top_rank_points')->first();
+        $averagePlayersPerLeague = $leagueCards->count() > 0
+            ? (int) round($totalPlayers / $leagueCards->count())
+            : 0;
+
         return view('pages.leaderboards.index', [
             'leagues' => $leagues,
+            'leagueCards' => $leagueCards,
+            'totalPlayers' => $totalPlayers,
+            'bestLeague' => $bestLeague,
+            'averagePlayersPerLeague' => $averagePlayersPerLeague,
         ]);
     }
 

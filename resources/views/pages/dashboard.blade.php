@@ -320,7 +320,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"! Also no effect on small screens!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-1.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('leaderboards.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -334,7 +334,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-1.html">Tortillas</a>
+																<a href="{{ route('leaderboards.index') }}">Classements</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Lifestyle</div>
@@ -359,7 +359,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-2.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('clips.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -373,7 +373,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-2.html">Coffee Shop</a>
+																<a href="{{ route('clips.index') }}">Clips</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Lifestyle</div>
@@ -398,7 +398,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-3.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('matches.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -415,7 +415,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-3.html">Fashion Shoot</a>
+																<a href="{{ route('matches.index') }}">Matchs</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Artistic</div>
@@ -440,7 +440,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-4.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('notifications.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -454,7 +454,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-4.html">Postorganic</a>
+																<a href="{{ route('notifications.index') }}">Notifications</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Artistic</div>
@@ -479,7 +479,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-5.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('duels.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -493,7 +493,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-5.html">Embrace Yourself</a>
+																<a href="{{ route('duels.index') }}">Duels</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Wellness</div>
@@ -518,7 +518,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-6.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('missions.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -532,7 +532,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-6.html">Pink Oasis</a>
+																<a href="{{ route('missions.index') }}">Missions</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Lifestyle</div>
@@ -557,7 +557,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-7.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('bets.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -571,7 +571,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-7.html">Turbulent Waters</a>
+																<a href="{{ route('bets.index') }}">Paris</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Lifestyle</div>
@@ -596,7 +596,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-8.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('wallet.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -610,7 +610,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-8.html">Baby Care</a>
+																<a href="{{ route('wallet.index') }}">Wallet</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Wellness</div>
@@ -635,7 +635,7 @@
 												* Use class "pgi-image-is-light" if needed, it makes the caption visible better if you use light image (only effect if "pgi-cap-inside" is enabled on "portfolio-grid"!).
 												-->
 												<div class="portfolio-grid-item">
-													<a href="single-project-9.html" class="pgi-image-wrap" data-cursor="View<br>Project">
+													<a href="{{ route('gifts.index') }}" class="pgi-image-wrap" data-cursor="View<br>Project">
 														<!-- Use class "cover-opacity-*" to set image overlay if needed. For example "cover-opacity-2". Useful if class "pgi-cap-inside" is enabled on "portfolio-grid". Note: It is individual and depends on the image you use. More info about helper classes in file "helper.css". -->
 														<div class="pgi-image-holder">
 															<div class="pgi-image-inner tt-anim-zoomin">
@@ -649,7 +649,7 @@
 													<div class="pgi-caption">
 														<div class="pgi-caption-inner">
 															<h2 class="pgi-title">
-																<a href="single-project-9.html">Dream Spa</a>
+																<a href="{{ route('gifts.index') }}">Cadeaux</a>
 															</h2>
 															<div class="pgi-categories-wrap">
 																<div class="pgi-category">Wellness</div>
@@ -792,4 +792,5 @@
 	</body>
 
 </html>
+
 

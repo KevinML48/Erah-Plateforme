@@ -6,6 +6,7 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
 use App\Application\Actions\Notifications\MarkNotificationReadAction;
 use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
+use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\RedirectResponse;
@@ -18,19 +19,65 @@ class NotificationsPageController extends Controller
     public function index(Request $request): View
     {
         $user = auth()->user();
-        $onlyUnread = $request->boolean('unread');
+        $allowedCategories = NotificationCategory::values();
+        $allowedStates = ['all', 'unread', 'read'];
 
-        $query = Notification::query()
+        $category = (string) $request->query('category', 'all');
+        if (! in_array($category, $allowedCategories, true)) {
+            $category = 'all';
+        }
+
+        $legacyOnlyUnread = $request->boolean('unread');
+        $state = (string) $request->query('state', $legacyOnlyUnread ? 'unread' : 'all');
+        if (! in_array($state, $allowedStates, true)) {
+            $state = 'all';
+        }
+
+        $baseQuery = Notification::query()
             ->where('user_id', $user->id)
             ->orderByDesc('id');
 
-        if ($onlyUnread) {
-            $query->whereNull('read_at');
+        $query = clone $baseQuery;
+
+        if ($category !== 'all') {
+            $query->where('category', $category);
         }
+
+        if ($state === 'unread') {
+            $query->whereNull('read_at');
+        } elseif ($state === 'read') {
+            $query->whereNotNull('read_at');
+        }
+
+        $totalCount = (clone $baseQuery)->count();
+        $unreadCount = (clone $baseQuery)->whereNull('read_at')->count();
+        $filteredCount = (clone $query)->count();
+
+        $categoryCounts = Notification::query()
+            ->where('user_id', $user->id)
+            ->select('category', DB::raw('count(*) as total'))
+            ->groupBy('category')
+            ->pluck('total', 'category');
 
         return view('pages.notifications.index', [
             'notifications' => $query->paginate(20)->withQueryString(),
-            'onlyUnread' => $onlyUnread,
+            'onlyUnread' => $state === 'unread',
+            'filters' => [
+                'state' => $state,
+                'category' => $category,
+            ],
+            'summary' => [
+                'total' => (int) $totalCount,
+                'unread' => (int) $unreadCount,
+                'read' => (int) max(0, $totalCount - $unreadCount),
+                'filtered' => (int) $filteredCount,
+            ],
+            'categoryCounts' => $categoryCounts,
+            'stateCounts' => [
+                'all' => (int) $totalCount,
+                'unread' => (int) $unreadCount,
+                'read' => (int) max(0, $totalCount - $unreadCount),
+            ],
         ]);
     }
 
@@ -81,7 +128,7 @@ class NotificationsPageController extends Controller
         Request $request,
         UpdateNotificationPreferencesAction $updateNotificationPreferencesAction
     ): RedirectResponse {
-        $categories = ['duel', 'clips', 'system', 'match', 'bet'];
+        $categories = NotificationCategory::values();
 
         $request->validate([
             'email_opt_in' => ['nullable', 'boolean'],
@@ -105,7 +152,11 @@ class NotificationsPageController extends Controller
 
         $updateNotificationPreferencesAction->execute(auth()->user(), $payload);
 
-        return redirect()->route('notifications.preferences')
+        $routeName = request()->routeIs('app.*')
+            ? 'app.notifications.preferences'
+            : 'notifications.preferences';
+
+        return redirect()->route($routeName)
             ->with('success', 'Preferences enregistrees.');
     }
 }

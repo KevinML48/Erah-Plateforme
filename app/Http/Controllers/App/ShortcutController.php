@@ -6,22 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\App\UpdateShortcutsRequest;
 use App\Services\ShortcutService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 class ShortcutController extends Controller
 {
-    public function index(ShortcutService $shortcutService): View
+    public function index(): RedirectResponse
     {
-        $user = auth()->user();
-        $current = $shortcutService->getForUser($user);
-        $available = $shortcutService->getAvailableForUser($user);
-
-        return view('pages.shortcuts.index', [
-            'current' => $current,
-            'available' => $available,
-            'maxShortcuts' => $shortcutService->maxShortcuts(),
-            'minShortcuts' => $shortcutService->minShortcuts(),
-        ]);
+        return redirect()->to(route('app.profile').'#profile-shortcuts');
     }
 
     public function update(
@@ -34,7 +24,7 @@ class ShortcutController extends Controller
         );
 
         return redirect()
-            ->route('app.shortcuts.index')
+            ->back()
             ->with('success', 'Raccourcis mis a jour.');
     }
 
@@ -43,8 +33,7 @@ class ShortcutController extends Controller
         $shortcutService->resetForUser(auth()->user());
 
         return redirect()
-            ->route('app.shortcuts.index')
+            ->back()
             ->with('success', 'Raccourcis reinitialises avec les valeurs par defaut.');
     }
 }
-

@@ -22,16 +22,11 @@
 
 
 							<ul class="tt-main-menu-list">
+								@php($platformShortcuts = app(\App\Services\ShortcutService::class)->getForUser(auth()->user()))
 
 								<li><a href="/">Accueil</a></li>
 
 								<li><a href="/about">A propos</a></li>
-
-								@auth
-									<li><a href="{{ route('app.profile') }}">Profil</a></li>
-								@else
-									<li><a href="{{ route('login') }}">Profil</a></li>
-								@endauth
 
 								<li class="tt-submenu-wrap tt-submenu-master">
 									<div class="tt-submenu-trigger">
@@ -48,7 +43,27 @@
 									</div>
 								</li>
 
-								<li><a href="/app">Plateforme</a></li>
+								<li class="tt-submenu-wrap tt-submenu-master">
+									<div class="tt-submenu-trigger">
+										<a href="{{ route('marketing.platform') }}">Plateforme</a>
+									</div>
+									<div class="tt-submenu">
+										<ul class="tt-submenu-list">
+											@foreach($platformShortcuts as $shortcut)
+												<li>
+													<a href="{{ $shortcut['url'] }}">
+														{{ $shortcut['label'] }}
+													</a>
+												</li>
+											@endforeach
+											@auth
+												@if(auth()->user()->role === \App\Models\User::ROLE_ADMIN)
+													<li><a href="{{ route('admin.dashboard') }}">Admin dashboard</a></li>
+												@endif
+											@endauth
+										</ul>
+									</div>
+								</li>
 
 								<li class="tt-submenu-wrap tt-submenu-master">
 									<div class="tt-submenu-trigger">
@@ -102,6 +117,12 @@
 
 
 			@auth
+				@if(auth()->user()->role === \App\Models\User::ROLE_ADMIN)
+					<a href="{{ route('admin.dashboard') }}"
+						class="tt-btn tt-btn-outline hide-from-xlg tt-magnetic-item">
+						<span data-hover="Admin">Admin</span>
+					</a>
+				@endif
 				<a href="{{ route('app.profile') }}"
 					class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
 					<span data-hover="Mon profil">Mon profil</span>
@@ -109,7 +130,7 @@
 			@else
 				<a href="{{ route('login') }}"
 					class="tt-btn tt-btn-secondary hide-from-xlg tt-magnetic-item">
-					<span data-hover="Connexion">Connexion</span>
+					<span data-hover="Se connecter">Se connecter</span>
 				</a>
 			@endauth
 

@@ -27,7 +27,7 @@ class LeaderboardQuery
 
         $progressRows = UserProgress::query()
             ->where('current_league_id', $league->id)
-            ->with('user:id,name')
+            ->with('user:id,name,avatar_path')
             ->orderByDesc('total_rank_points')
             ->orderByDesc('total_xp')
             ->orderBy('user_id')
@@ -39,6 +39,7 @@ class LeaderboardQuery
                 'position' => $index + 1,
                 'user_id' => $progress->user_id,
                 'name' => $progress->user?->name,
+                'avatar_url' => $progress->user?->avatar_url,
                 'total_rank_points' => $progress->total_rank_points,
                 'total_xp' => $progress->total_xp,
             ];

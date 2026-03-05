@@ -8,6 +8,7 @@ use App\Http\Controllers\TestConsole\RankingConsoleController;
 use App\Http\Controllers\TestConsole\UsersConsoleController;
 use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
+use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
@@ -57,7 +58,7 @@ Route::middleware('throttle:social-auth')->group(function () {
 });
 
 Route::prefix('app')->group(function () {
-    Route::get('/', [LeaderboardPageController::class, 'index'])->name('marketing.platform');
+    Route::get('/', fn () => redirect()->route('dashboard'))->name('marketing.platform');
     Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
     Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('app.leaderboards.show');
     Route::get('/clips', [ClipsPageController::class, 'index'])->name('app.clips.index');
@@ -78,7 +79,13 @@ Route::prefix('app')->group(function () {
             ->name('app.matches.bets.store');
         Route::get('/favoris', [ClipsPageController::class, 'favorites'])->name('app.clips.favorites');
         Route::get('/notifications', [NotificationsPageController::class, 'index'])->name('app.notifications.index');
+        Route::post('/notifications/read-all', [NotificationsPageController::class, 'readAll'])->name('app.notifications.read-all');
+        Route::post('/notifications/{notificationId}/read', [NotificationsPageController::class, 'read'])->name('app.notifications.read');
+        Route::get('/notifications/preferences', [NotificationsPageController::class, 'preferences'])->name('app.notifications.preferences');
+        Route::post('/notifications/preferences', [NotificationsPageController::class, 'updatePreferences'])->name('app.notifications.preferences.update');
         Route::get('/profil', ProfileController::class)->name('app.profile');
+        Route::get('/profil/transactions', [ProfileController::class, 'transactions'])->name('app.profile.transactions');
+        Route::delete('/profil', [ProfileController::class, 'destroy'])->name('app.profile.destroy');
         Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
         Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
         Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
@@ -170,11 +177,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/duels/{duelId}/refuse', [DuelsPageController::class, 'refuse'])->name('duels.refuse');
 
         Route::get('/profile', ProfileController::class)->name('profile.show');
+        Route::get('/profile/transactions', [ProfileController::class, 'transactions'])->name('profile.transactions');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
         Route::get('/settings', SettingsController::class)->name('settings.index');
 
         Route::middleware('admin')->prefix('admin')->group(function () {
+            Route::get('/dashboard', AdminDashboardController::class)->name('admin.dashboard');
+
             Route::get('/clips', [ClipsAdminController::class, 'index'])->name('admin.clips.index');
             Route::get('/clips/create', [ClipsAdminController::class, 'create'])->name('admin.clips.create');
             Route::post('/clips', [ClipsAdminController::class, 'store'])->name('admin.clips.store');

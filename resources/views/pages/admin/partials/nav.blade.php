@@ -1,0 +1,19 @@
+@php
+    $navItems = [
+        ['label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+        ['label' => 'Users', 'route' => route('users.index'), 'active' => request()->routeIs('users.*')],
+        ['label' => 'Clips', 'route' => route('admin.clips.index'), 'active' => request()->routeIs('admin.clips.*')],
+        ['label' => 'Matchs', 'route' => route('admin.matches.index'), 'active' => request()->routeIs('admin.matches.*')],
+        ['label' => 'Wallets', 'route' => route('admin.wallets.grant.create'), 'active' => request()->routeIs('admin.wallets.*')],
+        ['label' => 'Cadeaux', 'route' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
+        ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
+    ];
+@endphp
+
+<nav class="adm-nav" aria-label="Navigation admin">
+    @foreach($navItems as $item)
+        <a href="{{ $item['route'] }}" class="tt-btn {{ $item['active'] ? 'tt-btn-primary' : 'tt-btn-outline' }} tt-magnetic-item">
+            <span data-hover="{{ $item['label'] }}">{{ $item['label'] }}</span>
+        </a>
+    @endforeach
+</nav>

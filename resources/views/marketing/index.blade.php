@@ -303,6 +303,12 @@
 
 			<div id="tt-page-content">
 
+                @include('marketing.partials.home-access-rapide', [
+                    'homeQuickAccess' => $homeQuickAccess ?? [],
+                ])
+                @include('marketing.partials.home-en-ce-moment', [
+                    'homeEnCeMoment' => $homeEnCeMoment ?? [],
+                ])
 
 				<div class="tt-section padding-top-xlg-140 padding-bottom-xlg-120">
 					<div class="tt-section-inner tt-wrap">

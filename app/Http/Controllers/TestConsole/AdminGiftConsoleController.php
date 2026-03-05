@@ -17,6 +17,7 @@ use App\Models\RewardWalletTransaction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class AdminGiftConsoleController extends Controller
@@ -51,7 +52,7 @@ class AdminGiftConsoleController extends Controller
         Gift::query()->create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'image_url' => $validated['image_url'] ?? null,
+            'image_url' => $this->resolveImageUrl($request),
             'cost_points' => (int) $validated['cost_points'],
             'stock' => (int) $validated['stock'],
             'is_active' => $request->boolean('is_active', true),
@@ -67,7 +68,7 @@ class AdminGiftConsoleController extends Controller
         $gift->fill([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
-            'image_url' => $validated['image_url'] ?? null,
+            'image_url' => $this->resolveImageUrl($request, $gift->image_url),
             'cost_points' => (int) $validated['cost_points'],
             'stock' => (int) $validated['stock'],
             'is_active' => $request->boolean('is_active', false),
@@ -293,5 +294,21 @@ class AdminGiftConsoleController extends Controller
         });
 
         return back()->with('success', 'Redemption marquee comme livree.');
+    }
+
+    private function resolveImageUrl(Request $request, ?string $fallback = null): ?string
+    {
+        if ($request->hasFile('image_file')) {
+            $path = $request->file('image_file')->store('gifts', 'public');
+
+            return asset(Storage::url($path));
+        }
+
+        $imageUrl = trim((string) $request->input('image_url', ''));
+        if ($imageUrl !== '') {
+            return $imageUrl;
+        }
+
+        return $fallback;
     }
 }

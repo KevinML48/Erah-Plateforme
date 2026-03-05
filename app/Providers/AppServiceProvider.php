@@ -6,13 +6,17 @@ use App\Models\Clip;
 use App\Models\ClipComment;
 use App\Policies\ClipPolicy;
 use App\Policies\CommentPolicy;
+use App\Services\MarketingHomeActivityService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\View as BladeView;
 use SocialiteProviders\Discord\Provider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
@@ -33,6 +37,20 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Clip::class, ClipPolicy::class);
         Gate::policy(ClipComment::class, CommentPolicy::class);
+
+        View::composer('marketing.index', function (BladeView $view): void {
+            $user = Auth::user();
+            $activityData = app(MarketingHomeActivityService::class)->build($user);
+
+            $view->with([
+                'homeQuickAccess' => [
+                    'quick_stats' => $activityData['quick_stats'],
+                ],
+                'homeEnCeMoment' => [
+                    'activity_items' => $activityData['activity_items'],
+                ],
+            ]);
+        });
 
         Event::listen(function (SocialiteWasCalled $event): void {
             $event->extendSocialite('discord', Provider::class);

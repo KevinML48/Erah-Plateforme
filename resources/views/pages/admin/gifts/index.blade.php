@@ -1,127 +1,279 @@
-@extends('layouts.app')
+@extends('marketing.layouts.template')
 
-@section('title', 'Admin gifts')
+@section('title', 'Admin Cadeaux | ERAH Plateforme')
+@section('meta_description', 'Gestion du catalogue cadeaux et moderation des redemptions.')
+@section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
+
+@section('head_extra')
+    @include('pages.admin.partials.styles')
+@endsection
 
 @section('content')
-    <section class="section">
-        <h1>Admin gifts</h1>
-        <p class="meta">CRUD cadeaux + moderation redemptions.</p>
-    </section>
+    @php
+        $status = $status ?? 'all';
+        $statuses = $statuses ?? [];
+        $giftFallbackImage = '/template/assets/img/logo-fond.png';
+    @endphp
 
-    <section class="section">
-        <h2>Creer cadeau</h2>
-        <form method="POST" action="{{ route('admin.gifts.store') }}" class="grid grid-4">
-            @csrf
-            <div><label>Titre</label><input name="title" required></div>
-            <div><label>Description</label><input name="description"></div>
-            <div><label>Image URL</label><input name="image_url" type="url"></div>
-            <div><label>Cost points</label><input name="cost_points" type="number" min="1" value="1000" required></div>
-            <div><label>Stock</label><input name="stock" type="number" min="0" value="10" required></div>
-            <div><label><input type="checkbox" name="is_active" value="1" checked> Actif</label></div>
-            <div class="actions"><button type="submit">Creer</button></div>
-        </form>
-    </section>
+    @include('pages.admin.partials.hero', [
+        'heroSubtitle' => 'ERAH Control Center',
+        'heroTitle' => 'Admin Cadeaux',
+        'heroDescription' => 'Catalogue cadeaux, images, stocks et moderation des demandes.',
+        'heroMaskDescription' => 'Gestion gifts + redemptions.',
+    ])
 
-    <section class="section">
-        <h2>Liste cadeaux</h2>
-        @if($gifts->count())
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr><th>ID</th><th>Titre</th><th>Cost</th><th>Stock</th><th>Actif</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
-                    @foreach($gifts as $gift)
-                        <tr>
-                            <td>{{ $gift->id }}</td>
-                            <td>{{ $gift->title }}</td>
-                            <td>{{ $gift->cost_points }}</td>
-                            <td>{{ $gift->stock }}</td>
-                            <td>{{ $gift->is_active ? 'yes' : 'no' }}</td>
-                            <td>
-                                <form method="POST" action="{{ route('admin.gifts.update', $gift->id) }}" class="inline-form">
-                                    @csrf
-                                    @method('PUT')
-                                    <input name="title" value="{{ $gift->title }}" required>
-                                    <input name="description" value="{{ $gift->description }}">
-                                    <input name="image_url" value="{{ $gift->image_url }}">
-                                    <input name="cost_points" type="number" min="1" value="{{ $gift->cost_points }}" required>
-                                    <input name="stock" type="number" min="0" value="{{ $gift->stock }}" required>
-                                    <label><input type="checkbox" name="is_active" value="1" {{ $gift->is_active ? 'checked' : '' }}> actif</label>
-                                    <button type="submit">MAJ</button>
-                                </form>
-                                <form method="POST" action="{{ route('admin.gifts.destroy', $gift->id) }}" class="inline-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="actions">{{ $gifts->links() }}</div>
-        @else
-            <p class="meta">Aucun cadeau.</p>
-        @endif
-    </section>
+    <div id="tt-page-content">
+        <div class="tt-section padding-top-60 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1800">
+                <div class="adm-shell">
+                    @include('pages.admin.partials.nav')
 
-    <section class="section">
-        <h2>Redemptions</h2>
-        <div class="actions">
-            <a class="button-link" href="{{ route('admin.gifts.index', ['status' => 'all']) }}">all</a>
-            @foreach($statuses as $item)
-                <a class="button-link" href="{{ route('admin.gifts.index', ['status' => $item]) }}">{{ $item }}</a>
-            @endforeach
-        </div>
+                    <section class="adm-surface">
+                        <div class="tt-heading tt-heading-lg margin-bottom-20">
+                            <h2 class="tt-heading-title tt-text-reveal">Creer un cadeau</h2>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Vous pouvez soit televerser une image, soit fournir une URL.</p>
+                        </div>
 
-        @if($redemptions->count())
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr><th>ID</th><th>User</th><th>Gift</th><th>Status</th><th>Cost</th><th>Requested</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody>
-                    @foreach($redemptions as $redemption)
-                        <tr>
-                            <td>{{ $redemption->id }}</td>
-                            <td>#{{ $redemption->user_id }} {{ $redemption->user->name ?? '' }}</td>
-                            <td>#{{ $redemption->gift_id }} {{ $redemption->gift->title ?? '' }}</td>
-                            <td><span class="badge">{{ $redemption->status }}</span></td>
-                            <td>{{ $redemption->cost_points_snapshot }}</td>
-                            <td>{{ optional($redemption->requested_at)->format('Y-m-d H:i') }}</td>
-                            <td>
-                                <div class="actions">
-                                    <form method="POST" action="{{ route('admin.redemptions.approve', $redemption->id) }}" class="inline-form">
-                                        @csrf
-                                        <button type="submit">Approve</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('admin.redemptions.reject', $redemption->id) }}" class="inline-form">
-                                        @csrf
-                                        <input name="reason" placeholder="reason">
-                                        <button type="submit">Reject</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('admin.redemptions.ship', $redemption->id) }}" class="inline-form">
-                                        @csrf
-                                        <input name="tracking_code" placeholder="tracking">
-                                        <button type="submit">Ship</button>
-                                    </form>
-                                    <form method="POST" action="{{ route('admin.redemptions.deliver', $redemption->id) }}" class="inline-form">
-                                        @csrf
-                                        <button type="submit">Deliver</button>
-                                    </form>
+                        <form method="POST" action="{{ route('admin.gifts.store') }}" enctype="multipart/form-data" class="tt-form tt-form-creative adm-form">
+                            @csrf
+
+                            <div class="adm-form-grid-4">
+                                <div class="tt-form-group">
+                                    <label for="gift_title">Titre</label>
+                                    <input class="tt-form-control" id="gift_title" name="title" value="{{ old('title') }}" required>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+
+                                <div class="tt-form-group">
+                                    <label for="gift_cost_points">Cout (points)</label>
+                                    <input class="tt-form-control" id="gift_cost_points" name="cost_points" type="number" min="1" value="{{ old('cost_points', 1000) }}" required>
+                                </div>
+
+                                <div class="tt-form-group">
+                                    <label for="gift_stock">Stock</label>
+                                    <input class="tt-form-control" id="gift_stock" name="stock" type="number" min="0" value="{{ old('stock', 10) }}" required>
+                                </div>
+
+                                <div class="tt-form-group" style="align-self:end;">
+                                    <div class="tt-form-check">
+                                        <input type="checkbox" id="gift_is_active" name="is_active" value="1" @checked(old('is_active', true))>
+                                        <label for="gift_is_active">Actif</label>
+                                    </div>
+                                </div>
+
+                                <div class="tt-form-group adm-col-span-2">
+                                    <label for="gift_image_file">Image du cadeau</label>
+                                    <input class="tt-form-control" id="gift_image_file" name="image_file" type="file" accept="image/*">
+                                </div>
+
+                                <div class="tt-form-group adm-col-span-2">
+                                    <label for="gift_image_url">Ou URL image</label>
+                                    <input class="tt-form-control" id="gift_image_url" name="image_url" type="url" value="{{ old('image_url') }}" placeholder="https://...">
+                                </div>
+
+                                <div class="tt-form-group adm-col-span-4">
+                                    <label for="gift_description">Description</label>
+                                    <textarea class="tt-form-control" id="gift_description" name="description" rows="3">{{ old('description') }}</textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                <span data-hover="Creer le cadeau">Creer le cadeau</span>
+                            </button>
+                        </form>
+                    </section>
+
+                    <section class="adm-surface">
+                        <div class="tt-heading tt-heading-lg margin-bottom-20">
+                            <h2 class="tt-heading-title tt-text-reveal">Catalogue cadeaux</h2>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Vue cartes plus lisible avec edition simplifiee par cadeau.</p>
+                        </div>
+
+                        @if($gifts->count())
+                            <div class="adm-gift-grid">
+                                @foreach($gifts as $gift)
+                                    @php
+                                        $giftImage = (string) ($gift->image_url ?: $giftFallbackImage);
+                                    @endphp
+                                    <article class="adm-gift-card">
+                                        <div class="adm-gift-media">
+                                            <img src="{{ $giftImage }}" loading="lazy" alt="{{ $gift->title }}">
+                                        </div>
+
+                                        <div>
+                                            <h3 class="adm-gift-title">{{ $gift->title }}</h3>
+                                            <p class="adm-meta">{{ \Illuminate\Support\Str::limit((string) ($gift->description ?? 'Aucune description.'), 120) }}</p>
+                                        </div>
+
+                                        <div class="adm-row-actions">
+                                            <span class="adm-pill">ID #{{ $gift->id }}</span>
+                                            <span class="adm-pill">{{ (int) $gift->cost_points }} pts</span>
+                                            <span class="adm-pill">Stock {{ (int) $gift->stock }}</span>
+                                            <span class="adm-pill">{{ $gift->is_active ? 'Actif' : 'Inactif' }}</span>
+                                        </div>
+
+                                        <details class="adm-advanced">
+                                            <summary>Modifier ce cadeau</summary>
+                                            <div class="adm-advanced-body">
+                                                <form method="POST" action="{{ route('admin.gifts.update', $gift->id) }}" enctype="multipart/form-data" class="tt-form tt-form-creative adm-form">
+                                                    @csrf
+                                                    @method('PUT')
+
+                                                    <div class="adm-form-grid-3">
+                                                        <div class="tt-form-group">
+                                                            <label>Titre</label>
+                                                            <input class="tt-form-control" name="title" value="{{ $gift->title }}" required>
+                                                        </div>
+
+                                                        <div class="tt-form-group">
+                                                            <label>Cout points</label>
+                                                            <input class="tt-form-control" name="cost_points" type="number" min="1" value="{{ (int) $gift->cost_points }}" required>
+                                                        </div>
+
+                                                        <div class="tt-form-group">
+                                                            <label>Stock</label>
+                                                            <input class="tt-form-control" name="stock" type="number" min="0" value="{{ (int) $gift->stock }}" required>
+                                                        </div>
+
+                                                        <div class="tt-form-group adm-col-span-3">
+                                                            <label>Description</label>
+                                                            <textarea class="tt-form-control" name="description" rows="2">{{ $gift->description }}</textarea>
+                                                        </div>
+
+                                                        <div class="tt-form-group">
+                                                            <label>Nouvelle image (fichier)</label>
+                                                            <input class="tt-form-control" name="image_file" type="file" accept="image/*">
+                                                        </div>
+
+                                                        <div class="tt-form-group adm-col-span-2">
+                                                            <label>URL image</label>
+                                                            <input class="tt-form-control" name="image_url" value="{{ $gift->image_url }}" placeholder="https://...">
+                                                        </div>
+
+                                                        <div class="tt-form-group" style="align-self:end;">
+                                                            <div class="tt-form-check">
+                                                                <input type="checkbox" id="gift_active_{{ $gift->id }}" name="is_active" value="1" {{ $gift->is_active ? 'checked' : '' }}>
+                                                                <label for="gift_active_{{ $gift->id }}">Actif</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="adm-row-actions">
+                                                        <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                                            <span data-hover="Enregistrer">Enregistrer</span>
+                                                        </button>
+                                                    </div>
+                                                </form>
+
+                                                <form method="POST" action="{{ route('admin.gifts.destroy', $gift->id) }}" onsubmit="return confirm('Supprimer ce cadeau ?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                                        <span data-hover="Supprimer">Supprimer</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </details>
+                                    </article>
+                                @endforeach
+                            </div>
+
+                            <div class="adm-pagin">{{ $gifts->links() }}</div>
+                        @else
+                            <div class="adm-empty">Aucun cadeau dans le catalogue.</div>
+                        @endif
+                    </section>
+
+                    <section class="adm-surface">
+                        <div class="tt-heading tt-heading-lg margin-bottom-20">
+                            <h2 class="tt-heading-title tt-text-reveal">Redemptions</h2>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Traitez les demandes en attente puis suivez l'expedition et la livraison.</p>
+                        </div>
+
+                        <div class="adm-filter-actions margin-bottom-20">
+                            <a href="{{ route('admin.gifts.index', ['status' => 'all']) }}" class="tt-btn {{ $status === 'all' ? 'tt-btn-secondary' : 'tt-btn-outline' }} tt-magnetic-item">
+                                <span data-hover="Tous">Tous</span>
+                            </a>
+                            @foreach($statuses as $item)
+                                <a href="{{ route('admin.gifts.index', ['status' => $item]) }}" class="tt-btn {{ $status === $item ? 'tt-btn-secondary' : 'tt-btn-outline' }} tt-magnetic-item">
+                                    <span data-hover="{{ ucfirst($item) }}">{{ ucfirst($item) }}</span>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        @if($redemptions->count())
+                            <div class="adm-table-wrap">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Utilisateur</th>
+                                            <th>Cadeau</th>
+                                            <th>Statut</th>
+                                            <th>Cout</th>
+                                            <th>Demande</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($redemptions as $redemption)
+                                            <tr>
+                                                <td>#{{ $redemption->id }}</td>
+                                                <td>#{{ $redemption->user_id }} {{ $redemption->user->name ?? '' }}</td>
+                                                <td>#{{ $redemption->gift_id }} {{ $redemption->gift->title ?? '' }}</td>
+                                                <td><span class="adm-pill">{{ $redemption->status }}</span></td>
+                                                <td>{{ (int) $redemption->cost_points_snapshot }}</td>
+                                                <td>{{ optional($redemption->requested_at)->format('d/m/Y H:i') }}</td>
+                                                <td>
+                                                    <div class="adm-row-actions">
+                                                        <form method="POST" action="{{ route('admin.redemptions.approve', $redemption->id) }}">
+                                                            @csrf
+                                                            <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                                                <span data-hover="Approuver">Approuver</span>
+                                                            </button>
+                                                        </form>
+
+                                                        <form method="POST" action="{{ route('admin.redemptions.reject', $redemption->id) }}" class="adm-inline-form">
+                                                            @csrf
+                                                            <input class="adm-inline-input" name="reason" placeholder="Motif refus">
+                                                            <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                                <span data-hover="Refuser">Refuser</span>
+                                                            </button>
+                                                        </form>
+
+                                                        <form method="POST" action="{{ route('admin.redemptions.ship', $redemption->id) }}" class="adm-inline-form">
+                                                            @csrf
+                                                            <input class="adm-inline-input" name="tracking_code" placeholder="Code tracking">
+                                                            <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                                <span data-hover="Expedier">Expedier</span>
+                                                            </button>
+                                                        </form>
+
+                                                        <form method="POST" action="{{ route('admin.redemptions.deliver', $redemption->id) }}">
+                                                            @csrf
+                                                            <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                                                <span data-hover="Livrer">Livrer</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="adm-pagin">{{ $redemptions->links() }}</div>
+                        @else
+                            <div class="adm-empty">Aucune redemption pour ce filtre.</div>
+                        @endif
+                    </section>
+                </div>
             </div>
-            <div class="actions">{{ $redemptions->links() }}</div>
-        @else
-            <p class="meta">Aucune redemption.</p>
-        @endif
-    </section>
+        </div>
+    </div>
+@endsection
+
+@section('page_scripts')
+    @include('pages.admin.partials.theme-scripts')
 @endsection
 

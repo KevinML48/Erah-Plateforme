@@ -57,7 +57,7 @@ Route::middleware('throttle:social-auth')->group(function () {
         ->defaults('provider', 'discord');
 });
 
-Route::prefix('app')->group(function () {
+Route::prefix('app')->middleware('auth')->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'))->name('marketing.platform');
     Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
     Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('app.leaderboards.show');
@@ -66,30 +66,28 @@ Route::prefix('app')->group(function () {
     Route::get('/matchs', [MatchPageController::class, 'index'])->name('app.matches.index');
     Route::get('/matchs/{matchId}', [MatchPageController::class, 'show'])->name('app.matches.show');
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
-        Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
-        Route::get('/duels', [DuelsPageController::class, 'index'])->name('app.duels.index');
-        Route::get('/paris', [BetPageController::class, 'index'])->name('app.bets.index');
-        Route::delete('/paris/{betId}', [BetPageController::class, 'cancel'])
-            ->middleware('throttle:bets-place')
-            ->name('app.bets.cancel');
-        Route::post('/matchs/{matchId}/paris', [MatchPageController::class, 'placeBet'])
-            ->middleware('throttle:bets-place')
-            ->name('app.matches.bets.store');
-        Route::get('/favoris', [ClipsPageController::class, 'favorites'])->name('app.clips.favorites');
-        Route::get('/notifications', [NotificationsPageController::class, 'index'])->name('app.notifications.index');
-        Route::post('/notifications/read-all', [NotificationsPageController::class, 'readAll'])->name('app.notifications.read-all');
-        Route::post('/notifications/{notificationId}/read', [NotificationsPageController::class, 'read'])->name('app.notifications.read');
-        Route::get('/notifications/preferences', [NotificationsPageController::class, 'preferences'])->name('app.notifications.preferences');
-        Route::post('/notifications/preferences', [NotificationsPageController::class, 'updatePreferences'])->name('app.notifications.preferences.update');
-        Route::get('/profil', ProfileController::class)->name('app.profile');
-        Route::get('/profil/transactions', [ProfileController::class, 'transactions'])->name('app.profile.transactions');
-        Route::delete('/profil', [ProfileController::class, 'destroy'])->name('app.profile.destroy');
-        Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
-        Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
-        Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
-    });
+    Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
+    Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
+    Route::get('/duels', [DuelsPageController::class, 'index'])->name('app.duels.index');
+    Route::get('/paris', [BetPageController::class, 'index'])->name('app.bets.index');
+    Route::delete('/paris/{betId}', [BetPageController::class, 'cancel'])
+        ->middleware('throttle:bets-place')
+        ->name('app.bets.cancel');
+    Route::post('/matchs/{matchId}/paris', [MatchPageController::class, 'placeBet'])
+        ->middleware('throttle:bets-place')
+        ->name('app.matches.bets.store');
+    Route::get('/favoris', [ClipsPageController::class, 'favorites'])->name('app.clips.favorites');
+    Route::get('/notifications', [NotificationsPageController::class, 'index'])->name('app.notifications.index');
+    Route::post('/notifications/read-all', [NotificationsPageController::class, 'readAll'])->name('app.notifications.read-all');
+    Route::post('/notifications/{notificationId}/read', [NotificationsPageController::class, 'read'])->name('app.notifications.read');
+    Route::get('/notifications/preferences', [NotificationsPageController::class, 'preferences'])->name('app.notifications.preferences');
+    Route::post('/notifications/preferences', [NotificationsPageController::class, 'updatePreferences'])->name('app.notifications.preferences.update');
+    Route::get('/profil', ProfileController::class)->name('app.profile');
+    Route::get('/profil/transactions', [ProfileController::class, 'transactions'])->name('app.profile.transactions');
+    Route::delete('/profil', [ProfileController::class, 'destroy'])->name('app.profile.destroy');
+    Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
+    Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
+    Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
 });
 
 Route::middleware('auth')->group(function () {

@@ -1,0 +1,12 @@
+<script src="/template/assets/vendor/jquery/jquery.min.js" defer></script>
+<script src="/template/assets/vendor/gsap/gsap.min.js" defer></script>
+<script src="/template/assets/vendor/gsap/ScrollToPlugin.min.js" defer></script>
+<script src="/template/assets/vendor/gsap/ScrollTrigger.min.js" defer></script>
+<script src="/template/assets/vendor/lenis.min.js" defer></script>
+<script src="/template/assets/vendor/isotope/imagesloaded.pkgd.min.js" defer></script>
+<script src="/template/assets/vendor/isotope/isotope.pkgd.min.js" defer></script>
+<script src="/template/assets/vendor/isotope/packery-mode.pkgd.min.js" defer></script>
+<script src="/template/assets/vendor/fancybox/js/fancybox.umd.js" defer></script>
+<script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js" defer></script>
+<script src="/template/assets/js/theme.js" defer></script>
+<script src="/template/assets/js/cookies.js" defer></script>

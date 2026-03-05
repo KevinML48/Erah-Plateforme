@@ -1,110 +1,187 @@
-@extends('layouts.app')
+@extends('marketing.layouts.template')
 
-@section('title', 'Manage match')
+@section('title', 'Manage Match | Admin ERAH')
+@section('meta_description', 'Console detaillee de pilotage d un match: statut, resultat et settlement.')
+@section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
+
+@section('head_extra')
+    @include('pages.admin.partials.styles')
+@endsection
 
 @section('content')
-    <section class="section">
-        <h1>Manage match #{{ $match->id }}</h1>
-        <p><strong>{{ $match->team_a_name ?? $match->home_team }} vs {{ $match->team_b_name ?? $match->away_team }}</strong></p>
-        <p class="meta">Status: {{ $match->status }} | Resultat: {{ $match->result ?: '-' }}</p>
-        <p class="meta">Starts at: {{ optional($match->starts_at)->format('Y-m-d H:i') }} | Lock: {{ optional($match->locked_at)->format('Y-m-d H:i') }}</p>
+    @php
+        $teamA = $match->team_a_name ?? $match->home_team ?? 'Team A';
+        $teamB = $match->team_b_name ?? $match->away_team ?? 'Team B';
+        $currentStatus = (string) ($match->status ?? '-');
+        $currentResult = (string) ($match->result ?? '');
+    @endphp
 
-        <div class="actions">
-            <a class="button-link" href="{{ route('admin.matches.edit', $match->id) }}">Edit</a>
-            <a class="button-link" href="{{ route('matches.show', $match->id) }}">Voir cote user</a>
-            <a class="button-link" href="{{ route('admin.matches.index') }}">Retour</a>
+    @include('pages.admin.partials.hero', [
+        'heroSubtitle' => 'ERAH Control Center',
+        'heroTitle' => 'Manage Match #'.$match->id,
+        'heroDescription' => $teamA.' vs '.$teamB,
+        'heroMaskDescription' => 'Statut, resultat et settlement idempotent.',
+    ])
+
+    <div id="tt-page-content">
+        <div class="tt-section padding-top-60 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1800">
+                <div class="adm-shell">
+                    @include('pages.admin.partials.nav')
+
+                    <section class="adm-surface">
+                        <div class="tt-heading tt-heading-lg margin-bottom-20">
+                            <h2 class="tt-heading-title tt-text-reveal">{{ $teamA }} vs {{ $teamB }}</h2>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Page de commande match avec actions critiques securisees.</p>
+                        </div>
+
+                        <div class="adm-row-actions margin-bottom-20">
+                            <a href="{{ route('admin.matches.edit', $match->id) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                <span data-hover="Edit">Edit</span>
+                            </a>
+                            <a href="{{ route('matches.show', $match->id) }}" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener">
+                                <span data-hover="Voir cote user">Voir cote user</span>
+                            </a>
+                            <a href="{{ route('admin.matches.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                <span data-hover="Retour">Retour</span>
+                            </a>
+                        </div>
+
+                        <div class="adm-compact-kpis">
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ $currentStatus }}</strong>
+                                <span>Status</span>
+                            </article>
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ $currentResult !== '' ? $currentResult : '-' }}</strong>
+                                <span>Resultat</span>
+                            </article>
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ (int) ($match->bets_count ?? $match->bets->count()) }}</strong>
+                                <span>Bets</span>
+                            </article>
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ optional($match->starts_at)->format('d/m/Y H:i') ?: '-' }}</strong>
+                                <span>Debut</span>
+                            </article>
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ optional($match->locked_at)->format('d/m/Y H:i') ?: '-' }}</strong>
+                                <span>Lock</span>
+                            </article>
+                            <article class="adm-compact-kpi tt-anim-fadeinup">
+                                <strong>{{ optional($match->settlement?->processed_at)->format('d/m/Y H:i') ?: '-' }}</strong>
+                                <span>Settlement</span>
+                            </article>
+                        </div>
+                    </section>
+
+                    <div class="adm-sub-grid">
+                        <section class="adm-surface">
+                            <h3 class="adm-surface-title">Changer statut</h3>
+                            <form method="POST" action="{{ route('admin.matches.status', $match->id) }}" class="tt-form tt-form-creative adm-form">
+                                @csrf
+                                <div class="tt-form-group">
+                                    <label for="status">Status</label>
+                                    <select class="tt-form-control" id="status" name="status" required data-lenis-prevent>
+                                        @foreach($statuses as $statusValue)
+                                            <option value="{{ $statusValue }}" {{ $currentStatus === $statusValue ? 'selected' : '' }}>{{ $statusValue }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                    <span data-hover="Mettre a jour statut">Mettre a jour statut</span>
+                                </button>
+                            </form>
+                        </section>
+
+                        <section class="adm-surface">
+                            <h3 class="adm-surface-title">Definir resultat</h3>
+                            <form method="POST" action="{{ route('admin.matches.result', $match->id) }}" class="tt-form tt-form-creative adm-form">
+                                @csrf
+                                <div class="tt-form-group">
+                                    <label for="result">Resultat</label>
+                                    <select class="tt-form-control" id="result" name="result" required data-lenis-prevent>
+                                        @foreach($resultOptions as $resultValue => $resultLabel)
+                                            <option value="{{ $resultValue }}" {{ $currentResult === $resultValue ? 'selected' : '' }}>{{ $resultLabel }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Appliquer resultat">Appliquer resultat</span>
+                                </button>
+                            </form>
+                        </section>
+                    </div>
+
+                    <section class="adm-surface">
+                        <h3 class="adm-surface-title">Settlement idempotent</h3>
+                        <p class="adm-meta margin-bottom-20">Utilisez une cle unique pour chaque execution afin d eviter les doubles traitements.</p>
+
+                        <form method="POST" action="{{ route('admin.matches.settle', $match->id) }}" class="tt-form tt-form-creative adm-form">
+                            @csrf
+
+                            <div class="adm-form-grid">
+                                <div class="tt-form-group">
+                                    <label for="settle_result">Resultat settlement</label>
+                                    <select class="tt-form-control" id="settle_result" name="result" required data-lenis-prevent>
+                                        @foreach($resultOptions as $resultValue => $resultLabel)
+                                            <option value="{{ $resultValue }}">{{ $resultLabel }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="tt-form-group">
+                                    <label for="idempotency_key">Idempotency key</label>
+                                    <input class="tt-form-control" id="idempotency_key" name="idempotency_key" value="settle-{{ $match->id }}-{{ now()->timestamp }}" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                <span data-hover="Executer settlement">Executer settlement</span>
+                            </button>
+                        </form>
+                    </section>
+
+                    <section class="adm-surface">
+                        <h3 class="adm-surface-title">Derniers bets (30)</h3>
+
+                        @if($match->bets->count())
+                            <div class="adm-table-wrap">
+                                <table class="adm-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Bet ID</th>
+                                            <th>User</th>
+                                            <th>Prediction</th>
+                                            <th>Stake</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($match->bets as $bet)
+                                            <tr>
+                                                <td>#{{ $bet->id }}</td>
+                                                <td>{{ $bet->user->name ?? 'N/A' }}</td>
+                                                <td>{{ $bet->prediction }}</td>
+                                                <td>{{ (int) $bet->stake_points }}</td>
+                                                <td><span class="adm-pill">{{ $bet->status }}</span></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="adm-empty">Aucun bet sur ce match.</div>
+                        @endif
+                    </section>
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+@endsection
 
-    <section class="section">
-        <h2>Changer statut</h2>
-        <form method="POST" action="{{ route('admin.matches.status', $match->id) }}" class="grid">
-            @csrf
-            <div>
-                <label for="status">Status</label>
-                <select id="status" name="status" required>
-                    @foreach($statuses as $statusValue)
-                        <option value="{{ $statusValue }}" {{ $match->status === $statusValue ? 'selected' : '' }}>{{ $statusValue }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="actions">
-                <button type="submit">Mettre a jour statut</button>
-            </div>
-        </form>
-    </section>
-
-    <section class="section">
-        <h2>Definir resultat</h2>
-        <form method="POST" action="{{ route('admin.matches.result', $match->id) }}" class="grid">
-            @csrf
-            <div>
-                <label for="result">Resultat</label>
-                <select id="result" name="result" required>
-                    @foreach($resultOptions as $resultValue => $resultLabel)
-                        <option value="{{ $resultValue }}" {{ $match->result === $resultValue ? 'selected' : '' }}>{{ $resultLabel }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="actions">
-                <button type="submit">Appliquer resultat</button>
-            </div>
-        </form>
-    </section>
-
-    <section class="section">
-        <h2>Settlement idempotent</h2>
-        <form method="POST" action="{{ route('admin.matches.settle', $match->id) }}" class="grid">
-            @csrf
-            <div>
-                <label for="settle_result">Resultat settlement</label>
-                <select id="settle_result" name="result" required>
-                    @foreach($resultOptions as $resultValue => $resultLabel)
-                        <option value="{{ $resultValue }}">{{ $resultLabel }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label for="idempotency_key">Idempotency key</label>
-                <input id="idempotency_key" name="idempotency_key" value="settle-{{ $match->id }}-{{ now()->timestamp }}" required>
-            </div>
-
-            <div class="actions">
-                <button type="submit">Executer settlement</button>
-            </div>
-        </form>
-    </section>
-
-    <section class="section">
-        <h2>Derniers bets (30)</h2>
-        @if($match->bets->count())
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Bet ID</th>
-                        <th>User</th>
-                        <th>Prediction</th>
-                        <th>Stake</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($match->bets as $bet)
-                        <tr>
-                            <td>{{ $bet->id }}</td>
-                            <td>{{ $bet->user->name ?? 'N/A' }}</td>
-                            <td>{{ $bet->prediction }}</td>
-                            <td>{{ $bet->stake_points }}</td>
-                            <td>{{ $bet->status }}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <p class="meta">Aucun bet sur ce match.</p>
-        @endif
-    </section>
+@section('page_scripts')
+    @include('pages.admin.partials.theme-scripts')
 @endsection

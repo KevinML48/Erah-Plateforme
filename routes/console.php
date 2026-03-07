@@ -4,6 +4,7 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 use App\Services\GrantMonthlySupporterRewards;
+use App\Services\GalleryPhotoImportService;
 use App\Services\SupporterAccessResolver;
 use App\Services\SyncStripeSubscriptionStatus;
 use App\Models\User;
@@ -44,5 +45,14 @@ Artisan::command('supporter:sync-subscriptions {stripeCustomerId?}', function (
     $supporterAccessResolver->unlockCommunityGoals();
     $this->info('Users synchronises: '.$count);
 })->purpose('Sync supporter subscriptions from Cashier / Stripe state.');
+
+Artisan::command('gallery-photos:import-legacy', function (GalleryPhotoImportService $galleryPhotoImportService) {
+    $result = $galleryPhotoImportService->import();
+
+    $this->info('Sources trouvees: '.$result['found']);
+    $this->info('Creees: '.$result['created']);
+    $this->info('Mises a jour: '.$result['updated']);
+    $this->info('Ignorees: '.$result['skipped']);
+})->purpose('Import gallery photos from the legacy static Blade source.');
 
 Schedule::command('supporter:grant-monthly-rewards')->monthlyOn(1, '02:10');

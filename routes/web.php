@@ -12,8 +12,10 @@ use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipCampaignAdminController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
+use App\Http\Controllers\Web\Admin\GalleryPhotoAdminController;
 use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
+use App\Http\Controllers\Marketing\GalleryPhotoPageController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
 use App\Http\Controllers\Web\ClipSupporterController;
@@ -269,6 +271,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/missions', [AdminMissionConsoleController::class, 'storeTemplate'])->name('admin.missions.store');
             Route::put('/missions/{templateId}', [AdminMissionConsoleController::class, 'updateTemplate'])->name('admin.missions.update');
             Route::delete('/missions/{templateId}', [AdminMissionConsoleController::class, 'destroyTemplate'])->name('admin.missions.destroy');
+
+            Route::get('/gallery-photos', [GalleryPhotoAdminController::class, 'index'])->name('admin.gallery-photos.index');
+            Route::post('/gallery-photos', [GalleryPhotoAdminController::class, 'store'])->name('admin.gallery-photos.store');
+            Route::put('/gallery-photos/{photoId}', [GalleryPhotoAdminController::class, 'update'])->name('admin.gallery-photos.update');
+            Route::delete('/gallery-photos/{photoId}', [GalleryPhotoAdminController::class, 'destroy'])->name('admin.gallery-photos.destroy');
+            Route::post('/gallery-photos/{photoId}/toggle', [GalleryPhotoAdminController::class, 'toggle'])->name('admin.gallery-photos.toggle');
+            Route::post('/gallery-photos/{photoId}/reorder', [GalleryPhotoAdminController::class, 'reorder'])->name('admin.gallery-photos.reorder');
         });
     });
 });
@@ -277,6 +286,8 @@ Route::view('/', 'marketing.index')->name('marketing.index');
 Route::view('/index.html', 'marketing.index');
 Route::view('/faq', 'marketing.faq')->name('marketing.faq');
 Route::view('/faq.html', 'marketing.faq');
+Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');
+Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
 Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');
 Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')

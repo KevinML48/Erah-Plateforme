@@ -79,7 +79,7 @@
 									<div class="tt-submenu">
 										<ul class="tt-submenu-list">
 
-											<li><a href="/galerie-photos">Galerie Photo</a></li>
+											<li><a href="{{ route('marketing.gallery-photos') }}">Galerie Photo</a></li>
 											<li><a href="/galerie-video">Galerie Video</a></li>
 											<li><a href="/evenement">Nos evenements</a></li>
 											<li><a href="/nos-stages">Nos stages</a></li>

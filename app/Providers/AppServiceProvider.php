@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\View as BladeView;
+use Laravel\Cashier\Cashier;
 use SocialiteProviders\Discord\Provider;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
@@ -27,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Cashier::ignoreRoutes();
     }
 
     /**
@@ -154,6 +155,28 @@ class AppServiceProvider extends ServiceProvider
             $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
 
             return Limit::perMinute(60)->by($identifier);
+        });
+
+        RateLimiter::for('supporter-checkout', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(12)->by($identifier);
+        });
+
+        RateLimiter::for('supporter-votes', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(30)->by($identifier);
+        });
+
+        RateLimiter::for('supporter-reactions', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(45)->by($identifier);
+        });
+
+        RateLimiter::for('stripe-webhook', function (Request $request) {
+            return Limit::perMinute(120)->by($request->ip());
         });
     }
 }

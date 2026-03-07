@@ -152,6 +152,20 @@
             line-height: 1.4;
         }
 
+        .lb-supporter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: rgba(255, 255, 255, .84);
+        }
+
         .lb-board {
             border: 1px solid rgba(255, 255, 255, .14);
             border-radius: 14px;
@@ -417,6 +431,9 @@
                                         @if(($currentUserId ?? null) === ($entry['user_id'] ?? null))
                                             <small class="text-muted">Vous</small>
                                         @endif
+                                        @if($entry['is_supporter'] ?? false)
+                                            <span class="lb-supporter-badge">Supporter</span>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="lb-podium-meta">
@@ -450,6 +467,9 @@
                                         <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
                                         @if($isMe)
                                             <span class="lb-you-badge">Vous</span>
+                                        @endif
+                                        @if($entry['is_supporter'] ?? false)
+                                            <span class="lb-supporter-badge">Supporter</span>
                                         @endif
                                     </div>
                                 </div>

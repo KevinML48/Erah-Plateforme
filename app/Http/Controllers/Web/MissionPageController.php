@@ -51,6 +51,7 @@ class MissionPageController extends Controller
             ->whereHas('instance.template', function ($query): void {
                 $query->whereIn('scope', [
                     MissionTemplate::SCOPE_ONCE,
+                    MissionTemplate::SCOPE_MONTHLY,
                     MissionTemplate::SCOPE_EVENT_WINDOW,
                 ]);
             })
@@ -134,6 +135,7 @@ class MissionPageController extends Controller
         return match ($scope) {
             MissionTemplate::SCOPE_DAILY => 'Daily',
             MissionTemplate::SCOPE_WEEKLY => 'Weekly',
+            MissionTemplate::SCOPE_MONTHLY => 'Monthly',
             MissionTemplate::SCOPE_ONCE => 'One-shot',
             MissionTemplate::SCOPE_EVENT_WINDOW => 'Event',
             default => 'Mission',

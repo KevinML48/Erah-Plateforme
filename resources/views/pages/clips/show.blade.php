@@ -137,6 +137,241 @@
             color: inherit;
             cursor: pointer;
         }
+
+        .clip-supporter-card {
+            margin-top: 18px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .clip-supporter-actions,
+        .clip-supporter-vote-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .clip-supporter-vote-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .clip-supporter-vote-option img {
+            width: 72px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .clip-supporter-note {
+            margin-top: 12px;
+            color: rgba(255, 255, 255, .72);
+            font-size: 14px;
+        }
+
+        .clip-comment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 8px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        .clip-comments-inline {
+            margin-top: 26px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .clip-comments-board {
+            margin-top: 48px;
+            padding: 26px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .clip-comments-note {
+            margin: 12px 0 0;
+            color: rgba(255, 255, 255, .72);
+        }
+
+        .clip-comments-list {
+            list-style: none;
+            padding: 0;
+            margin: 32px 0 0;
+            display: grid;
+            gap: 16px;
+        }
+
+        .clip-comment-item {
+            display: grid;
+            grid-template-columns: 64px minmax(0, 1fr);
+            gap: 16px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .clip-comment-item.is-supporter {
+            border-color: rgba(224, 34, 34, .35);
+            background: linear-gradient(180deg, rgba(224, 34, 34, .08), rgba(255, 255, 255, .02));
+        }
+
+        .clip-comment-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: block;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, .12);
+            transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+        }
+
+        .clip-comment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .clip-comment-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .clip-comment-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .clip-comment-author-name {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.1;
+        }
+
+        .clip-comment-author-name a,
+        .clip-comment-avatar {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .clip-comment-author-name a {
+            transition: color .22s ease, text-shadow .22s ease;
+        }
+
+        .clip-comment-item:hover .clip-comment-author-name a,
+        .clip-comment-author-name a:hover,
+        .clip-comment-author-name a:focus-visible {
+            color: #e02222;
+            text-shadow: 0 0 16px rgba(224, 34, 34, .18);
+        }
+
+        .clip-comment-item:hover a.clip-comment-avatar,
+        a.clip-comment-avatar:hover,
+        a.clip-comment-avatar:focus-visible {
+            border-color: rgba(224, 34, 34, .75);
+            box-shadow: 0 0 0 4px rgba(224, 34, 34, .12);
+            transform: translateY(-2px);
+        }
+
+        .clip-comment-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: rgba(255, 255, 255, .68);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .clip-comment-body-text {
+            color: rgba(255, 255, 255, .9);
+            line-height: 1.65;
+        }
+
+        .clip-comment-body-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .clip-comment-delete {
+            background: transparent;
+            border: 0;
+            padding: 0;
+            color: rgba(255, 255, 255, .8);
+            cursor: pointer;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        body.tt-lightmode-on .clip-comments-board {
+            border-color: rgba(33, 33, 33, .12);
+            background: rgba(255, 255, 255, .76);
+            box-shadow: 0 18px 40px rgba(33, 33, 33, .05);
+        }
+
+        body.tt-lightmode-on .clip-comments-note,
+        body.tt-lightmode-on .clip-comment-meta {
+            color: rgba(23, 23, 23, .62);
+        }
+
+        body.tt-lightmode-on .clip-comment-item {
+            border-color: rgba(33, 33, 33, .1);
+            background: rgba(255, 255, 255, .88);
+        }
+
+        body.tt-lightmode-on .clip-comment-item.is-supporter {
+            border-color: rgba(224, 34, 34, .18);
+            background: linear-gradient(180deg, rgba(224, 34, 34, .06), rgba(255, 255, 255, .9));
+        }
+
+        body.tt-lightmode-on .clip-comment-avatar {
+            border-color: rgba(33, 33, 33, .1);
+        }
+
+        body.tt-lightmode-on .clip-comment-author-name,
+        body.tt-lightmode-on .clip-comment-body-text,
+        body.tt-lightmode-on .clip-comment-delete {
+            color: #171717;
+        }
+
+        @media (max-width: 767.98px) {
+            .clip-comments-board {
+                padding: 18px;
+            }
+
+            .clip-comment-item {
+                grid-template-columns: 1fr;
+            }
+
+            .clip-comment-avatar {
+                width: 52px;
+                height: 52px;
+            }
+        }
     </style>
 @endsection
 
@@ -149,6 +384,8 @@
             ? (auth()->check() ? route('app.clips.favorites') : route('login'))
             : route('clips.favorites');
         $favoritesLabel = auth()->check() ? 'Mes clips favoris' : 'Connexion';
+        $commentStoreRouteName = $isPublicApp ? 'app.clips.comment' : 'clips.comment';
+        $commentDeleteRouteName = $isPublicApp ? 'app.clips.comment.delete' : 'clips.comment.delete';
         $authorName = $clip->createdBy?->name ?? 'ERAH';
         $thumbnail = $clip->thumbnail_url ?: '/template/assets/img/logo.png';
         $publishedLabel = optional($clip->published_at)->format('d/m/Y H:i') ?: 'Date inconnue';
@@ -343,7 +580,7 @@
                             @else
                                 <div class="clip-engagement-actions">
                                     <p class="clip-public-note">
-                                        Mode /app: consultation publique. Connectez-vous a la console pour liker, commenter et gerer les favoris.
+                                        Mode /app: commentaires ouverts aux membres connectes. Pour les likes et favoris, ouvrez la console complete.
                                     </p>
                                     @guest
                                         <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
@@ -356,6 +593,84 @@
                                     @endguest
                                 </div>
                             @endif
+                        </div>
+
+                        <div class="clip-supporter-card">
+                            <h4 class="no-margin">Supporter ERAH</h4>
+                            <p class="clip-supporter-note">
+                                Tout membre connecte peut commenter. Les supporters actifs profitent seulement des reactions premium, des commentaires prioritaires et des votes clips.
+                            </p>
+
+                            @if(!$isPublicApp && $isSupporterActive)
+                                <div class="clip-supporter-actions">
+                                    @foreach(($supporterReactionOptions ?? []) as $reaction)
+                                        @php($hasReaction = in_array($reaction['key'], $userSupporterReactionKeys ?? [], true))
+                                        @if($hasReaction)
+                                            <form method="POST" action="{{ route('clips.supporter-reactions.destroy', [$clip->id, $reaction['key']]) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                    <span data-hover="{{ $reaction['label'] }} ({{ (int) ($supporterReactionCounts[$reaction['key']] ?? 0) }})">{{ $reaction['label'] }} ({{ (int) ($supporterReactionCounts[$reaction['key']] ?? 0) }})</span>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form method="POST" action="{{ route('clips.supporter-reactions.store', $clip->id) }}">
+                                                @csrf
+                                                <input type="hidden" name="reaction_key" value="{{ $reaction['key'] }}">
+                                                <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                                    <span data-hover="{{ $reaction['label'] }} ({{ (int) ($supporterReactionCounts[$reaction['key']] ?? 0) }})">{{ $reaction['label'] }} ({{ (int) ($supporterReactionCounts[$reaction['key']] ?? 0) }})</span>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                @forelse(($supporterCampaigns ?? []) as $campaign)
+                                    @php($existingVote = $campaign->votes->first())
+                                    <div class="clip-supporter-card margin-top-20">
+                                        <h5 class="no-margin">{{ $campaign->title }}</h5>
+                                        <p class="clip-supporter-note">Fin de campagne: {{ optional($campaign->ends_at)->format('d/m/Y H:i') }} - {{ (int) $campaign->votes_count }} vote(s)</p>
+
+                                        <div class="clip-supporter-vote-options">
+                                            @foreach($campaign->entries as $entry)
+                                                @if($entry->clip)
+                                                    <div class="clip-supporter-vote-option">
+                                                        <img src="{{ $entry->clip->thumbnail_url ?: '/template/assets/img/logo.png' }}" alt="{{ $entry->clip->title }}">
+                                                        <div>
+                                                            <strong>{{ $entry->clip->title }}</strong>
+                                                            @if((int) ($existingVote?->clip_id ?? 0) === (int) $entry->clip->id)
+                                                                <div class="clip-supporter-note">Votre vote actuel</div>
+                                                            @endif
+                                                        </div>
+                                                        <form method="POST" action="{{ route('clips.campaigns.vote', $campaign->id) }}">
+                                                            @csrf
+                                                            <input type="hidden" name="clip_id" value="{{ $entry->clip->id }}">
+                                                            <button type="submit" class="tt-btn {{ (int) ($existingVote?->clip_id ?? 0) === (int) $entry->clip->id ? 'tt-btn-outline' : 'tt-btn-primary' }} tt-magnetic-item">
+                                                                <span data-hover="Voter">Voter</span>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @empty
+                                @endforelse
+                            @else
+                                <p class="clip-supporter-note no-margin">
+                                    @if($isPublicApp)
+                                        La version publique affiche les clips sans interactions premium. Ouvrez la console pour retrouver le mode supporter.
+                                    @elseif(auth()->check())
+                                        Votre compte n a pas de support actif sur ce moment.
+                                    @else
+                                        Connectez-vous puis activez Supporter ERAH pour debloquer ces interactions.
+                                    @endif
+                                </p>
+                            @endif
+
+                            @include('pages.clips.partials.comments-panel', [
+                                'panelClass' => 'clip-comments-inline',
+                            ])
                         </div>
                     </div>
 
@@ -423,72 +738,6 @@
                     </div>
                 </div>
 
-                <div id="tt-blog-post-comments">
-                    <h4 class="tt-bpc-heading">{{ $comments->total() }} commentaire(s)</h4>
-
-                    @if(!$isPublicApp)
-                        <form id="tt-post-comment-form" method="POST" action="{{ route('clips.comment', $clip->id) }}">
-                            @csrf
-                            <h4 class="tt-post-comment-form-heading">Ajouter un commentaire:</h4>
-                            <small class="tt-form-text">Votre commentaire sera visible publiquement.</small>
-                            <br>
-                            <br>
-
-                            <div class="tt-form-group">
-                                <label for="body">Commentaire <span class="required">*</span></label>
-                                <textarea class="tt-form-control" id="body" name="body" rows="6" required>{{ old('body') }}</textarea>
-                            </div>
-
-                            <button type="submit" class="tt-btn tt-btn-primary margin-top-30">
-                                <span data-hover="Publier">Publier</span>
-                            </button>
-                        </form>
-                    @else
-                        <p class="tt-form-text">Les commentaires sont visibles publiquement. Publication reservee aux utilisateurs connectes dans la console.</p>
-                    @endif
-
-                    @if(($comments ?? null) && $comments->count())
-                        <ul class="tt-comments-list margin-top-40">
-                            @foreach($comments as $comment)
-                                @php
-                                    $commentAuthor = $comment->user?->name ?? 'Utilisateur';
-                                    $avatarUrl = $comment->user?->avatar_url ?? '/template/assets/img/blog/avatar.png';
-                                @endphp
-                                <li class="tt-comment">
-                                    <a href="#0" class="tt-comment-avatar">
-                                        <img src="{{ $avatarUrl }}" loading="lazy" alt="{{ $commentAuthor }}">
-                                    </a>
-                                    <div class="tt-comment-body">
-                                        <div class="tt-comment-meta">
-                                            <h4 class="tt-comment-heading"><a href="#0">{{ $commentAuthor }}</a></h4>
-                                            <span class="tt-comment-time">{{ optional($comment->created_at)->format('d/m/Y H:i') }}</span>
-                                        </div>
-
-                                        @if(!$isPublicApp && (auth()->id() === $comment->user_id || auth()->user()?->role === 'admin'))
-                                            <span class="tt-comment-reply">
-                                                <form method="POST" action="{{ route('clips.comment.delete', [$clip->id, $comment->id]) }}" class="tt-comment-delete-form">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit">Supprimer</button>
-                                                </form>
-                                            </span>
-                                        @endif
-
-                                        <div class="tt-comment-text">
-                                            <p>{!! nl2br(e((string) $comment->body)) !!}</p>
-                                        </div>
-                                    </div>
-                                </li>
-                            @endforeach
-                        </ul>
-
-                        <div class="margin-top-40">
-                            {{ $comments->links() }}
-                        </div>
-                    @else
-                        <p class="margin-top-40">Aucun commentaire.</p>
-                    @endif
-                </div>
             </div>
         </div>
     </div>

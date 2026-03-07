@@ -10,10 +10,13 @@ use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
+use App\Http\Controllers\Web\Admin\ClipCampaignAdminController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
+use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
+use App\Http\Controllers\Web\ClipSupporterController;
 use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DuelsPageController;
@@ -26,6 +29,9 @@ use App\Http\Controllers\Web\OnboardingController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\PublicProfileController;
 use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\StripeWebhookController;
+use App\Http\Controllers\Web\SupporterConsoleController;
+use App\Http\Controllers\Web\SupporterPageController;
 use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use Illuminate\Support\Facades\Route;
@@ -57,12 +63,26 @@ Route::middleware('throttle:social-auth')->group(function () {
         ->defaults('provider', 'discord');
 });
 
+Route::get('/supporter', [SupporterPageController::class, 'show'])->name('supporter.show');
+Route::post('/supporter/checkout', [SupporterPageController::class, 'checkout'])
+    ->middleware(['auth', 'throttle:supporter-checkout'])
+    ->name('supporter.checkout');
+Route::get('/supporter/success', [SupporterPageController::class, 'success'])
+    ->middleware('auth')
+    ->name('supporter.success');
+Route::get('/supporter/cancel', [SupporterPageController::class, 'cancel'])->name('supporter.cancel');
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
+    ->middleware('throttle:stripe-webhook')
+    ->name('stripe.webhook');
+
 Route::prefix('app')->middleware('auth')->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'))->name('marketing.platform');
     Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
     Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('app.leaderboards.show');
     Route::get('/clips', [ClipsPageController::class, 'index'])->name('app.clips.index');
     Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])->name('app.clips.show');
+    Route::post('/clips/{clipId}/comments', [ClipsPageController::class, 'comment'])->name('app.clips.comment');
+    Route::delete('/clips/{clipId}/comments/{commentId}', [ClipsPageController::class, 'deleteComment'])->name('app.clips.comment.delete');
     Route::get('/matchs', [MatchPageController::class, 'index'])->name('app.matches.index');
     Route::get('/matchs/{matchId}', [MatchPageController::class, 'show'])->name('app.matches.show');
 
@@ -130,6 +150,8 @@ Route::middleware('auth')->group(function () {
             ->name('bets.cancel');
 
         Route::get('/wallet', [WalletPageController::class, 'index'])->name('wallet.index');
+        Route::get('/supporter', [SupporterConsoleController::class, 'index'])->name('supporter.console');
+        Route::post('/supporter/portal', [SupporterConsoleController::class, 'portal'])->name('supporter.portal');
 
         Route::get('/clips', [ClipsPageController::class, 'index'])->name('clips.index');
         Route::get('/clips/favorites', [ClipsPageController::class, 'favorites'])->name('clips.favorites');
@@ -141,6 +163,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/clips/{clipId}/comments', [ClipsPageController::class, 'comment'])->name('clips.comment');
         Route::delete('/clips/{clipId}/comments/{commentId}', [ClipsPageController::class, 'deleteComment'])->name('clips.comment.delete');
         Route::post('/clips/{clipId}/share', [ClipsPageController::class, 'share'])->name('clips.share');
+        Route::post('/clips/{clipId}/supporter-reaction', [ClipSupporterController::class, 'storeReaction'])
+            ->middleware(['supporter.active', 'throttle:supporter-reactions'])
+            ->name('clips.supporter-reactions.store');
+        Route::delete('/clips/{clipId}/supporter-reaction/{reactionKey}', [ClipSupporterController::class, 'destroyReaction'])
+            ->middleware(['supporter.active', 'throttle:supporter-reactions'])
+            ->name('clips.supporter-reactions.destroy');
+        Route::post('/clips/campaigns/{campaignId}/vote', [ClipSupporterController::class, 'vote'])
+            ->middleware(['supporter.active', 'throttle:supporter-votes'])
+            ->name('clips.campaigns.vote');
 
         Route::get('/leaderboards/me', [LeaderboardPageController::class, 'me'])->name('leaderboards.me');
         Route::get('/leaderboards', [LeaderboardPageController::class, 'index'])->name('leaderboards.index');
@@ -183,6 +214,8 @@ Route::middleware('auth')->group(function () {
 
         Route::middleware('admin')->prefix('admin')->group(function () {
             Route::get('/dashboard', AdminDashboardController::class)->name('admin.dashboard');
+            Route::get('/supporters', [SupportersAdminController::class, 'index'])->name('admin.supporters.index');
+            Route::get('/supporters/{userId}', [SupportersAdminController::class, 'show'])->name('admin.supporters.show');
 
             Route::get('/clips', [ClipsAdminController::class, 'index'])->name('admin.clips.index');
             Route::get('/clips/create', [ClipsAdminController::class, 'create'])->name('admin.clips.create');
@@ -192,6 +225,11 @@ Route::middleware('auth')->group(function () {
             Route::post('/clips/{clipId}/publish', [ClipsAdminController::class, 'publish'])->name('admin.clips.publish');
             Route::post('/clips/{clipId}/unpublish', [ClipsAdminController::class, 'unpublish'])->name('admin.clips.unpublish');
             Route::delete('/clips/{clipId}', [ClipsAdminController::class, 'destroy'])->name('admin.clips.destroy');
+            Route::get('/clips/campaigns', [ClipCampaignAdminController::class, 'index'])->name('admin.clips.campaigns.index');
+            Route::post('/clips/campaigns', [ClipCampaignAdminController::class, 'store'])->name('admin.clips.campaigns.store');
+            Route::put('/clips/campaigns/{campaignId}', [ClipCampaignAdminController::class, 'update'])->name('admin.clips.campaigns.update');
+            Route::post('/clips/campaigns/{campaignId}/close', [ClipCampaignAdminController::class, 'close'])->name('admin.clips.campaigns.close');
+            Route::post('/clips/campaigns/{campaignId}/settle', [ClipCampaignAdminController::class, 'settle'])->name('admin.clips.campaigns.settle');
 
             Route::get('/matches', [AdminMatchController::class, 'index'])->name('admin.matches.index');
             Route::get('/matches/create', [AdminMatchController::class, 'create'])->name('admin.matches.create');

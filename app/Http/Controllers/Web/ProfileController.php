@@ -6,6 +6,7 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Ranking\EnsureUserProgressAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\UpdateProfileRequest;
+use App\Services\SupporterAccessResolver;
 use App\Services\ShortcutService;
 use App\Models\Bet;
 use App\Models\Duel;
@@ -23,7 +24,8 @@ class ProfileController extends Controller
 {
     public function __invoke(
         EnsureUserProgressAction $ensureUserProgressAction,
-        ShortcutService $shortcutService
+        ShortcutService $shortcutService,
+        SupporterAccessResolver $supporterAccessResolver
     ): View
     {
         $user = auth()->user();
@@ -38,6 +40,8 @@ class ProfileController extends Controller
         $stats = $this->buildStats($user);
         $currentShortcuts = $shortcutService->getForUser($user);
         $availableShortcuts = $shortcutService->getAvailableForUser($user);
+        $supporterProfile = $supporterAccessResolver->ensurePublicProfile($user);
+        $supporterSummary = $supporterAccessResolver->summary($user);
 
         return view('pages.profile.show', [
             'user' => $user,
@@ -48,15 +52,16 @@ class ProfileController extends Controller
             'availableShortcuts' => $availableShortcuts,
             'minShortcuts' => $shortcutService->minShortcuts(),
             'maxShortcuts' => $shortcutService->maxShortcuts(),
+            'supporterProfile' => $supporterProfile,
+            'supporterSummary' => $supporterSummary,
         ]);
     }
 
-    public function update(
-        UpdateProfileRequest $request,
-        StoreAuditLogAction $storeAuditLogAction
-    ): RedirectResponse {
+    public function update(UpdateProfileRequest $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
+    {
         $user = $request->user();
         $validated = $request->validated();
+        $isSupporterActive = $user->isSupporterActive();
         $newAvatarPath = null;
         $oldAvatarPath = $user->avatar_path;
 
@@ -64,7 +69,7 @@ class ProfileController extends Controller
             $newAvatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
-        DB::transaction(function () use ($user, $validated, $newAvatarPath, $storeAuditLogAction) {
+        DB::transaction(function () use ($user, $validated, $newAvatarPath, $storeAuditLogAction, $isSupporterActive, $request) {
             $lockedUser = User::query()
                 ->whereKey($user->id)
                 ->lockForUpdate()
@@ -83,6 +88,19 @@ class ProfileController extends Controller
 
             $lockedUser->save();
 
+            if (
+                $isSupporterActive
+                && (array_key_exists('show_in_supporter_wall', $validated) || array_key_exists('supporter_display_name', $validated))
+            ) {
+                $lockedUser->supportPublicProfile()->updateOrCreate(
+                    ['user_id' => $lockedUser->id],
+                    [
+                        'is_visible_on_wall' => $request->boolean('show_in_supporter_wall'),
+                        'display_name' => $validated['supporter_display_name'] ?? $lockedUser->name,
+                    ],
+                );
+            }
+
             $storeAuditLogAction->execute(
                 action: 'profile.updated',
                 actor: $lockedUser,
@@ -96,6 +114,8 @@ class ProfileController extends Controller
                         'tiktok_url',
                         'discord_url',
                         'avatar_path' => $newAvatarPath !== null,
+                        'show_in_supporter_wall' => $isSupporterActive && array_key_exists('show_in_supporter_wall', $validated),
+                        'supporter_display_name' => $isSupporterActive && array_key_exists('supporter_display_name', $validated),
                     ],
                 ],
             );

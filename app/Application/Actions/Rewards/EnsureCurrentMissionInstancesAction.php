@@ -6,13 +6,19 @@ use App\Models\MissionInstance;
 use App\Models\MissionTemplate;
 use App\Models\User;
 use App\Models\UserMission;
+use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class EnsureCurrentMissionInstancesAction
 {
+    public function __construct(
+        private readonly SupporterAccessResolver $supporterAccessResolver
+    ) {
+    }
+
     /**
-     * @return array{daily: int, weekly: int, once: int, event_window: int}
+     * @return array{daily: int, weekly: int, monthly: int, once: int, event_window: int}
      */
     public function execute(User $user): array
     {
@@ -21,10 +27,14 @@ class EnsureCurrentMissionInstancesAction
             $todayEnd = now()->copy()->endOfDay();
             $weekStart = now()->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
             $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
+            $monthStart = now()->copy()->startOfMonth()->startOfDay();
+            $monthEnd = $monthStart->copy()->endOfMonth()->endOfDay();
+            $isSupporter = $this->supporterAccessResolver->hasActiveSupport($user);
 
             $counters = [
                 'daily' => 0,
                 'weekly' => 0,
+                'monthly' => 0,
                 'once' => 0,
                 'event_window' => 0,
             ];
@@ -35,7 +45,20 @@ class EnsureCurrentMissionInstancesAction
                 ->get();
 
             foreach ($activeTemplates as $template) {
-                [$periodStart, $periodEnd] = $this->resolvePeriod($template, $todayStart, $todayEnd, $weekStart, $weekEnd);
+                $constraints = is_array($template->constraints) ? $template->constraints : [];
+                if (($constraints['supporter_only'] ?? false) && ! $isSupporter) {
+                    continue;
+                }
+
+                [$periodStart, $periodEnd] = $this->resolvePeriod(
+                    $template,
+                    $todayStart,
+                    $todayEnd,
+                    $weekStart,
+                    $weekEnd,
+                    $monthStart,
+                    $monthEnd
+                );
 
                 if (! $periodStart || ! $periodEnd) {
                     continue;
@@ -72,11 +95,14 @@ class EnsureCurrentMissionInstancesAction
         Carbon $todayStart,
         Carbon $todayEnd,
         Carbon $weekStart,
-        Carbon $weekEnd
+        Carbon $weekEnd,
+        Carbon $monthStart,
+        Carbon $monthEnd
     ): array {
         return match ($template->scope) {
             MissionTemplate::SCOPE_DAILY => [$todayStart, $todayEnd],
             MissionTemplate::SCOPE_WEEKLY => [$weekStart, $weekEnd],
+            MissionTemplate::SCOPE_MONTHLY => [$monthStart, $monthEnd],
             MissionTemplate::SCOPE_ONCE => [
                 $template->start_at?->copy()->startOfDay() ?? Carbon::create(2020, 1, 1, 0, 0, 0),
                 $template->end_at?->copy()->endOfDay() ?? Carbon::create(2099, 12, 31, 23, 59, 59),
@@ -102,4 +128,3 @@ class EnsureCurrentMissionInstancesAction
         return [$template->start_at->copy(), $template->end_at->copy()];
     }
 }
-

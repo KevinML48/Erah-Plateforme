@@ -28,6 +28,13 @@
             letter-spacing: .08em;
         }
 
+        .adm-dashboard-list .tt-avlist-item:hover .tt-avlist-title,
+        .adm-dashboard-list .tt-avlist-item:hover .tt-avlist-description,
+        .adm-dashboard-list .tt-avlist-item:hover .tt-avlist-info,
+        .adm-dashboard-list .tt-avlist-item:hover .adm-pill {
+            color: rgba(15, 19, 28, .94);
+        }
+
         @media (max-width: 991.98px) {
             .adm-dashboard-list .tt-avlist-col-info {
                 justify-content: flex-start;

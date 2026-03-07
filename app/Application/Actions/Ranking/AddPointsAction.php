@@ -42,6 +42,10 @@ class AddPointsAction
             throw new RuntimeException('Points must be positive.');
         }
 
+        if ($kind === PointsTransaction::KIND_XP && $user->isSupporterActive()) {
+            $points = max(1, (int) ceil($points * (float) config('supporter.xp_multiplier', 1)));
+        }
+
         try {
             return DB::transaction(function () use ($user, $kind, $points, $sourceType, $sourceId, $actor, $meta) {
                 $progress = $this->ensureUserProgressAction->execute($user);
@@ -230,11 +234,12 @@ class AddPointsAction
             $this->notifyAction->execute(
                 user: $user,
                 category: 'system',
-                message: 'Promotion de ligue',
-                title: 'Promotion',
+                message: 'Vous accedez a la ligue '.$league->name.'.',
+                title: 'Nouvelle ligue debloquee',
                 data: [
                     'from' => $fromLeague?->name,
                     'to' => $league->name,
+                    'to_league_key' => $league->key,
                     'rank_points' => $progress->total_rank_points,
                 ],
             );

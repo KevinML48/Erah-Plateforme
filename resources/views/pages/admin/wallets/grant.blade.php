@@ -42,7 +42,8 @@
                                     <input class="tt-form-control" id="q" name="q" value="{{ $search }}" placeholder="Ex: erah, admin@...">
                                 </div>
 
-                                <div class="tt-form-group" style="align-self:end;">
+                                <div class="tt-form-group adm-form-cta" style="align-self:end;">
+                                    <p class="adm-form-cta-copy">Lancez une recherche pour remplir rapidement la selection utilisateur.</p>
                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
                                         <span data-hover="Rechercher">Rechercher</span>
                                     </button>
@@ -75,10 +76,35 @@
 
                             <form method="POST" action="{{ route('admin.wallets.grant.store') }}" class="tt-form tt-form-creative adm-form">
                                 @csrf
+                                @php
+                                    $selectedUserOption = $users->firstWhere('id', (int) old('user_id'));
+                                    $selectedUserLabel = $selectedUserOption
+                                        ? sprintf(
+                                            '%s (%s) - solde %d',
+                                            $selectedUserOption->name,
+                                            $selectedUserOption->email,
+                                            (int) ($selectedUserOption->wallet->balance ?? 0)
+                                        )
+                                        : '';
+                                @endphp
+
+                                <div class="tt-form-group">
+                                    <label for="user_lookup">Recherche utilisateur</label>
+                                    <input
+                                        class="tt-form-control"
+                                        id="user_lookup"
+                                        type="search"
+                                        value="{{ $selectedUserLabel }}"
+                                        placeholder="Tapez un nom ou un email pour filtrer"
+                                        data-wallet-user-filter
+                                        autocomplete="off"
+                                    >
+                                    <p class="adm-field-help">La liste ci-dessous se filtre pendant la saisie et la premiere correspondance est selectionnee.</p>
+                                </div>
 
                                 <div class="tt-form-group">
                                     <label for="user_id">Utilisateur cible</label>
-                                    <select class="tt-form-control" id="user_id" name="user_id" required data-lenis-prevent>
+                                    <select class="tt-form-control" id="user_id" name="user_id" required data-lenis-prevent data-wallet-user-select>
                                         <option value="">-- choisir --</option>
                                         @foreach($users as $u)
                                             <option value="{{ $u->id }}" {{ (string) old('user_id') === (string) $u->id ? 'selected' : '' }}>
@@ -118,7 +144,7 @@
                             </div>
 
                             @if($usersCount)
-                                <div class="adm-user-list">
+                                <div class="adm-user-list" data-lenis-prevent data-lenis-prevent-wheel data-admin-wheel-list>
                                     @foreach($users as $u)
                                         <article class="adm-user-item">
                                             <strong>{{ $u->name }}</strong>
@@ -142,6 +168,49 @@
 @endsection
 
 @section('page_scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-admin-wheel-list]').forEach(function (list) {
+                list.addEventListener('wheel', function (event) {
+                    event.stopPropagation();
+                }, { passive: true });
+            });
+
+            var filterInput = document.querySelector('[data-wallet-user-filter]');
+            var userSelect = document.querySelector('[data-wallet-user-select]');
+            if (filterInput && userSelect) {
+                var options = Array.from(userSelect.options).filter(function (option) {
+                    return option.value !== '';
+                });
+
+                var syncFilter = function () {
+                    var term = filterInput.value.trim().toLowerCase();
+                    var firstMatch = null;
+
+                    options.forEach(function (option) {
+                        var match = term === '' || option.textContent.toLowerCase().indexOf(term) !== -1;
+                        option.hidden = !match;
+                        if (match && firstMatch === null) {
+                            firstMatch = option;
+                        }
+                    });
+
+                    if (term !== '' && firstMatch) {
+                        userSelect.value = firstMatch.value;
+                    }
+                };
+
+                filterInput.addEventListener('input', syncFilter);
+                userSelect.addEventListener('change', function () {
+                    var selected = userSelect.options[userSelect.selectedIndex];
+                    if (selected && selected.value !== '') {
+                        filterInput.value = selected.textContent.trim();
+                    }
+                });
+                syncFilter();
+            }
+        });
+    </script>
     @include('pages.admin.partials.theme-scripts')
 @endsection
 

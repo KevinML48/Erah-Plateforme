@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdminRole;
+use App\Http\Middleware\EnsureSupporterActive;
 use App\Http\Middleware\LocalOnly;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,8 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'stripe/webhook',
+        ]);
+
         $middleware->alias([
             'admin' => EnsureAdminRole::class,
+            'supporter.active' => EnsureSupporterActive::class,
             'local.only' => LocalOnly::class,
         ]);
     })

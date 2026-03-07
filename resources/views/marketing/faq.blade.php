@@ -115,6 +115,62 @@
                 <div class="tt-row">
                     <div class="tt-col-lg-5">
                         <div class="tt-heading tt-heading-xlg">
+                            <h2 class="tt-heading-title tt-text-reveal">Pourquoi utiliser<br>la plateforme ?</h2>
+                        </div>
+                        <div class="text-muted tt-anim-fadeinup">
+                            <p>Un meme espace pour suivre, jouer, progresser et soutenir ERAH.</p>
+                        </div>
+                    </div>
+                    <div class="tt-col-lg-1 padding-top-30"></div>
+                    <div class="tt-col-lg-6 tt-align-self-center tt-anim-fadeinup">
+                        <p class="text-lg">
+                            ERAH centralise les clips edites par le staff, les missions de progression, les duels, les matchs,
+                            les paris, les classements, les cadeaux et les notifications dans une seule plateforme.
+                        </p>
+                        <p>
+                            L interet est double: offrir une vraie boucle d engagement autour du club et donner aux membres
+                            une progression claire, traçable et coherente entre le contenu, le competitif et les rewards.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-lg-60 padding-top-80 padding-bottom-lg-40 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1600">
+                <div class="tt-row">
+                    <div class="tt-col-lg-5">
+                        <div class="tt-heading tt-heading-xlg">
+                            <h2 class="tt-heading-title tt-text-reveal">Tutoriel<br>Plateforme</h2>
+                        </div>
+                        <div class="text-muted tt-anim-fadeinup">
+                            <p>Le parcours simple pour ne rien rater.</p>
+                        </div>
+                    </div>
+                    <div class="tt-col-lg-1 padding-top-30"></div>
+                    <div class="tt-col-lg-6 tt-align-self-center tt-anim-fadeinup">
+                        <p class="text-lg">
+                            1. Connectez-vous puis ouvrez votre profil pour verifier votre avatar, votre bio et vos reseaux.
+                        </p>
+                        <p>
+                            2. Ouvrez les clips pour liker, commenter, sauvegarder vos favoris et suivre les campagnes de vote.
+                            3. Passez sur les missions pour convertir votre activite en XP, rank points et reward points.
+                            4. Consultez ensuite le classement, les matchs live, vos notifications et le store cadeaux.
+                        </p>
+                        <p>
+                            Si vous voulez aller plus loin, activez Supporter ERAH pour debloquer les reactions premium,
+                            les missions reservees, le mur public, les votes clips et les avantages club/IRL.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-lg-60 padding-top-80 padding-bottom-lg-40 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1600">
+                <div class="tt-row">
+                    <div class="tt-col-lg-5">
+                        <div class="tt-heading tt-heading-xlg">
                             <h2 class="tt-heading-title tt-text-reveal">Compte et<br>Securite</h2>
                         </div>
                         <div class="text-muted tt-anim-fadeinup">
@@ -130,6 +186,63 @@
                         <p>
                             Pensez a verifier votre profil, vos preferences de notification et vos canaux actifs.
                             Si une action est protegee, une redirection vers la connexion est appliquee automatiquement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-lg-60 padding-top-80 padding-bottom-lg-40 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1600">
+                <div class="tt-row">
+                    <div class="tt-col-lg-5">
+                        <div class="tt-heading tt-heading-xlg">
+                            <h2 class="tt-heading-title tt-text-reveal">Clips et<br>Interactions</h2>
+                        </div>
+                        <div class="text-muted tt-anim-fadeinup">
+                            <p>Contenu staff, interactions communautaires et priorisation supporter.</p>
+                        </div>
+                    </div>
+                    <div class="tt-col-lg-1 padding-top-30"></div>
+                    <div class="tt-col-lg-6 tt-align-self-center tt-anim-fadeinup">
+                        <p class="text-lg">
+                            Les clips sont publies par l equipe admin/staff uniquement. Les membres peuvent ensuite liker,
+                            commenter, sauvegarder en favoris et partager ces contenus.
+                        </p>
+                        <p>
+                            Les supporters gardent le meme droit de commenter que les autres membres, mais leurs commentaires
+                            remontent en priorite dans l affichage. Ils disposent aussi de reactions premium et de votes
+                            sur les campagnes clip de la semaine ou action du mois.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-lg-60 padding-top-80 padding-bottom-lg-40 border-top">
+            <div class="tt-section-inner tt-wrap max-width-1600">
+                <div class="tt-row">
+                    <div class="tt-col-lg-5">
+                        <div class="tt-heading tt-heading-xlg">
+                            <h2 class="tt-heading-title tt-text-reveal">Supporter<br>ERAH</h2>
+                        </div>
+                        <div class="text-muted tt-anim-fadeinup">
+                            <p>Trois formules, meme programme, reduction sur l engagement long.</p>
+                        </div>
+                    </div>
+                    <div class="tt-col-lg-1 padding-top-30"></div>
+                    <div class="tt-col-lg-6 tt-align-self-center tt-anim-fadeinup">
+                        <p class="text-lg">
+                            Vous pouvez choisir un paiement mensuel a 5,00 €, un paiement tous les 6 mois avec 8% de reduction
+                            sur le total, ou un paiement annuel avec 16% de reduction.
+                        </p>
+                        <p>
+                            Le programme debloque le badge supporter, les missions reservees, les votes clips, les reactions
+                            premium, la priorisation des commentaires, le mur public, le bonus XP et des avantages club/IRL.
+                        </p>
+                        <p>
+                            La page /supporter permet de comparer les formules, puis Stripe gere le checkout et la facturation
+                            recurrente selon la formule choisie.
                         </p>
                     </div>
                 </div>
@@ -282,6 +395,14 @@
 
                             <div class="tt-accordion-item tt-anim-fadeinup">
                                 <div class="tt-accordion-heading">
+                                    <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Que se passe-t-il quand j atteins la ligue suivante ?</h4></div></div>
+                                    <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
+                                </div>
+                                <div class="tt-accordion-content max-width-900"><p>Le systeme detecte automatiquement le nouveau seuil de rank points, applique la promotion et envoie une notification in-app pour confirmer l acces a la ligue suivante.</p></div>
+                            </div>
+
+                            <div class="tt-accordion-item tt-anim-fadeinup">
+                                <div class="tt-accordion-heading">
                                     <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Quand un pari ne peut plus etre annule ?</h4></div></div>
                                     <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
                                 </div>
@@ -302,6 +423,22 @@
                                     <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
                                 </div>
                                 <div class="tt-accordion-content max-width-900"><p>Les reward points servent au store cadeaux uniquement. Ils ne remplacent ni les bet points, ni les rank points du classement.</p></div>
+                            </div>
+
+                            <div class="tt-accordion-item tt-anim-fadeinup">
+                                <div class="tt-accordion-heading">
+                                    <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Tout le monde peut-il commenter les clips ?</h4></div></div>
+                                    <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
+                                </div>
+                                <div class="tt-accordion-content max-width-900"><p>Oui. Tout membre connecte peut commenter un clip. Les supporters ne gagnent pas un droit de commentaire exclusif, mais ils sont mis en avant via un affichage prioritaire et des reactions supplementaires.</p></div>
+                            </div>
+
+                            <div class="tt-accordion-item tt-anim-fadeinup">
+                                <div class="tt-accordion-heading">
+                                    <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Quelle formule supporter choisir ?</h4></div></div>
+                                    <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
+                                </div>
+                                <div class="tt-accordion-content max-width-900"><p>Le mensuel convient si vous voulez rester flexible a 5,00 € par mois. La formule 6 mois reduit le total de 8%. La formule annuelle reduit le total de 16% et reste la plus rentable si vous savez deja que vous soutiendrez ERAH sur la duree.</p></div>
                             </div>
 
                             <div class="tt-accordion-item tt-anim-fadeinup">
@@ -347,14 +484,14 @@
                     <div class="tt-col-xl-8">
                         <div class="tt-heading tt-heading-xxxlg no-margin">
                             <h3 class="tt-heading-subtitle tt-text-reveal">Matchs & Paris</h3>
-                            <h2 class="tt-heading-title tt-text-reveal">Pret a lancer<br>votre premier pari ?</h2>
+                            <h2 class="tt-heading-title tt-text-reveal">Lancer un pari</h2>
                         </div>
                     </div>
 
                     <div class="tt-col-xl-4 tt-align-self-end tt-xl-column-reverse margin-top-40">
                         <div class="tt-big-round-ptn margin-top-30 margin-bottom-xlg-80 tt-anim-fadeinup">
                             <a href="{{ route('app.matches.index') }}" class="tt-big-round-ptn-holder tt-magnetic-item">
-                                <div class="tt-big-round-ptn-inner">Parier<br>Maintenant</div>
+                                <div class="tt-big-round-ptn-inner">Voir les<br>matchs</div>
                             </a>
                         </div>
                     </div>

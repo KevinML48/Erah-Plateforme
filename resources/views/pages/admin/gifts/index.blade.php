@@ -99,12 +99,12 @@
                                             <img src="{{ $giftImage }}" loading="lazy" alt="{{ $gift->title }}">
                                         </div>
 
-                                        <div>
+                                        <div class="adm-gift-copy">
                                             <h3 class="adm-gift-title">{{ $gift->title }}</h3>
                                             <p class="adm-meta">{{ \Illuminate\Support\Str::limit((string) ($gift->description ?? 'Aucune description.'), 120) }}</p>
                                         </div>
 
-                                        <div class="adm-row-actions">
+                                        <div class="adm-gift-meta">
                                             <span class="adm-pill">ID #{{ $gift->id }}</span>
                                             <span class="adm-pill">{{ (int) $gift->cost_points }} pts</span>
                                             <span class="adm-pill">Stock {{ (int) $gift->stock }}</span>

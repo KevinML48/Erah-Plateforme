@@ -64,6 +64,7 @@
                                         $clipStatusLabel = $clip->is_published ? 'Publie' : 'Brouillon';
                                         $clipPublicUrl = $clip->slug ? route('clips.show', $clip->slug) : '#';
                                         $clipThumb = (string) ($clip->thumbnail_url ?: $fallbackClipImage);
+                                        $clipPreviewUrl = preg_match('/\.(mp4|webm|ogg)(\?.*)?$/i', (string) ($clip->video_url ?? '')) ? (string) $clip->video_url : null;
                                         $clipDate = optional($clip->published_at ?: $clip->created_at)->format('d/m/Y H:i');
                                         $clipSummary = trim((string) ($clip->description ?? ''));
                                         if ($clipSummary === '') {
@@ -73,8 +74,14 @@
                                     @endphp
                                     <article class="blog-list-item">
                                         <a href="{{ $clipPublicUrl }}" class="bli-image-wrap" data-cursor="Voir" @if(!$clip->slug) onclick="return false;" @endif>
-                                            <figure class="bli-image tt-anim-zoomin">
-                                                <img src="{{ $clipThumb }}" loading="lazy" alt="{{ $clip->title }}">
+                                            <figure class="bli-image tt-anim-zoomin adm-clip-preview">
+                                                <img class="adm-clip-image" src="{{ $clipThumb }}" loading="lazy" alt="{{ $clip->title }}">
+                                                @if($clipPreviewUrl)
+                                                    <video class="adm-clip-video" muted loop playsinline preload="none" data-preview-video>
+                                                        <source src="{{ $clipPreviewUrl }}">
+                                                    </video>
+                                                    <span class="adm-clip-live">Preview active</span>
+                                                @endif
                                             </figure>
                                         </a>
 
@@ -93,8 +100,10 @@
 
                                             <div class="bli-desc">{{ $clipSummary }}</div>
 
-                                            <div class="bli-desc">
-                                                {{ (int) $clip->likes_count }} likes · {{ (int) $clip->comments_count }} commentaires · {{ (int) $clip->favorites_count }} favoris
+                                            <div class="adm-clip-stats">
+                                                <span class="adm-pill">{{ (int) $clip->likes_count }} likes</span>
+                                                <span class="adm-pill">{{ (int) $clip->comments_count }} commentaires</span>
+                                                <span class="adm-pill">{{ (int) $clip->favorites_count }} favoris</span>
                                             </div>
 
                                             <div class="adm-row-actions">
@@ -149,6 +158,40 @@
 @endsection
 
 @section('page_scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.body.classList.contains('is-mobile')) {
+                return;
+            }
+
+            document.querySelectorAll('.adm-clip-list .blog-list-item').forEach(function (item) {
+                var video = item.querySelector('[data-preview-video]');
+                if (!video) {
+                    return;
+                }
+
+                var startPreview = function () {
+                    item.classList.add('is-previewing');
+                    video.currentTime = 0;
+                    var playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === 'function') {
+                        playPromise.catch(function () {});
+                    }
+                };
+
+                var stopPreview = function () {
+                    item.classList.remove('is-previewing');
+                    video.pause();
+                    video.currentTime = 0;
+                };
+
+                item.addEventListener('mouseenter', startPreview);
+                item.addEventListener('mouseleave', stopPreview);
+                item.addEventListener('focusin', startPreview);
+                item.addEventListener('focusout', stopPreview);
+            });
+        });
+    </script>
     @include('pages.admin.partials.theme-scripts')
 @endsection
 

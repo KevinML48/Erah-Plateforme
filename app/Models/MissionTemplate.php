@@ -13,6 +13,7 @@ class MissionTemplate extends Model
     public const SCOPE_ONCE = 'once';
     public const SCOPE_DAILY = 'daily';
     public const SCOPE_WEEKLY = 'weekly';
+    public const SCOPE_MONTHLY = 'monthly';
     public const SCOPE_EVENT_WINDOW = 'event_window';
 
     protected $fillable = [
@@ -50,6 +51,7 @@ class MissionTemplate extends Model
             self::SCOPE_ONCE,
             self::SCOPE_DAILY,
             self::SCOPE_WEEKLY,
+            self::SCOPE_MONTHLY,
             self::SCOPE_EVENT_WINDOW,
         ];
     }

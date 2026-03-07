@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             DemoDataSeeder::class,
             BettingBaseSeeder::class,
             MissionsAndGiftsSeeder::class,
+            SupporterProgramSeeder::class,
         ]);
     }
 }

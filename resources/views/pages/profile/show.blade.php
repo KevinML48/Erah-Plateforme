@@ -23,6 +23,25 @@
             background: rgba(255, 255, 255, .03);
         }
 
+        .profile-avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-upload .tt-file-info {
+            width: auto;
+            min-width: 240px;
+            flex: 1 1 240px;
+            color: rgba(255, 255, 255, .72);
+        }
+
+        .profile-avatar-help {
+            display: block;
+            margin-top: 10px;
+        }
+
         .profile-kpi-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -231,6 +250,8 @@
         $isPublicApp = request()->routeIs('app.*');
         $historyRouteName = $isPublicApp ? 'app.profile.transactions' : 'profile.transactions';
         $deleteRouteName = $isPublicApp ? 'app.profile.destroy' : 'profile.destroy';
+        $supporterProfile = $supporterProfile ?? null;
+        $supporterSummary = $supporterSummary ?? [];
         $currentShortcuts = $currentShortcuts ?? [];
         $availableShortcuts = $availableShortcuts ?? [];
         $oldShortcutKeys = old('shortcuts');
@@ -308,10 +329,54 @@
                                 <textarea class="tt-form-control" id="bio" name="bio" rows="5">{{ old('bio', $user->bio) }}</textarea>
                             </div>
 
+                            @if(($supporterSummary['is_active'] ?? false) === true)
+                                <div class="tt-row">
+                                    <div class="tt-col-lg-6">
+                                        <div class="tt-form-group">
+                                            <label for="supporter_display_name">Nom public supporter</label>
+                                            <input
+                                                class="tt-form-control"
+                                                id="supporter_display_name"
+                                                name="supporter_display_name"
+                                                type="text"
+                                                value="{{ old('supporter_display_name', $supporterProfile->display_name ?? $user->name) }}"
+                                                placeholder="Nom affiche sur le mur supporter">
+                                        </div>
+                                    </div>
+                                    <div class="tt-col-lg-6">
+                                        <div class="tt-form-group">
+                                            <label class="tt-form-check">
+                                                <input type="hidden" name="show_in_supporter_wall" value="0">
+                                                <input type="checkbox" name="show_in_supporter_wall" value="1" @checked(old('show_in_supporter_wall', $supporterProfile->is_visible_on_wall ?? true))>
+                                                <span>Afficher mon profil sur le mur des supporters</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="tt-form-group">
                                 <label for="avatar">Photo de profil</label>
-                                <input class="tt-form-control" id="avatar" name="avatar" type="file" accept="image/*">
-                                <small class="tt-form-text">Formats: jpg, jpeg, png, webp - 4 Mo max.</small>
+                                <div class="tt-form-file profile-avatar-upload">
+                                    <span class="btn-file">
+                                        <label class="tt-btn tt-btn-outline tt-magnetic-item" for="avatar">
+                                            <span data-hover="Choisir une image">Choisir une image</span>
+                                            <input id="avatar" name="avatar" type="file" accept="image/*" data-profile-avatar-input>
+                                        </label>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        class="tt-file-info"
+                                        value="{{ $user->avatar_path ? 'Image actuelle chargee' : 'Aucun fichier selectionne' }}"
+                                        readonly
+                                        aria-hidden="true"
+                                        tabindex="-1"
+                                    >
+                                </div>
+                                <small class="tt-form-text profile-avatar-help">Formats: jpg, jpeg, png, webp - 4 Mo max.</small>
+                                @error('avatar')
+                                    <small class="tt-form-text" style="color:#ff9f9f;">{{ $message }}</small>
+                                @enderror
                             </div>
 
                             <div class="tt-row">
@@ -354,10 +419,16 @@
 
                     <div class="tt-col-xl-5">
                         <div class="profile-side-card margin-bottom-30">
-                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar">
+                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview>
                             <h4 class="no-margin">{{ $user->name }}</h4>
                             <p class="tt-form-text no-margin">{{ $user->email }}</p>
                             <p class="tt-form-text margin-top-10">Role: {{ strtoupper((string) $user->role) }}</p>
+                            <p class="tt-form-text margin-top-10">
+                                Supporter: {{ ($supporterSummary['is_active'] ?? false) ? 'Actif' : 'Inactif' }}
+                                @if(!empty($supporterSummary['loyalty_badge']))
+                                    - {{ $supporterSummary['loyalty_badge'] }}
+                                @endif
+                            </p>
 
                             <ul class="tt-list margin-top-20">
                                 <li><strong>Ligue:</strong> {{ $progress->league->name ?? 'N/A' }}</li>
@@ -383,6 +454,15 @@
                                     </ul>
                                 </div>
                             @endif
+
+                            <div class="profile-inline-actions margin-top-20">
+                                <a href="{{ route('supporter.show') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                    <span data-hover="Page supporter">Page supporter</span>
+                                </a>
+                                <a href="{{ route('supporter.console') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                    <span data-hover="Console supporter">Console supporter</span>
+                                </a>
+                            </div>
                         </div>
 
                         <div class="profile-kpi-grid">
@@ -723,6 +803,27 @@
             if (confirmBlock && confirmBlock.classList.contains('is-open') && passwordInput) {
                 passwordInput.disabled = false;
             }
+        })();
+
+        (function () {
+            var fileInput = document.querySelector('[data-profile-avatar-input]');
+            var avatarPreview = document.querySelector('[data-profile-avatar-preview]');
+            if (!fileInput || !avatarPreview || typeof FileReader === 'undefined') return;
+
+            fileInput.addEventListener('change', function () {
+                var file = fileInput.files && fileInput.files[0];
+                if (!file) return;
+
+                if (!file.type || file.type.indexOf('image/') !== 0) return;
+
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    if (event.target && typeof event.target.result === 'string') {
+                        avatarPreview.src = event.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
         })();
     </script>
 @endsection

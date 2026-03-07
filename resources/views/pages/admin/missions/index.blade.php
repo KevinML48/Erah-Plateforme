@@ -174,7 +174,7 @@
                                             <span class="adm-pill">{{ $template->is_active ? 'Actif' : 'Inactif' }}</span>
                                         </div>
 
-                                        <p class="adm-meta">{{ $template->key }} · {{ $template->event_type }}</p>
+                                        <p class="adm-meta">{{ $template->key }} - {{ $template->event_type }}</p>
 
                                         <div class="adm-row-actions">
                                             <span class="adm-pill">Scope {{ $template->scope }}</span>

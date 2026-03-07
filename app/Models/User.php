@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use Billable, HasApiTokens, HasFactory, Notifiable;
 
     public const ROLE_USER = 'user';
     public const ROLE_ADMIN = 'admin';
@@ -221,5 +222,70 @@ class User extends Authenticatable
     public function giftRedemptionEvents(): HasMany
     {
         return $this->hasMany(GiftRedemptionEvent::class, 'actor_user_id');
+    }
+
+    public function supportSubscriptions(): HasMany
+    {
+        return $this->hasMany(UserSupportSubscription::class);
+    }
+
+    public function supportPublicProfile(): HasOne
+    {
+        return $this->hasOne(SupporterPublicProfile::class);
+    }
+
+    public function supporterMonthlyRewards(): HasMany
+    {
+        return $this->hasMany(SupporterMonthlyReward::class);
+    }
+
+    public function clipVotes(): HasMany
+    {
+        return $this->hasMany(ClipVote::class);
+    }
+
+    public function clipSupporterReactions(): HasMany
+    {
+        return $this->hasMany(ClipSupporterReaction::class);
+    }
+
+    public function activeSupportSubscription(): ?UserSupportSubscription
+    {
+        $relation = $this->relationLoaded('supportSubscriptions')
+            ? collect($this->supportSubscriptions)->first(fn (UserSupportSubscription $subscription) => $subscription->status === UserSupportSubscription::STATUS_ACTIVE)
+            : null;
+
+        if ($relation instanceof UserSupportSubscription) {
+            return $relation;
+        }
+
+        return $this->supportSubscriptions()
+            ->active()
+            ->current()
+            ->first();
+    }
+
+    public function isSupporterActive(): bool
+    {
+        return $this->activeSupportSubscription() !== null;
+    }
+
+    public function supporterStatus(): string
+    {
+        $latest = $this->relationLoaded('supportSubscriptions')
+            ? collect($this->supportSubscriptions)->sortByDesc('id')->first()
+            : $this->supportSubscriptions()->current()->first();
+
+        return $latest?->status ?? UserSupportSubscription::STATUS_INACTIVE;
+    }
+
+    public function supporterEndsAt(): mixed
+    {
+        $subscription = $this->activeSupportSubscription()
+            ?: ($this->relationLoaded('supportSubscriptions')
+                ? collect($this->supportSubscriptions)->sortByDesc('id')->first()
+                : $this->supportSubscriptions()->current()->first());
+
+        return $subscription?->current_period_end ?? $subscription?->ended_at ?? null;
     }
 }

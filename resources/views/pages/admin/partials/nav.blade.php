@@ -7,6 +7,8 @@
         ['label' => 'Wallets', 'route' => route('admin.wallets.grant.create'), 'active' => request()->routeIs('admin.wallets.*')],
         ['label' => 'Cadeaux', 'route' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
         ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
+        ['label' => 'Supporters', 'route' => route('admin.supporters.index'), 'active' => request()->routeIs('admin.supporters.*')],
+        ['label' => 'Campagnes clips', 'route' => route('admin.clips.campaigns.index'), 'active' => request()->routeIs('admin.clips.campaigns.*')],
     ];
 @endphp
 

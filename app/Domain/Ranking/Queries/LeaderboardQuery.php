@@ -27,7 +27,10 @@ class LeaderboardQuery
 
         $progressRows = UserProgress::query()
             ->where('current_league_id', $league->id)
-            ->with('user:id,name,avatar_path')
+            ->with([
+                'user:id,name,avatar_path',
+                'user.supportSubscriptions' => fn ($query) => $query->active(),
+            ])
             ->orderByDesc('total_rank_points')
             ->orderByDesc('total_xp')
             ->orderBy('user_id')
@@ -42,6 +45,7 @@ class LeaderboardQuery
                 'avatar_url' => $progress->user?->avatar_url,
                 'total_rank_points' => $progress->total_rank_points,
                 'total_xp' => $progress->total_xp,
+                'is_supporter' => $progress->user?->isSupporterActive() ?? false,
             ];
         });
 

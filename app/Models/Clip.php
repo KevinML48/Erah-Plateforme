@@ -76,4 +76,19 @@ class Clip extends Model
     {
         return $this->hasMany(ClipShare::class);
     }
+
+    public function voteEntries(): HasMany
+    {
+        return $this->hasMany(ClipVoteEntry::class);
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(ClipVote::class);
+    }
+
+    public function supporterReactions(): HasMany
+    {
+        return $this->hasMany(ClipSupporterReaction::class);
+    }
 }

@@ -20,6 +20,8 @@ class UpdateProfileRequest extends FormRequest
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'bio' => ['nullable', 'string', 'max:1500'],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'show_in_supporter_wall' => ['nullable', 'boolean'],
+            'supporter_display_name' => ['nullable', 'string', 'max:120'],
             'twitter_url' => ['nullable', 'url', 'max:255', 'regex:/^https?:\/\/(www\.)?(twitter\.com|x\.com)\//i'],
             'instagram_url' => ['nullable', 'url', 'max:255', 'regex:/^https?:\/\/(www\.)?instagram\.com\//i'],
             'tiktok_url' => ['nullable', 'url', 'max:255', 'regex:/^https?:\/\/(www\.)?tiktok\.com\//i'],
@@ -42,7 +44,7 @@ class UpdateProfileRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $fields = ['name', 'bio', 'twitter_url', 'instagram_url', 'tiktok_url', 'discord_url'];
+        $fields = ['name', 'bio', 'supporter_display_name', 'twitter_url', 'instagram_url', 'tiktok_url', 'discord_url'];
         $data = [];
 
         foreach ($fields as $field) {
@@ -59,4 +61,3 @@ class UpdateProfileRequest extends FormRequest
         $this->merge($data);
     }
 }
-

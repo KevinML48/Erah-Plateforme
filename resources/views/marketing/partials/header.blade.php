@@ -49,6 +49,11 @@
 									</div>
 									<div class="tt-submenu">
 										<ul class="tt-submenu-list">
+											<li>
+												<a href="{{ route('marketing.faq') }}">
+													FAQ
+												</a>
+											</li>
 											@foreach($platformShortcuts as $shortcut)
 												<li>
 													<a href="{{ $shortcut['url'] }}">
@@ -64,6 +69,8 @@
 										</ul>
 									</div>
 								</li>
+
+								<li><a href="{{ route('supporter.show') }}">Supporter</a></li>
 
 								<li class="tt-submenu-wrap tt-submenu-master">
 									<div class="tt-submenu-trigger">

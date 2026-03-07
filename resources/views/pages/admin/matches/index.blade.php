@@ -34,6 +34,11 @@
             color: rgba(18, 22, 30, .92);
         }
 
+        .adm-match-list .tt-avlist-item:hover .tt-avlist-title,
+        .adm-match-list .tt-avlist-item:hover .adm-pill {
+            color: rgba(18, 22, 30, .92);
+        }
+
         @media (max-width: 991.98px) {
             .adm-match-list .tt-avlist-col-info {
                 justify-content: flex-start;

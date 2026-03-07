@@ -12,6 +12,9 @@ use App\Models\Clip;
 use App\Models\ClipComment;
 use App\Models\ClipFavorite;
 use App\Models\ClipLike;
+use App\Models\ClipVoteCampaign;
+use App\Services\PrioritizeClipComments;
+use App\Services\SupporterAccessResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -65,7 +68,12 @@ class ClipsPageController extends Controller
         ]);
     }
 
-    public function show(string $slug): View
+    public function show(
+        Request $request,
+        string $slug,
+        PrioritizeClipComments $prioritizeClipComments,
+        SupporterAccessResolver $supporterAccessResolver
+    ): View
     {
         $clip = Clip::query()
             ->published()
@@ -73,19 +81,63 @@ class ClipsPageController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $comments = ClipComment::query()
-            ->where('clip_id', $clip->id)
-            ->with('user:id,name,avatar_path')
-            ->orderByDesc('id')
-            ->paginate(10);
+        $actualCommentsCount = (int) $clip->comments()->count();
+        if ((int) $clip->comments_count !== $actualCommentsCount) {
+            $clip->comments_count = $actualCommentsCount;
+            $clip->save();
+        }
 
         $userId = auth()->id();
+        $requestedCommentsPage = max(1, (int) $request->integer('comments_page', 1));
+        $comments = $prioritizeClipComments->execute($clip, 10, $requestedCommentsPage);
+
+        if ($comments->isEmpty() && $actualCommentsCount > 0 && $requestedCommentsPage > 1) {
+            $comments = $prioritizeClipComments->execute($clip, 10, 1);
+        }
+
+        if ($comments->isEmpty() && $actualCommentsCount > 0) {
+            $comments = $clip->comments()
+                ->with('user:id,name,avatar_path')
+                ->orderByDesc('id')
+                ->paginate(10, ['*'], 'comments_page', 1);
+
+            $comments->getCollection()->transform(function (ClipComment $comment): ClipComment {
+                $comment->supporter_priority = 0;
+
+                return $comment;
+            });
+        }
+
+        $isSupporterActive = $supporterAccessResolver->hasActiveSupport(auth()->user());
+        $campaigns = ClipVoteCampaign::query()
+            ->active()
+            ->whereHas('entries', fn ($query) => $query->where('clip_id', $clip->id))
+            ->withCount('votes')
+            ->with([
+                'entries.clip',
+                'votes' => fn ($query) => $query->where('user_id', $userId),
+            ])
+            ->orderBy('ends_at')
+            ->get();
+        $reactionCounts = $clip->supporterReactions()
+            ->selectRaw('reaction_key, COUNT(*) as total')
+            ->groupBy('reaction_key')
+            ->pluck('total', 'reaction_key')
+            ->all();
+        $userReactionKeys = $userId
+            ? $clip->supporterReactions()->where('user_id', $userId)->pluck('reaction_key')->all()
+            : [];
 
         return view('pages.clips.show', [
             'clip' => $clip,
             'comments' => $comments,
             'isLiked' => ClipLike::query()->where('clip_id', $clip->id)->where('user_id', $userId)->exists(),
             'isFavorited' => ClipFavorite::query()->where('clip_id', $clip->id)->where('user_id', $userId)->exists(),
+            'isSupporterActive' => $isSupporterActive,
+            'supporterCampaigns' => $campaigns,
+            'supporterReactionOptions' => ClipSupporterController::reactionOptions(),
+            'supporterReactionCounts' => $reactionCounts,
+            'userSupporterReactionKeys' => $userReactionKeys,
         ]);
     }
 

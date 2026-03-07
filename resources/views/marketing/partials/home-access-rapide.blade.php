@@ -36,6 +36,28 @@
         color: rgba(255, 255, 255, .78);
     }
 
+    body.tt-lightmode-on .home-summary-card {
+        border-color: rgba(33, 33, 33, .16);
+        background: linear-gradient(160deg, rgba(255, 255, 255, .92), rgba(246, 242, 237, .86));
+        box-shadow: 0 10px 24px rgba(33, 33, 33, .05);
+    }
+
+    body.tt-lightmode-on .home-summary-card strong {
+        color: #171717;
+    }
+
+    body.tt-lightmode-on .home-summary-card span {
+        color: rgba(23, 23, 23, .62);
+    }
+
+    body.tt-lightmode-on .home-summary-user {
+        color: rgba(23, 23, 23, .66);
+    }
+
+    body.tt-lightmode-on .home-summary-meta {
+        color: rgba(23, 23, 23, .72);
+    }
+
     @media (max-width: 1199.98px) {
         .home-summary-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -69,7 +91,7 @@
     }
 </style>
 
-<div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top">
+<div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top home-summary-section">
     <div class="tt-section-inner tt-wrap max-width-1800">
         <div class="tt-heading tt-heading-lg margin-bottom-30">
             <h3 class="tt-heading-subtitle tt-text-uppercase">Accueil</h3>
@@ -121,7 +143,7 @@
             </article>
         </section>
 
-        <p class="tt-form-text margin-top-20">
+        <p class="tt-form-text margin-top-20 home-summary-meta">
             Ligue actuelle: {{ $quickStats['league_name'] ?? 'Non classee' }}
         </p>
     </div>

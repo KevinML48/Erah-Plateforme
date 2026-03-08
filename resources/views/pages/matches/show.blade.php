@@ -185,6 +185,25 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 767.98px) {
+            .match-detail-toolbar .tt-btn,
+            .match-market-card .tt-btn,
+            .match-market-card form,
+            .match-market-form button {
+                width: 100%;
+            }
+
+            .match-market-card .tt-btn,
+            .match-market-form button {
+                justify-content: center;
+            }
+
+            .match-market-card,
+            .match-panel {
+                padding: 16px;
+            }
+        }
     </style>
 @endsection
 

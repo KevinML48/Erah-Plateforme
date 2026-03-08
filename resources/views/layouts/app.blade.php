@@ -20,37 +20,153 @@
         @media (max-width: 991.98px) { .app-toast-stack { top: 10px; right: 10px; width: calc(100vw - 20px); } }
     </style>
 </head>
+@php
+    $isAuthenticated = auth()->check();
+    $isAdmin = $isAuthenticated && auth()->user()?->role === 'admin';
+    $primaryLinks = $isAuthenticated
+        ? [
+            ['label' => 'Dashboard', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
+            ['label' => 'Matchs', 'href' => route('matches.index'), 'active' => request()->routeIs('matches.*')],
+            ['label' => 'Clips', 'href' => route('clips.index'), 'active' => request()->routeIs('clips.*')],
+            ['label' => 'Classements', 'href' => route('leaderboards.index'), 'active' => request()->routeIs('leaderboards.*') || request()->routeIs('ranking.*')],
+            ['label' => 'Missions', 'href' => route('missions.index'), 'active' => request()->routeIs('missions.*')],
+            ['label' => 'Cadeaux', 'href' => route('gifts.index'), 'active' => request()->routeIs('gifts.*')],
+            ['label' => 'Notifications', 'href' => route('notifications.index'), 'active' => request()->routeIs('notifications.*')],
+        ]
+        : [
+            ['label' => 'Accueil site', 'href' => route('marketing.index'), 'active' => request()->routeIs('marketing.*')],
+            ['label' => 'Plateforme /app', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
+        ];
+    $adminLinks = $isAdmin
+        ? [
+            ['label' => 'Console admin', 'href' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+            ['label' => 'Matchs admin', 'href' => route('admin.matches.index'), 'active' => request()->routeIs('admin.matches.*')],
+            ['label' => 'Clips admin', 'href' => route('admin.clips.index'), 'active' => request()->routeIs('admin.clips.*')],
+            ['label' => 'Cadeaux admin', 'href' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
+            ['label' => 'Missions admin', 'href' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
+            ['label' => 'Galerie admin', 'href' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],
+            ['label' => 'Avis admin', 'href' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
+        ]
+        : [];
+    $sessionLinks = $isAuthenticated
+        ? [
+            ['label' => 'Mon profil', 'href' => route('profile.show'), 'active' => request()->routeIs('profile.*')],
+            ['label' => 'Vue publique /app', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
+        ]
+        : [
+            ['label' => 'Se connecter', 'href' => route('login'), 'active' => request()->routeIs('login')],
+            ['label' => 'Inscription', 'href' => route('register'), 'active' => request()->routeIs('register')],
+        ];
+@endphp
+
 <body class="platform-app">
-<header>
+<header class="app-header" data-mobile-nav-root>
     <div class="container">
         <div class="header-row">
-            <a class="brand" href="{{ auth()->check() ? route('dashboard') : route('marketing.index') }}">
-                Plateforme ERAH
-            </a>
+            <div class="header-main">
+                <a class="brand" href="{{ $isAuthenticated ? route('dashboard') : route('marketing.index') }}">
+                    Plateforme ERAH
+                </a>
 
-            <nav class="nav-links">
+                <nav class="nav-links desktop-nav" aria-label="Navigation principale">
+                    @foreach ($primaryLinks as $link)
+                        <a href="{{ $link['href'] }}" class="{{ $link['active'] ? 'is-active' : '' }}">{{ $link['label'] }}</a>
+                    @endforeach
+                </nav>
+            </div>
+
+            <div class="header-actions">
+                <nav class="nav-links desktop-session-nav" aria-label="Actions de session">
+                    @if ($isAdmin)
+                        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.*') ? 'is-active nav-link-admin' : 'nav-link-admin' }}">Admin</a>
+                    @endif
+
+                    @foreach ($sessionLinks as $link)
+                        <a href="{{ $link['href'] }}" class="{{ $link['active'] ? 'is-active' : '' }}">{{ $link['label'] }}</a>
+                    @endforeach
+                </nav>
+
                 @auth
-                    <a href="{{ route('dashboard') }}">Dashboard</a>
-                    <a href="{{ route('matches.index') }}">Matches</a>
-                    <a href="{{ route('clips.index') }}">Clips</a>
-                    <a href="{{ route('leaderboards.index') }}">Classements</a>
-                    <a href="{{ route('missions.index') }}">Missions</a>
-                    <a href="{{ route('gifts.index') }}">Gifts</a>
-                    <a href="{{ route('notifications.index') }}">Notifications</a>
-                    <a href="{{ route('profile.show') }}">Mon profil</a>
-                    <a href="{{ route('app.leaderboards.index') }}">Vue publique /app</a>
-
-                    <form method="POST" action="{{ route('auth.logout') }}" class="logout-form">
+                    <form method="POST" action="{{ route('auth.logout') }}" class="logout-form desktop-logout">
                         @csrf
                         <button type="submit" class="btn btn-danger">Deconnexion</button>
                     </form>
-                @else
-                    <a href="{{ route('marketing.index') }}">Accueil site</a>
-                    <a href="{{ route('app.leaderboards.index') }}">Plateforme /app</a>
-                    <a href="{{ route('login') }}">Se connecter</a>
-                    <a href="{{ route('register') }}">Inscription</a>
                 @endauth
-            </nav>
+
+                <button
+                    type="button"
+                    class="mobile-nav-toggle"
+                    data-mobile-nav-toggle
+                    aria-expanded="false"
+                    aria-controls="app-mobile-nav"
+                    aria-label="Ouvrir le menu de navigation"
+                >
+                    <span class="mobile-nav-toggle-box" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                    <span>Menu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav-backdrop" data-mobile-nav-backdrop hidden></div>
+
+    <div id="app-mobile-nav" class="mobile-nav-panel" data-mobile-nav-panel hidden>
+        <div class="mobile-nav-shell">
+            <div class="mobile-nav-head">
+                <div>
+                    <p class="mobile-nav-kicker">Navigation mobile</p>
+                    <strong>Acces rapide a la plateforme</strong>
+                </div>
+                <button type="button" class="mobile-nav-close" data-mobile-nav-close aria-label="Fermer le menu">
+                    Fermer
+                </button>
+            </div>
+
+            <section class="mobile-nav-section">
+                <p class="mobile-nav-section-label">Navigation principale</p>
+                <div class="mobile-nav-list">
+                    @foreach ($primaryLinks as $link)
+                        <a href="{{ $link['href'] }}" class="mobile-nav-link {{ $link['active'] ? 'is-active' : '' }}" data-mobile-nav-link>
+                            {{ $link['label'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+
+            @if (count($adminLinks))
+                <section class="mobile-nav-section">
+                    <p class="mobile-nav-section-label">Admin</p>
+                    <div class="mobile-nav-list">
+                        @foreach ($adminLinks as $link)
+                            <a href="{{ $link['href'] }}" class="mobile-nav-link {{ $link['active'] ? 'is-active' : '' }}" data-mobile-nav-link>
+                                {{ $link['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            <section class="mobile-nav-section">
+                <p class="mobile-nav-section-label">{{ $isAuthenticated ? 'Session' : 'Compte' }}</p>
+                <div class="mobile-nav-list">
+                    @foreach ($sessionLinks as $link)
+                        <a href="{{ $link['href'] }}" class="mobile-nav-link {{ $link['active'] ? 'is-active' : '' }}" data-mobile-nav-link>
+                            {{ $link['label'] }}
+                        </a>
+                    @endforeach
+                </div>
+
+                @auth
+                    <form method="POST" action="{{ route('auth.logout') }}" class="mobile-nav-logout">
+                        @csrf
+                        <button type="submit" class="btn btn-danger btn-full">Se deconnecter</button>
+                    </form>
+                @endauth
+            </section>
         </div>
     </div>
 </header>

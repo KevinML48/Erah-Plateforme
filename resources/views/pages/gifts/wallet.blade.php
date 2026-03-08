@@ -11,7 +11,7 @@
     <section class="section">
         <h2>Transactions reward</h2>
         @if(($transactions ?? null) && $transactions->count())
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead>
                     <tr>
@@ -26,12 +26,12 @@
                     <tbody>
                     @foreach($transactions as $tx)
                         <tr>
-                            <td>{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
-                            <td>{{ $tx->type }}</td>
-                            <td>{{ $tx->amount }}</td>
-                            <td>{{ $tx->balance_after }}</td>
-                            <td>{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
-                            <td class="meta">{{ $tx->unique_key }}</td>
+                            <td data-label="Date">{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
+                            <td data-label="Type">{{ $tx->type }}</td>
+                            <td data-label="Montant">{{ $tx->amount }}</td>
+                            <td data-label="Solde apres">{{ $tx->balance_after }}</td>
+                            <td data-label="Ref">{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
+                            <td data-label="Unique key" class="meta">{{ $tx->unique_key }}</td>
                         </tr>
                     @endforeach
                     </tbody>

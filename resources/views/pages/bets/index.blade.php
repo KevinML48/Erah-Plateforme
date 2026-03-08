@@ -41,17 +41,17 @@
                         $selectionLabel = $betSelection?->label ?? $bet->selection_key ?? $bet->prediction;
                     @endphp
                     <tr>
-                        <td>{{ $bet->id }}</td>
-                        <td>
+                        <td data-label="ID">{{ $bet->id }}</td>
+                        <td data-label="Match">
                             {{ $bet->match->displayTitle() }}
                             <br>
                             <x-ui.button :href="route($matchShowRouteName, $bet->match_id)" variant="outline" size="sm">Ouvrir match</x-ui.button>
                         </td>
-                        <td>{{ $matchLabelResolver->labelForMarketKey($bet->market_key) }} / {{ $selectionLabel }}</td>
-                        <td>{{ $bet->stake_points }}</td>
-                        <td><span class="badge">{{ $matchLabelResolver->labelForBetStatus($bet->status) }}</span></td>
-                        <td>{{ (int) ($bet->settlement->payout_points ?? 0) }}</td>
-                        <td>
+                        <td data-label="Choix">{{ $matchLabelResolver->labelForMarketKey($bet->market_key) }} / {{ $selectionLabel }}</td>
+                        <td data-label="Mise">{{ $bet->stake_points }}</td>
+                        <td data-label="Etat"><span class="badge">{{ $matchLabelResolver->labelForBetStatus($bet->status) }}</span></td>
+                        <td data-label="Gain">{{ (int) ($bet->settlement->payout_points ?? 0) }}</td>
+                        <td data-label="Actions">
                             @if(in_array($bet->status, [\App\Models\Bet::STATUS_PENDING, \App\Models\Bet::STATUS_PLACED], true))
                                 <form method="POST" action="{{ route($cancelRouteName, $bet->id) }}">
                                     @csrf

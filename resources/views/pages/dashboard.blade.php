@@ -308,6 +308,62 @@
 					min-height: 360px;
 				}
 			}
+
+			@media (max-width: 767.98px) {
+				.platform-dashboard-menu .ttgr-cat-trigger {
+					min-width: 132px;
+					min-height: 54px;
+				}
+
+				.platform-dashboard-menu .ttgr-cat-text {
+					padding: 0 18px;
+				}
+
+				.platform-dashboard-menu .ttgr-cat-text > span {
+					font-size: 13px;
+					letter-spacing: .12em;
+				}
+
+				.platform-dashboard-menu .ttgr-cat-close-btn {
+					top: 14px;
+					left: 14px;
+					width: 76px;
+					height: 76px;
+					font-size: 11px;
+				}
+
+				.platform-dashboard-menu-shell {
+					gap: 20px;
+					padding: 92px 18px 24px;
+				}
+
+				.platform-dashboard-menu-label {
+					font-size: clamp(42px, 13vw, 72px);
+				}
+
+				.platform-dashboard-menu-meta,
+				.platform-dashboard-menu-preview-description {
+					font-size: 12px;
+				}
+
+				.platform-dashboard-menu-preview {
+					min-height: 280px;
+					border-radius: 24px;
+				}
+			}
+
+			@media (max-width: 479.98px) {
+				.platform-dashboard-menu .ttgr-cat-trigger {
+					min-width: 120px;
+					min-height: 50px;
+				}
+
+				.platform-dashboard-menu-preview-caption {
+					left: 20px;
+					right: 20px;
+					bottom: 20px;
+				}
+			}
 		</style>
 
 	</head>

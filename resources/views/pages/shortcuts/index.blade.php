@@ -70,12 +70,12 @@
                 @endforeach
             </div>
 
-            <div class="actions">
+            <div class="actions actions-stack-mobile">
                 <button type="submit" class="btn btn-primary">Enregistrer mes raccourcis</button>
             </div>
         </form>
 
-        <form method="POST" action="{{ route('app.shortcuts.reset') }}" class="actions">
+        <form method="POST" action="{{ route('app.shortcuts.reset') }}" class="actions actions-stack-mobile">
             @csrf
             <button type="submit" class="btn btn-outline">Reinitialiser par defaut</button>
         </form>

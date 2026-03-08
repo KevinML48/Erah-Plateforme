@@ -45,6 +45,33 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
+        @media (max-width: 767.98px) {
+            .clip-index-toolbar .tt-btn-group,
+            .clip-card-actions {
+                display: grid;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .clip-index-toolbar .tt-btn,
+            .clip-card-actions .tt-btn,
+            .clip-card-actions form {
+                width: 100%;
+            }
+
+            .tt-shortcuts-inline {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .tt-shortcuts-inline .tt-btn-group {
+                width: 100%;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 4px;
+            }
+        }
     </style>
 @endsection
 
@@ -109,7 +136,7 @@
     <div id="tt-page-content">
         <div class="tt-section padding-top-60 padding-bottom-40">
             <div class="tt-section-inner tt-wrap">
-                <div class="tt-row">
+                <div class="tt-row clip-index-toolbar">
                     <div class="tt-col-lg-9">
                         <div class="tt-btn-group">
                             <a href="{{ route($indexRouteName, ['sort' => 'recent']) }}"
@@ -237,7 +264,7 @@
                                             </div>
                                         </div>
                                         <div class="tt-col-xl-5 tt-align-self-center">
-                                            <div class="tt-btn-group tt-justify-content-xl-end">
+                                            <div class="tt-btn-group tt-justify-content-xl-end clip-card-actions">
                                                 <a href="{{ route($showRouteName, $clip->slug) }}" class="tt-btn tt-btn-primary tt-magnetic-item">
                                                     <span data-hover="Voir">Voir</span>
                                                 </a>

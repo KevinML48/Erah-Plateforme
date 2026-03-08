@@ -359,6 +359,22 @@
         }
 
         @media (max-width: 767.98px) {
+            .clip-engagement-actions,
+            .clip-supporter-actions,
+            .clip-supporter-vote-options {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .clip-engagement-actions > *,
+            .clip-engagement-actions form,
+            .clip-engagement-actions .tt-btn,
+            .clip-supporter-actions > *,
+            .clip-supporter-actions form,
+            .clip-supporter-actions .tt-btn {
+                width: 100%;
+            }
+
             .clip-comments-board {
                 padding: 18px;
             }

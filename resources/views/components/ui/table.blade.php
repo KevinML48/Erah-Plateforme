@@ -2,7 +2,7 @@
     'compact' => false,
 ])
 
-<div {{ $attributes->class(['table-wrap', $compact ? 'table-compact' : '']) }}>
+<div {{ $attributes->merge(['data-responsive' => 'cards'])->class(['table-wrap', $compact ? 'table-compact' : '']) }}>
     <table>
         {{ $slot }}
     </table>

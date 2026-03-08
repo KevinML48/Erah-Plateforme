@@ -91,17 +91,17 @@
     <section class="section">
         <h2>Dernieres transactions bet_points</h2>
         @if($betTransactions->count())
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead><tr><th>Date</th><th>Type</th><th>Montant</th><th>Solde apres</th><th>Ref</th></tr></thead>
                     <tbody>
                     @foreach($betTransactions as $tx)
                         <tr>
-                            <td>{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
-                            <td>{{ $tx->type }}</td>
-                            <td>{{ $tx->amount }}</td>
-                            <td>{{ $tx->balance_after }}</td>
-                            <td>{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
+                            <td data-label="Date">{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
+                            <td data-label="Type">{{ $tx->type }}</td>
+                            <td data-label="Montant">{{ $tx->amount }}</td>
+                            <td data-label="Solde apres">{{ $tx->balance_after }}</td>
+                            <td data-label="Ref">{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -115,17 +115,17 @@
     <section class="section">
         <h2>Dernieres transactions reward_points</h2>
         @if($rewardTransactions->count())
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead><tr><th>Date</th><th>Type</th><th>Montant</th><th>Solde apres</th><th>Ref</th></tr></thead>
                     <tbody>
                     @foreach($rewardTransactions as $tx)
                         <tr>
-                            <td>{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
-                            <td>{{ $tx->type }}</td>
-                            <td>{{ $tx->amount }}</td>
-                            <td>{{ $tx->balance_after }}</td>
-                            <td>{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
+                            <td data-label="Date">{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
+                            <td data-label="Type">{{ $tx->type }}</td>
+                            <td data-label="Montant">{{ $tx->amount }}</td>
+                            <td data-label="Solde apres">{{ $tx->balance_after }}</td>
+                            <td data-label="Ref">{{ $tx->ref_type }}#{{ $tx->ref_id }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -136,4 +136,3 @@
         @endif
     </section>
 @endsection
-

@@ -40,7 +40,7 @@
         @if(empty($leaderboard) || empty($leaderboard['entries']))
             <p class="meta">Leaderboard indisponible.</p>
         @else
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead>
                         <tr>
@@ -52,9 +52,9 @@
                     <tbody>
                     @foreach($leaderboard['entries'] as $entry)
                         <tr>
-                            <td>{{ $entry['position'] }}</td>
-                            <td>{{ $entry['name'] }}</td>
-                            <td>{{ $entry['total_rank_points'] ?? $entry['rank_points'] ?? 0 }}</td>
+                            <td data-label="#">{{ $entry['position'] }}</td>
+                            <td data-label="Joueur">{{ $entry['name'] }}</td>
+                            <td data-label="Points">{{ $entry['total_rank_points'] ?? $entry['rank_points'] ?? 0 }}</td>
                         </tr>
                     @endforeach
                     </tbody>

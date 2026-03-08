@@ -8,7 +8,7 @@
         <p><a href="{{ route('gifts.index') }}">Retour cadeaux</a></p>
 
         @if(($redemptions ?? null) && $redemptions->count())
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead>
                         <tr>
@@ -22,11 +22,11 @@
                     <tbody>
                     @foreach($redemptions as $redemption)
                         <tr>
-                            <td>{{ optional($redemption->requested_at)->format('Y-m-d H:i') }}</td>
-                            <td>{{ $redemption->gift->title ?? 'Gift' }}</td>
-                            <td>{{ $redemption->status }}</td>
-                            <td>{{ $redemption->cost_points_snapshot }}</td>
-                            <td>{{ $redemption->tracking_code ?: '-' }}</td>
+                            <td data-label="Date">{{ optional($redemption->requested_at)->format('Y-m-d H:i') }}</td>
+                            <td data-label="Cadeau">{{ $redemption->gift->title ?? 'Gift' }}</td>
+                            <td data-label="Statut">{{ $redemption->status }}</td>
+                            <td data-label="Cout">{{ $redemption->cost_points_snapshot }}</td>
+                            <td data-label="Tracking">{{ $redemption->tracking_code ?: '-' }}</td>
                         </tr>
                     @endforeach
                     </tbody>

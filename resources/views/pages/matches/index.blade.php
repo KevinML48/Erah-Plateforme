@@ -189,11 +189,42 @@
         }
 
         @media (max-width: 767.98px) {
+            .match-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 6px;
+            }
+
+            .match-tab {
+                flex: 0 0 auto;
+                min-height: 44px;
+                padding-inline: 16px;
+            }
+
             .match-toolbar-grid,
             .match-index-kpis,
             .match-card-grid,
             .match-meta-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .match-toolbar-grid .match-pill-row,
+            .match-event-head .tt-btn {
+                width: 100%;
+            }
+
+            .match-toolbar-grid .tt-btn,
+            .match-event-head .tt-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 479.98px) {
+            .match-event-card,
+            .match-index-kpi {
+                padding: 16px;
+                border-radius: 20px;
             }
         }
     </style>

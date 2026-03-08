@@ -75,7 +75,7 @@
         @if(empty($leaderboard) || empty($leaderboard['entries']))
             <p class="meta">Aucune entree.</p>
         @else
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead>
                     <tr>
@@ -87,9 +87,9 @@
                     <tbody>
                     @foreach($leaderboard['entries'] as $entry)
                         <tr>
-                            <td>{{ $entry['position'] }}</td>
-                            <td>{{ $entry['name'] }} @if($entry['user_id'] === auth()->id()) <strong>(vous)</strong> @endif</td>
-                            <td>{{ $entry['total_rank_points'] ?? $entry['rank_points'] ?? 0 }}</td>
+                            <td data-label="#">{{ $entry['position'] }}</td>
+                            <td data-label="User">{{ $entry['name'] }} @if($entry['user_id'] === auth()->id()) <strong>(vous)</strong> @endif</td>
+                            <td data-label="Points">{{ $entry['total_rank_points'] ?? $entry['rank_points'] ?? 0 }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -101,7 +101,7 @@
     <section class="section">
         <h2>Debug transactions recentes (moi)</h2>
         @if($recentTransactions->count())
-            <div class="table-wrap">
+            <div class="table-wrap" data-responsive="cards">
                 <table>
                     <thead>
                     <tr>
@@ -114,10 +114,10 @@
                     <tbody>
                     @foreach($recentTransactions as $tx)
                         <tr>
-                            <td>{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
-                            <td>{{ $tx->kind }}</td>
-                            <td>{{ $tx->points }}</td>
-                            <td>{{ $tx->source_type }}#{{ $tx->source_id }}</td>
+                            <td data-label="Date">{{ optional($tx->created_at)->format('Y-m-d H:i') }}</td>
+                            <td data-label="Kind">{{ $tx->kind }}</td>
+                            <td data-label="Points">{{ $tx->points }}</td>
+                            <td data-label="Source">{{ $tx->source_type }}#{{ $tx->source_id }}</td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -128,4 +128,3 @@
         @endif
     </section>
 @endsection
-

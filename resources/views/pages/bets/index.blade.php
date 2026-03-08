@@ -8,13 +8,14 @@
         $indexRouteName = $isPublicApp ? 'app.bets.index' : 'bets.index';
         $matchShowRouteName = $isPublicApp ? 'app.matches.show' : 'matches.show';
         $cancelRouteName = $isPublicApp ? 'app.bets.cancel' : 'bets.cancel';
+        $matchLabelResolver = $matchLabelResolver ?? null;
     @endphp
 
     <section class="section">
         <h1>Mes paris</h1>
         <div class="actions">
-            <x-ui.button :href="route($indexRouteName, ['tab' => 'active'])" variant="secondary" magnetic>En cours</x-ui.button>
-            <x-ui.button :href="route($indexRouteName, ['tab' => 'settled'])" variant="secondary" magnetic>Regles</x-ui.button>
+            <x-ui.button :href="route($indexRouteName, ['tab' => 'active'])" variant="secondary" magnetic>Ouverts</x-ui.button>
+            <x-ui.button :href="route($indexRouteName, ['tab' => 'settled'])" variant="secondary" magnetic>Termines</x-ui.button>
         </div>
     </section>
 
@@ -25,25 +26,30 @@
                 <tr>
                     <th>ID</th>
                     <th>Match</th>
-                    <th>Selection</th>
+                    <th>Choix</th>
                     <th>Mise</th>
-                    <th>Status</th>
-                    <th>Payout</th>
+                    <th>Etat</th>
+                    <th>Gain</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($bets as $bet)
+                    @php
+                        $betMarket = $bet->match?->markets->firstWhere('key', $bet->market_key);
+                        $betSelection = $betMarket?->selections->firstWhere('key', $bet->selection_key);
+                        $selectionLabel = $betSelection?->label ?? $bet->selection_key ?? $bet->prediction;
+                    @endphp
                     <tr>
                         <td>{{ $bet->id }}</td>
                         <td>
-                            {{ $bet->match->team_a_name ?? $bet->match->home_team }} vs {{ $bet->match->team_b_name ?? $bet->match->away_team }}
+                            {{ $bet->match->displayTitle() }}
                             <br>
                             <x-ui.button :href="route($matchShowRouteName, $bet->match_id)" variant="outline" size="sm">Ouvrir match</x-ui.button>
                         </td>
-                        <td>{{ $bet->prediction }}</td>
+                        <td>{{ $matchLabelResolver->labelForMarketKey($bet->market_key) }} / {{ $selectionLabel }}</td>
                         <td>{{ $bet->stake_points }}</td>
-                        <td><span class="badge">{{ $bet->status }}</span></td>
+                        <td><span class="badge">{{ $matchLabelResolver->labelForBetStatus($bet->status) }}</span></td>
                         <td>{{ (int) ($bet->settlement->payout_points ?? 0) }}</td>
                         <td>
                             @if(in_array($bet->status, [\App\Models\Bet::STATUS_PENDING, \App\Models\Bet::STATUS_PLACED], true))
@@ -64,7 +70,7 @@
 
             <div class="actions">{{ $bets->links() }}</div>
         @else
-            <x-ui.empty-state title="Aucun pari a afficher" message="Placez un pari depuis la page matches pour le voir ici." />
+            <x-ui.empty-state title="Aucun pari a afficher" message="Placez un pronostic depuis la page matchs pour le voir ici." />
         @endif
     </section>
 @endsection

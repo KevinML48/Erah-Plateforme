@@ -15,11 +15,11 @@ class AuthRememberMeWebTest extends TestCase
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('Auth\\/Login', false);
+            ->assertSee('Se souvenir de moi');
 
         $this->get(route('register'))
             ->assertOk()
-            ->assertSee('Auth\\/Register', false);
+            ->assertSee('Se souvenir de moi');
     }
 
     public function test_login_with_remember_me_sets_recaller_cookie(): void

@@ -21,6 +21,7 @@ class Bet extends Model
     public const PREDICTION_HOME = 'home';
     public const PREDICTION_AWAY = 'away';
     public const PREDICTION_DRAW = 'draw';
+    public const PREDICTION_VOID = 'void';
 
     public const SELECTION_TEAM_A = 'team_a';
     public const SELECTION_TEAM_B = 'team_b';
@@ -88,6 +89,7 @@ class Bet extends Model
             self::PREDICTION_HOME,
             self::PREDICTION_AWAY,
             self::PREDICTION_DRAW,
+            self::PREDICTION_VOID,
         ];
     }
 

@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Web\Admin;
 
-use App\Models\EsportMatch;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SettleAdminMatchRequest extends FormRequest
 {
@@ -19,8 +17,10 @@ class SettleAdminMatchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'result' => ['required', 'string', Rule::in(EsportMatch::settlementResults())],
+            'result' => ['required', 'string', 'max:40'],
             'idempotency_key' => ['required', 'string', 'min:8', 'max:120', 'regex:/^[A-Za-z0-9._:-]+$/'],
+            'team_a_score' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'team_b_score' => ['nullable', 'integer', 'min:0', 'max:20'],
         ];
     }
 
@@ -29,6 +29,8 @@ class SettleAdminMatchRequest extends FormRequest
         $this->merge([
             'result' => strtolower(trim((string) $this->input('result'))),
             'idempotency_key' => trim((string) $this->input('idempotency_key')),
+            'team_a_score' => blank($this->input('team_a_score')) ? null : (int) $this->input('team_a_score'),
+            'team_b_score' => blank($this->input('team_b_score')) ? null : (int) $this->input('team_b_score'),
         ]);
     }
 }

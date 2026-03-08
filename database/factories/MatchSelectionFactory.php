@@ -33,7 +33,7 @@ class MatchSelectionFactory extends Factory
                 default => 'Draw',
             },
             'odds' => $key === MatchSelection::KEY_DRAW ? 3.000 : 2.000,
+            'sort_order' => 0,
         ];
     }
 }
-

@@ -6,17 +6,18 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Ranking\EnsureUserProgressAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\UpdateProfileRequest;
-use App\Services\SupporterAccessResolver;
-use App\Services\ShortcutService;
 use App\Models\Bet;
 use App\Models\Duel;
 use App\Models\PointsTransaction;
 use App\Models\User;
+use App\Services\ShortcutService;
+use App\Services\SupporterAccessResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -48,6 +49,7 @@ class ProfileController extends Controller
             'progress' => $progress,
             'transactions' => $transactions,
             'stats' => $stats,
+            'clubReview' => Schema::hasTable('club_reviews') ? $user->clubReview()->first() : null,
             'currentShortcuts' => $currentShortcuts,
             'availableShortcuts' => $availableShortcuts,
             'minShortcuts' => $shortcutService->minShortcuts(),

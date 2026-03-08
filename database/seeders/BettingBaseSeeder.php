@@ -64,57 +64,156 @@ class BettingBaseSeeder extends Seeder
         $definitions = [
             'bet-v1-scheduled-1' => [
                 'game_key' => 'valorant',
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => null,
+                'competition_name' => 'Valorant Challengers',
+                'competition_stage' => 'Main Event',
+                'competition_split' => 'Week 1',
+                'best_of' => 3,
+                'parent_match_id' => null,
                 'team_a_name' => 'ERAH Falcons',
                 'team_b_name' => 'Midnight Owls',
                 'starts_at' => now()->addHours(2),
                 'locked_at' => now()->addHours(2)->subMinutes(5),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
                 'status' => EsportMatch::STATUS_SCHEDULED,
                 'result' => null,
                 'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
                 'settled_at' => null,
             ],
             'bet-v1-scheduled-2' => [
                 'game_key' => 'lol',
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => null,
+                'competition_name' => 'ERAH Masters',
+                'competition_stage' => 'Groups',
+                'competition_split' => 'Week 2',
+                'best_of' => 1,
+                'parent_match_id' => null,
                 'team_a_name' => 'Nova Breakers',
                 'team_b_name' => 'Atlas Wolves',
                 'starts_at' => now()->addHours(6),
                 'locked_at' => now()->addHours(6)->subMinutes(5),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
                 'status' => EsportMatch::STATUS_SCHEDULED,
                 'result' => null,
                 'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
                 'settled_at' => null,
             ],
             'bet-v1-scheduled-3' => [
                 'game_key' => 'cs2',
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => null,
+                'competition_name' => 'ERAH Arena',
+                'competition_stage' => 'Swiss',
+                'competition_split' => 'Stage 1',
+                'best_of' => 3,
+                'parent_match_id' => null,
                 'team_a_name' => 'Vector Prime',
                 'team_b_name' => 'Crimson Shift',
                 'starts_at' => now()->addHours(10),
                 'locked_at' => now()->addHours(10)->subMinutes(5),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
                 'status' => EsportMatch::STATUS_SCHEDULED,
                 'result' => null,
                 'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
                 'settled_at' => null,
             ],
             'bet-v1-live-1' => [
                 'game_key' => 'valorant',
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => null,
+                'competition_name' => 'Valorant Showdown',
+                'competition_stage' => 'Quarterfinal',
+                'competition_split' => 'Main Event',
+                'best_of' => 3,
+                'parent_match_id' => null,
                 'team_a_name' => 'Titan Squad',
                 'team_b_name' => 'Storm Unit',
                 'starts_at' => now()->subMinutes(15),
                 'locked_at' => now()->subMinutes(20),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
                 'status' => EsportMatch::STATUS_LIVE,
                 'result' => null,
                 'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
                 'settled_at' => null,
             ],
             'bet-v1-finished-1' => [
                 'game_key' => 'lol',
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => null,
+                'competition_name' => 'ERAH Finals',
+                'competition_stage' => 'Final',
+                'competition_split' => 'Season 1',
+                'best_of' => 5,
+                'parent_match_id' => null,
                 'team_a_name' => 'Quantum Five',
                 'team_b_name' => 'Solar Rush',
                 'starts_at' => now()->subHours(3),
                 'locked_at' => now()->subHours(3)->subMinutes(5),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
                 'status' => EsportMatch::STATUS_FINISHED,
-                'result' => MatchSelection::KEY_TEAM_A,
+                'result' => EsportMatch::RESULT_HOME,
                 'finished_at' => now()->subHours(2),
+                'team_a_score' => 3,
+                'team_b_score' => 1,
+                'settled_at' => null,
+            ],
+            'bet-v2-rl-tournament-open' => [
+                'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+                'event_type' => EsportMatch::EVENT_TYPE_TOURNAMENT_RUN,
+                'event_name' => 'RLCS Open Europe #1',
+                'competition_name' => 'RLCS Europe',
+                'competition_stage' => 'Open Qualifier',
+                'competition_split' => 'Spring Split',
+                'best_of' => null,
+                'parent_match_id' => null,
+                'team_a_name' => null,
+                'team_b_name' => null,
+                'starts_at' => now()->addDay(),
+                'locked_at' => now()->addDay()->subHour(),
+                'ends_at' => now()->addDays(3),
+                'child_matches_unlocked_at' => null,
+                'status' => EsportMatch::STATUS_SCHEDULED,
+                'result' => null,
+                'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
+                'settled_at' => null,
+            ],
+            'bet-v2-rl-tournament-top16' => [
+                'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+                'event_type' => EsportMatch::EVENT_TYPE_TOURNAMENT_RUN,
+                'event_name' => 'RLCS Regional Europe #2',
+                'competition_name' => 'RLCS Europe',
+                'competition_stage' => 'Top 16',
+                'competition_split' => 'Spring Regional 2',
+                'best_of' => null,
+                'parent_match_id' => null,
+                'team_a_name' => null,
+                'team_b_name' => null,
+                'starts_at' => now()->addDays(4),
+                'locked_at' => now()->addDays(4)->subHour(),
+                'ends_at' => now()->addDays(5),
+                'child_matches_unlocked_at' => now()->subHour(),
+                'status' => EsportMatch::STATUS_SCHEDULED,
+                'result' => null,
+                'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
                 'settled_at' => null,
             ],
         ];
@@ -126,15 +225,26 @@ class BettingBaseSeeder extends Seeder
                 ['match_key' => $matchKey],
                 [
                     'game_key' => $definition['game_key'],
+                    'event_type' => $definition['event_type'],
+                    'event_name' => $definition['event_name'],
+                    'competition_name' => $definition['competition_name'],
+                    'competition_stage' => $definition['competition_stage'],
+                    'competition_split' => $definition['competition_split'],
+                    'best_of' => $definition['best_of'],
+                    'parent_match_id' => $definition['parent_match_id'],
                     'team_a_name' => $definition['team_a_name'],
                     'team_b_name' => $definition['team_b_name'],
-                    'home_team' => $definition['team_a_name'],
-                    'away_team' => $definition['team_b_name'],
+                    'home_team' => $definition['team_a_name'] ?? 'ERAH Rocket League',
+                    'away_team' => $definition['team_b_name'] ?? 'Tournament Run',
                     'starts_at' => $definition['starts_at'],
                     'locked_at' => $definition['locked_at'],
+                    'ends_at' => $definition['ends_at'],
+                    'child_matches_unlocked_at' => $definition['child_matches_unlocked_at'],
                     'status' => $definition['status'],
                     'result' => $definition['result'],
                     'finished_at' => $definition['finished_at'],
+                    'team_a_score' => $definition['team_a_score'],
+                    'team_b_score' => $definition['team_b_score'],
                     'settled_at' => $definition['settled_at'],
                     'meta' => ['seed' => self::class],
                     'created_by' => $admin->id,
@@ -145,6 +255,68 @@ class BettingBaseSeeder extends Seeder
             $rows[$matchKey] = $match->fresh();
         }
 
+        $rows['bet-v2-rl-child-1'] = EsportMatch::query()->updateOrCreate(
+            ['match_key' => 'bet-v2-rl-child-1'],
+            [
+                'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => $rows['bet-v2-rl-tournament-top16']->event_name,
+                'competition_name' => $rows['bet-v2-rl-tournament-top16']->competition_name,
+                'competition_stage' => 'Round 1',
+                'competition_split' => $rows['bet-v2-rl-tournament-top16']->competition_split,
+                'best_of' => 5,
+                'parent_match_id' => $rows['bet-v2-rl-tournament-top16']->id,
+                'team_a_name' => 'ERAH Rocket League',
+                'team_b_name' => 'North Star',
+                'home_team' => 'ERAH Rocket League',
+                'away_team' => 'North Star',
+                'starts_at' => now()->addDays(4)->addHours(2),
+                'locked_at' => now()->addDays(4)->addHours(1)->addMinutes(55),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
+                'status' => EsportMatch::STATUS_SCHEDULED,
+                'result' => null,
+                'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
+                'settled_at' => null,
+                'meta' => ['seed' => self::class],
+                'created_by' => $admin->id,
+                'updated_by' => $admin->id,
+            ]
+        )->fresh();
+
+        $rows['bet-v2-rl-child-2'] = EsportMatch::query()->updateOrCreate(
+            ['match_key' => 'bet-v2-rl-child-2'],
+            [
+                'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+                'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+                'event_name' => $rows['bet-v2-rl-tournament-top16']->event_name,
+                'competition_name' => $rows['bet-v2-rl-tournament-top16']->competition_name,
+                'competition_stage' => 'Upper Quarterfinal',
+                'competition_split' => $rows['bet-v2-rl-tournament-top16']->competition_split,
+                'best_of' => 7,
+                'parent_match_id' => $rows['bet-v2-rl-tournament-top16']->id,
+                'team_a_name' => 'ERAH Rocket League',
+                'team_b_name' => 'Pulse Engine',
+                'home_team' => 'ERAH Rocket League',
+                'away_team' => 'Pulse Engine',
+                'starts_at' => now()->addDays(4)->addHours(6),
+                'locked_at' => now()->addDays(4)->addHours(5)->addMinutes(55),
+                'ends_at' => null,
+                'child_matches_unlocked_at' => null,
+                'status' => EsportMatch::STATUS_SCHEDULED,
+                'result' => null,
+                'finished_at' => null,
+                'team_a_score' => null,
+                'team_b_score' => null,
+                'settled_at' => null,
+                'meta' => ['seed' => self::class],
+                'created_by' => $admin->id,
+                'updated_by' => $admin->id,
+            ]
+        )->fresh();
+
         return $rows;
     }
 
@@ -154,6 +326,32 @@ class BettingBaseSeeder extends Seeder
     private function seedWinnerMarkets(array $matches): void
     {
         foreach ($matches as $match) {
+            if ($match->event_type === EsportMatch::EVENT_TYPE_TOURNAMENT_RUN) {
+                $market = MatchMarket::query()->updateOrCreate(
+                    [
+                        'match_id' => $match->id,
+                        'key' => MatchMarket::KEY_TOURNAMENT_FINISH,
+                    ],
+                    [
+                        'title' => 'Parcours final ERAH',
+                        'is_active' => true,
+                    ]
+                );
+
+                foreach ((array) config('betting.market_presets.tournament_finish_labels', []) as $key => $label) {
+                    MatchSelection::query()->updateOrCreate(
+                        ['market_id' => $market->id, 'key' => $key],
+                        [
+                            'label' => $label,
+                            'odds' => (float) (config('betting.odds.rocket_league_finish.'.$key) ?? 2.000),
+                            'sort_order' => array_search($key, array_keys((array) config('betting.market_presets.tournament_finish_labels', [])), true),
+                        ]
+                    );
+                }
+
+                continue;
+            }
+
             $market = MatchMarket::query()->updateOrCreate(
                 [
                     'match_id' => $match->id,
@@ -167,18 +365,46 @@ class BettingBaseSeeder extends Seeder
 
             MatchSelection::query()->updateOrCreate(
                 ['market_id' => $market->id, 'key' => MatchSelection::KEY_TEAM_A],
-                ['label' => (string) ($match->team_a_name ?: $match->home_team), 'odds' => 2.000]
+                ['label' => (string) ($match->team_a_name ?: $match->home_team), 'odds' => 2.000, 'sort_order' => 0]
             );
 
             MatchSelection::query()->updateOrCreate(
                 ['market_id' => $market->id, 'key' => MatchSelection::KEY_TEAM_B],
-                ['label' => (string) ($match->team_b_name ?: $match->away_team), 'odds' => 2.000]
+                ['label' => (string) ($match->team_b_name ?: $match->away_team), 'odds' => 2.000, 'sort_order' => 1]
             );
 
             MatchSelection::query()->updateOrCreate(
                 ['market_id' => $market->id, 'key' => MatchSelection::KEY_DRAW],
-                ['label' => 'Draw', 'odds' => 3.000]
+                ['label' => 'Draw', 'odds' => 3.000, 'sort_order' => 2]
             );
+
+            if ($match->game_key === EsportMatch::GAME_ROCKET_LEAGUE && in_array((int) $match->best_of, [5, 7], true)) {
+                $exactScoreMarket = MatchMarket::query()->updateOrCreate(
+                    [
+                        'match_id' => $match->id,
+                        'key' => MatchMarket::KEY_EXACT_SCORE,
+                    ],
+                    [
+                        'title' => 'Score exact',
+                        'is_active' => true,
+                    ]
+                );
+
+                $scoreOdds = (array) config('betting.odds.rocket_league_exact_score.'.(int) $match->best_of, []);
+                foreach (array_values($scoreOdds) as $index => $odds) {
+                    $scoreKey = array_keys($scoreOdds)[$index];
+                    [$teamAScore, $teamBScore] = explode('_', (string) $scoreKey);
+
+                    MatchSelection::query()->updateOrCreate(
+                        ['market_id' => $exactScoreMarket->id, 'key' => $scoreKey],
+                        [
+                            'label' => ($match->team_a_name ?: $match->home_team).' '.$teamAScore.' - '.$teamBScore.' '.($match->team_b_name ?: $match->away_team),
+                            'odds' => (float) $odds,
+                            'sort_order' => $index,
+                        ]
+                    );
+                }
+            }
         }
     }
 
@@ -364,4 +590,3 @@ class BettingBaseSeeder extends Seeder
         $wallet->save();
     }
 }
-

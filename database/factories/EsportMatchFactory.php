@@ -28,19 +28,61 @@ class EsportMatchFactory extends Factory
         return [
             'match_key' => 'match-'.Str::lower(Str::random(10)),
             'game_key' => fake()->randomElement(['valorant', 'lol', 'cs2']),
+            'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+            'event_name' => null,
+            'competition_name' => null,
+            'competition_stage' => null,
+            'competition_split' => null,
+            'best_of' => null,
+            'parent_match_id' => null,
             'team_a_name' => $homeTeam,
             'team_b_name' => $awayTeam,
             'home_team' => $homeTeam,
             'away_team' => $awayTeam,
             'starts_at' => $startsAt,
             'locked_at' => $startsAt->copy()->subMinutes(5),
+            'ends_at' => null,
             'status' => EsportMatch::STATUS_SCHEDULED,
             'result' => null,
             'finished_at' => null,
+            'team_a_score' => null,
+            'team_b_score' => null,
+            'child_matches_unlocked_at' => null,
             'settled_at' => null,
             'meta' => null,
             'created_by' => User::factory(),
             'updated_by' => null,
         ];
+    }
+
+    public function rocketLeagueTournament(): static
+    {
+        return $this->state(fn () => [
+            'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+            'event_type' => EsportMatch::EVENT_TYPE_TOURNAMENT_RUN,
+            'event_name' => 'RLCS Open',
+            'competition_name' => 'RLCS Open',
+            'competition_stage' => 'Open Qualifier',
+            'competition_split' => 'Spring',
+            'best_of' => null,
+            'team_a_name' => null,
+            'team_b_name' => null,
+            'home_team' => 'ERAH Rocket League',
+            'away_team' => 'Tournament Run',
+            'ends_at' => now()->addDays(2),
+        ]);
+    }
+
+    public function rocketLeagueChildMatch(?EsportMatch $parent = null): static
+    {
+        return $this->state(fn () => [
+            'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
+            'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
+            'best_of' => 5,
+            'parent_match_id' => $parent?->id,
+            'competition_name' => $parent?->competition_name,
+            'competition_stage' => $parent?->competition_stage,
+            'competition_split' => $parent?->competition_split,
+        ]);
     }
 }

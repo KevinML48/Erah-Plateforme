@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Web;
 
-use App\Models\MatchSelection;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class PlaceMatchBetRequest extends FormRequest
 {
@@ -19,11 +17,8 @@ class PlaceMatchBetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'selection_key' => ['required', 'string', Rule::in([
-                MatchSelection::KEY_TEAM_A,
-                MatchSelection::KEY_TEAM_B,
-                MatchSelection::KEY_DRAW,
-            ])],
+            'market_key' => ['nullable', 'string', 'max:40'],
+            'selection_key' => ['required', 'string', 'max:20'],
             'stake_points' => [
                 'required',
                 'integer',
@@ -37,6 +32,7 @@ class PlaceMatchBetRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'market_key' => blank($this->input('market_key')) ? null : strtoupper(trim((string) $this->input('market_key'))),
             'selection_key' => strtolower(trim((string) $this->input('selection_key'))),
             'idempotency_key' => trim((string) $this->input('idempotency_key')),
         ]);

@@ -3,8 +3,11 @@
 namespace App\Application\Actions\Bets;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
+use App\Application\Actions\Matches\SyncMatchMarketsAction;
 use App\Models\Bet;
 use App\Models\EsportMatch;
+use App\Models\MatchMarket;
+use App\Models\MatchSelection;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Database\QueryException;
@@ -15,7 +18,8 @@ class PlaceBetAction
 {
     public function __construct(
         private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
-        private readonly StoreAuditLogAction $storeAuditLogAction
+        private readonly StoreAuditLogAction $storeAuditLogAction,
+        private readonly SyncMatchMarketsAction $syncMatchMarketsAction
     ) {
     }
 
@@ -29,6 +33,10 @@ class PlaceBetAction
             return DB::transaction(function () use ($user, $payload) {
                 $match = EsportMatch::query()
                     ->whereKey((int) $payload['match_id'])
+                    ->with([
+                        'parentMatch:id,child_matches_unlocked_at',
+                        'markets' => fn ($query) => $query->where('is_active', true)->with('selections'),
+                    ])
                     ->lockForUpdate()
                     ->firstOrFail();
 
@@ -36,9 +44,20 @@ class PlaceBetAction
                     throw new RuntimeException('Match is not open for betting.');
                 }
 
+                if ($match->parentMatch && ! $match->parentMatch->hasUnlockedChildMatches()) {
+                    throw new RuntimeException('Tournament match phase is not unlocked yet.');
+                }
+
                 $lockAt = $match->locked_at ?? $match->starts_at;
                 if ($lockAt && now()->greaterThanOrEqualTo($lockAt)) {
                     throw new RuntimeException('Betting is closed for this match.');
+                }
+
+                if ($match->markets->isEmpty()) {
+                    $this->syncMatchMarketsAction->execute($match, null, $match->toArray());
+                    $match->load([
+                        'markets' => fn ($query) => $query->where('is_active', true)->with('selections'),
+                    ]);
                 }
 
                 $idempotencyKey = (string) $payload['idempotency_key'];
@@ -59,7 +78,7 @@ class PlaceBetAction
                 $existingByMatch = Bet::query()
                     ->where('user_id', $user->id)
                     ->where('match_id', $match->id)
-                    ->where('market_key', 'WINNER')
+                    ->where('market_key', $this->resolveMarketKey($payload))
                     ->lockForUpdate()
                     ->first();
 
@@ -68,20 +87,16 @@ class PlaceBetAction
                 }
 
                 $stakePoints = (int) $payload['stake_points'];
-                $prediction = (string) $payload['prediction'];
-
-                $multiplier = $prediction === Bet::PREDICTION_DRAW ? 3 : 2;
-                $potentialPayout = $stakePoints * $multiplier;
-                $selectionKey = match ($prediction) {
-                    Bet::PREDICTION_HOME => Bet::SELECTION_TEAM_A,
-                    Bet::PREDICTION_AWAY => Bet::SELECTION_TEAM_B,
-                    default => Bet::SELECTION_DRAW,
-                };
+                [$market, $selection] = $this->resolveSelection($match, $payload);
+                $selectionKey = (string) $selection->key;
+                $prediction = $this->resolvePredictionValue($market->key, $selectionKey);
+                $multiplier = round((float) $selection->odds, 3);
+                $potentialPayout = (int) round($stakePoints * $multiplier, 0);
 
                 $bet = Bet::query()->create([
                     'user_id' => $user->id,
                     'match_id' => $match->id,
-                    'market_key' => 'WINNER',
+                    'market_key' => $market->key,
                     'selection_key' => $selectionKey,
                     'stake' => $stakePoints,
                     'odds_snapshot' => $multiplier,
@@ -105,6 +120,8 @@ class PlaceBetAction
                     refId: (string) $bet->id,
                     metadata: [
                         'match_id' => $match->id,
+                        'market_key' => $market->key,
+                        'selection_key' => $selectionKey,
                         'prediction' => $prediction,
                     ],
                     initialBalanceIfMissing: (int) config('betting.wallet.initial_balance', 1000),
@@ -117,6 +134,8 @@ class PlaceBetAction
                     context: [
                         'bet_id' => $bet->id,
                         'match_id' => $match->id,
+                        'market_key' => $market->key,
+                        'selection_key' => $selectionKey,
                         'prediction' => $prediction,
                         'stake_points' => $stakePoints,
                         'idempotency_key' => $idempotencyKey,
@@ -162,5 +181,60 @@ class PlaceBetAction
 
             throw $exception;
         }
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function resolveMarketKey(array $payload): string
+    {
+        $marketKey = trim((string) ($payload['market_key'] ?? ''));
+
+        return $marketKey !== '' ? strtoupper($marketKey) : MatchMarket::KEY_WINNER;
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array{0: MatchMarket, 1: MatchSelection}
+     */
+    private function resolveSelection(EsportMatch $match, array $payload): array
+    {
+        $marketKey = $this->resolveMarketKey($payload);
+        $selectionKey = strtolower(trim((string) ($payload['selection_key'] ?? '')));
+
+        if ($selectionKey === '') {
+            $selectionKey = match ((string) ($payload['prediction'] ?? '')) {
+                Bet::PREDICTION_HOME => MatchSelection::KEY_TEAM_A,
+                Bet::PREDICTION_AWAY => MatchSelection::KEY_TEAM_B,
+                Bet::PREDICTION_DRAW => MatchSelection::KEY_DRAW,
+                default => '',
+            };
+        }
+
+        $market = $match->markets->firstWhere('key', $marketKey);
+        if (! $market) {
+            throw new RuntimeException('Requested market is not available for this match.');
+        }
+
+        $selection = $market->selections->firstWhere('key', $selectionKey);
+        if (! $selection) {
+            throw new RuntimeException('Requested selection is not available for this market.');
+        }
+
+        return [$market, $selection];
+    }
+
+    private function resolvePredictionValue(string $marketKey, string $selectionKey): string
+    {
+        if ($marketKey !== MatchMarket::KEY_WINNER) {
+            return $selectionKey;
+        }
+
+        return match ($selectionKey) {
+            MatchSelection::KEY_TEAM_A => Bet::PREDICTION_HOME,
+            MatchSelection::KEY_TEAM_B => Bet::PREDICTION_AWAY,
+            MatchSelection::KEY_DRAW => Bet::PREDICTION_DRAW,
+            default => $selectionKey,
+        };
     }
 }

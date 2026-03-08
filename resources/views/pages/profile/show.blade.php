@@ -231,6 +231,68 @@
             justify-content: center;
         }
 
+        .profile-review-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-review-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-review-status.is-published {
+            border-color: rgba(91, 214, 143, .45);
+            color: #d6ffe6;
+        }
+
+        .profile-review-status.is-hidden {
+            color: rgba(255, 255, 255, .74);
+        }
+
+        .profile-review-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .profile-review-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, .72);
+        }
+
+        .profile-review-note {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            color: rgba(255, 255, 255, .7);
+            font-size: 14px;
+        }
+
         @media (max-width: 991.98px) {
             .profile-form-card,
             .profile-side-card {
@@ -415,6 +477,8 @@
                                 </a>
                             </div>
                         </form>
+
+                        @include('pages.profile.partials.club-review-panel')
                     </div>
 
                     <div class="tt-col-xl-5">
@@ -824,6 +888,19 @@
                 };
                 reader.readAsDataURL(file);
             });
+        })();
+
+        (function () {
+            var reviewInput = document.querySelector('[data-review-input]');
+            var countEl = document.querySelector('[data-review-count]');
+            if (!reviewInput || !countEl) return;
+
+            function updateReviewCount() {
+                countEl.textContent = String(reviewInput.value.trim().length);
+            }
+
+            reviewInput.addEventListener('input', updateReviewCount);
+            updateReviewCount();
         })();
     </script>
 @endsection

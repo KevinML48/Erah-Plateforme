@@ -6,6 +6,7 @@ use App\Models\Clip;
 use App\Models\ClipComment;
 use App\Policies\ClipPolicy;
 use App\Policies\CommentPolicy;
+use App\Services\ClubReviewPresenter;
 use App\Services\MarketingHomeActivityService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -42,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('marketing.index', function (BladeView $view): void {
             $user = Auth::user();
             $activityData = app(MarketingHomeActivityService::class)->build($user);
+            $homeReviews = app(ClubReviewPresenter::class)->latestPublished(5);
 
             $view->with([
                 'homeQuickAccess' => [
@@ -50,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
                 'homeEnCeMoment' => [
                     'activity_items' => $activityData['activity_items'],
                 ],
+                'homeReviews' => $homeReviews,
             ]);
         });
 

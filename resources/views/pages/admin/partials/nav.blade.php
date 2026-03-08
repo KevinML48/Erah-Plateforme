@@ -8,6 +8,7 @@
         ['label' => 'Cadeaux', 'route' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
         ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
         ['label' => 'Galerie', 'route' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],
+        ['label' => 'Avis', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
         ['label' => 'Supporters', 'route' => route('admin.supporters.index'), 'active' => request()->routeIs('admin.supporters.*')],
         ['label' => 'Campagnes clips', 'route' => route('admin.clips.campaigns.index'), 'active' => request()->routeIs('admin.clips.campaigns.*')],
     ];

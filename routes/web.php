@@ -13,11 +13,13 @@ use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipCampaignAdminController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
 use App\Http\Controllers\Web\Admin\GalleryPhotoAdminController;
+use App\Http\Controllers\Web\Admin\PublicProfileModerationController;
 use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
 use App\Http\Controllers\Marketing\GalleryPhotoPageController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
+use App\Http\Controllers\Web\ClubReviewPageController;
 use App\Http\Controllers\Web\ClipSupporterController;
 use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
@@ -29,6 +31,7 @@ use App\Http\Controllers\Web\MissionPageController;
 use App\Http\Controllers\Web\NotificationsPageController;
 use App\Http\Controllers\Web\OnboardingController;
 use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\ProfileClubReviewController;
 use App\Http\Controllers\Web\PublicProfileController;
 use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\StripeWebhookController;
@@ -36,6 +39,7 @@ use App\Http\Controllers\Web\SupporterConsoleController;
 use App\Http\Controllers\Web\SupporterPageController;
 use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
+use App\Http\Controllers\Web\Admin\ClubReviewAdminController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
@@ -211,13 +215,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile/transactions', [ProfileController::class, 'transactions'])->name('profile.transactions');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
+        Route::post('/profile/review', [ProfileClubReviewController::class, 'store'])->name('profile.reviews.store');
+        Route::put('/profile/review', [ProfileClubReviewController::class, 'update'])->name('profile.reviews.update');
+        Route::delete('/profile/review', [ProfileClubReviewController::class, 'destroy'])->name('profile.reviews.destroy');
         Route::get('/settings', SettingsController::class)->name('settings.index');
 
         Route::middleware('admin')->prefix('admin')->group(function () {
             Route::get('/dashboard', AdminDashboardController::class)->name('admin.dashboard');
+            Route::put('/users/{user}/public-profile', [PublicProfileModerationController::class, 'update'])->name('admin.users.public-profile.update');
+            Route::delete('/users/{user}/public-profile', [PublicProfileModerationController::class, 'destroy'])->name('admin.users.public-profile.destroy');
             Route::get('/supporters', [SupportersAdminController::class, 'index'])->name('admin.supporters.index');
             Route::get('/supporters/{userId}', [SupportersAdminController::class, 'show'])->name('admin.supporters.show');
+            Route::get('/reviews', [ClubReviewAdminController::class, 'index'])->name('admin.reviews.index');
+            Route::put('/reviews/{review}', [ClubReviewAdminController::class, 'update'])->name('admin.reviews.update');
+            Route::delete('/reviews/{review}', [ClubReviewAdminController::class, 'destroy'])->name('admin.reviews.destroy');
 
             Route::get('/clips', [ClipsAdminController::class, 'index'])->name('admin.clips.index');
             Route::get('/clips/create', [ClipsAdminController::class, 'create'])->name('admin.clips.create');
@@ -246,6 +257,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/matches/{matchId}/status', [AdminMatchController::class, 'updateStatus'])
                 ->middleware('throttle:matches-admin')
                 ->name('admin.matches.status');
+            Route::post('/matches/{matchId}/unlock-child-matches', [AdminMatchController::class, 'unlockChildMatches'])
+                ->middleware('throttle:matches-admin')
+                ->name('admin.matches.unlock-child-matches');
             Route::post('/matches/{matchId}/result', [AdminMatchController::class, 'setResult'])
                 ->middleware('throttle:matches-admin')
                 ->name('admin.matches.result');
@@ -282,6 +296,8 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
+Route::get('/avis', [ClubReviewPageController::class, 'index'])->name('reviews.index');
 Route::view('/', 'marketing.index')->name('marketing.index');
 Route::view('/index.html', 'marketing.index');
 Route::view('/faq', 'marketing.faq')->name('marketing.faq');

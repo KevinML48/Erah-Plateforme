@@ -3,33 +3,37 @@
 namespace App\Http\Controllers\Web;
 
 use App\Application\Actions\Bets\PlaceBetAction;
+use App\Domain\Betting\Support\MatchMarketCatalog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\PlaceMatchBetRequest;
 use App\Models\Bet;
 use App\Models\EsportMatch;
-use App\Models\MatchMarket;
-use App\Models\MatchSelection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use RuntimeException;
 
 class MatchPageController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, MatchMarketCatalog $matchMarketCatalog): View
     {
-        $tab = (string) $request->query('tab', 'upcoming');
+        $tab = $this->resolveTab((string) $request->query('tab', 'upcoming'));
+        $game = blank($request->query('game')) ? 'all' : strtolower(trim((string) $request->query('game')));
+        $eventType = blank($request->query('event_type')) ? 'all' : strtolower(trim((string) $request->query('event_type')));
+        $search = trim((string) $request->query('q', ''));
+
+        $filteredBaseQuery = $this->buildIndexBaseQuery($game, $eventType, $search);
 
         $tabCounts = [
-            'upcoming' => EsportMatch::query()
+            'upcoming' => (clone $filteredBaseQuery)
                 ->whereIn('status', [EsportMatch::STATUS_SCHEDULED, EsportMatch::STATUS_LOCKED])
                 ->count(),
-            'live' => EsportMatch::query()
+            'live' => (clone $filteredBaseQuery)
                 ->where('status', EsportMatch::STATUS_LIVE)
                 ->count(),
-            'finished' => EsportMatch::query()
+            'finished' => (clone $filteredBaseQuery)
                 ->whereIn('status', [
                     EsportMatch::STATUS_FINISHED,
                     EsportMatch::STATUS_SETTLED,
@@ -38,13 +42,13 @@ class MatchPageController extends Controller
                 ->count(),
         ];
 
-        $query = EsportMatch::query()->withCount('bets');
+        $matchesQuery = clone $filteredBaseQuery;
 
         if ($tab === 'live') {
-            $query->where('status', EsportMatch::STATUS_LIVE)
+            $matchesQuery->where('status', EsportMatch::STATUS_LIVE)
                 ->orderByDesc('starts_at');
         } elseif ($tab === 'finished') {
-            $query->whereIn('status', [
+            $matchesQuery->whereIn('status', [
                 EsportMatch::STATUS_FINISHED,
                 EsportMatch::STATUS_SETTLED,
                 EsportMatch::STATUS_CANCELLED,
@@ -53,41 +57,77 @@ class MatchPageController extends Controller
                 ->orderByDesc('settled_at')
                 ->orderByDesc('id');
         } else {
-            $tab = 'upcoming';
-            $query->whereIn('status', [EsportMatch::STATUS_SCHEDULED, EsportMatch::STATUS_LOCKED])
+            $matchesQuery->whereIn('status', [EsportMatch::STATUS_SCHEDULED, EsportMatch::STATUS_LOCKED])
                 ->orderBy('starts_at');
         }
 
+        $matches = $matchesQuery->paginate(12)->withQueryString();
+        $currentItems = collect($matches->items());
+        $windowStart = max(1, $matches->currentPage() - 1);
+        $windowEnd = min($matches->lastPage(), $matches->currentPage() + 1);
+
         return view('pages.matches.index', [
             'tab' => $tab,
-            'matches' => $query->paginate(12)->withQueryString(),
+            'matches' => $matches,
             'tabCounts' => $tabCounts,
             'totalMatches' => array_sum($tabCounts),
+            'game' => $game,
+            'eventType' => $eventType,
+            'search' => $search,
+            'gameOptions' => $matchMarketCatalog->gameOptions(),
+            'eventTypeOptions' => $matchMarketCatalog->eventTypeOptions(),
+            'matchLabelResolver' => $matchMarketCatalog,
+            'sectionedMatches' => [
+                'classic' => $currentItems->filter(fn (EsportMatch $match) => $match->isHeadToHead() && $match->game_key !== EsportMatch::GAME_ROCKET_LEAGUE),
+                'tournaments' => $currentItems->filter(fn (EsportMatch $match) => $match->isTournamentRun()),
+                'rocketLeagueMatches' => $currentItems->filter(fn (EsportMatch $match) => $match->isHeadToHead() && $match->game_key === EsportMatch::GAME_ROCKET_LEAGUE),
+            ],
+            'windowStart' => $windowStart,
+            'windowEnd' => $windowEnd,
         ]);
     }
 
-    public function show(int $matchId): View
+    public function show(int $matchId, MatchMarketCatalog $matchMarketCatalog): View
     {
         $match = EsportMatch::query()
+            ->withCount(['bets', 'childMatches'])
             ->with([
-                'markets' => fn ($query) => $query->where('key', MatchMarket::KEY_WINNER)->with('selections'),
+                'parentMatch:id,event_name,competition_name,competition_stage,competition_split,child_matches_unlocked_at,starts_at,status',
+                'childMatches' => fn ($query) => $query
+                    ->withCount('bets')
+                    ->orderBy('starts_at'),
+                'markets' => fn ($query) => $query->where('is_active', true)->with('selections'),
             ])
-            ->withCount('bets')
             ->findOrFail($matchId);
 
         $user = auth()->user();
-        $myBet = null;
+        $myBetsByMarket = collect();
+        $markets = $match->markets;
+
+        if ($markets->isEmpty()) {
+            $markets = collect($matchMarketCatalog->buildDefaultMarkets($match))
+                ->map(function (array $market) {
+                    return (object) [
+                        'key' => $market['key'],
+                        'title' => $market['title'],
+                        'is_active' => $market['is_active'],
+                        'selections' => collect($market['selections'])->map(fn (array $selection) => (object) $selection),
+                    ];
+                });
+        }
 
         if ($user) {
-            $myBet = Bet::query()
+            $myBetsByMarket = Bet::query()
                 ->where('user_id', $user->id)
                 ->where('match_id', $match->id)
                 ->latest('id')
-                ->first();
+                ->get()
+                ->keyBy('market_key');
         }
 
         $relatedMatches = EsportMatch::query()
             ->whereKeyNot($match->id)
+            ->when($match->game_key, fn (Builder $query) => $query->where('game_key', $match->game_key))
             ->withCount('bets')
             ->orderByRaw("case when status in ('scheduled', 'locked', 'live') then 0 else 1 end")
             ->orderBy('starts_at')
@@ -97,11 +137,14 @@ class MatchPageController extends Controller
 
         return view('pages.matches.show', [
             'match' => $match,
-            'options' => $this->resolveWinnerOptions($match),
-            'myBet' => $myBet,
+            'markets' => $markets,
+            'myBetsByMarket' => $myBetsByMarket,
             'walletBalance' => (int) ($user->wallet?->balance ?? config('betting.wallet.initial_balance', 1000)),
             'betIsOpen' => $this->isBettingOpen($match),
             'relatedMatches' => $relatedMatches,
+            'gameLabel' => $matchMarketCatalog->labelForGame($match->game_key),
+            'eventTypeLabel' => $matchMarketCatalog->labelForEventType($match->event_type),
+            'matchLabelResolver' => $matchMarketCatalog,
         ]);
     }
 
@@ -112,18 +155,13 @@ class MatchPageController extends Controller
     ): RedirectResponse {
         $validated = $request->validated();
 
-        $prediction = match ((string) $validated['selection_key']) {
-            MatchSelection::KEY_TEAM_A => Bet::PREDICTION_HOME,
-            MatchSelection::KEY_TEAM_B => Bet::PREDICTION_AWAY,
-            default => Bet::PREDICTION_DRAW,
-        };
-
         try {
             $result = $placeBetAction->execute(
                 user: $request->user(),
                 payload: [
                     'match_id' => $matchId,
-                    'prediction' => $prediction,
+                    'market_key' => $validated['market_key'] ?? null,
+                    'selection_key' => $validated['selection_key'],
                     'stake_points' => (int) $validated['stake_points'],
                     'idempotency_key' => (string) $validated['idempotency_key'],
                     'meta' => ['source' => 'web'],
@@ -148,44 +186,37 @@ class MatchPageController extends Controller
             return false;
         }
 
+        if ($match->parentMatch && ! $match->parentMatch->hasUnlockedChildMatches()) {
+            return false;
+        }
+
         $lockAt = $match->locked_at ?? $match->starts_at;
 
         return ! $lockAt || now()->lt($lockAt);
     }
 
-    /**
-     * @return Collection<int, array{key: string, label: string, odds: string}>
-     */
-    private function resolveWinnerOptions(EsportMatch $match): Collection
+    private function resolveTab(string $tab): string
     {
-        $market = $match->markets->first();
-        if ($market && $market->selections->isNotEmpty()) {
-            return $market->selections
-                ->sortBy('id')
-                ->map(fn (MatchSelection $selection) => [
-                    'key' => $selection->key,
-                    'label' => $selection->label,
-                    'odds' => number_format((float) $selection->odds, 3),
-                ])
-                ->values();
-        }
+        return in_array($tab, ['upcoming', 'live', 'finished'], true) ? $tab : 'upcoming';
+    }
 
-        return collect([
-            [
-                'key' => MatchSelection::KEY_TEAM_A,
-                'label' => (string) ($match->team_a_name ?: $match->home_team),
-                'odds' => number_format((float) config('betting.odds.winner_fixed', 2.0), 3),
-            ],
-            [
-                'key' => MatchSelection::KEY_TEAM_B,
-                'label' => (string) ($match->team_b_name ?: $match->away_team),
-                'odds' => number_format((float) config('betting.odds.winner_fixed', 2.0), 3),
-            ],
-            [
-                'key' => MatchSelection::KEY_DRAW,
-                'label' => 'Draw',
-                'odds' => number_format((float) config('betting.odds.draw_fixed', 3.0), 3),
-            ],
-        ]);
+    private function buildIndexBaseQuery(string $game, string $eventType, string $search): Builder
+    {
+        return EsportMatch::query()
+            ->withCount(['bets', 'childMatches'])
+            ->with('parentMatch:id,event_name,competition_name')
+            ->when($game !== 'all', fn (Builder $query) => $query->where('game_key', $game))
+            ->when($eventType !== 'all', fn (Builder $query) => $query->where('event_type', $eventType))
+            ->when($search !== '', function (Builder $query) use ($search) {
+                $query->where(function (Builder $nested) use ($search) {
+                    $nested->where('event_name', 'like', '%'.$search.'%')
+                        ->orWhere('competition_name', 'like', '%'.$search.'%')
+                        ->orWhere('competition_stage', 'like', '%'.$search.'%')
+                        ->orWhere('team_a_name', 'like', '%'.$search.'%')
+                        ->orWhere('team_b_name', 'like', '%'.$search.'%')
+                        ->orWhere('home_team', 'like', '%'.$search.'%')
+                        ->orWhere('away_team', 'like', '%'.$search.'%');
+                });
+            });
     }
 }

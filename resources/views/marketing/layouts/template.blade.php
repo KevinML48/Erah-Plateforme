@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="/template/assets/css/theme.css">
   <link rel="stylesheet" href="/template/assets/css/theme-light.css">
   <link rel="stylesheet" href="/template/assets/css/platform-responsive.css">
+  <link rel="stylesheet" href="/template/assets/css/platform-motion.css">
 
   <link rel="preload" href="/template/assets/vendor/fontawesome/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="/template/assets/vendor/fancybox/css/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -192,5 +193,6 @@
   </script>
 
   @yield('page_scripts')
+  <script src="/template/assets/js/platform-motion.js" defer></script>
 </body>
 </html>

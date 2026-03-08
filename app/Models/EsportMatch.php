@@ -13,6 +13,12 @@ class EsportMatch extends Model
 {
     use HasFactory;
 
+    public const EVENT_TYPE_HEAD_TO_HEAD = 'head_to_head';
+    public const EVENT_TYPE_TOURNAMENT_RUN = 'tournament_run';
+
+    public const GAME_VALORANT = 'valorant';
+    public const GAME_ROCKET_LEAGUE = 'rocket_league';
+
     public const STATUS_SCHEDULED = 'scheduled';
     public const STATUS_LOCKED = 'locked';
     public const STATUS_LIVE = 'live';
@@ -32,15 +38,26 @@ class EsportMatch extends Model
     protected $fillable = [
         'match_key',
         'game_key',
+        'event_type',
+        'event_name',
+        'competition_name',
+        'competition_stage',
+        'competition_split',
+        'best_of',
+        'parent_match_id',
         'team_a_name',
         'team_b_name',
         'home_team',
         'away_team',
         'starts_at',
         'locked_at',
+        'ends_at',
         'status',
         'result',
         'finished_at',
+        'team_a_score',
+        'team_b_score',
+        'child_matches_unlocked_at',
         'settled_at',
         'meta',
         'created_by',
@@ -52,12 +69,50 @@ class EsportMatch extends Model
         return [
             'starts_at' => 'datetime',
             'locked_at' => 'datetime',
+            'ends_at' => 'datetime',
             'finished_at' => 'datetime',
+            'child_matches_unlocked_at' => 'datetime',
             'settled_at' => 'datetime',
             'meta' => 'array',
+            'best_of' => 'integer',
+            'parent_match_id' => 'integer',
+            'team_a_score' => 'integer',
+            'team_b_score' => 'integer',
             'created_by' => 'integer',
             'updated_by' => 'integer',
         ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function eventTypes(): array
+    {
+        return [
+            self::EVENT_TYPE_HEAD_TO_HEAD,
+            self::EVENT_TYPE_TOURNAMENT_RUN,
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function supportedGames(): array
+    {
+        return array_keys((array) config('betting.events.games', []));
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    public static function bestOfOptions(): array
+    {
+        return array_map('intval', array_keys((array) config('betting.events.best_of', [
+            1 => 'BO1',
+            3 => 'BO3',
+            5 => 'BO5',
+            7 => 'BO7',
+        ])));
     }
 
     /**
@@ -109,7 +164,49 @@ class EsportMatch extends Model
 
     public function scopePublicFeed(Builder $query): Builder
     {
-        return $query->orderBy('starts_at');
+        return $query
+            ->orderByRaw("case when event_type = ? then 0 else 1 end", [self::EVENT_TYPE_TOURNAMENT_RUN])
+            ->orderBy('starts_at');
+    }
+
+    public function isTournamentRun(): bool
+    {
+        return (string) $this->event_type === self::EVENT_TYPE_TOURNAMENT_RUN;
+    }
+
+    public function isHeadToHead(): bool
+    {
+        return (string) $this->event_type !== self::EVENT_TYPE_TOURNAMENT_RUN;
+    }
+
+    public function hasUnlockedChildMatches(): bool
+    {
+        return $this->child_matches_unlocked_at !== null;
+    }
+
+    public function displayTitle(): string
+    {
+        if ($this->isTournamentRun()) {
+            return (string) ($this->event_name ?: $this->competition_name ?: 'Tournoi Rocket League');
+        }
+
+        $teamA = (string) ($this->team_a_name ?: $this->home_team ?: 'Equipe A');
+        $teamB = (string) ($this->team_b_name ?: $this->away_team ?: 'Equipe B');
+
+        return $teamA.' vs '.$teamB;
+    }
+
+    public function displaySubtitle(): ?string
+    {
+        if ($this->isTournamentRun()) {
+            return collect([
+                $this->competition_name,
+                $this->competition_split,
+                $this->competition_stage,
+            ])->filter()->implode(' • ') ?: null;
+        }
+
+        return null;
     }
 
     public function creator(): BelongsTo
@@ -135,5 +232,15 @@ class EsportMatch extends Model
     public function markets(): HasMany
     {
         return $this->hasMany(MatchMarket::class, 'match_id');
+    }
+
+    public function parentMatch(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_match_id');
+    }
+
+    public function childMatches(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_match_id');
     }
 }

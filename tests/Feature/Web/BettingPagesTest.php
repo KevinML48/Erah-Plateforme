@@ -271,4 +271,32 @@ class BettingPagesTest extends TestCase
         $this->actingAs($admin)->get(route('admin.wallets.grant.create'))->assertOk();
         $this->actingAs($admin)->get(route('admin.matches.manage', $match->id))->assertOk();
     }
+
+    public function test_admin_can_open_matches_index_with_tournament_and_child_matches(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $tournament = EsportMatch::factory()->rocketLeagueTournament()->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'event_name' => 'RLCS Open Europe #2',
+            'competition_name' => 'RLCS Europe',
+            'child_matches_unlocked_at' => now()->subHour(),
+        ]);
+
+        EsportMatch::factory()->rocketLeagueChildMatch($tournament)->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'team_a_name' => 'ERAH Rocket League',
+            'team_b_name' => 'North Star',
+            'home_team' => 'ERAH Rocket League',
+            'away_team' => 'North Star',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.matches.index'))
+            ->assertOk()
+            ->assertSee('RLCS Open Europe #2')
+            ->assertSee('ERAH Rocket League');
+    }
 }

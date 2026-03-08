@@ -229,6 +229,11 @@ class User extends Authenticatable
         return $this->hasMany(UserSupportSubscription::class);
     }
 
+    public function clubReview(): HasOne
+    {
+        return $this->hasOne(ClubReview::class);
+    }
+
     public function supportPublicProfile(): HasOne
     {
         return $this->hasOne(SupporterPublicProfile::class);

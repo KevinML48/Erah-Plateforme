@@ -12,6 +12,8 @@ class MatchMarket extends Model
     use HasFactory;
 
     public const KEY_WINNER = 'WINNER';
+    public const KEY_EXACT_SCORE = 'EXACT_SCORE';
+    public const KEY_TOURNAMENT_FINISH = 'TOURNAMENT_FINISH';
 
     protected $fillable = [
         'match_id',
@@ -35,7 +37,6 @@ class MatchMarket extends Model
 
     public function selections(): HasMany
     {
-        return $this->hasMany(MatchSelection::class, 'market_id');
+        return $this->hasMany(MatchSelection::class, 'market_id')->orderBy('sort_order')->orderBy('id');
     }
 }
-

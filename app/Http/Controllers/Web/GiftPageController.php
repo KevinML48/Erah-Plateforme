@@ -88,6 +88,12 @@ class GiftPageController extends Controller
         );
 
         $gift = Gift::query()->findOrFail($giftId);
+        $categoryKey = $this->resolveCategoryKey($gift);
+        $walletBalance = (int) ($wallet->balance ?? 0);
+        $giftCost = (int) $gift->cost_points;
+        $giftStock = (int) $gift->stock;
+        $isRedeemable = $gift->is_active && $giftStock > 0;
+        $pointsMissing = max(0, $giftCost - $walletBalance);
 
         $myRecentRedemptions = GiftRedemption::query()
             ->where('user_id', $user->id)
@@ -99,6 +105,15 @@ class GiftPageController extends Controller
         return view('pages.gifts.show', [
             'wallet' => $wallet,
             'gift' => $gift,
+            'giftCategoryKey' => $categoryKey,
+            'giftCategoryLabel' => $this->categoryLabel($categoryKey),
+            'giftCover' => $gift->image_url ?: '/template/assets/img/logo.png',
+            'walletBalance' => $walletBalance,
+            'giftCost' => $giftCost,
+            'giftStock' => $giftStock,
+            'isRedeemable' => $isRedeemable,
+            'canAffordGift' => $walletBalance >= $giftCost,
+            'pointsMissing' => $pointsMissing,
             'myRecentRedemptions' => $myRecentRedemptions,
         ]);
     }

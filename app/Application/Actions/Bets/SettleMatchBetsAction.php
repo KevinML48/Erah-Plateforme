@@ -4,6 +4,7 @@ namespace App\Application\Actions\Bets;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\NotifyAction;
+use App\Domain\Betting\Support\MatchOutcomeResolver;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\Bet;
 use App\Models\EsportMatch;
@@ -20,7 +21,8 @@ class SettleMatchBetsAction
     public function __construct(
         private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
         private readonly NotifyAction $notifyAction,
-        private readonly StoreAuditLogAction $storeAuditLogAction
+        private readonly StoreAuditLogAction $storeAuditLogAction,
+        private readonly MatchOutcomeResolver $matchOutcomeResolver
     ) {
     }
 
@@ -31,19 +33,23 @@ class SettleMatchBetsAction
         User $actor,
         int $matchId,
         string $result,
-        string $idempotencyKey
+        string $idempotencyKey,
+        ?int $teamAScore = null,
+        ?int $teamBScore = null
     ): array {
         try {
-            return DB::transaction(function () use ($actor, $matchId, $result, $idempotencyKey) {
+            return DB::transaction(function () use ($actor, $matchId, $result, $idempotencyKey, $teamAScore, $teamBScore) {
                 $match = EsportMatch::query()
                     ->whereKey($matchId)
+                    ->with(['markets' => fn ($query) => $query->where('is_active', true)->with('selections')])
                     ->lockForUpdate()
                     ->firstOrFail();
-
-                $normalizedResult = EsportMatch::normalizeResultKey($result);
-                if (! $normalizedResult) {
-                    throw new RuntimeException('Invalid settlement result.');
-                }
+                $resolved = $this->matchOutcomeResolver->resolve(
+                    $match,
+                    $result,
+                    $teamAScore ?? $match->team_a_score,
+                    $teamBScore ?? $match->team_b_score,
+                );
 
                 $existingSettlement = MatchSettlement::query()
                     ->where('match_id', $match->id)
@@ -81,7 +87,7 @@ class SettleMatchBetsAction
                 $now = now();
 
                 foreach ($pendingBets as $bet) {
-                    if ($normalizedResult === EsportMatch::RESULT_VOID) {
+                    if ($resolved['is_void']) {
                         $bet->status = Bet::STATUS_VOID;
                         $bet->settlement_points = $bet->stake_points;
                         $bet->payout = $bet->stake_points;
@@ -98,28 +104,39 @@ class SettleMatchBetsAction
 
                         $voidCount++;
                         $payoutTotal += $bet->stake_points;
-                    } elseif ($bet->prediction === $normalizedResult) {
-                        $bet->status = Bet::STATUS_WON;
-                        $bet->settlement_points = $bet->potential_payout;
-                        $bet->payout = $bet->potential_payout;
-
-                        $this->applyWalletTransactionAction->execute(
-                            user: $bet->user,
-                            type: WalletTransaction::TYPE_PAYOUT,
-                            amount: (int) $bet->potential_payout,
-                            uniqueKey: 'bet.payout.'.$bet->id,
-                            refType: WalletTransaction::REF_TYPE_BET,
-                            refId: (string) $bet->id,
-                            metadata: ['match_id' => $match->id]
-                        );
-
-                        $wonCount++;
-                        $payoutTotal += $bet->potential_payout;
                     } else {
-                        $bet->status = Bet::STATUS_LOST;
-                        $bet->settlement_points = 0;
-                        $bet->payout = 0;
-                        $lostCount++;
+                        $winningSelection = $resolved['resolved_markets'][$bet->market_key] ?? null;
+                        if ($winningSelection === null) {
+                            throw new RuntimeException('Missing market resolution for '.$bet->market_key.'.');
+                        }
+
+                        if ((string) $bet->selection_key === (string) $winningSelection) {
+                            $bet->status = Bet::STATUS_WON;
+                            $bet->settlement_points = $bet->potential_payout;
+                            $bet->payout = $bet->potential_payout;
+
+                            $this->applyWalletTransactionAction->execute(
+                                user: $bet->user,
+                                type: WalletTransaction::TYPE_PAYOUT,
+                                amount: (int) $bet->potential_payout,
+                                uniqueKey: 'bet.payout.'.$bet->id,
+                                refType: WalletTransaction::REF_TYPE_BET,
+                                refId: (string) $bet->id,
+                                metadata: [
+                                    'match_id' => $match->id,
+                                    'market_key' => $bet->market_key,
+                                    'selection_key' => $bet->selection_key,
+                                ]
+                            );
+
+                            $wonCount++;
+                            $payoutTotal += $bet->potential_payout;
+                        } else {
+                            $bet->status = Bet::STATUS_LOST;
+                            $bet->settlement_points = 0;
+                            $bet->payout = 0;
+                            $lostCount++;
+                        }
                     }
 
                     $bet->settled_at = $now;
@@ -133,6 +150,8 @@ class SettleMatchBetsAction
                         data: [
                             'bet_id' => $bet->id,
                             'match_id' => $match->id,
+                            'market_key' => $bet->market_key,
+                            'selection_key' => $bet->selection_key,
                             'status' => $bet->status,
                             'settlement_points' => $bet->settlement_points,
                         ],
@@ -140,7 +159,9 @@ class SettleMatchBetsAction
                 }
 
                 $match->status = EsportMatch::STATUS_FINISHED;
-                $match->result = $normalizedResult;
+                $match->result = $resolved['stored_result'];
+                $match->team_a_score = $resolved['team_a_score'];
+                $match->team_b_score = $resolved['team_b_score'];
                 $match->finished_at = $match->finished_at ?? $now;
                 $match->settled_at = $now;
                 $match->updated_by = $actor->id;
@@ -149,7 +170,7 @@ class SettleMatchBetsAction
                 $settlement = MatchSettlement::query()->create([
                     'match_id' => $match->id,
                     'idempotency_key' => $idempotencyKey,
-                    'result' => $normalizedResult,
+                    'result' => $resolved['stored_result'],
                     'bets_total' => $pendingBets->count(),
                     'won_count' => $wonCount,
                     'lost_count' => $lostCount,
@@ -157,7 +178,11 @@ class SettleMatchBetsAction
                     'payout_total' => $payoutTotal,
                     'processed_by' => $actor->id,
                     'processed_at' => $now,
-                    'meta' => null,
+                    'meta' => [
+                        'resolved_markets' => $resolved['resolved_markets'],
+                        'team_a_score' => $resolved['team_a_score'],
+                        'team_b_score' => $resolved['team_b_score'],
+                    ],
                 ]);
 
                 $this->storeAuditLogAction->execute(
@@ -167,7 +192,9 @@ class SettleMatchBetsAction
                     context: [
                         'match_id' => $match->id,
                         'match_key' => $match->match_key,
-                        'result' => $normalizedResult,
+                        'result' => $resolved['stored_result'],
+                        'team_a_score' => $resolved['team_a_score'],
+                        'team_b_score' => $resolved['team_b_score'],
                         'idempotency_key' => $idempotencyKey,
                         'bets_total' => $pendingBets->count(),
                         'won_count' => $wonCount,

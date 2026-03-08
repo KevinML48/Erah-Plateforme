@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Application\Actions\Bets\CancelBetAction;
+use App\Domain\Betting\Support\MatchMarketCatalog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\CancelBetRequest;
 use App\Models\Bet;
@@ -15,13 +16,13 @@ use RuntimeException;
 
 class BetPageController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, MatchMarketCatalog $matchMarketCatalog): View
     {
         $tab = (string) $request->query('tab', 'active');
 
         $query = Bet::query()
             ->where('user_id', auth()->id())
-            ->with('match:id,match_key,home_team,away_team,starts_at,locked_at,status,result,settled_at')
+            ->with('match.markets.selections')
             ->orderByDesc('id');
 
         if ($tab === 'settled') {
@@ -39,6 +40,7 @@ class BetPageController extends Controller
         return view('pages.bets.index', [
             'tab' => $tab,
             'bets' => $query->paginate(12)->withQueryString(),
+            'matchLabelResolver' => $matchMarketCatalog,
         ]);
     }
 

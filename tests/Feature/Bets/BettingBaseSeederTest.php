@@ -25,10 +25,12 @@ class BettingBaseSeederTest extends TestCase
         $this->assertTrue(Schema::hasTable('wallet_transactions'));
         $this->assertTrue(Schema::hasTable('bet_settlements'));
 
-        $this->assertDatabaseCount('matches', 8);
+        $this->assertDatabaseCount('matches', 12);
         $this->assertDatabaseHas('matches', ['match_key' => 'bet-v1-scheduled-1', 'status' => 'scheduled']);
         $this->assertDatabaseHas('matches', ['match_key' => 'bet-v1-live-1', 'status' => 'live']);
         $this->assertDatabaseHas('matches', ['match_key' => 'bet-v1-finished-1', 'status' => 'finished']);
+        $this->assertDatabaseHas('matches', ['match_key' => 'bet-v2-rl-tournament-open', 'event_type' => 'tournament_run']);
+        $this->assertDatabaseHas('matches', ['match_key' => 'bet-v2-rl-child-1', 'parent_match_id' => \App\Models\EsportMatch::query()->where('match_key', 'bet-v2-rl-tournament-top16')->value('id')]);
 
         $scheduled = \App\Models\EsportMatch::query()->where('match_key', 'bet-v1-scheduled-1')->firstOrFail();
         $market = MatchMarket::query()->where('match_id', $scheduled->id)->where('key', MatchMarket::KEY_WINNER)->firstOrFail();
@@ -36,6 +38,10 @@ class BettingBaseSeederTest extends TestCase
         $this->assertDatabaseHas('match_selections', ['market_id' => $market->id, 'key' => MatchSelection::KEY_TEAM_A]);
         $this->assertDatabaseHas('match_selections', ['market_id' => $market->id, 'key' => MatchSelection::KEY_TEAM_B]);
         $this->assertDatabaseHas('match_selections', ['market_id' => $market->id, 'key' => MatchSelection::KEY_DRAW]);
+
+        $tournament = \App\Models\EsportMatch::query()->where('match_key', 'bet-v2-rl-tournament-open')->firstOrFail();
+        $tournamentMarket = MatchMarket::query()->where('match_id', $tournament->id)->where('key', MatchMarket::KEY_TOURNAMENT_FINISH)->firstOrFail();
+        $this->assertDatabaseHas('match_selections', ['market_id' => $tournamentMarket->id, 'key' => MatchSelection::KEY_TOP_16]);
 
         $usersCount = User::query()->count();
         $this->assertDatabaseCount('user_wallets', $usersCount);
@@ -48,4 +54,3 @@ class BettingBaseSeederTest extends TestCase
         $this->assertDatabaseHas('bet_settlements', ['outcome' => Bet::STATUS_WON]);
     }
 }
-

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             BettingBaseSeeder::class,
             MissionsAndGiftsSeeder::class,
             SupporterProgramSeeder::class,
+            ClubReviewSeeder::class,
         ]);
     }
 }

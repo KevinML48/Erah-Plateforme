@@ -67,6 +67,8 @@ class BetController extends Controller
         return [
             'id' => $bet->id,
             'match_id' => $bet->match_id,
+            'market_key' => $bet->market_key,
+            'selection_key' => $bet->selection_key,
             'prediction' => $bet->prediction,
             'stake_points' => $bet->stake_points,
             'potential_payout' => $bet->potential_payout,

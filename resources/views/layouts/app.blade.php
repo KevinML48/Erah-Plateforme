@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Plateforme ERAH">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="/template/assets/css/platform-motion.css">
     <style>
         .app-toast-stack { position: fixed; top: 16px; right: 16px; width: min(420px, calc(100vw - 24px)); display: grid; gap: 10px; z-index: 2000; pointer-events: none; }
         .app-toast { margin: 0; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(0, 0, 0, .15); box-shadow: 0 10px 28px rgba(0, 0, 0, .2); backdrop-filter: blur(4px); pointer-events: auto; transition: opacity .2s ease, transform .2s ease; }
@@ -19,7 +20,7 @@
         @media (max-width: 991.98px) { .app-toast-stack { top: 10px; right: 10px; width: calc(100vw - 20px); } }
     </style>
 </head>
-<body>
+<body class="platform-app">
 <header>
     <div class="container">
         <div class="header-row">
@@ -137,5 +138,6 @@
         }, 5200);
     });
 </script>
+<script src="/template/assets/js/platform-motion.js" defer></script>
 </body>
 </html>

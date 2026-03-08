@@ -59,6 +59,31 @@ class MissionsAndGiftsPagesTest extends TestCase
             ->assertSee('Cadeaux');
     }
 
+    public function test_user_can_view_gift_detail_page(): void
+    {
+        $user = User::factory()->create();
+
+        $gift = Gift::query()->create([
+            'title' => 'Sticker Pack ERAH',
+            'description' => 'Pack officiel de stickers.',
+            'image_url' => null,
+            'cost_points' => 180,
+            'stock' => 40,
+            'is_active' => true,
+        ]);
+
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 400,
+        ]);
+
+        $this->actingAs($user)->get(route('gifts.show', $gift->id))
+            ->assertOk()
+            ->assertSee('Sticker Pack ERAH')
+            ->assertSee('Demander ce cadeau')
+            ->assertSee('Mes demandes recentes');
+    }
+
     public function test_user_can_redeem_gift_once_with_idempotent_replay(): void
     {
         $user = User::factory()->create();
@@ -150,4 +175,3 @@ class MissionsAndGiftsPagesTest extends TestCase
         ]);
     }
 }
-

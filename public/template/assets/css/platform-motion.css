@@ -1,0 +1,149 @@
+:root {
+    --platform-motion-ease: cubic-bezier(.22, 1, .36, 1);
+    --platform-motion-shadow-dark: 0 24px 52px rgba(0, 0, 0, .24);
+    --platform-motion-shadow-light: 0 22px 44px rgba(18, 23, 35, .12);
+    --platform-motion-border: rgba(224, 0, 0, .28);
+}
+
+.platform-motion-surface,
+.platform-motion-button,
+.platform-motion-nav-link {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+.platform-motion-surface {
+    position: relative;
+    isolation: isolate;
+    transition:
+        transform .6s var(--platform-motion-ease),
+        box-shadow .55s var(--platform-motion-ease),
+        border-color .35s ease,
+        background .35s ease,
+        background-color .35s ease,
+        filter .35s ease;
+}
+
+.platform-motion-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(460px circle at var(--motion-x, 50%) var(--motion-y, 50%), rgba(255, 255, 255, .12), transparent 42%);
+    transition: opacity .35s ease;
+}
+
+body.tt-lightmode-on .platform-motion-surface::before,
+body.platform-app .platform-motion-surface::before {
+    background: radial-gradient(460px circle at var(--motion-x, 50%) var(--motion-y, 50%), rgba(224, 0, 0, .12), transparent 42%);
+}
+
+.platform-motion-button:not(.tt-btn),
+.platform-motion-nav-link {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform .3s var(--platform-motion-ease),
+        box-shadow .35s var(--platform-motion-ease),
+        border-color .25s ease,
+        background .25s ease,
+        color .25s ease;
+}
+
+.platform-motion-button:not(.tt-btn)::after,
+.platform-motion-nav-link::after {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: .7;
+    background: linear-gradient(110deg, transparent 12%, rgba(255, 255, 255, .22) 48%, transparent 82%);
+    transform: translate3d(-120%, 0, 0);
+    transition: transform .6s var(--platform-motion-ease), opacity .25s ease;
+}
+
+body.platform-app .platform-motion-button:not(.tt-btn)::after,
+body.platform-app .platform-motion-nav-link::after {
+    background: linear-gradient(110deg, transparent 12%, rgba(255, 255, 255, .16) 48%, transparent 82%);
+}
+
+.platform-motion-button:focus-visible,
+.platform-motion-nav-link:focus-visible,
+.platform-motion-surface:focus-within {
+    outline: 2px solid rgba(224, 0, 0, .4);
+    outline-offset: 3px;
+}
+
+body.platform-app .section,
+body.platform-app .ui-card,
+body.platform-app .app-card,
+body.platform-app .table-wrap {
+    transform-origin: 50% 100%;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .platform-motion-surface:hover,
+    .platform-motion-surface:focus-within {
+        transform: translate3d(0, -8px, 0);
+        box-shadow: var(--platform-motion-shadow-dark);
+        border-color: var(--platform-motion-border);
+        filter: saturate(1.04);
+    }
+
+    body.tt-lightmode-on .platform-motion-surface:hover,
+    body.tt-lightmode-on .platform-motion-surface:focus-within,
+    body.platform-app .platform-motion-surface:hover,
+    body.platform-app .platform-motion-surface:focus-within {
+        box-shadow: var(--platform-motion-shadow-light);
+    }
+
+    .platform-motion-surface:hover::before,
+    .platform-motion-surface:focus-within::before {
+        opacity: 1;
+    }
+
+    .platform-motion-button:not(.tt-btn):hover,
+    .platform-motion-button:not(.tt-btn):focus-visible,
+    .platform-motion-nav-link:hover,
+    .platform-motion-nav-link:focus-visible {
+        transform: translate3d(0, -2px, 0);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, .18);
+    }
+
+    .platform-motion-button:not(.tt-btn):hover::after,
+    .platform-motion-button:not(.tt-btn):focus-visible::after,
+    .platform-motion-nav-link:hover::after,
+    .platform-motion-nav-link:focus-visible::after {
+        transform: translate3d(120%, 0, 0);
+    }
+
+    .adm-nav .platform-motion-button.tt-btn,
+    .adm-row-actions .platform-motion-button.tt-btn,
+    .adm-filter-actions .platform-motion-button.tt-btn {
+        transition: box-shadow .35s var(--platform-motion-ease), filter .35s ease;
+    }
+
+    .adm-nav .platform-motion-button.tt-btn:hover,
+    .adm-row-actions .platform-motion-button.tt-btn:hover,
+    .adm-filter-actions .platform-motion-button.tt-btn:hover {
+        box-shadow: 0 14px 32px rgba(0, 0, 0, .16);
+        filter: saturate(1.04);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .platform-motion-surface,
+    .platform-motion-button,
+    .platform-motion-nav-link {
+        transition: none !important;
+    }
+
+    .platform-motion-surface::before,
+    .platform-motion-button::after,
+    .platform-motion-nav-link::after {
+        display: none !important;
+    }
+}

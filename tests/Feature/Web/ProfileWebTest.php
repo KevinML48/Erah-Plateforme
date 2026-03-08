@@ -69,10 +69,7 @@ class ProfileWebTest extends TestCase
             'discord_url' => 'https://discord.gg/publicplayer',
         ]);
 
-        $this->get(route('users.public', $user))
-            ->assertRedirect(route('login'));
-
-        $response = $this->actingAs($viewer)->get(route('users.public', $user));
+        $response = $this->get(route('users.public', $user));
 
         $response->assertOk();
         $response->assertSee('Public Player');
@@ -81,5 +78,9 @@ class ProfileWebTest extends TestCase
         $response->assertSee('https://instagram.com/publicplayer', false);
         $response->assertSee('https://tiktok.com/@publicplayer', false);
         $response->assertSee('https://discord.gg/publicplayer', false);
+
+        $this->actingAs($viewer)->get(route('users.public', $user))
+            ->assertOk()
+            ->assertSee('Public Player');
     }
 }

@@ -59,6 +59,53 @@
                                 <span>Commentaire prioritaire</span>
                             </div>
                         @endif
+
+                        @if(($comment->replies ?? collect())->count())
+                            <div class="margin-top-20">
+                                @foreach($comment->replies as $reply)
+                                    @php
+                                        $replyAuthor = $reply->user?->name ?? 'Utilisateur';
+                                        $replyProfileUrl = $reply->user ? route('users.public', $reply->user) : null;
+                                    @endphp
+                                    <div class="clip-comment-item margin-top-15">
+                                        <div>
+                                            <div class="clip-comment-header">
+                                                <div class="clip-comment-author">
+                                                    @if($replyProfileUrl)
+                                                        <h4 class="clip-comment-author-name">
+                                                            <a href="{{ $replyProfileUrl }}">{{ $replyAuthor }}</a>
+                                                        </h4>
+                                                    @else
+                                                        <h4 class="clip-comment-author-name">{{ $replyAuthor }}</h4>
+                                                    @endif
+                                                    <span class="clip-comment-badge">Reponse</span>
+                                                </div>
+                                                <div class="clip-comment-meta">
+                                                    <span>{{ optional($reply->created_at)->format('d/m/Y H:i') }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="clip-comment-body-text">
+                                                <p>{!! nl2br(e((string) $reply->body)) !!}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @auth
+                            <form method="POST" action="{{ route($commentStoreRouteName, $clip->id) }}" class="margin-top-20">
+                                @csrf
+                                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                <div class="tt-form-group">
+                                    <label for="reply_{{ $comment->id }}">Repondre</label>
+                                    <textarea class="tt-form-control" id="reply_{{ $comment->id }}" name="body" rows="3" maxlength="2000"></textarea>
+                                </div>
+                                <button type="submit" class="tt-btn tt-btn-outline margin-top-10">
+                                    <span data-hover="Publier la reponse">Publier la reponse</span>
+                                </button>
+                            </form>
+                        @endauth
                     </div>
                 </li>
             @endforeach

@@ -325,6 +325,10 @@
                             <div class="adm-empty">Aucun template mission.</div>
                         @endif
                     </section>
+
+                    @include('pages.admin.missions.partials.quizzes')
+                    @include('pages.admin.missions.partials.live-codes')
+                    @include('pages.admin.missions.partials.events')
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             MissionsAndGiftsSeeder::class,
             SupporterProgramSeeder::class,
             ClubReviewSeeder::class,
+            CommunityPlatformSeeder::class,
         ]);
     }
 }

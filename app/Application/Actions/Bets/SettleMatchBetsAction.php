@@ -11,6 +11,7 @@ use App\Models\EsportMatch;
 use App\Models\MatchSettlement;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Services\BetService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,8 @@ class SettleMatchBetsAction
         private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction,
-        private readonly MatchOutcomeResolver $matchOutcomeResolver
+        private readonly MatchOutcomeResolver $matchOutcomeResolver,
+        private readonly BetService $betService
     ) {
     }
 
@@ -141,6 +143,7 @@ class SettleMatchBetsAction
 
                     $bet->settled_at = $now;
                     $bet->save();
+                    $this->betService->rewardSettlement($bet->fresh('user'));
 
                     $this->notifyAction->execute(
                         user: $bet->user,

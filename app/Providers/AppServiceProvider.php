@@ -8,7 +8,9 @@ use App\Policies\ClipPolicy;
 use App\Policies\CommentPolicy;
 use App\Services\ClubReviewPresenter;
 use App\Services\MarketingHomeActivityService;
+use App\Services\StreakService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -58,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(function (SocialiteWasCalled $event): void {
             $event->extendSocialite('discord', Provider::class);
+        });
+
+        Event::listen(function (Login $event): void {
+            app(StreakService::class)->handleLogin($event->user);
         });
 
         RateLimiter::for('auth-login', function (Request $request) {

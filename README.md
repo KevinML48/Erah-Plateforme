@@ -1,66 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ERAH Plateforme
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plateforme communautaire esport Laravel 11 pour ERAH, avec modules clips, paris, duels, missions, cadeaux, profils publics, avis membres, galerie, et maintenant un socle communautaire complet:
 
-## About Laravel
+- ligues communautaires basees sur l XP
+- leaderboards XP / rang / duel
+- rewards clips avec caps journaliers
+- commentaires clips avec reponses niveau 1
+- quiz et tentatives
+- codes live et redemptions
+- resultats de duels admin
+- succes permanents
+- streak de connexion
+- boutique communautaire
+- evenements dynamiques
+- push subscriptions et PWA minimale
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Architecture
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Le projet conserve les modules existants et ajoute une couche metier dediee dans `app/Services`:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- `WalletService`
+- `RewardGrantService`
+- `RankService`
+- `LeaderboardService`
+- `ClipRewardService`
+- `MissionEngine`
+- `QuizService`
+- `LiveCodeService`
+- `DuelService`
+- `BetService`
+- `AchievementService`
+- `StreakService`
+- `ShopService`
+- `PushNotificationService`
+- `EventService`
 
-## Learning Laravel
+Les controllers restent minces et s appuient sur ces services. Les pages web reutilisent les layouts Blade existants et les nouveaux ecrans marketing/admin s alignent sur `templates-neuf`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Donnees ajoutees
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Migrations communautaires:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `2026_03_09_100000_create_community_platform_foundations.php`
+- `2026_03_09_100100_extend_clip_comments_and_create_views.php`
+- `2026_03_09_100200_create_quiz_tables.php`
+- `2026_03_09_100300_create_live_code_tables.php`
+- `2026_03_09_100400_create_achievement_tables.php`
+- `2026_03_09_100500_create_shop_tables.php`
+- `2026_03_09_100600_create_duel_results_table_and_extend_progress.php`
 
-## Laravel Sponsors
+Seeder communautaire:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- `database/seeders/CommunityPlatformSeeder.php`
 
-### Premium Partners
+Ce seeder initialise:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- les succes par defaut
+- les objets boutique par defaut
+- un quiz communautaire de demonstration
+- un code live publie
+- un evenement dynamique bonus clips
 
-## Contributing
+## Routes principales ajoutees
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Web app / console:
 
-## Code of Conduct
+- `/app/quizzes`, `/console/quizzes`
+- `/app/live-codes`, `/console/live-codes`
+- `/app/statistics`, `/console/statistics`
+- `/app/achievements`, `/console/achievements`
+- `/app/shop`, `/console/shop`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Admin:
 
-## Security Vulnerabilities
+- `/console/admin/missions`
+- `/console/admin/quizzes`
+- `/console/admin/live-codes`
+- `/console/admin/events`
+- `/console/admin/duels/{duelId}/result`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+API:
 
-## License
+- `GET /api/community/leaderboards`
+- `POST /api/me/push-subscriptions`
+- `DELETE /api/me/push-subscriptions`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## PWA
+
+Fichiers publics:
+
+- `public/manifest.json`
+- `public/sw.js`
+
+Le manifest est branche sur les layouts app, guest et marketing. Le service worker est enregistre cote app via `resources/js/app.js` et cote marketing dans le layout template.
+
+## Mise en route
+
+```bash
+composer install
+npm install
+php artisan migrate
+php artisan db:seed
+npm run build
+php artisan view:cache
+php artisan test
+```
+
+Pour seed uniquement le module communautaire:
+
+```bash
+php artisan db:seed --class=CommunityPlatformSeeder
+```
+
+## Verification
+
+Validation effectuee sur cette implementation:
+
+- `npm run build`
+- `php artisan view:cache`
+- `php artisan test`
+
+Resultat:
+
+- `103 passed`
+
+## Notes
+
+- Le systeme de ligues competitives existant base sur les `rank_points` est conserve.
+- Les nouvelles ligues communautaires basees sur l XP vivent a cote via `RankService` et `user_rank_histories`.
+- Les nouvelles recompenses communautaires sont idempotentes via `community_reward_grants`.
+- Le front desktop existant n est pas refondu; les nouvelles pages et sections reutilisent les patterns Blade / templates deja presents.

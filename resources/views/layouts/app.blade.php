@@ -5,6 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Plateforme ERAH">
+    <meta name="theme-color" content="#d80707">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="/template/assets/css/platform-motion.css">
     <style>

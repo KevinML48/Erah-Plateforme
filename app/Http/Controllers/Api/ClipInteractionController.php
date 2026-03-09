@@ -111,7 +111,12 @@ class ClipInteractionController extends Controller
     ): JsonResponse {
         try {
             $clip = $this->resolvePublishedClip($id);
-            $comment = $addClipCommentAction->execute($request->user(), $clip, $request->validated('body'));
+            $comment = $addClipCommentAction->execute(
+                $request->user(),
+                $clip,
+                $request->validated('body'),
+                $request->validated('parent_id'),
+            );
         } catch (ModelNotFoundException) {
             return response()->json(['message' => 'Clip not found.'], 404);
         } catch (RuntimeException $exception) {
@@ -122,6 +127,7 @@ class ClipInteractionController extends Controller
             'data' => [
                 'id' => $comment->id,
                 'clip_id' => $comment->clip_id,
+                'parent_id' => $comment->parent_id,
                 'body' => $comment->body,
                 'user' => [
                     'id' => $comment->user?->id,

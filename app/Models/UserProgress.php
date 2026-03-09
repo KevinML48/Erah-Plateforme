@@ -20,6 +20,9 @@ class UserProgress extends Model
         'current_league_id',
         'total_xp',
         'total_rank_points',
+        'duel_score',
+        'duel_wins',
+        'duel_losses',
         'last_points_at',
     ];
 
@@ -30,6 +33,9 @@ class UserProgress extends Model
             'current_league_id' => 'integer',
             'total_xp' => 'integer',
             'total_rank_points' => 'integer',
+            'duel_score' => 'integer',
+            'duel_wins' => 'integer',
+            'duel_losses' => 'integer',
             'last_points_at' => 'datetime',
         ];
     }

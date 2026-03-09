@@ -14,6 +14,7 @@ class Duel extends Model
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_ACCEPTED = 'accepted';
+    public const STATUS_SETTLED = 'settled';
     public const STATUS_REFUSED = 'refused';
     public const STATUS_EXPIRED = 'expired';
 
@@ -53,6 +54,7 @@ class Duel extends Model
         return [
             self::STATUS_PENDING,
             self::STATUS_ACCEPTED,
+            self::STATUS_SETTLED,
             self::STATUS_REFUSED,
             self::STATUS_EXPIRED,
         ];
@@ -79,5 +81,10 @@ class Duel extends Model
     public function events(): HasMany
     {
         return $this->hasMany(DuelEvent::class);
+    }
+
+    public function result()
+    {
+        return $this->hasOne(DuelResult::class);
     }
 }

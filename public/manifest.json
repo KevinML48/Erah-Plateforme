@@ -1,0 +1,17 @@
+{
+  "name": "ERAH Plateforme",
+  "short_name": "ERAH",
+  "start_url": "/console/dashboard",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#d80707",
+  "description": "Plateforme communautaire esport ERAH.",
+  "icons": [
+    {
+      "src": "/template/assets/img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

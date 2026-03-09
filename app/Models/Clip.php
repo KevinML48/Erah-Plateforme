@@ -72,6 +72,11 @@ class Clip extends Model
         return $this->hasMany(ClipComment::class);
     }
 
+    public function views(): HasMany
+    {
+        return $this->hasMany(ClipView::class);
+    }
+
     public function shares(): HasMany
     {
         return $this->hasMany(ClipShare::class);

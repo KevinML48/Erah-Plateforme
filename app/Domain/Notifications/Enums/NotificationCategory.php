@@ -9,6 +9,11 @@ enum NotificationCategory: string
     case SYSTEM = 'system';
     case MATCH = 'match';
     case BET = 'bet';
+    case MISSION = 'mission';
+    case COMMENT = 'comment';
+    case QUIZ = 'quiz';
+    case LIVE_CODE = 'live_code';
+    case ACHIEVEMENT = 'achievement';
 
     /**
      * @return array<int, string>

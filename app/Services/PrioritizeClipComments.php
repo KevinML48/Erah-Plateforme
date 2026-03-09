@@ -18,6 +18,8 @@ class PrioritizeClipComments
 
         return ClipComment::query()
             ->where('clip_comments.clip_id', $clip->id)
+            ->whereNull('clip_comments.parent_id')
+            ->where('clip_comments.status', ClipComment::STATUS_PUBLISHED)
             ->leftJoinSub($activeSupporters, 'supporter_flags', function ($join): void {
                 $join->on('supporter_flags.user_id', '=', 'clip_comments.user_id');
             })
@@ -25,7 +27,13 @@ class PrioritizeClipComments
                 'clip_comments.*',
                 DB::raw('COALESCE(supporter_flags.supporter_priority, 0) as supporter_priority'),
             ])
-            ->with('user:id,name,avatar_path')
+            ->with([
+                'user:id,name,avatar_path',
+                'replies' => fn ($query) => $query
+                    ->where('status', ClipComment::STATUS_PUBLISHED)
+                    ->with('user:id,name,avatar_path')
+                    ->orderBy('id'),
+            ])
             ->orderByDesc('supporter_priority')
             ->orderByDesc('clip_comments.id')
             ->paginate($perPage, ['*'], 'comments_page', $page);

@@ -7,6 +7,8 @@
   <meta name="description" content="@yield('meta_description', 'ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.')">
   <meta name="keywords" content="@yield('meta_keywords', 'ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique')">
   <meta name="author" content="@yield('meta_author', 'ERAH Esport')">
+  <meta name="theme-color" content="#d80707">
+  <link rel="manifest" href="/manifest.json">
 
   <link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">
   <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
@@ -188,6 +190,21 @@
         link.addEventListener('click', function () {
           mobileToggle.click();
         });
+      });
+    });
+
+    window.addEventListener('load', function () {
+      if (!('serviceWorker' in navigator)) {
+        return;
+      }
+
+      var isLocalhost = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
+      if (window.location.protocol !== 'https:' && !isLocalhost) {
+        return;
+      }
+
+      navigator.serviceWorker.register('/sw.js').catch(function () {
+        // Additive registration only.
       });
     });
   </script>

@@ -10,6 +10,8 @@ use App\Models\LeaguePromotion;
 use App\Models\PointsTransaction;
 use App\Models\User;
 use App\Models\UserProgress;
+use App\Services\RankService;
+use App\Services\StreakService;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
@@ -21,7 +23,9 @@ class AddPointsAction
     public function __construct(
         private readonly EnsureUserProgressAction $ensureUserProgressAction,
         private readonly StoreAuditLogAction $storeAuditLogAction,
-        private readonly NotifyAction $notifyAction
+        private readonly NotifyAction $notifyAction,
+        private readonly StreakService $streakService,
+        private readonly RankService $rankService
     ) {
     }
 
@@ -46,8 +50,12 @@ class AddPointsAction
             $points = max(1, (int) ceil($points * (float) config('supporter.xp_multiplier', 1)));
         }
 
+        if ($kind === PointsTransaction::KIND_XP) {
+            $points = max(1, (int) ceil($points * $this->streakService->xpMultiplierFor($user)));
+        }
+
         try {
-            return DB::transaction(function () use ($user, $kind, $points, $sourceType, $sourceId, $actor, $meta) {
+            $result = DB::transaction(function () use ($user, $kind, $points, $sourceType, $sourceId, $actor, $meta) {
                 $progress = $this->ensureUserProgressAction->execute($user);
                 $progress = UserProgress::query()
                     ->where('user_id', $user->id)
@@ -140,6 +148,12 @@ class AddPointsAction
                     promotions: $promotions,
                 );
             });
+
+            if ($kind === PointsTransaction::KIND_XP) {
+                $this->rankService->sync($user);
+            }
+
+            return $result;
         } catch (QueryException $exception) {
             $message = $exception->getMessage();
             $isIdempotenceCollision = str_contains($message, 'points_idempotence_unique')
@@ -162,12 +176,18 @@ class AddPointsAction
                 ->orderBy('id')
                 ->get();
 
-            return new AddPointsResult(
+            $result = new AddPointsResult(
                 idempotent: true,
                 transaction: $existing,
                 progress: $progress->fresh(['league']),
                 promotions: $promotions,
             );
+
+            if ($kind === PointsTransaction::KIND_XP) {
+                $this->rankService->sync($user);
+            }
+
+            return $result;
         }
     }
 

@@ -3,12 +3,16 @@
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\App\ShortcutController;
 use App\Http\Controllers\TestConsole\AdminGiftConsoleController;
-use App\Http\Controllers\TestConsole\AdminMissionConsoleController;
 use App\Http\Controllers\TestConsole\RankingConsoleController;
 use App\Http\Controllers\TestConsole\UsersConsoleController;
 use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
+use App\Http\Controllers\Web\Admin\AdminDuelResultController;
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
+use App\Http\Controllers\Web\Admin\AdminLiveCodeController;
+use App\Http\Controllers\Web\Admin\AdminMissionController;
+use App\Http\Controllers\Web\Admin\AdminPlatformEventController;
+use App\Http\Controllers\Web\Admin\AdminQuizController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipCampaignAdminController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
@@ -25,18 +29,23 @@ use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\DuelsPageController;
 use App\Http\Controllers\Web\GiftPageController;
+use App\Http\Controllers\Web\LiveCodePageController;
 use App\Http\Controllers\Web\LeaderboardPageController;
 use App\Http\Controllers\Web\MatchPageController;
 use App\Http\Controllers\Web\MissionPageController;
 use App\Http\Controllers\Web\NotificationsPageController;
 use App\Http\Controllers\Web\OnboardingController;
+use App\Http\Controllers\Web\QuizPageController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\ProfileClubReviewController;
 use App\Http\Controllers\Web\PublicProfileController;
 use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\ShopPageController;
 use App\Http\Controllers\Web\StripeWebhookController;
+use App\Http\Controllers\Web\StatisticsPageController;
 use App\Http\Controllers\Web\SupporterConsoleController;
 use App\Http\Controllers\Web\SupporterPageController;
+use App\Http\Controllers\Web\AchievementPageController;
 use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use App\Http\Controllers\Web\Admin\ClubReviewAdminController;
@@ -94,6 +103,15 @@ Route::prefix('app')->middleware('auth')->group(function () {
 
     Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
     Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
+    Route::get('/quizzes', [QuizPageController::class, 'index'])->name('app.quizzes.index');
+    Route::get('/quizzes/{slug}', [QuizPageController::class, 'show'])->name('app.quizzes.show');
+    Route::post('/quizzes/{slug}/attempts', [QuizPageController::class, 'attempt'])->name('app.quizzes.attempt');
+    Route::get('/live-codes', [LiveCodePageController::class, 'index'])->name('app.live-codes.index');
+    Route::post('/live-codes/redeem', [LiveCodePageController::class, 'redeem'])->name('app.live-codes.redeem');
+    Route::get('/statistics', StatisticsPageController::class)->name('app.statistics.index');
+    Route::get('/achievements', AchievementPageController::class)->name('app.achievements.index');
+    Route::get('/shop', [ShopPageController::class, 'index'])->name('app.shop.index');
+    Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('app.shop.purchase');
     Route::get('/duels', [DuelsPageController::class, 'index'])->name('app.duels.index');
     Route::get('/paris', [BetPageController::class, 'index'])->name('app.bets.index');
     Route::delete('/paris/{betId}', [BetPageController::class, 'cancel'])
@@ -184,12 +202,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/leaderboards/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('leaderboards.show');
 
         Route::get('/missions', [MissionPageController::class, 'index'])->name('missions.index');
-        Route::post('/missions/generate/daily', [AdminMissionConsoleController::class, 'generateDaily'])
+        Route::post('/missions/generate/daily', [AdminMissionController::class, 'generateDaily'])
             ->middleware('admin')
             ->name('missions.generate.daily');
-        Route::post('/missions/generate/weekly', [AdminMissionConsoleController::class, 'generateWeekly'])
+        Route::post('/missions/generate/weekly', [AdminMissionController::class, 'generateWeekly'])
             ->middleware('admin')
             ->name('missions.generate.weekly');
+
+        Route::get('/quizzes', [QuizPageController::class, 'index'])->name('quizzes.index');
+        Route::get('/quizzes/{slug}', [QuizPageController::class, 'show'])->name('quizzes.show');
+        Route::post('/quizzes/{slug}/attempts', [QuizPageController::class, 'attempt'])->name('quizzes.attempt');
+
+        Route::get('/live-codes', [LiveCodePageController::class, 'index'])->name('live-codes.index');
+        Route::post('/live-codes/redeem', [LiveCodePageController::class, 'redeem'])->name('live-codes.redeem');
+
+        Route::get('/statistics', StatisticsPageController::class)->name('statistics.index');
+        Route::get('/achievements', AchievementPageController::class)->name('achievements.index');
+        Route::get('/shop', [ShopPageController::class, 'index'])->name('shop.index');
+        Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('shop.purchase');
 
         Route::get('/gifts', [GiftPageController::class, 'index'])->name('gifts.index');
         Route::get('/gifts/redemptions', [GiftPageController::class, 'redemptions'])->name('gifts.redemptions');
@@ -281,10 +311,20 @@ Route::middleware('auth')->group(function () {
             Route::post('/redemptions/{redemptionId}/ship', [AdminGiftConsoleController::class, 'ship'])->name('admin.redemptions.ship');
             Route::post('/redemptions/{redemptionId}/deliver', [AdminGiftConsoleController::class, 'deliver'])->name('admin.redemptions.deliver');
 
-            Route::get('/missions', [AdminMissionConsoleController::class, 'index'])->name('admin.missions.index');
-            Route::post('/missions', [AdminMissionConsoleController::class, 'storeTemplate'])->name('admin.missions.store');
-            Route::put('/missions/{templateId}', [AdminMissionConsoleController::class, 'updateTemplate'])->name('admin.missions.update');
-            Route::delete('/missions/{templateId}', [AdminMissionConsoleController::class, 'destroyTemplate'])->name('admin.missions.destroy');
+            Route::get('/missions', [AdminMissionController::class, 'index'])->name('admin.missions.index');
+            Route::post('/missions', [AdminMissionController::class, 'storeTemplate'])->name('admin.missions.store');
+            Route::put('/missions/{templateId}', [AdminMissionController::class, 'updateTemplate'])->name('admin.missions.update');
+            Route::delete('/missions/{templateId}', [AdminMissionController::class, 'destroyTemplate'])->name('admin.missions.destroy');
+            Route::post('/quizzes', [AdminQuizController::class, 'store'])->name('admin.quizzes.store');
+            Route::put('/quizzes/{quizId}', [AdminQuizController::class, 'update'])->name('admin.quizzes.update');
+            Route::delete('/quizzes/{quizId}', [AdminQuizController::class, 'destroy'])->name('admin.quizzes.destroy');
+            Route::post('/live-codes', [AdminLiveCodeController::class, 'store'])->name('admin.live-codes.store');
+            Route::put('/live-codes/{liveCodeId}', [AdminLiveCodeController::class, 'update'])->name('admin.live-codes.update');
+            Route::delete('/live-codes/{liveCodeId}', [AdminLiveCodeController::class, 'destroy'])->name('admin.live-codes.destroy');
+            Route::post('/events', [AdminPlatformEventController::class, 'store'])->name('admin.events.store');
+            Route::put('/events/{eventId}', [AdminPlatformEventController::class, 'update'])->name('admin.events.update');
+            Route::delete('/events/{eventId}', [AdminPlatformEventController::class, 'destroy'])->name('admin.events.destroy');
+            Route::post('/duels/{duelId}/result', [AdminDuelResultController::class, 'store'])->name('admin.duels.result.store');
 
             Route::get('/gallery-photos', [GalleryPhotoAdminController::class, 'index'])->name('admin.gallery-photos.index');
             Route::post('/gallery-photos', [GalleryPhotoAdminController::class, 'store'])->name('admin.gallery-photos.store');

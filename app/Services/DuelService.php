@@ -1,0 +1,157 @@
+<?php
+
+namespace App\Services;
+
+use App\Application\Actions\Audit\StoreAuditLogAction;
+use App\Application\Actions\Notifications\NotifyAction;
+use App\Domain\Notifications\Enums\NotificationCategory;
+use App\Models\Duel;
+use App\Models\DuelResult;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+
+class DuelService
+{
+    public function __construct(
+        private readonly RewardGrantService $rewardGrantService,
+        private readonly EventService $eventService,
+        private readonly MissionEngine $missionEngine,
+        private readonly AchievementService $achievementService,
+        private readonly NotifyAction $notifyAction,
+        private readonly StoreAuditLogAction $storeAuditLogAction
+    ) {
+    }
+
+    public function recordResult(
+        User $actor,
+        Duel $duel,
+        User $winner,
+        ?int $challengerScore = null,
+        ?int $challengedScore = null,
+        ?string $note = null
+    ): DuelResult {
+        return DB::transaction(function () use ($actor, $duel, $winner, $challengerScore, $challengedScore, $note) {
+            $duel = Duel::query()->whereKey($duel->id)->with(['challenger', 'challenged', 'result'])->lockForUpdate()->firstOrFail();
+
+            if ($duel->status !== Duel::STATUS_ACCEPTED && $duel->status !== Duel::STATUS_SETTLED) {
+                throw new RuntimeException('Seuls les duels actifs peuvent etre regles.');
+            }
+
+            if (! in_array($winner->id, [(int) $duel->challenger_id, (int) $duel->challenged_id], true)) {
+                throw new RuntimeException('Le gagnant doit etre un participant du duel.');
+            }
+
+            $loser = (int) $winner->id === (int) $duel->challenger_id ? $duel->challenged : $duel->challenger;
+            if (! $loser) {
+                throw new RuntimeException('Adversaire introuvable.');
+            }
+
+            $result = DuelResult::query()->updateOrCreate(
+                ['duel_id' => $duel->id],
+                [
+                    'winner_user_id' => $winner->id,
+                    'loser_user_id' => $loser->id,
+                    'actor_id' => $actor->id,
+                    'challenger_score' => $challengerScore,
+                    'challenged_score' => $challengedScore,
+                    'note' => $note,
+                    'meta' => null,
+                    'settled_at' => now(),
+                ],
+            );
+
+            $duel->status = Duel::STATUS_SETTLED;
+            $duel->responded_at = $duel->responded_at ?? now();
+            $duel->save();
+
+            $winRewards = $this->eventService->applyModifiers(
+                [
+                    'xp' => (int) config('community.duels.rewards.win.xp', 120),
+                    'reward_points' => (int) config('community.duels.rewards.win.reward_points', 150),
+                    'duel_score' => (int) config('community.duels.score.win', 25),
+                ],
+                'bonus_duel',
+            );
+
+            $lossRewards = $this->eventService->applyModifiers(
+                [
+                    'xp' => (int) config('community.duels.rewards.loss.xp', 30),
+                    'reward_points' => (int) config('community.duels.rewards.loss.reward_points', -150),
+                    'duel_score' => (int) config('community.duels.score.loss', -10),
+                ],
+                'bonus_duel',
+            );
+
+            $dailyLimit = (int) config('community.duels.daily_limit', 10);
+
+            if ($this->canGrantRewards($winner, $dailyLimit)) {
+                $this->rewardGrantService->grant(
+                    user: $winner,
+                    domain: 'duels',
+                    action: 'win',
+                    dedupeKey: 'duel.win.'.$duel->id.'.'.$winner->id,
+                    rewards: $winRewards,
+                    actor: $actor,
+                    subjectType: Duel::class,
+                    subjectId: (string) $duel->id,
+                );
+            }
+
+            if ($this->canGrantRewards($loser, $dailyLimit)) {
+                $this->rewardGrantService->grant(
+                    user: $loser,
+                    domain: 'duels',
+                    action: 'loss',
+                    dedupeKey: 'duel.loss.'.$duel->id.'.'.$loser->id,
+                    rewards: $lossRewards,
+                    actor: $actor,
+                    subjectType: Duel::class,
+                    subjectId: (string) $duel->id,
+                    allowPartialRewardDebit: true,
+                );
+            }
+
+            $this->missionEngine->recordEvent($winner, 'duel.win');
+            $this->missionEngine->recordEvent($winner, 'duel.play');
+            $this->missionEngine->recordEvent($loser, 'duel.play');
+            $this->achievementService->sync($winner);
+            $this->achievementService->sync($loser);
+
+            $this->notifyAction->execute(
+                user: $winner,
+                category: NotificationCategory::DUEL->value,
+                title: 'Victoire en duel',
+                message: 'Vous remportez le duel #'.$duel->id.'.',
+                data: ['duel_id' => $duel->id, 'result' => 'win'],
+            );
+
+            $this->notifyAction->execute(
+                user: $loser,
+                category: NotificationCategory::DUEL->value,
+                title: 'Defaite en duel',
+                message: 'Le duel #'.$duel->id.' est termine.',
+                data: ['duel_id' => $duel->id, 'result' => 'loss'],
+            );
+
+            $this->storeAuditLogAction->execute(
+                action: 'duels.result.recorded',
+                actor: $actor,
+                target: $result,
+                context: [
+                    'duel_id' => $duel->id,
+                    'winner_user_id' => $winner->id,
+                    'loser_user_id' => $loser->id,
+                ],
+            );
+
+            return $result;
+        });
+    }
+
+    private function canGrantRewards(User $user, int $dailyLimit): bool
+    {
+        return $this->rewardGrantService->countForDay($user, 'duels', 'win')
+            + $this->rewardGrantService->countForDay($user, 'duels', 'loss') < $dailyLimit;
+    }
+}

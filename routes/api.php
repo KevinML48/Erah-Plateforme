@@ -7,10 +7,12 @@ use App\Http\Controllers\Api\Admin\MatchAdminController;
 use App\Http\Controllers\Api\BetController;
 use App\Http\Controllers\Api\ClipController;
 use App\Http\Controllers\Api\ClipInteractionController;
+use App\Http\Controllers\Api\CommunityLeaderboardController;
 use App\Http\Controllers\Api\DuelController;
 use App\Http\Controllers\Api\MatchController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\NotificationPreferenceController;
+use App\Http\Controllers\Api\PushSubscriptionController;
 use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\UserDeviceController;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('throttle:notification-settings');
 
     Route::post('/me/devices', [UserDeviceController::class, 'store'])
+        ->middleware('throttle:devices');
+    Route::post('/me/push-subscriptions', [PushSubscriptionController::class, 'store'])
+        ->middleware('throttle:devices');
+    Route::delete('/me/push-subscriptions', [PushSubscriptionController::class, 'destroy'])
         ->middleware('throttle:devices');
 
     Route::post('/bets', [BetController::class, 'store'])
@@ -64,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/leagues', [RankingController::class, 'leagues']);
 Route::get('/leagues/{key}/leaderboard', [RankingController::class, 'leaderboard']);
+Route::get('/community/leaderboards', CommunityLeaderboardController::class);
 
 Route::middleware('throttle:clips-feed')->group(function () {
     Route::get('/clips', [ClipController::class, 'index']);

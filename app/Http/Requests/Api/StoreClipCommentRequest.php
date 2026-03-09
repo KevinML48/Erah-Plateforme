@@ -23,6 +23,7 @@ class StoreClipCommentRequest extends FormRequest
     {
         return [
             'body' => ['required', 'string', 'min:1', 'max:2000'],
+            'parent_id' => ['nullable', 'integer'],
         ];
     }
 
@@ -30,6 +31,7 @@ class StoreClipCommentRequest extends FormRequest
     {
         $this->merge([
             'body' => trim((string) $this->input('body')),
+            'parent_id' => $this->input('parent_id') !== null ? (int) $this->input('parent_id') : null,
         ]);
     }
 }

@@ -7,7 +7,6 @@ use App\Models\League;
 use App\Models\User;
 use App\Models\UserProgress;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 class EnsureUserProgressAction
 {
@@ -33,13 +32,9 @@ class EnsureUserProgressAction
                 ->orderBy('sort_order')
                 ->first();
 
-            if (! $defaultLeague) {
-                throw new RuntimeException('No active league configured.');
-            }
-
             $progress = UserProgress::query()->create([
                 'user_id' => $user->id,
-                'current_league_id' => $defaultLeague->id,
+                'current_league_id' => $defaultLeague?->id,
                 'total_xp' => 0,
                 'total_rank_points' => 0,
                 'last_points_at' => null,
@@ -50,7 +45,7 @@ class EnsureUserProgressAction
                 actor: $user,
                 target: $progress,
                 context: [
-                    'league_key' => $defaultLeague->key,
+                    'league_key' => $defaultLeague?->key,
                 ],
             );
 

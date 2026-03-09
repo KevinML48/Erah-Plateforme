@@ -139,6 +139,11 @@ class User extends Authenticatable
         return $this->hasMany(ClipComment::class);
     }
 
+    public function clipViews(): HasMany
+    {
+        return $this->hasMany(ClipView::class);
+    }
+
     public function clipShares(): HasMany
     {
         return $this->hasMany(ClipShare::class);
@@ -157,6 +162,16 @@ class User extends Authenticatable
     public function duelEvents(): HasMany
     {
         return $this->hasMany(DuelEvent::class, 'actor_id');
+    }
+
+    public function duelWins(): HasMany
+    {
+        return $this->hasMany(DuelResult::class, 'winner_user_id');
+    }
+
+    public function duelLosses(): HasMany
+    {
+        return $this->hasMany(DuelResult::class, 'loser_user_id');
     }
 
     public function createdMatches(): HasMany
@@ -214,6 +229,11 @@ class User extends Authenticatable
         return $this->hasMany(RewardWalletTransaction::class);
     }
 
+    public function communityRewardGrants(): HasMany
+    {
+        return $this->hasMany(CommunityRewardGrant::class);
+    }
+
     public function giftRedemptions(): HasMany
     {
         return $this->hasMany(GiftRedemption::class);
@@ -252,6 +272,41 @@ class User extends Authenticatable
     public function clipSupporterReactions(): HasMany
     {
         return $this->hasMany(ClipSupporterReaction::class);
+    }
+
+    public function rankHistories(): HasMany
+    {
+        return $this->hasMany(UserRankHistory::class);
+    }
+
+    public function loginStreak(): HasOne
+    {
+        return $this->hasOne(UserLoginStreak::class);
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function liveCodeRedemptions(): HasMany
+    {
+        return $this->hasMany(LiveCodeRedemption::class);
+    }
+
+    public function userAchievements(): HasMany
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(UserPurchase::class);
+    }
+
+    public function pushSubscriptions(): HasMany
+    {
+        return $this->hasMany(PushSubscription::class);
     }
 
     public function activeSupportSubscription(): ?UserSupportSubscription

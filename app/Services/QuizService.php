@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Application\Actions\Notifications\NotifyAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\Quiz;
+use App\Models\QuizQuestion;
 use App\Models\QuizAttempt;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -66,11 +67,10 @@ class QuizService
                 }
 
                 $maxScore += (int) $question->points;
-                $selected = (int) ($answers[$question->id] ?? 0);
+                $selected = $answers[$question->id] ?? null;
                 $normalizedAnswers[(string) $question->id] = $selected;
 
-                $correct = $question->answers->firstWhere('is_correct', true);
-                if ($correct && (int) $correct->id === $selected) {
+                if ($this->isCorrectAnswer($question, $selected)) {
                     $score += (int) $question->points;
                 }
             }
@@ -127,5 +127,30 @@ class QuizService
 
             return $attempt->fresh();
         });
+    }
+
+    private function isCorrectAnswer(QuizQuestion $question, mixed $selected): bool
+    {
+        if ($question->question_type === QuizQuestion::TYPE_SHORT_TEXT) {
+            $expected = $this->normalizeTextAnswer($question->accepted_answer);
+            $candidate = $this->normalizeTextAnswer(is_scalar($selected) ? (string) $selected : null);
+
+            return $expected !== null && $candidate !== null && $expected === $candidate;
+        }
+
+        $correct = $question->answers->firstWhere('is_correct', true);
+
+        return $correct !== null && (int) $correct->id === (int) $selected;
+    }
+
+    private function normalizeTextAnswer(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = mb_strtolower(trim($value));
+
+        return $normalized === '' ? null : preg_replace('/\s+/', ' ', $normalized);
     }
 }

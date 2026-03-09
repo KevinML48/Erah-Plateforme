@@ -24,7 +24,7 @@
                 <input class="tt-form-control" type="number" name="xp_reward" min="0" value="80">
             </div>
             <div class="tt-form-group">
-                <label>Reward points</label>
+                <label>Points plateforme</label>
                 <input class="tt-form-control" type="number" name="reward_points" min="0" value="40">
             </div>
             <div class="tt-form-group">
@@ -45,6 +45,12 @@
       { "label": "Rocket League", "is_correct": true },
       { "label": "Chess", "is_correct": false }
     ]
+  },
+  {
+    "prompt": "Quel est le nom du club ?",
+    "type": "short_text",
+    "accepted_answer": "ERAH",
+    "points": 1
   }
 ]</textarea>
             </div>

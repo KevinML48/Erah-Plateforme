@@ -20,6 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
         ]);
 
+        $middleware->redirectGuestsTo(fn () => route('login', [
+            'required' => 'participation',
+        ]));
+
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
         ]);

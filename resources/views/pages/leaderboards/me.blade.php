@@ -82,6 +82,20 @@
             margin-bottom: 10px;
         }
 
+        .lb-me-profile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: inherit;
+            color: inherit;
+            text-decoration: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .lb-me-profile-link:hover {
+            opacity: .92;
+            transform: translateY(-1px);
+        }
+
         .lb-me-avatar {
             width: 58px;
             height: 58px;
@@ -272,6 +286,7 @@
         $progressPercent = $nextMin !== null ? (int) min(100, round(($numerator / $denominator) * 100)) : 100;
         $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
         $myAvatar = (string) (($user->avatar_url ?? '') !== '' ? $user->avatar_url : $avatarFallback);
+        $publicProfileRouteName = 'users.public';
         $contextEntries = $myPosition > 0
             ? $entries->filter(fn ($entry) => abs(((int) ($entry['position'] ?? 0)) - $myPosition) <= 2)->values()
             : $entries->take(5)->values();
@@ -371,11 +386,13 @@
                 <section class="lb-me-main">
                     <article class="lb-me-card tt-anim-fadeinup">
                         <div class="lb-me-profile">
-                            <img src="{{ $myAvatar }}" alt="{{ $user->name }}" class="lb-me-avatar">
-                            <div>
-                                <strong>{{ $user->name }}</strong>
-                                <span>{{ $currentLeagueName }}</span>
-                            </div>
+                            <a href="{{ route($publicProfileRouteName, $user) }}" class="lb-me-profile-link">
+                                <img src="{{ $myAvatar }}" alt="{{ $user->name }}" class="lb-me-avatar">
+                                <div>
+                                    <strong>{{ $user->name }}</strong>
+                                    <span>{{ $currentLeagueName }}</span>
+                                </div>
+                            </a>
                         </div>
                         <div>
                             <span class="lb-me-badge">Position {{ $myPosition > 0 ? '#'.$myPosition : 'N/A' }}</span>
@@ -414,16 +431,27 @@
                             @php
                                 $isMe = (int) ($entry['user_id'] ?? 0) === (int) $user->id;
                                 $avatar = (string) ($entry['avatar_url'] ?? $avatarFallback);
+                                $profileUrl = !empty($entry['user_id']) ? route($publicProfileRouteName, $entry['user_id']) : null;
                             @endphp
                             <article class="lb-me-row {{ $isMe ? 'is-me' : '' }}">
                                 <div class="lb-me-rank">#{{ (int) ($entry['position'] ?? 0) }}</div>
 
                                 <div class="lb-me-user">
-                                    <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
-                                    <div>
-                                        <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
-                                        <small>{{ $isMe ? 'vous' : 'joueur' }}</small>
-                                    </div>
+                                    @if($profileUrl)
+                                        <a href="{{ $profileUrl }}" class="lb-me-profile-link">
+                                            <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
+                                            <div>
+                                                <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
+                                                <small>{{ $isMe ? 'vous' : 'joueur' }}</small>
+                                            </div>
+                                        </a>
+                                    @else
+                                        <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
+                                        <div>
+                                            <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
+                                            <small>{{ $isMe ? 'vous' : 'joueur' }}</small>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="lb-me-value">{{ (int) ($entry['total_rank_points'] ?? 0) }}</div>

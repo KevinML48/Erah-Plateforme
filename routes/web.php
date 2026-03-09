@@ -27,6 +27,7 @@ use App\Http\Controllers\Web\ClubReviewPageController;
 use App\Http\Controllers\Web\ClipSupporterController;
 use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\DuelLeaderboardPageController;
 use App\Http\Controllers\Web\DuelsPageController;
 use App\Http\Controllers\Web\GiftPageController;
 use App\Http\Controllers\Web\LiveCodePageController;
@@ -90,16 +91,27 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->middleware('throttle:stripe-webhook')
     ->name('stripe.webhook');
 
+Route::prefix('app')->group(function () {
+    Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
+    Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])
+        ->where('leagueKey', '(?!me$)[A-Za-z0-9\-_]+')
+        ->name('app.leaderboards.show');
+    Route::get('/clips', [ClipsPageController::class, 'index'])->name('app.clips.index');
+    Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])
+        ->where('slug', '(?!favorites$)[A-Za-z0-9\-]+')
+        ->name('app.clips.show');
+    Route::get('/matchs', [MatchPageController::class, 'index'])->name('app.matches.index');
+    Route::get('/matchs/{matchId}', [MatchPageController::class, 'show'])
+        ->whereNumber('matchId')
+        ->name('app.matches.show');
+    Route::get('/statistics', StatisticsPageController::class)->name('app.statistics.index');
+    Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('app.duels.leaderboard');
+});
+
 Route::prefix('app')->middleware('auth')->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'))->name('marketing.platform');
-    Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
-    Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('app.leaderboards.show');
-    Route::get('/clips', [ClipsPageController::class, 'index'])->name('app.clips.index');
-    Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])->name('app.clips.show');
     Route::post('/clips/{clipId}/comments', [ClipsPageController::class, 'comment'])->name('app.clips.comment');
     Route::delete('/clips/{clipId}/comments/{commentId}', [ClipsPageController::class, 'deleteComment'])->name('app.clips.comment.delete');
-    Route::get('/matchs', [MatchPageController::class, 'index'])->name('app.matches.index');
-    Route::get('/matchs/{matchId}', [MatchPageController::class, 'show'])->name('app.matches.show');
 
     Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
     Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
@@ -108,7 +120,6 @@ Route::prefix('app')->middleware('auth')->group(function () {
     Route::post('/quizzes/{slug}/attempts', [QuizPageController::class, 'attempt'])->name('app.quizzes.attempt');
     Route::get('/live-codes', [LiveCodePageController::class, 'index'])->name('app.live-codes.index');
     Route::post('/live-codes/redeem', [LiveCodePageController::class, 'redeem'])->name('app.live-codes.redeem');
-    Route::get('/statistics', StatisticsPageController::class)->name('app.statistics.index');
     Route::get('/achievements', AchievementPageController::class)->name('app.achievements.index');
     Route::get('/shop', [ShopPageController::class, 'index'])->name('app.shop.index');
     Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('app.shop.purchase');
@@ -132,6 +143,23 @@ Route::prefix('app')->middleware('auth')->group(function () {
     Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
     Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
     Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
+});
+
+Route::prefix('console')->group(function () {
+    Route::get('/matches', [MatchPageController::class, 'index'])->name('matches.index');
+    Route::get('/matches/{matchId}', [MatchPageController::class, 'show'])
+        ->whereNumber('matchId')
+        ->name('matches.show');
+    Route::get('/clips', [ClipsPageController::class, 'index'])->name('clips.index');
+    Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])
+        ->where('slug', '(?!favorites$)[A-Za-z0-9\-]+')
+        ->name('clips.show');
+    Route::get('/leaderboards', [LeaderboardPageController::class, 'index'])->name('leaderboards.index');
+    Route::get('/leaderboards/{leagueKey}', [LeaderboardPageController::class, 'show'])
+        ->where('leagueKey', '(?!me$)[A-Za-z0-9\-_]+')
+        ->name('leaderboards.show');
+    Route::get('/statistics', StatisticsPageController::class)->name('statistics.index');
+    Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('duels.leaderboard');
 });
 
 Route::middleware('auth')->group(function () {
@@ -162,8 +190,6 @@ Route::middleware('auth')->group(function () {
             ->middleware(['admin', 'throttle:points-grant'])
             ->name('wallets.grant-reward');
 
-        Route::get('/matches', [MatchPageController::class, 'index'])->name('matches.index');
-        Route::get('/matches/{matchId}', [MatchPageController::class, 'show'])->name('matches.show');
         Route::post('/matches/{matchId}/bets', [MatchPageController::class, 'placeBet'])
             ->middleware('throttle:bets-place')
             ->name('matches.bets.store');
@@ -177,9 +203,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/supporter', [SupporterConsoleController::class, 'index'])->name('supporter.console');
         Route::post('/supporter/portal', [SupporterConsoleController::class, 'portal'])->name('supporter.portal');
 
-        Route::get('/clips', [ClipsPageController::class, 'index'])->name('clips.index');
         Route::get('/clips/favorites', [ClipsPageController::class, 'favorites'])->name('clips.favorites');
-        Route::get('/clips/{slug}', [ClipsPageController::class, 'show'])->name('clips.show');
         Route::post('/clips/{clipId}/like', [ClipsPageController::class, 'like'])->name('clips.like');
         Route::post('/clips/{clipId}/unlike', [ClipsPageController::class, 'unlike'])->name('clips.unlike');
         Route::post('/clips/{clipId}/favorite', [ClipsPageController::class, 'favorite'])->name('clips.favorite');
@@ -198,8 +222,6 @@ Route::middleware('auth')->group(function () {
             ->name('clips.campaigns.vote');
 
         Route::get('/leaderboards/me', [LeaderboardPageController::class, 'me'])->name('leaderboards.me');
-        Route::get('/leaderboards', [LeaderboardPageController::class, 'index'])->name('leaderboards.index');
-        Route::get('/leaderboards/{leagueKey}', [LeaderboardPageController::class, 'show'])->name('leaderboards.show');
 
         Route::get('/missions', [MissionPageController::class, 'index'])->name('missions.index');
         Route::post('/missions/generate/daily', [AdminMissionController::class, 'generateDaily'])
@@ -216,7 +238,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/live-codes', [LiveCodePageController::class, 'index'])->name('live-codes.index');
         Route::post('/live-codes/redeem', [LiveCodePageController::class, 'redeem'])->name('live-codes.redeem');
 
-        Route::get('/statistics', StatisticsPageController::class)->name('statistics.index');
         Route::get('/achievements', AchievementPageController::class)->name('achievements.index');
         Route::get('/shop', [ShopPageController::class, 'index'])->name('shop.index');
         Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('shop.purchase');
@@ -338,8 +359,20 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
 Route::get('/avis', [ClubReviewPageController::class, 'index'])->name('reviews.index');
-Route::view('/', 'marketing.index')->name('marketing.index');
-Route::view('/index.html', 'marketing.index');
+Route::get('/', function () {
+    return response()
+        ->view('marketing.index')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+})->name('marketing.index');
+Route::get('/index.html', function () {
+    return response()
+        ->view('marketing.index')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+});
 Route::view('/faq', 'marketing.faq')->name('marketing.faq');
 Route::view('/faq.html', 'marketing.faq');
 Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');

@@ -34,6 +34,7 @@ class UpdateMissionTemplateRequest extends FormRequest
             'event_type' => ['required', 'string', 'max:64'],
             'target_count' => ['required', 'integer', 'min:1', 'max:100000'],
             'scope' => ['required', 'string', Rule::in(MissionTemplate::scopes())],
+            'difficulty' => ['nullable', 'string', Rule::in(['simple', 'medium', 'special'])],
             'start_at' => ['nullable', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],
             'rewards_xp' => ['nullable', 'integer', 'min:0', 'max:1000000'],
@@ -45,4 +46,3 @@ class UpdateMissionTemplateRequest extends FormRequest
         ];
     }
 }
-

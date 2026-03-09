@@ -23,6 +23,8 @@ class UserProgress extends Model
         'duel_score',
         'duel_wins',
         'duel_losses',
+        'duel_current_streak',
+        'duel_best_streak',
         'last_points_at',
     ];
 
@@ -36,6 +38,8 @@ class UserProgress extends Model
             'duel_score' => 'integer',
             'duel_wins' => 'integer',
             'duel_losses' => 'integer',
+            'duel_current_streak' => 'integer',
+            'duel_best_streak' => 'integer',
             'last_points_at' => 'datetime',
         ];
     }

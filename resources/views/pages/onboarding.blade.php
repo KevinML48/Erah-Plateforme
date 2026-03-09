@@ -29,8 +29,12 @@
             </label>
 
             <div class="actions actions-stack-mobile">
-                <button type="submit">Terminer</button>
-                <a class="button-link" href="{{ route('dashboard') }}">Passer</a>
+                <button type="submit" class="tt-btn tt-btn-primary">
+                    <span data-hover="Terminer">Terminer</span>
+                </button>
+                <a class="tt-btn tt-btn-outline" href="{{ route('dashboard') }}">
+                    <span data-hover="Passer">Passer</span>
+                </a>
             </div>
         </form>
     </section>

@@ -24,7 +24,7 @@ class WalletService
      * @param array<string, mixed> $meta
      * @return array{wallet: UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int}
      */
-    public function adjustRewardPoints(
+    public function adjustPoints(
         User $user,
         int $amount,
         string $uniqueKey,
@@ -62,6 +62,20 @@ class WalletService
         );
 
         return $result + ['actual_amount' => $actualAmount];
+    }
+
+    /**
+     * @param array<string, mixed> $meta
+     * @return array{wallet: UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int}
+     */
+    public function adjustRewardPoints(
+        User $user,
+        int $amount,
+        string $uniqueKey,
+        array $meta = [],
+        bool $allowPartialDebit = false
+    ): array {
+        return $this->adjustPoints($user, $amount, $uniqueKey, $meta, $allowPartialDebit);
     }
 
     /**
@@ -106,5 +120,12 @@ class WalletService
         );
 
         return $result + ['actual_amount' => $actualAmount];
+    }
+
+    public function pointsBalance(User $user): int
+    {
+        return (int) ($user->rewardWallet?->balance
+            ?? UserRewardWallet::query()->where('user_id', $user->id)->value('balance')
+            ?? 0);
     }
 }

@@ -20,21 +20,22 @@ return [
         'rewards' => [
             'view' => [
                 'xp' => 10,
-                'reward_points' => 15,
+                'points' => 15,
             ],
             'like' => [
                 'xp' => 5,
-                'reward_points' => 10,
+                'points' => 10,
             ],
             'comment' => [
                 'xp' => 15,
-                'reward_points' => 20,
+                'points' => 20,
             ],
         ],
     ],
 
     'duels' => [
         'daily_limit' => 10,
+        'same_opponent_reward_limit' => 3,
         'score' => [
             'win' => 25,
             'loss' => -10,
@@ -42,16 +43,17 @@ return [
         'rewards' => [
             'win' => [
                 'xp' => 120,
-                'reward_points' => 150,
+                'points' => 150,
             ],
             'loss' => [
                 'xp' => 30,
-                'reward_points' => -150,
+                'points' => -150,
             ],
         ],
     ],
 
     'bets' => [
+        'daily_xp_limit' => 20,
         'rewards' => [
             'win' => ['xp' => 60],
             'loss' => ['xp' => 15],
@@ -59,9 +61,14 @@ return [
     ],
 
     'missions' => [
+        'daily_mix' => [
+            'simple' => 3,
+            'medium' => 1,
+            'special' => 1,
+        ],
         'daily_completion_bonus' => [
             'xp' => 150,
-            'reward_points' => 200,
+            'points' => 200,
         ],
     ],
 
@@ -86,7 +93,7 @@ return [
             'type' => 'clips',
             'metric' => 'clip_views',
             'threshold' => 1,
-            'rewards' => ['xp' => 40, 'reward_points' => 20],
+            'rewards' => ['xp' => 40, 'points' => 20],
             'badge_label' => 'Clips',
             'sort_order' => 10,
         ],
@@ -97,7 +104,7 @@ return [
             'type' => 'communaute',
             'metric' => 'clip_comments',
             'threshold' => 5,
-            'rewards' => ['xp' => 60, 'reward_points' => 40],
+            'rewards' => ['xp' => 60, 'points' => 40],
             'badge_label' => 'Commu',
             'sort_order' => 20,
         ],
@@ -108,7 +115,7 @@ return [
             'type' => 'paris',
             'metric' => 'bets_won',
             'threshold' => 1,
-            'rewards' => ['xp' => 80, 'reward_points' => 30],
+            'rewards' => ['xp' => 80, 'points' => 30],
             'badge_label' => 'Paris',
             'sort_order' => 30,
         ],
@@ -119,7 +126,7 @@ return [
             'type' => 'duels',
             'metric' => 'duels_won',
             'threshold' => 3,
-            'rewards' => ['xp' => 120, 'reward_points' => 50],
+            'rewards' => ['xp' => 120, 'points' => 50],
             'badge_label' => 'Duel',
             'sort_order' => 40,
         ],
@@ -130,7 +137,7 @@ return [
             'type' => 'progression',
             'metric' => 'total_xp',
             'threshold' => 1000,
-            'rewards' => ['reward_points' => 75],
+            'rewards' => ['points' => 75],
             'badge_label' => 'XP',
             'sort_order' => 50,
         ],

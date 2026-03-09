@@ -8,6 +8,10 @@
     @include('pages.community.partials.styles')
 @endsection
 
+@section('page_scripts')
+    @include('marketing.partials.theme-scripts')
+@endsection
+
 @section('content')
     @php
         $isPublicApp = request()->routeIs('app.*');
@@ -32,7 +36,7 @@
                 <div class="community-head">
                     <div>
                         <h1>Quiz actifs</h1>
-                        <p>Les quiz sont lies aux missions, a l XP et aux recompenses points. Chaque fiche affiche le score minimum et le volume de tentatives.</p>
+                        <p>Les quiz sont lies aux missions, a l XP et aux points plateforme. Chaque fiche affiche le score minimum et le volume de tentatives.</p>
                     </div>
                     <div class="community-actions">
                         <a href="{{ $isPublicApp ? route('app.missions.index') : route('missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Missions">Missions</span></a>

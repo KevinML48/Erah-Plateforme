@@ -15,7 +15,7 @@ class StoreQuizAttemptRequest extends FormRequest
     {
         return [
             'answers' => ['required', 'array', 'min:1'],
-            'answers.*' => ['nullable', 'integer'],
+            'answers.*' => ['nullable'],
         ];
     }
 }

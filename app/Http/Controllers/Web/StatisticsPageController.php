@@ -20,8 +20,6 @@ class StatisticsPageController extends Controller
 
         return view('pages.statistics.index', [
             'xpLeaderboard' => $leaderboardService->xp(10),
-            'rankLeaderboard' => $leaderboardService->byRank(10),
-            'duelLeaderboard' => $leaderboardService->duel(10),
             'communityRank' => $user ? $rankService->currentLeague($user) : null,
             'progress' => $progress,
             'stats' => [

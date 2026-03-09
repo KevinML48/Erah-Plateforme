@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Notification;
+use App\Services\PushNotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -17,10 +18,16 @@ class SendNotificationChannelJob implements ShouldQueue
     ) {
     }
 
-    public function handle(): void
+    public function handle(PushNotificationService $pushNotificationService): void
     {
         $notification = Notification::query()->find($this->notificationId);
         if (! $notification) {
+            return;
+        }
+
+        if ($this->channel === 'push') {
+            $pushNotificationService->sendNotification($notification);
+
             return;
         }
 

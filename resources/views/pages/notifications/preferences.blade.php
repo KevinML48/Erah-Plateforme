@@ -295,6 +295,42 @@
                 'icon' => 'fa-solid fa-clapperboard',
                 'tone' => 'tone-clips',
             ],
+            'comment' => [
+                'label' => 'Commentaires',
+                'description' => 'Reponses, nouvelles discussions et suivi des echanges.',
+                'icon' => 'fa-solid fa-comments',
+                'tone' => 'tone-clips',
+            ],
+            'mission' => [
+                'label' => 'Missions',
+                'description' => 'Validation, progression et bonus journaliers.',
+                'icon' => 'fa-solid fa-list-check',
+                'tone' => 'tone-system',
+            ],
+            'quiz' => [
+                'label' => 'Quiz',
+                'description' => 'Ouverture des quiz, tentatives et validations.',
+                'icon' => 'fa-solid fa-circle-question',
+                'tone' => 'tone-system',
+            ],
+            'live_code' => [
+                'label' => 'Codes live',
+                'description' => 'Codes temporaires, redemptions et campagnes live.',
+                'icon' => 'fa-solid fa-bolt',
+                'tone' => 'tone-system',
+            ],
+            'achievement' => [
+                'label' => 'Succes',
+                'description' => 'Deblocages permanents et badges communautaires.',
+                'icon' => 'fa-solid fa-medal',
+                'tone' => 'tone-system',
+            ],
+            'event' => [
+                'label' => 'Evenements',
+                'description' => 'Fenetres bonus, double XP et operations speciales.',
+                'icon' => 'fa-solid fa-calendar-days',
+                'tone' => 'tone-match',
+            ],
             'system' => [
                 'label' => 'Systeme',
                 'description' => 'Infos compte, securite et annonces plateforme.',

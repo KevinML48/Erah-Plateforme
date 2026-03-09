@@ -199,116 +199,16 @@
         }
 
         .adm-gallery-btn {
-            appearance: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 56px;
-            padding: 0 22px;
-            border-radius: 18px;
-            border: 1px solid var(--adm-border);
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .035)),
-                rgba(255, 255, 255, .03);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
-            color: rgba(255, 255, 255, .96);
-            font: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: .04em;
-            line-height: 1.2;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, color .18s ease;
+            margin: 0;
             white-space: nowrap;
         }
 
-        .adm-gallery-btn:hover,
-        .adm-gallery-btn:focus-visible {
-            transform: translateY(-1px);
-            border-color: rgba(255, 255, 255, .28);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, .18);
-            color: rgba(255, 255, 255, .98);
-        }
-
-        .adm-gallery-btn:focus-visible {
-            outline: 2px solid rgba(223, 11, 11, .34);
-            outline-offset: 2px;
-        }
-
-        .adm-gallery-btn--primary {
-            border-color: rgba(223, 11, 11, .5);
-            background: linear-gradient(180deg, #ff2f2f 0%, #d90b0b 100%);
-            color: #fff;
-            box-shadow: 0 10px 26px rgba(223, 11, 11, .2);
-        }
-
-        .adm-gallery-btn--primary:hover,
-        .adm-gallery-btn--primary:focus-visible {
-            border-color: rgba(255, 120, 120, .68);
-            background: linear-gradient(180deg, #ff4646 0%, #e10d0d 100%);
-            color: #fff;
-        }
-
-        .adm-gallery-btn--secondary {
-            border-color: rgba(255, 255, 255, .16);
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .05)),
-                rgba(255, 255, 255, .04);
-        }
-
-        .adm-gallery-btn--outline {
-            background: transparent;
-            border-color: rgba(255, 255, 255, .34);
-            color: rgba(255, 255, 255, .94);
-        }
-
-        .adm-gallery-btn--outline:hover,
-        .adm-gallery-btn--outline:focus-visible {
-            background: rgba(255, 255, 255, .06);
-            border-color: rgba(255, 255, 255, .52);
-        }
-
-        .adm-gallery-btn--danger {
-            border-color: rgba(239, 68, 68, .38);
-            background: linear-gradient(180deg, rgba(239, 68, 68, .22), rgba(179, 20, 20, .18));
-            color: #fff;
-        }
-
-        .adm-gallery-btn--danger:hover,
-        .adm-gallery-btn--danger:focus-visible {
-            border-color: rgba(248, 113, 113, .62);
-            background: linear-gradient(180deg, rgba(239, 68, 68, .34), rgba(179, 20, 20, .26));
-        }
-
-        body.tt-lightmode-on .adm-gallery-btn {
-            border-color: rgba(18, 23, 35, .16);
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(248, 248, 248, .92)),
-                rgba(255, 255, 255, .94);
-            color: rgba(18, 23, 35, .94);
-            box-shadow: 0 8px 20px rgba(18, 23, 35, .08);
-        }
-
-        body.tt-lightmode-on .adm-gallery-btn--primary {
-            border-color: rgba(223, 11, 11, .5);
-            background: linear-gradient(180deg, #ef1919 0%, #cf0909 100%);
-            color: #fff;
-        }
-
-        body.tt-lightmode-on .adm-gallery-btn--outline {
-            background: rgba(255, 255, 255, .82);
-            border-color: rgba(18, 23, 35, .26);
-            color: rgba(18, 23, 35, .92);
+        .adm-gallery-btn > span {
+            white-space: nowrap;
         }
 
         .adm-gallery-hero-actions .adm-gallery-btn {
-            min-height: 58px;
-            padding-left: 24px;
-            padding-right: 24px;
-            font-size: 12px;
-            letter-spacing: .08em;
+            margin: 0;
         }
 
         .adm-gallery-stats-grid {
@@ -647,10 +547,7 @@
 
         .adm-gallery-toolbar .adm-gallery-btn {
             width: 100%;
-            min-height: 64px;
             justify-content: center;
-            font-size: 12px;
-            letter-spacing: .08em;
         }
 
         .adm-gallery-results {
@@ -969,9 +866,6 @@
         .adm-gallery-action-row .adm-gallery-btn {
             width: 100%;
             justify-content: center;
-            font-size: 12px;
-            letter-spacing: .08em;
-            min-height: 52px;
         }
 
         .adm-gallery-order-steps {
@@ -1387,11 +1281,11 @@
                         </div>
 
                             <div class="adm-gallery-hero-actions">
-                                <a href="#gallery-compose" class="adm-gallery-btn adm-gallery-btn--primary" data-gallery-compose-open>
+                                <a href="#gallery-compose" class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn" data-gallery-compose-open>
                                     <span>Ajouter une photo</span>
                                 </a>
 
-                                <a href="{{ route('marketing.gallery-photos') }}" class="adm-gallery-btn adm-gallery-btn--outline" target="_blank" rel="noopener">
+                                <a href="{{ route('marketing.gallery-photos') }}" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" target="_blank" rel="noopener">
                                     <span>Voir la galerie publique</span>
                                 </a>
                             </div>
@@ -1522,11 +1416,11 @@
                                 </select>
                             </div>
 
-                            <button class="adm-gallery-btn adm-gallery-btn--primary" type="submit">
+                            <button class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn" type="submit">
                                 <span>Appliquer</span>
                             </button>
 
-                            <a href="{{ route('admin.gallery-photos.index') }}" class="adm-gallery-btn adm-gallery-btn--outline">
+                            <a href="{{ route('admin.gallery-photos.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn">
                                 <span>Reinitialiser</span>
                             </a>
                         </form>
@@ -1569,12 +1463,12 @@
 
                                 <div class="adm-gallery-hero-actions">
                                     @if($hasFilters)
-                                        <a href="{{ route('admin.gallery-photos.index') }}" class="adm-gallery-btn adm-gallery-btn--outline">
+                                        <a href="{{ route('admin.gallery-photos.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn">
                                             <span>Reinitialiser les filtres</span>
                                         </a>
                                     @endif
 
-                                    <a href="#gallery-compose" class="adm-gallery-btn adm-gallery-btn--primary" data-gallery-compose-open>
+                                    <a href="#gallery-compose" class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn" data-gallery-compose-open>
                                         <span>Ajouter une photo</span>
                                     </a>
                                 </div>

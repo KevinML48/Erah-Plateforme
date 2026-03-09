@@ -312,19 +312,8 @@
     .adm-row-actions .tt-btn,
     .adm-nav .tt-btn,
     .adm-filter-actions .tt-btn {
-        min-height: 46px;
-        min-width: 132px;
-        padding: 10px 18px;
-        border-radius: 999px;
-        font-size: 12px;
-        letter-spacing: .06em;
-        line-height: 1;
+        margin: 0;
         justify-content: center;
-    }
-
-    .adm-nav .tt-btn,
-    .adm-filter-actions .tt-btn {
-        min-width: 126px;
     }
 
     .adm-nav .tt-btn > span,
@@ -1044,10 +1033,6 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .adm-nav .tt-btn,
-        .adm-filter-actions .tt-btn {
-            min-width: 110px;
-        }
     }
 
     @media (max-width: 767.98px) {
@@ -1074,7 +1059,6 @@
         .adm-filter-actions .tt-btn {
             width: 100%;
             justify-content: center;
-            min-width: 0;
         }
 
         .adm-inline-form {

@@ -80,7 +80,7 @@ class MissionEngine
                         rewards: [
                             'xp' => (int) ($rewards['xp'] ?? 0),
                             'rank_points' => (int) ($rewards['rank_points'] ?? 0),
-                            'reward_points' => (int) ($rewards['reward_points'] ?? 0),
+                            'points' => (int) ($rewards['points'] ?? $rewards['reward_points'] ?? 0),
                             'bet_points' => (int) ($rewards['bet_points'] ?? 0),
                         ],
                         subjectType: UserMission::class,
@@ -147,7 +147,7 @@ class MissionEngine
             dedupeKey: 'mission.daily-bonus.'.$user->id.'.'.$today->toDateString(),
             rewards: [
                 'xp' => (int) ($bonus['xp'] ?? 0),
-                'reward_points' => (int) ($bonus['reward_points'] ?? 0),
+                'points' => (int) ($bonus['points'] ?? $bonus['reward_points'] ?? 0),
             ],
             subjectType: User::class,
             subjectId: (string) $user->id,

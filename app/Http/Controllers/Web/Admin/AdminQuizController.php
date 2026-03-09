@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Admin\UpsertQuizRequest;
 use App\Models\Quiz;
+use App\Models\QuizQuestion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -83,13 +84,24 @@ class AdminQuizController extends Controller
             $quiz->questions()->delete();
 
             foreach ($questions as $questionIndex => $questionPayload) {
+                $questionType = (string) ($questionPayload['type'] ?? QuizQuestion::TYPE_SINGLE_CHOICE);
                 $question = $quiz->questions()->create([
                     'prompt' => $questionPayload['prompt'],
+                    'question_type' => in_array($questionType, QuizQuestion::types(), true)
+                        ? $questionType
+                        : QuizQuestion::TYPE_SINGLE_CHOICE,
                     'explanation' => $questionPayload['explanation'] ?? null,
+                    'accepted_answer' => $questionType === QuizQuestion::TYPE_SHORT_TEXT
+                        ? trim((string) ($questionPayload['accepted_answer'] ?? ''))
+                        : null,
                     'sort_order' => $questionIndex + 1,
                     'points' => (int) ($questionPayload['points'] ?? 1),
                     'is_active' => true,
                 ]);
+
+                if ($question->question_type === QuizQuestion::TYPE_SHORT_TEXT) {
+                    continue;
+                }
 
                 foreach ((array) $questionPayload['answers'] as $answerIndex => $answerPayload) {
                     $question->answers()->create([

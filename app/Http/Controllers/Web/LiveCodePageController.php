@@ -40,7 +40,8 @@ class LiveCodePageController extends Controller
 
         return back()->with(
             'success',
-            'Code valide: +'.$redemption->xp_reward.' XP / +'.$redemption->reward_points.' points / +'.$redemption->bet_points.' bet points.'
+            'Code valide: +'.$redemption->xp_reward.' XP / +'.$redemption->reward_points.' points'
+            .($redemption->bet_points > 0 ? ' / +'.$redemption->bet_points.' points paris' : '')
         );
     }
 }

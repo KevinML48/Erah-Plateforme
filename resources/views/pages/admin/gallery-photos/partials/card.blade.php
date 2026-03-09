@@ -118,7 +118,7 @@
                 <form method="POST" action="{{ route('admin.gallery-photos.reorder', $photo->id) }}" class="adm-gallery-order-form">
                     @csrf
                     <input class="tt-form-control" name="sort_order" type="number" min="0" value="{{ (int) $photo->sort_order }}" aria-label="Ordre de {{ $title }}">
-                    <button type="submit" class="adm-gallery-btn adm-gallery-btn--outline">
+                    <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn">
                         <span>Appliquer</span>
                     </button>
                 </form>
@@ -143,7 +143,7 @@
             @if($previewUrl)
                 <button
                     type="button"
-                    class="adm-gallery-btn adm-gallery-btn--secondary"
+                    class="tt-btn tt-btn-secondary tt-magnetic-item adm-gallery-btn"
                     data-gallery-preview-trigger
                     data-preview-type="{{ $photo->is_video ? 'video' : 'image' }}"
                     data-preview-src="{{ $previewUrl }}"
@@ -157,13 +157,13 @@
 
             <form method="POST" action="{{ route('admin.gallery-photos.toggle', $photo->id) }}">
                 @csrf
-                <button type="submit" class="adm-gallery-btn {{ $photo->is_active ? 'adm-gallery-btn--outline' : 'adm-gallery-btn--secondary' }}">
+                <button type="submit" class="tt-btn {{ $photo->is_active ? 'tt-btn-outline' : 'tt-btn-secondary' }} tt-magnetic-item adm-gallery-btn">
                     <span>{{ $photo->is_active ? 'Desactiver' : 'Activer' }}</span>
                 </button>
             </form>
 
             @if($previewUrl)
-                <a href="{{ $previewUrl }}" class="adm-gallery-btn adm-gallery-btn--outline" target="_blank" rel="noopener">
+                <a href="{{ $previewUrl }}" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" target="_blank" rel="noopener">
                     <span>Ouvrir le fichier</span>
                 </a>
             @endif
@@ -171,7 +171,7 @@
             <form method="POST" action="{{ route('admin.gallery-photos.destroy', $photo->id) }}" onsubmit="return confirm('Supprimer definitivement ce media galerie ?');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="adm-gallery-btn adm-gallery-btn--danger">
+                <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn">
                     <span>Supprimer</span>
                 </button>
             </form>
@@ -247,11 +247,11 @@
                     </label>
 
                     <div class="adm-gallery-edit-action-buttons">
-                        <button type="button" class="adm-gallery-btn adm-gallery-btn--outline" data-gallery-close-details>
+                        <button type="button" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" data-gallery-close-details>
                             <span>Fermer</span>
                         </button>
 
-                        <button type="submit" class="adm-gallery-btn adm-gallery-btn--primary">
+                        <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn">
                             <span>Enregistrer</span>
                         </button>
                     </div>

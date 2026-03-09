@@ -3,17 +3,17 @@
 Plateforme communautaire esport Laravel 11 pour ERAH, avec modules clips, paris, duels, missions, cadeaux, profils publics, avis membres, galerie, et maintenant un socle communautaire complet:
 
 - ligues communautaires basees sur l XP
-- leaderboards XP / rang / duel
+- leaderboards XP / ligues XP / duel
 - rewards clips avec caps journaliers
 - commentaires clips avec reponses niveau 1
-- quiz et tentatives
+- quiz QCM + reponse courte et tentatives
 - codes live et redemptions
-- resultats de duels admin
+- resultats de duels admin avec anti-abus et duel streak
 - succes permanents
 - streak de connexion
 - boutique communautaire
 - evenements dynamiques
-- push subscriptions et PWA minimale
+- push subscriptions categories + PWA minimale
 
 ## Architecture
 
@@ -94,6 +94,19 @@ Fichiers publics:
 
 Le manifest est branche sur les layouts app, guest et marketing. Le service worker est enregistre cote app via `resources/js/app.js` et cote marketing dans le layout template.
 
+Les subscriptions web push sont stockees dans `push_subscriptions`. Le service supporte des categories ciblees (`duel`, `mission`, `quiz`, `live_code`, `comment`, `clips`, `bet`, `match`, `achievement`, `event`, `system`) et degrade proprement en mode log si aucun provider web push n est configure.
+
+## Regles metier finalisees
+
+- Points plateforme: monnaie communautaire principale via `user_reward_wallets`
+- XP: progression, ligues communautaires et leaderboard global
+- Duel score: axe separe pour les duels, avec serie en cours et meilleure serie
+- Clips: vue / like / commentaire recompenses une seule fois par clip et par membre, avec caps journaliers
+- Commentaires clips: profondeur maximale 1
+- Missions daily: mix cible `3 simples / 1 moyenne / 1 speciale`
+- Paris: maximum 20 paris par jour comptent pour l XP communautaire
+- Duels: maximum 10 duels par jour pour la progression et anti-abus contre le meme adversaire
+
 ## Mise en route
 
 ```bash
@@ -122,11 +135,12 @@ Validation effectuee sur cette implementation:
 
 Resultat:
 
-- `103 passed`
+- `109 passed`
 
 ## Notes
 
-- Le systeme de ligues competitives existant base sur les `rank_points` est conserve.
-- Les nouvelles ligues communautaires basees sur l XP vivent a cote via `RankService` et `user_rank_histories`.
+- Le systeme de ligues competitives existant base sur les `rank_points` est conserve pour compatibilite.
+- Les ligues communautaires finales reposent sur l XP via `RankService` et `user_rank_histories`.
 - Les nouvelles recompenses communautaires sont idempotentes via `community_reward_grants`.
+- Les labels front ont ete clarifies pour distinguer les points plateforme des soldes legacy encore presents dans certains modules historiques.
 - Le front desktop existant n est pas refondu; les nouvelles pages et sections reutilisent les patterns Blade / templates deja presents.

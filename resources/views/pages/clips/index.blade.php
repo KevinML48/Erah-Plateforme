@@ -78,11 +78,13 @@
 @section('content')
     @php
         $isPublicApp = request()->routeIs('app.*');
+        $isGuest = auth()->guest();
+        $participationLoginUrl = route('login', ['required' => 'participation']);
         $indexRouteName = $isPublicApp ? 'app.clips.index' : 'clips.index';
         $showRouteName = $isPublicApp ? 'app.clips.show' : 'clips.show';
         $favoritesUrl = $isPublicApp
-            ? (auth()->check() ? route('app.clips.favorites') : route('login'))
-            : route('clips.favorites');
+            ? (auth()->check() ? route('app.clips.favorites') : $participationLoginUrl)
+            : ($isGuest ? $participationLoginUrl : route('clips.favorites'));
         $currentPage = (int) $clips->currentPage();
         $lastPage = (int) $clips->lastPage();
         $startPage = max(1, $currentPage - 2);
@@ -177,9 +179,9 @@
                     </div>
                 </div>
 
-                @if($isPublicApp)
+                @if($isGuest)
                     <div class="tt-alert tt-alert-danger margin-top-20">
-                        Mode /app: consultation publique. Connectez-vous a la console pour liker, commenter et gerer les favoris.
+                        Creez un compte pour participer, gagner des points et progresser sur la plateforme.
                     </div>
                 @endif
             </div>
@@ -269,7 +271,7 @@
                                                     <span data-hover="Voir">Voir</span>
                                                 </a>
 
-                                                @if(! $isPublicApp)
+                                                @if(auth()->check())
                                                     @if($isLiked)
                                                         <form method="POST" action="{{ route('clips.unlike', $clip->id) }}">
                                                             @csrf
@@ -293,6 +295,14 @@
                                                             <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">Favorite</button>
                                                         </form>
                                                     @endif
+                                                @else
+                                                    <a href="{{ $participationLoginUrl }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                        <span data-hover="Se connecter">Se connecter</span>
+                                                    </a>
+
+                                                    <a href="{{ $participationLoginUrl }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                        <span data-hover="Creer un compte">Creer un compte</span>
+                                                    </a>
                                                 @endif
                                             </div>
                                         </div>

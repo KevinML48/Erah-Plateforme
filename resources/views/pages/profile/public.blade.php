@@ -77,15 +77,16 @@
         .public-profile-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            min-height: 38px;
-            padding: 8px 14px;
-            border-radius: 999px;
+            gap: 6px;
+            min-height: 32px;
+            padding: 6px 12px;
+            border-radius: 14px;
             border: 1px solid rgba(255, 255, 255, .14);
             background: rgba(255, 255, 255, .04);
             color: rgba(255, 255, 255, .82);
-            font-size: 12px;
-            letter-spacing: .06em;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: .08em;
             text-transform: uppercase;
             line-height: 1;
         }
@@ -100,7 +101,14 @@
         .public-profile-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .public-profile-actions .tt-btn,
+        .public-profile-admin-toolbar .tt-btn {
+            margin: 0;
+            white-space: nowrap;
         }
 
         .public-profile-highlight-grid,
@@ -218,7 +226,16 @@
         .public-profile-top-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .public-profile-top-badges .public-profile-pill {
+            min-height: 28px;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: .09em;
         }
 
         .public-profile-name {
@@ -537,6 +554,13 @@
             .public-profile-actions {
                 flex-direction: column;
                 align-items: stretch;
+            }
+
+            .public-profile-actions .tt-btn,
+            .public-profile-admin-toolbar .tt-btn {
+                width: 100%;
+                white-space: normal;
+                text-align: center;
             }
 
             .public-profile-page-start {
@@ -927,7 +951,7 @@
                                                         <input id="confirmation_name" name="confirmation_name" class="tt-form-control" value="{{ old('confirmation_name') }}" placeholder="{{ $userProfile->name }}">
                                                     </div>
 
-                                                    <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                                    <button type="submit" class="tt-btn tt-btn-primary tt-btn-full tt-magnetic-item">
                                                         <span data-hover="Supprimer le compte">Supprimer le compte</span>
                                                     </button>
                                                 </form>

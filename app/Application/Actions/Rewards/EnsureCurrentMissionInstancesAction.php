@@ -44,12 +44,21 @@ class EnsureCurrentMissionInstancesAction
                 ->lockForUpdate()
                 ->get();
 
-            foreach ($activeTemplates as $template) {
-                $constraints = is_array($template->constraints) ? $template->constraints : [];
-                if (($constraints['supporter_only'] ?? false) && ! $isSupporter) {
-                    continue;
-                }
+            $eligibleTemplates = $activeTemplates
+                ->filter(function (MissionTemplate $template) use ($isSupporter): bool {
+                    $constraints = is_array($template->constraints) ? $template->constraints : [];
 
+                    return ! (($constraints['supporter_only'] ?? false) && ! $isSupporter);
+                })
+                ->values();
+
+            $selectedTemplates = $eligibleTemplates
+                ->reject(fn (MissionTemplate $template): bool => $template->scope === MissionTemplate::SCOPE_DAILY)
+                ->concat($this->selectDailyTemplates($eligibleTemplates->where('scope', MissionTemplate::SCOPE_DAILY), $user))
+                ->values();
+
+            foreach ($selectedTemplates as $template) {
+                $constraints = is_array($template->constraints) ? $template->constraints : [];
                 [$periodStart, $periodEnd] = $this->resolvePeriod(
                     $template,
                     $todayStart,
@@ -85,6 +94,44 @@ class EnsureCurrentMissionInstancesAction
 
             return $counters;
         });
+    }
+
+    /**
+     * @param \Illuminate\Support\Collection<int, MissionTemplate> $dailyTemplates
+     * @return \Illuminate\Support\Collection<int, MissionTemplate>
+     */
+    private function selectDailyTemplates($dailyTemplates, User $user)
+    {
+        $mix = (array) config('community.missions.daily_mix', []);
+        $ordered = $dailyTemplates
+            ->sortBy(fn (MissionTemplate $template): string => $this->dailySelectionKey($template, $user))
+            ->values();
+
+        $selected = collect();
+        $remaining = $ordered;
+
+        foreach (['simple', 'medium', 'special'] as $difficulty) {
+            $target = max(0, (int) ($mix[$difficulty] ?? 0));
+            if ($target === 0) {
+                continue;
+            }
+
+            $bucket = $remaining
+                ->filter(fn (MissionTemplate $template): bool => $this->templateDifficulty($template) === $difficulty)
+                ->take($target);
+
+            $selected = $selected->concat($bucket);
+            $remaining = $remaining->reject(
+                fn (MissionTemplate $template): bool => $bucket->contains('id', $template->id)
+            )->values();
+        }
+
+        $targetTotal = array_sum(array_map('intval', $mix));
+        if ($selected->count() < $targetTotal) {
+            $selected = $selected->concat($remaining->take($targetTotal - $selected->count()));
+        }
+
+        return $selected->unique('id')->values();
     }
 
     /**
@@ -126,5 +173,21 @@ class EnsureCurrentMissionInstancesAction
         }
 
         return [$template->start_at->copy(), $template->end_at->copy()];
+    }
+
+    private function templateDifficulty(MissionTemplate $template): string
+    {
+        $constraints = is_array($template->constraints) ? $template->constraints : [];
+        $difficulty = (string) ($constraints['difficulty'] ?? $constraints['daily_slot'] ?? 'simple');
+
+        return in_array($difficulty, ['simple', 'medium', 'special'], true) ? $difficulty : 'simple';
+    }
+
+    private function dailySelectionKey(MissionTemplate $template, User $user): string
+    {
+        return sprintf(
+            '%020u',
+            abs(crc32($user->id.'|'.now()->toDateString().'|'.$template->key.'|'.$template->id))
+        );
     }
 }

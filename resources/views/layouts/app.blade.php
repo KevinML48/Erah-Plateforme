@@ -92,7 +92,9 @@
                 @auth
                     <form method="POST" action="{{ route('auth.logout') }}" class="logout-form desktop-logout">
                         @csrf
-                        <button type="submit" class="btn btn-danger">Deconnexion</button>
+                        <button type="submit" class="tt-btn tt-btn-primary">
+                            <span data-hover="Deconnexion">Deconnexion</span>
+                        </button>
                     </form>
                 @endauth
 
@@ -166,7 +168,9 @@
                 @auth
                     <form method="POST" action="{{ route('auth.logout') }}" class="mobile-nav-logout">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-full">Se deconnecter</button>
+                        <button type="submit" class="tt-btn tt-btn-primary tt-btn-full">
+                            <span data-hover="Se deconnecter">Se deconnecter</span>
+                        </button>
                     </form>
                 @endauth
             </section>

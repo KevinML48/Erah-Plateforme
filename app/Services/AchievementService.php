@@ -58,7 +58,7 @@ class AchievementService
                         dedupeKey: 'achievement.unlock.'.$user->id.'.'.$achievement->key,
                         rewards: [
                             'xp' => (int) ($rewards['xp'] ?? 0),
-                            'reward_points' => (int) ($rewards['reward_points'] ?? 0),
+                            'points' => (int) ($rewards['points'] ?? $rewards['reward_points'] ?? 0),
                             'rank_points' => (int) ($rewards['rank_points'] ?? 0),
                         ],
                         subjectType: Achievement::class,

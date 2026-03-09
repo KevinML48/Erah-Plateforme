@@ -8,12 +8,22 @@
         <p>Base front neutre. Cette page sert de point d'entree fonctionnel.</p>
         <div class="actions">
             @auth
-                <a class="button-link" href="{{ route('dashboard') }}">Aller au dashboard</a>
+                <a class="tt-btn tt-btn-link" href="{{ route('dashboard') }}">
+                    <span data-hover="Aller au dashboard">Aller au dashboard</span>
+                </a>
             @else
-                <a class="button-link" href="{{ route('login') }}">Se connecter</a>
-                <a class="button-link" href="{{ route('register') }}">Creer un compte</a>
-                <a class="button-link" href="{{ url('/auth/google/redirect') }}">Google login</a>
-                <a class="button-link" href="{{ url('/auth/discord/redirect') }}">Discord login</a>
+                <a class="tt-btn tt-btn-link" href="{{ route('login') }}">
+                    <span data-hover="Se connecter">Se connecter</span>
+                </a>
+                <a class="tt-btn tt-btn-link" href="{{ route('register') }}">
+                    <span data-hover="Creer un compte">Creer un compte</span>
+                </a>
+                <a class="tt-btn tt-btn-link" href="{{ url('/auth/google/redirect') }}">
+                    <span data-hover="Google login">Google login</span>
+                </a>
+                <a class="tt-btn tt-btn-link" href="{{ url('/auth/discord/redirect') }}">
+                    <span data-hover="Discord login">Discord login</span>
+                </a>
             @endauth
         </div>
     </section>

@@ -14,6 +14,7 @@ enum NotificationCategory: string
     case QUIZ = 'quiz';
     case LIVE_CODE = 'live_code';
     case ACHIEVEMENT = 'achievement';
+    case EVENT = 'event';
 
     /**
      * @return array<int, string>

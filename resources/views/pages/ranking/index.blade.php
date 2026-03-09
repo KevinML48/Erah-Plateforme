@@ -22,7 +22,9 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit">Afficher</button>
+                    <button type="submit" class="tt-btn tt-btn-primary">
+                        <span data-hover="Afficher">Afficher</span>
+                    </button>
                 </form>
             </div>
         </div>
@@ -64,7 +66,9 @@
                     <input id="source_id" name="source_id" value="{{ old('source_id', 'admin-'.auth()->id().'-'.now()->timestamp) }}" required>
                 </div>
                 <div class="actions">
-                    <button type="submit">Accorder points</button>
+                    <button type="submit" class="tt-btn tt-btn-primary">
+                        <span data-hover="Accorder points">Accorder points</span>
+                    </button>
                 </div>
             </form>
         </section>

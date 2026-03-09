@@ -7,9 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Console\StoreMissionTemplateRequest;
 use App\Http\Requests\Web\Console\UpdateMissionTemplateRequest;
 use App\Models\LiveCode;
+use App\Models\LiveCodeRedemption;
+use App\Models\MissionCompletion;
 use App\Models\MissionTemplate;
 use App\Models\PlatformEvent;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
@@ -25,12 +28,33 @@ class AdminMissionController extends Controller
             ->orderBy('key')
             ->paginate(25);
 
+        $activeTemplatesCount = MissionTemplate::query()->where('is_active', true)->count();
+        $activeDailyCount = MissionTemplate::query()->where('is_active', true)->where('scope', MissionTemplate::SCOPE_DAILY)->count();
+        $activeQuizCount = Quiz::query()->where('is_active', true)->count();
+        $activeLiveCodeCount = LiveCode::query()->where('status', 'published')->count();
+        $activeEventCount = PlatformEvent::query()->activeWindow()->count();
+        $missionsCompletedToday = MissionCompletion::query()->whereDate('completed_at', now()->toDateString())->count();
+        $quizAttemptsToday = QuizAttempt::query()->whereDate('finished_at', now()->toDateString())->count();
+        $liveCodeRedemptionsToday = LiveCodeRedemption::query()->whereDate('redeemed_at', now()->toDateString())->count();
+        $pendingValidationCount = 0;
+
         return view('pages.admin.missions.index', [
             'templates' => $templates,
             'scopes' => MissionTemplate::scopes(),
             'quizzes' => Quiz::query()->withCount('attempts')->latest('id')->limit(8)->get(),
             'liveCodes' => LiveCode::query()->withCount('redemptions')->latest('id')->limit(8)->get(),
             'events' => PlatformEvent::query()->latest('id')->limit(8)->get(),
+            'overview' => [
+                'active_templates' => $activeTemplatesCount,
+                'active_daily_templates' => $activeDailyCount,
+                'active_quizzes' => $activeQuizCount,
+                'active_live_codes' => $activeLiveCodeCount,
+                'active_events' => $activeEventCount,
+                'missions_completed_today' => $missionsCompletedToday,
+                'quiz_attempts_today' => $quizAttemptsToday,
+                'live_code_redemptions_today' => $liveCodeRedemptionsToday,
+                'pending_validation' => $pendingValidationCount,
+            ],
         ]);
     }
 
@@ -102,10 +126,14 @@ class AdminMissionController extends Controller
             'scope' => $validated['scope'],
             'start_at' => $validated['start_at'] ?? null,
             'end_at' => $validated['end_at'] ?? null,
-            'constraints' => $this->decodeJsonOrNull($validated['constraints_json'] ?? null),
+            'constraints' => $this->mergeDifficultyConstraint(
+                $this->decodeJsonOrNull($validated['constraints_json'] ?? null),
+                $validated['difficulty'] ?? null,
+            ),
             'rewards' => [
                 'xp' => (int) ($validated['rewards_xp'] ?? 0),
                 'rank_points' => (int) ($validated['rewards_rank_points'] ?? 0),
+                'points' => (int) ($validated['rewards_reward_points'] ?? 0),
                 'reward_points' => (int) ($validated['rewards_reward_points'] ?? 0),
                 'bet_points' => (int) ($validated['rewards_bet_points'] ?? 0),
             ],
@@ -128,5 +156,20 @@ class AdminMissionController extends Controller
         }
 
         return $decoded;
+    }
+
+    /**
+     * @param array<string, mixed>|null $constraints
+     * @return array<string, mixed>|null
+     */
+    private function mergeDifficultyConstraint(?array $constraints, ?string $difficulty): ?array
+    {
+        $payload = $constraints ?? [];
+
+        if ($difficulty !== null && $difficulty !== '') {
+            $payload['difficulty'] = $difficulty;
+        }
+
+        return $payload === [] ? null : $payload;
     }
 }

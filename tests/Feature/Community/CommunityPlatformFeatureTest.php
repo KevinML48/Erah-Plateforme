@@ -3,11 +3,17 @@
 namespace Tests\Feature\Community;
 
 use App\Models\Duel;
+use App\Models\MissionTemplate;
 use App\Models\LiveCode;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
+use App\Models\QuizQuestion;
 use App\Models\User;
 use App\Models\UserProgress;
+use App\Services\BetService;
+use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
+use App\Models\Bet;
+use App\Models\CommunityRewardGrant;
 use Database\Seeders\CommunityPlatformSeeder;
 use Database\Seeders\LeagueSeeder;
 use Illuminate\Auth\Events\Login;
@@ -91,6 +97,44 @@ class CommunityPlatformFeatureTest extends TestCase
         ]);
 
         $this->assertNotNull($wrong->id);
+    }
+
+    public function test_user_can_pass_short_text_quiz(): void
+    {
+        $user = User::factory()->create();
+        $quiz = Quiz::query()->create([
+            'title' => 'Culture ERAH',
+            'slug' => 'culture-erah',
+            'description' => 'Quiz reponse courte',
+            'pass_score' => 1,
+            'reward_points' => 20,
+            'xp_reward' => 30,
+            'is_active' => true,
+        ]);
+
+        $quiz->questions()->create([
+            'prompt' => 'Quel est le nom du club ?',
+            'question_type' => QuizQuestion::TYPE_SHORT_TEXT,
+            'accepted_answer' => 'ERAH',
+            'sort_order' => 1,
+            'points' => 1,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('quizzes.attempt', ['slug' => $quiz->slug]), [
+            'answers' => [
+                $quiz->questions()->value('id') => ' erah ',
+            ],
+        ]);
+
+        $response->assertRedirect()->assertSessionHas('success');
+
+        $this->assertDatabaseHas('quiz_attempts', [
+            'quiz_id' => $quiz->id,
+            'user_id' => $user->id,
+            'passed' => true,
+            'score' => 1,
+        ]);
     }
 
     public function test_live_code_redemption_is_limited_per_user_and_rewards_user(): void
@@ -187,6 +231,8 @@ class CommunityPlatformFeatureTest extends TestCase
             'user_id' => $winner->id,
             'duel_score' => 25,
             'duel_wins' => 1,
+            'duel_current_streak' => 1,
+            'duel_best_streak' => 1,
         ]);
 
         $this->assertDatabaseHas('user_progress', [
@@ -206,6 +252,40 @@ class CommunityPlatformFeatureTest extends TestCase
         ]);
     }
 
+    public function test_duel_rewards_are_blocked_after_repeated_farming_against_same_opponent(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $winner = User::factory()->create();
+        $loser = User::factory()->create();
+
+        foreach (range(1, 4) as $index) {
+            $duel = Duel::factory()->create([
+                'challenger_id' => $winner->id,
+                'challenged_id' => $loser->id,
+                'status' => Duel::STATUS_ACCEPTED,
+                'responded_at' => now(),
+                'accepted_at' => now(),
+            ]);
+
+            $this->actingAs($admin)->post(route('admin.duels.result.store', ['duelId' => $duel->id]), [
+                'winner_user_id' => $winner->id,
+                'challenger_score' => 3,
+                'challenged_score' => 0,
+            ])->assertRedirect();
+        }
+
+        $this->assertDatabaseHas('user_progress', [
+            'user_id' => $winner->id,
+            'duel_wins' => 3,
+            'duel_score' => 75,
+            'duel_current_streak' => 3,
+            'duel_best_streak' => 3,
+        ]);
+
+        $this->assertSame(3, CommunityRewardGrant::query()->where('domain', 'duels')->where('action', 'win')->count());
+        $this->assertSame(3, CommunityRewardGrant::query()->where('domain', 'duels')->where('action', 'loss')->count());
+    }
+
     public function test_community_leaderboard_api_and_push_subscription_endpoints_work(): void
     {
         $this->seed(LeagueSeeder::class);
@@ -221,6 +301,8 @@ class CommunityPlatformFeatureTest extends TestCase
             'duel_score' => 40,
             'duel_wins' => 3,
             'duel_losses' => 1,
+            'duel_current_streak' => 2,
+            'duel_best_streak' => 4,
         ]);
 
         UserProgress::query()->create([
@@ -231,6 +313,8 @@ class CommunityPlatformFeatureTest extends TestCase
             'duel_score' => 15,
             'duel_wins' => 2,
             'duel_losses' => 2,
+            'duel_current_streak' => 1,
+            'duel_best_streak' => 2,
         ]);
 
         $leaderboards = $this->getJson('/api/community/leaderboards?limit=5');
@@ -246,6 +330,7 @@ class CommunityPlatformFeatureTest extends TestCase
             'public_key' => 'public-key',
             'auth_token' => 'auth-token',
             'content_encoding' => 'aes128gcm',
+            'categories' => ['duel', 'quiz'],
         ]);
 
         $store->assertCreated()
@@ -286,6 +371,98 @@ class CommunityPlatformFeatureTest extends TestCase
             'user_id' => $user->id,
             'balance' => 20,
         ]);
+    }
+
+    public function test_daily_missions_are_selected_with_expected_simple_medium_special_mix(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (range(1, 4) as $index) {
+            MissionTemplate::query()->create([
+                'key' => 'mission.daily.simple.'.$index,
+                'title' => 'Simple '.$index,
+                'event_type' => 'clip.view',
+                'target_count' => 1,
+                'scope' => MissionTemplate::SCOPE_DAILY,
+                'constraints' => ['difficulty' => 'simple'],
+                'rewards' => ['xp' => 10, 'points' => 5],
+                'is_active' => true,
+            ]);
+        }
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.daily.medium.1',
+            'title' => 'Medium 1',
+            'event_type' => 'clip.like',
+            'target_count' => 2,
+            'scope' => MissionTemplate::SCOPE_DAILY,
+            'constraints' => ['difficulty' => 'medium'],
+            'rewards' => ['xp' => 20, 'points' => 10],
+            'is_active' => true,
+        ]);
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.daily.special.1',
+            'title' => 'Special 1',
+            'event_type' => 'duel.win',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_DAILY,
+            'constraints' => ['difficulty' => 'special'],
+            'rewards' => ['xp' => 30, 'points' => 15],
+            'is_active' => true,
+        ]);
+
+        $result = app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $this->assertSame(5, $result['daily']);
+        $this->assertSame(5, $user->missionProgress()->count());
+    }
+
+    public function test_bet_rewards_stop_granting_xp_after_daily_limit(): void
+    {
+        $user = User::factory()->create();
+
+        foreach (range(1, 21) as $index) {
+            $bet = Bet::factory()->create([
+                'user_id' => $user->id,
+                'market_key' => 'winner',
+                'selection_key' => 'team_a',
+                'stake' => 100,
+                'odds_snapshot' => 1.5,
+                'prediction' => Bet::PREDICTION_HOME,
+                'stake_points' => 100,
+                'potential_payout' => 125,
+                'settlement_points' => 0,
+                'status' => Bet::STATUS_WON,
+                'idempotency_key' => 'bet-'.$index,
+                'placed_at' => now(),
+                'settled_at' => now(),
+                'payout' => 125,
+            ]);
+
+            app(BetService::class)->rewardSettlement($bet->fresh('user'));
+        }
+
+        $this->assertSame(20, CommunityRewardGrant::query()->where('domain', 'bets')->where('action', 'win')->count());
+        $this->assertDatabaseHas('user_progress', [
+            'user_id' => $user->id,
+            'total_xp' => 1200,
+        ]);
+    }
+
+    public function test_statistics_and_duel_leaderboard_pages_are_accessible(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('statistics.index'))
+            ->assertOk()
+            ->assertSee('Statistiques');
+
+        $this->actingAs($user)
+            ->get(route('duels.leaderboard'))
+            ->assertOk()
+            ->assertSee('Classement duel');
     }
 
     public function test_community_platform_seeder_inserts_default_content(): void

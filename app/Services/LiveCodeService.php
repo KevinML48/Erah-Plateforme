@@ -96,7 +96,7 @@ class LiveCodeService
                 dedupeKey: 'live-code.redeem.'.$redemption->id,
                 rewards: [
                     'xp' => (int) $liveCode->xp_reward,
-                    'reward_points' => (int) $liveCode->reward_points,
+                    'points' => (int) $liveCode->reward_points,
                     'bet_points' => (int) $liveCode->bet_points,
                 ],
                 subjectType: LiveCode::class,

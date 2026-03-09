@@ -8,6 +8,10 @@
     @include('pages.community.partials.styles')
 @endsection
 
+@section('page_scripts')
+    @include('marketing.partials.theme-scripts')
+@endsection
+
 @section('content')
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
         <div class="page-header-inner tt-wrap">

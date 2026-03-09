@@ -23,7 +23,9 @@
             <form method="GET" action="{{ route('wallets.index') }}" class="inline-form">
                 <label for="q">Recherche user</label>
                 <input id="q" name="q" value="{{ $search ?? '' }}" placeholder="Nom ou email">
-                <button type="submit">Filtrer</button>
+                <button type="submit" class="tt-btn tt-btn-primary">
+                    <span data-hover="Filtrer">Filtrer</span>
+                </button>
             </form>
 
             <div class="grid grid-2">
@@ -53,7 +55,11 @@
                         <label>Idempotency key</label>
                         <input name="idempotency_key" value="bet-grant-{{ auth()->id() }}-{{ now()->timestamp }}" required>
                     </div>
-                    <div class="actions"><button type="submit">Crediter bet_points</button></div>
+                    <div class="actions">
+                        <button type="submit" class="tt-btn tt-btn-primary">
+                            <span data-hover="Crediter bet_points">Crediter bet_points</span>
+                        </button>
+                    </div>
                 </form>
 
                 <form method="POST" action="{{ route('wallets.grant-reward') }}" class="grid">
@@ -82,7 +88,11 @@
                         <label>Idempotency key</label>
                         <input name="idempotency_key" value="reward-grant-{{ auth()->id() }}-{{ now()->timestamp }}" required>
                     </div>
-                    <div class="actions"><button type="submit">Crediter reward_points</button></div>
+                    <div class="actions">
+                        <button type="submit" class="tt-btn tt-btn-primary">
+                            <span data-hover="Crediter reward_points">Crediter reward_points</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </section>

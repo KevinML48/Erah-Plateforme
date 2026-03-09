@@ -16,7 +16,9 @@
 
         <form method="POST" action="{{ route('auth.logout') }}" class="actions actions-stack-mobile">
             @csrf
-            <button type="submit">Se deconnecter</button>
+            <button type="submit" class="tt-btn tt-btn-primary">
+                <span data-hover="Se deconnecter">Se deconnecter</span>
+            </button>
         </form>
     </section>
 @endsection

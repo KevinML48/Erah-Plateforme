@@ -189,11 +189,11 @@
             </div>
 
             <div class="adm-gallery-form-actions">
-                <button class="adm-gallery-btn adm-gallery-btn--primary" type="submit">
+                <button class="tt-btn tt-btn-primary tt-magnetic-item adm-gallery-btn" type="submit">
                     <span>Enregistrer la photo</span>
                 </button>
 
-                <button class="adm-gallery-btn adm-gallery-btn--outline" type="button" data-gallery-close-details>
+                <button class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" type="button" data-gallery-close-details>
                     <span>Fermer</span>
                 </button>
             </div>

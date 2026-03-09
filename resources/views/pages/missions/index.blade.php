@@ -220,7 +220,7 @@
             'completion_rate' => 0,
             'xp_potential' => 0,
             'rank_potential' => 0,
-            'reward_potential' => 0,
+            'points_potential' => 0,
             'bet_potential' => 0,
         ];
     @endphp
@@ -323,8 +323,8 @@
                         <span class="text-muted">Taux de completion</span>
                     </article>
                     <article class="mission-kpi-card">
-                        <span class="mission-kpi-value">{{ (int) ($missionStats['reward_potential'] ?? 0) }}</span>
-                        <span class="text-muted">Reward points potentiels</span>
+                        <span class="mission-kpi-value">{{ (int) ($missionStats['points_potential'] ?? 0) }}</span>
+                        <span class="text-muted">Points plateforme potentiels</span>
                     </article>
                 </div>
             </div>
@@ -382,13 +382,13 @@
                                             <span class="mission-reward-chip">+{{ (int) $mission['rewards']['xp'] }} XP</span>
                                         @endif
                                         @if((int) ($mission['rewards']['rank_points'] ?? 0) > 0)
-                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['rank_points'] }} Rank</span>
+                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['rank_points'] }} classement legacy</span>
                                         @endif
-                                        @if((int) ($mission['rewards']['reward_points'] ?? 0) > 0)
-                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['reward_points'] }} Reward</span>
+                                        @if((int) ($mission['rewards']['points'] ?? 0) > 0)
+                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['points'] }} points</span>
                                         @endif
                                         @if((int) ($mission['rewards']['bet_points'] ?? 0) > 0)
-                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['bet_points'] }} Bet</span>
+                                            <span class="mission-reward-chip">+{{ (int) $mission['rewards']['bet_points'] }} paris legacy</span>
                                         @endif
                                     </div>
 

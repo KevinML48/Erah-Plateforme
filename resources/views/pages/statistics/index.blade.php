@@ -9,13 +9,19 @@
 @endsection
 
 @section('content')
+    @php
+        $isPublicApp = request()->routeIs('app.*');
+        $duelLeaderboardRouteName = $isPublicApp ? 'app.duels.leaderboard' : 'duels.leaderboard';
+        $duelsRouteName = $isPublicApp ? 'app.duels.index' : 'duels.index';
+    @endphp
+
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
                     <h2 class="ph-caption-subtitle">ERAH Insights</h2>
                     <h1 class="ph-caption-title">Statistiques</h1>
-                    <div class="ph-caption-description max-width-700">Vision globale des performances XP, du classement competitif et du score duel.</div>
+                    <div class="ph-caption-description max-width-700">Vision globale de la progression XP, des ligues communautaires et du duel ranking.</div>
                 </div>
             </div>
         </div>
@@ -27,7 +33,11 @@
                 <div class="community-head">
                     <div>
                         <h1>Vue d ensemble</h1>
-                        <p>Trois classements coexistent: experience communautaire, classement competitif et score duel. Le module consolide aussi le volume clips, paris et duels termines.</p>
+                        <p>La lecture reste simple: un classement XP principal, votre ligue communautaire et un acces separe au classement duel.</p>
+                    </div>
+                    <div class="community-actions">
+                        <a href="{{ route($duelLeaderboardRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item no-transition"><span data-hover="Classement duel">Classement duel</span></a>
+                        <a href="{{ route($duelsRouteName) }}" class="tt-btn tt-btn-primary tt-magnetic-item no-transition"><span data-hover="Mes duels">Mes duels</span></a>
                     </div>
                 </div>
 
@@ -67,39 +77,17 @@
                 </section>
 
                 <section class="community-surface">
-                    <h3 class="no-margin">Leaderboard classement</h3>
-                    <table class="community-table margin-top-20">
-                        <thead><tr><th>#</th><th>Joueur</th><th>Ligue</th><th>Points classement</th></tr></thead>
-                        <tbody>
-                            @foreach($rankLeaderboard as $entry)
-                                <tr>
-                                    <td>{{ $entry['position'] }}</td>
-                                    <td>{{ $entry['name'] }}</td>
-                                    <td>{{ $entry['league'] ?: 'N/A' }}</td>
-                                    <td>{{ number_format((int) $entry['total_rank_points'], 0, ',', ' ') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </section>
-
-                <section class="community-surface">
-                    <h3 class="no-margin">Leaderboard duel</h3>
-                    <table class="community-table margin-top-20">
-                        <thead><tr><th>#</th><th>Joueur</th><th>Score duel</th><th>Bilan</th></tr></thead>
-                        <tbody>
-                            @foreach($duelLeaderboard as $entry)
-                                <tr>
-                                    <td>{{ $entry['position'] }}</td>
-                                    <td>{{ $entry['name'] }}</td>
-                                    <td>{{ number_format((int) $entry['duel_score'], 0, ',', ' ') }}</td>
-                                    <td>{{ (int) $entry['duel_wins'] }} V / {{ (int) $entry['duel_losses'] }} D</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <h3 class="no-margin">Performance duel</h3>
+                    <p class="margin-top-20">Le classement duel dispose maintenant de sa propre page pour separer clairement la competition globale et vos duels personnels.</p>
+                    <div class="community-actions margin-top-20">
+                        <a href="{{ route($duelLeaderboardRouteName) }}" class="tt-btn tt-btn-primary tt-magnetic-item no-transition"><span data-hover="Ouvrir le classement duel">Ouvrir le classement duel</span></a>
+                    </div>
                 </section>
             </div>
         </div>
     </div>
+@endsection
+
+@section('page_scripts')
+    @include('marketing.partials.theme-scripts')
 @endsection

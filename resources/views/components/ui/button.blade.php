@@ -8,30 +8,31 @@
 
 @php
     $variantClass = match ($variant) {
-        'primary' => 'btn-primary',
-        'secondary' => 'btn-secondary',
-        'outline' => 'btn-outline',
-        'dark' => 'btn-dark',
-        'link' => 'btn-link',
-        'danger' => 'btn-danger',
-        default => 'btn-secondary',
+        'primary' => 'tt-btn-primary',
+        'secondary' => 'tt-btn-secondary',
+        'outline' => 'tt-btn-outline',
+        'dark' => 'tt-btn-dark',
+        'link' => 'tt-btn-link',
+        'danger' => 'tt-btn-primary',
+        default => 'tt-btn-secondary',
     };
 
     $sizeClass = match ($size) {
-        'sm' => 'btn-sm',
-        'lg' => 'btn-lg',
+        'sm' => 'tt-btn-sm',
+        'lg' => 'tt-btn-lg',
         default => '',
     };
 
-    $classes = trim('btn '.$variantClass.' '.$sizeClass);
+    $classes = trim('tt-btn '.$variantClass.' '.$sizeClass);
+    $label = trim(strip_tags((string) $slot)) ?: 'Action';
 @endphp
 
 @if($href)
     <a href="{{ $href }}" {{ $attributes->class($classes) }}>
-        {{ $slot }}
+        <span data-hover="{{ $label }}">{{ $slot }}</span>
     </a>
 @else
     <button type="{{ $type }}" {{ $attributes->class($classes) }}>
-        {{ $slot }}
+        <span data-hover="{{ $label }}">{{ $slot }}</span>
     </button>
 @endif

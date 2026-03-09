@@ -53,6 +53,43 @@
             margin-bottom: 30px;
         }
 
+        .duel-quick-access {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .01));
+        }
+
+        .duel-quick-access-copy {
+            max-width: 620px;
+        }
+
+        .duel-quick-access-title {
+            display: block;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .duel-quick-access-text {
+            color: rgba(255, 255, 255, .7);
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .duel-quick-access-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .duel-summary-card {
             border: 1px solid rgba(255, 255, 255, .14);
             border-radius: 12px;
@@ -72,11 +109,21 @@
         }
 
         .duel-item-card .pcli-item-inner {
-            align-items: stretch;
+            align-items: center;
+        }
+
+        .duel-item-card .pcli-col-image {
+            flex: 0 0 180px;
+            width: 180px;
         }
 
         .duel-item-card .pcli-image {
-            height: 100%;
+            width: 180px;
+            height: 180px;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 20px;
+            margin-left: auto;
         }
 
         .duel-item-card .pcli-image img {
@@ -163,6 +210,19 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 767.98px) {
+            .duel-item-card .pcli-col-image {
+                flex: 0 0 132px;
+                width: 132px;
+            }
+
+            .duel-item-card .pcli-image {
+                width: 132px;
+                height: 132px;
+                border-radius: 16px;
+            }
+        }
     </style>
 @endsection
 
@@ -170,6 +230,8 @@
     @php
         $isPublicApp = request()->routeIs('app.*');
         $indexRouteName = $isPublicApp ? 'app.duels.index' : 'duels.index';
+        $duelLeaderboardRouteName = $isPublicApp ? 'app.duels.leaderboard' : 'duels.leaderboard';
+        $statisticsRouteName = $isPublicApp ? 'app.statistics.index' : 'statistics.index';
         $statusCounts = $statusCounts ?? ['pending' => 0, 'active' => 0, 'finished' => 0];
         $summary = $summary ?? ['needs_response' => 0, 'sent_pending' => 0, 'all' => 0];
     @endphp
@@ -247,6 +309,21 @@
                     <a href="{{ route('duels.create') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
                         <span data-hover="Creer un duel">Creer un duel</span>
                     </a>
+                </div>
+
+                <div class="duel-quick-access">
+                    <div class="duel-quick-access-copy">
+                        <span class="duel-quick-access-title">Voir le classement duel</span>
+                        <p class="duel-quick-access-text">Le classement duel est maintenant sur une page dediee. Cette page reste concentree sur vos duels actuels, vos demandes en attente et votre historique personnel.</p>
+                    </div>
+                    <div class="duel-quick-access-actions">
+                        <a href="{{ route($duelLeaderboardRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item no-transition">
+                            <span data-hover="Classement duel">Classement duel</span>
+                        </a>
+                        <a href="{{ route($statisticsRouteName) }}" class="tt-btn tt-btn-primary tt-magnetic-item no-transition">
+                            <span data-hover="Statistiques">Statistiques</span>
+                        </a>
+                    </div>
                 </div>
 
                 <div class="duel-summary-grid">

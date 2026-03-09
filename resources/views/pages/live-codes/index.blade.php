@@ -8,6 +8,10 @@
     @include('pages.community.partials.styles')
 @endsection
 
+@section('page_scripts')
+    @include('marketing.partials.theme-scripts')
+@endsection
+
 @section('content')
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
         <div class="page-header-inner tt-wrap">
@@ -40,7 +44,7 @@
                         </div>
                         <div class="full">
                             <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                <span data-hover="Redeem">Redeem</span>
+                                <span data-hover="Valider le code">Valider le code</span>
                             </button>
                         </div>
                     </form>
@@ -58,7 +62,9 @@
                             <div class="community-meta">
                                 <span class="community-pill">+{{ (int) $code->xp_reward }} XP</span>
                                 <span class="community-pill">+{{ (int) $code->reward_points }} points</span>
-                                <span class="community-pill">+{{ (int) $code->bet_points }} bet points</span>
+                                @if((int) $code->bet_points > 0)
+                                    <span class="community-pill">+{{ (int) $code->bet_points }} points paris</span>
+                                @endif
                             </div>
                         </article>
                     @endforeach
@@ -82,7 +88,12 @@
                                     <tr>
                                         <td>{{ $redemption->liveCode?->code }}</td>
                                         <td>{{ optional($redemption->redeemed_at)->format('d/m/Y H:i') }}</td>
-                                        <td>+{{ (int) $redemption->xp_reward }} XP / +{{ (int) $redemption->reward_points }} pts / +{{ (int) $redemption->bet_points }} bet</td>
+                                        <td>
+                                            +{{ (int) $redemption->xp_reward }} XP / +{{ (int) $redemption->reward_points }} pts
+                                            @if((int) $redemption->bet_points > 0)
+                                                / +{{ (int) $redemption->bet_points }} paris
+                                            @endif
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

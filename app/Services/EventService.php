@@ -26,6 +26,8 @@ class EventService
     public function applyModifiers(array $rewards, ?string $type = null): array
     {
         $result = $rewards;
+        $result['points'] = (int) ($result['points'] ?? $result['reward_points'] ?? 0);
+        unset($result['reward_points']);
 
         foreach ($this->active() as $event) {
             if ($event->type !== 'double_xp' && $type !== null && $event->type !== $type) {
@@ -42,13 +44,13 @@ class EventService
 
             $result['xp'] = (int) round(((int) ($result['xp'] ?? 0)) * (float) ($config['xp_multiplier'] ?? 1));
             $result['rank_points'] = (int) round(((int) ($result['rank_points'] ?? 0)) * (float) ($config['rank_points_multiplier'] ?? 1));
-            $result['reward_points'] = (int) round(((int) ($result['reward_points'] ?? 0)) * (float) ($config['reward_points_multiplier'] ?? 1));
+            $result['points'] = (int) round(((int) ($result['points'] ?? 0)) * (float) ($config['points_multiplier'] ?? $config['reward_points_multiplier'] ?? 1));
             $result['bet_points'] = (int) round(((int) ($result['bet_points'] ?? 0)) * (float) ($config['bet_points_multiplier'] ?? 1));
             $result['duel_score'] = (int) round(((int) ($result['duel_score'] ?? 0)) * (float) ($config['duel_score_multiplier'] ?? 1));
 
             $result['xp'] += (int) ($config['xp_bonus'] ?? 0);
             $result['rank_points'] += (int) ($config['rank_points_bonus'] ?? 0);
-            $result['reward_points'] += (int) ($config['reward_points_bonus'] ?? 0);
+            $result['points'] += (int) ($config['points_bonus'] ?? $config['reward_points_bonus'] ?? 0);
             $result['bet_points'] += (int) ($config['bet_points_bonus'] ?? 0);
             $result['duel_score'] += (int) ($config['duel_score_bonus'] ?? 0);
         }

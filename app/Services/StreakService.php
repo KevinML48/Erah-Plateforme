@@ -68,7 +68,7 @@ class StreakService
         $streak->save();
 
         if ($rewardPoints > 0) {
-            $this->walletService->adjustRewardPoints(
+            $this->walletService->adjustPoints(
                 user: $user,
                 amount: $rewardPoints,
                 uniqueKey: 'streak.login.'.$user->id.'.'.$today,
@@ -86,7 +86,7 @@ class StreakService
             message: 'Serie active: '.$streak->current_streak.' jour(s).',
             data: [
                 'current_streak' => $streak->current_streak,
-                'reward_points' => $rewardPoints,
+                'points' => $rewardPoints,
                 'xp_multiplier' => (float) $streak->current_multiplier,
             ],
         );
@@ -97,7 +97,7 @@ class StreakService
             target: $streak,
             context: [
                 'current_streak' => $streak->current_streak,
-                'reward_points' => $rewardPoints,
+                'points' => $rewardPoints,
                 'multiplier' => $streak->current_multiplier,
             ],
         );

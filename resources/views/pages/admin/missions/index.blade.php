@@ -11,6 +11,12 @@
 @section('content')
     @php
         $scopes = $scopes ?? [];
+        $overview = $overview ?? [];
+        $difficultyOptions = [
+            'simple' => 'Simple',
+            'medium' => 'Moyenne',
+            'special' => 'Speciale',
+        ];
     @endphp
 
     @include('pages.admin.partials.hero', [
@@ -25,6 +31,39 @@
             <div class="tt-section-inner tt-wrap max-width-1800">
                 <div class="adm-shell">
                     @include('pages.admin.partials.nav')
+
+                    <section class="adm-surface">
+                        <div class="tt-heading tt-heading-lg margin-bottom-20">
+                            <h2 class="tt-heading-title tt-text-reveal">Vue d ensemble</h2>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Pilotage rapide du moteur missions, des quiz actifs et des campagnes live.</p>
+                        </div>
+
+                        <div class="adm-form-grid-3">
+                            <article class="adm-mission-card">
+                                <h3 class="adm-mission-title">{{ (int) ($overview['active_templates'] ?? 0) }}</h3>
+                                <p class="adm-meta">Templates actifs</p>
+                                <div class="adm-row-actions">
+                                    <span class="adm-pill">{{ (int) ($overview['active_daily_templates'] ?? 0) }} daily</span>
+                                    <span class="adm-pill">{{ (int) ($overview['missions_completed_today'] ?? 0) }} completes aujourd hui</span>
+                                </div>
+                            </article>
+                            <article class="adm-mission-card">
+                                <h3 class="adm-mission-title">{{ (int) ($overview['active_quizzes'] ?? 0) }}</h3>
+                                <p class="adm-meta">Quiz actifs</p>
+                                <div class="adm-row-actions">
+                                    <span class="adm-pill">{{ (int) ($overview['quiz_attempts_today'] ?? 0) }} tentative(s) aujourd hui</span>
+                                </div>
+                            </article>
+                            <article class="adm-mission-card">
+                                <h3 class="adm-mission-title">{{ (int) (($overview['active_live_codes'] ?? 0) + ($overview['active_events'] ?? 0)) }}</h3>
+                                <p class="adm-meta">Live codes + evenements</p>
+                                <div class="adm-row-actions">
+                                    <span class="adm-pill">{{ (int) ($overview['active_live_codes'] ?? 0) }} codes publies</span>
+                                    <span class="adm-pill">{{ (int) ($overview['live_code_redemptions_today'] ?? 0) }} redemptions aujourd hui</span>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
 
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
@@ -88,6 +127,16 @@
                                     </select>
                                 </div>
 
+                                <div class="tt-form-group">
+                                    <label for="mission_difficulty">Difficulte daily</label>
+                                    <select class="tt-form-control" id="mission_difficulty" name="difficulty" data-lenis-prevent>
+                                        <option value="">Aucune</option>
+                                        @foreach($difficultyOptions as $difficultyKey => $difficultyLabel)
+                                            <option value="{{ $difficultyKey }}" {{ old('difficulty') === $difficultyKey ? 'selected' : '' }}>{{ $difficultyLabel }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="tt-form-group" style="align-self:end;">
                                     <div class="tt-form-check">
                                         <input type="checkbox" id="mission_is_active" name="is_active" value="1" @checked(old('is_active', true))>
@@ -121,17 +170,17 @@
                                         </div>
 
                                         <div class="tt-form-group">
-                                            <label for="mission_rewards_rank_points">Rank points</label>
+                                            <label for="mission_rewards_rank_points">Points classement legacy</label>
                                             <input class="tt-form-control" id="mission_rewards_rank_points" type="number" name="rewards_rank_points" min="0" value="{{ old('rewards_rank_points', 0) }}">
                                         </div>
 
                                         <div class="tt-form-group">
-                                            <label for="mission_rewards_reward_points">Reward points</label>
+                                            <label for="mission_rewards_reward_points">Points plateforme</label>
                                             <input class="tt-form-control" id="mission_rewards_reward_points" type="number" name="rewards_reward_points" min="0" value="{{ old('rewards_reward_points', 0) }}">
                                         </div>
 
                                         <div class="tt-form-group">
-                                            <label for="mission_rewards_bet_points">Bet points</label>
+                                            <label for="mission_rewards_bet_points">Points paris legacy</label>
                                             <input class="tt-form-control" id="mission_rewards_bet_points" type="number" name="rewards_bet_points" min="0" value="{{ old('rewards_bet_points', 0) }}">
                                         </div>
 
@@ -164,8 +213,9 @@
                                         $endAtValue = optional($template->end_at)->format('Y-m-d\\TH:i');
                                         $rewardXp = (int) ($template->rewards['xp'] ?? 0);
                                         $rewardRank = (int) ($template->rewards['rank_points'] ?? 0);
-                                        $rewardReward = (int) ($template->rewards['reward_points'] ?? 0);
+                                        $rewardReward = (int) ($template->rewards['points'] ?? $template->rewards['reward_points'] ?? 0);
                                         $rewardBet = (int) ($template->rewards['bet_points'] ?? 0);
+                                        $difficulty = is_array($template->constraints) ? ($template->constraints['difficulty'] ?? null) : null;
                                     @endphp
 
                                     <article class="adm-mission-card">
@@ -178,6 +228,9 @@
 
                                         <div class="adm-row-actions">
                                             <span class="adm-pill">Scope {{ $template->scope }}</span>
+                                            @if($difficulty)
+                                                <span class="adm-pill">{{ $difficultyOptions[$difficulty] ?? ucfirst($difficulty) }}</span>
+                                            @endif
                                             <span class="adm-pill">Objectif {{ (int) $template->target_count }}</span>
                                             <span class="adm-pill">XP {{ $rewardXp }}</span>
                                         </div>
@@ -212,6 +265,16 @@
                                                     <select class="tt-form-control" name="scope" required data-lenis-prevent>
                                                         @foreach($scopes as $scope)
                                                             <option value="{{ $scope }}" {{ $template->scope === $scope ? 'selected' : '' }}>{{ $scope }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <div class="tt-form-group">
+                                                    <label>Difficulte daily</label>
+                                                    <select class="tt-form-control" name="difficulty" data-lenis-prevent>
+                                                        <option value="">Aucune</option>
+                                                        @foreach($difficultyOptions as $difficultyKey => $difficultyLabel)
+                                                            <option value="{{ $difficultyKey }}" {{ $difficulty === $difficultyKey ? 'selected' : '' }}>{{ $difficultyLabel }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -260,6 +323,7 @@
                                                     <input type="hidden" name="event_type" value="{{ $template->event_type }}">
                                                     <input type="hidden" name="target_count" value="{{ (int) $template->target_count }}">
                                                     <input type="hidden" name="scope" value="{{ $template->scope }}">
+                                                    <input type="hidden" name="difficulty" value="{{ $difficulty }}">
 
                                                     <div class="tt-form-group">
                                                         <label>Description</label>
@@ -290,17 +354,17 @@
                                                         </div>
 
                                                         <div class="tt-form-group">
-                                                            <label>Rank points</label>
+                                                            <label>Points classement legacy</label>
                                                             <input class="tt-form-control" type="number" name="rewards_rank_points" min="0" value="{{ $rewardRank }}">
                                                         </div>
 
                                                         <div class="tt-form-group">
-                                                            <label>Reward points</label>
+                                                            <label>Points plateforme</label>
                                                             <input class="tt-form-control" type="number" name="rewards_reward_points" min="0" value="{{ $rewardReward }}">
                                                         </div>
 
                                                         <div class="tt-form-group">
-                                                            <label>Bet points</label>
+                                                            <label>Points paris legacy</label>
                                                             <input class="tt-form-control" type="number" name="rewards_bet_points" min="0" value="{{ $rewardBet }}">
                                                         </div>
 

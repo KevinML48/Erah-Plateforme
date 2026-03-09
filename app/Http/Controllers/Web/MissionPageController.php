@@ -118,14 +118,14 @@ class MissionPageController extends Controller
     }
 
     /**
-     * @return array{xp: int, rank_points: int, reward_points: int, bet_points: int}
+     * @return array{xp: int, rank_points: int, points: int, bet_points: int}
      */
     private function normalizeRewards(array $rewards): array
     {
         return [
             'xp' => max(0, (int) ($rewards['xp'] ?? $rewards['xp_amount'] ?? 0)),
             'rank_points' => max(0, (int) ($rewards['rank_points'] ?? $rewards['rank_points_amount'] ?? 0)),
-            'reward_points' => max(0, (int) ($rewards['reward_points'] ?? $rewards['reward_points_amount'] ?? 0)),
+            'points' => max(0, (int) ($rewards['points'] ?? $rewards['reward_points'] ?? $rewards['reward_points_amount'] ?? 0)),
             'bet_points' => max(0, (int) ($rewards['bet_points'] ?? $rewards['bet_points_amount'] ?? 0)),
         ];
     }
@@ -164,7 +164,7 @@ class MissionPageController extends Controller
      *     completion_rate: int,
      *     xp_potential: int,
      *     rank_potential: int,
-     *     reward_potential: int,
+     *     points_potential: int,
      *     bet_potential: int
      * }
      */
@@ -187,7 +187,7 @@ class MissionPageController extends Controller
             'completion_rate' => $completionRate,
             'xp_potential' => (int) $allCards->sum(fn (array $card): int => (int) ($card['rewards']['xp'] ?? 0)),
             'rank_potential' => (int) $allCards->sum(fn (array $card): int => (int) ($card['rewards']['rank_points'] ?? 0)),
-            'reward_potential' => (int) $allCards->sum(fn (array $card): int => (int) ($card['rewards']['reward_points'] ?? 0)),
+            'points_potential' => (int) $allCards->sum(fn (array $card): int => (int) ($card['rewards']['points'] ?? 0)),
             'bet_potential' => (int) $allCards->sum(fn (array $card): int => (int) ($card['rewards']['bet_points'] ?? 0)),
         ];
     }

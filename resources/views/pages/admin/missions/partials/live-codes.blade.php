@@ -28,11 +28,11 @@
                 <input class="tt-form-control" type="number" name="xp_reward" min="0" value="40">
             </div>
             <div class="tt-form-group">
-                <label>Reward points</label>
+                <label>Points plateforme</label>
                 <input class="tt-form-control" type="number" name="reward_points" min="0" value="60">
             </div>
             <div class="tt-form-group">
-                <label>Bet points</label>
+                <label>Points paris legacy</label>
                 <input class="tt-form-control" type="number" name="bet_points" min="0" value="0">
             </div>
             <div class="tt-form-group">

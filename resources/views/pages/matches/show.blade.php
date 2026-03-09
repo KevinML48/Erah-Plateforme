@@ -210,6 +210,8 @@
 @section('content')
     @php
         $isPublicApp = request()->routeIs('app.*');
+        $isGuest = auth()->guest();
+        $participationLoginUrl = route('login', ['required' => 'participation']);
         $indexRouteName = $isPublicApp ? 'app.matches.index' : 'matches.index';
         $placeBetRouteName = $isPublicApp ? 'app.matches.bets.store' : 'matches.bets.store';
         $betsRouteName = $isPublicApp ? 'app.bets.index' : 'bets.index';
@@ -357,16 +359,22 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <input type="hidden" name="idempotency_key" value="web-cancel-{{ $marketBet->id }}-{{ now()->timestamp }}">
-                                                <button type="submit" class="tt-btn tt-btn-danger tt-btn-sm">
+                                                <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm">
                                                     <span data-hover="Annuler ce pari">Annuler ce pari</span>
                                                 </button>
                                             </form>
                                         @endif
                                     </div>
-                                @elseif($isPublicApp && auth()->guest())
-                                    <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Connexion requise">Connexion requise</span>
-                                    </a>
+                                @elseif($isGuest)
+                                    <div class="match-market-form">
+                                        <p class="match-market-note">Creez un compte pour participer, gagner des points et progresser sur la plateforme.</p>
+                                        <a href="{{ $participationLoginUrl }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                            <span data-hover="Se connecter">Se connecter</span>
+                                        </a>
+                                        <a href="{{ route('register') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                            <span data-hover="Creer un compte">Creer un compte</span>
+                                        </a>
+                                    </div>
                                 @elseif($betIsOpen)
                                     <form method="POST" action="{{ route($placeBetRouteName, $match->id) }}" class="match-market-form">
                                         @csrf

@@ -16,6 +16,8 @@ class PushSubscriptionController extends Controller
             'public_key' => ['required', 'string', 'max:2000'],
             'auth_token' => ['required', 'string', 'max:2000'],
             'content_encoding' => ['nullable', 'string', 'max:30'],
+            'categories' => ['nullable', 'array'],
+            'categories.*' => ['string', 'max:50'],
         ]);
 
         $subscription = $pushNotificationService->subscribe($request->user(), $validated);

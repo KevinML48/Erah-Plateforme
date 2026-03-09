@@ -120,7 +120,8 @@ class NotificationsPageController extends Controller
         return view('pages.notifications.preferences', [
             'channels' => $user->notificationChannels,
             'preferences' => $preferences,
-            'hasActiveDevice' => $user->devices()->where('is_active', true)->exists(),
+            'hasActiveDevice' => $user->devices()->where('is_active', true)->exists()
+                || $user->pushSubscriptions()->where('is_active', true)->exists(),
         ]);
     }
 

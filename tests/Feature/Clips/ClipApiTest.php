@@ -3,6 +3,7 @@
 namespace Tests\Feature\Clips;
 
 use App\Models\Clip;
+use App\Models\CommunityRewardGrant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -128,6 +129,32 @@ class ClipApiTest extends TestCase
         $this->assertSame(0, $clip->favorites_count);
     }
 
+    public function test_like_reward_is_granted_only_once_even_after_unlike_and_relike(): void
+    {
+        $user = User::factory()->create();
+        $clip = Clip::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/clips/'.$clip->id.'/like')->assertOk();
+        $this->deleteJson('/api/clips/'.$clip->id.'/like')->assertOk();
+        $this->postJson('/api/clips/'.$clip->id.'/like')->assertOk();
+
+        $this->assertSame(
+            1,
+            CommunityRewardGrant::query()
+                ->where('user_id', $user->id)
+                ->where('domain', 'clips')
+                ->where('action', 'like')
+                ->count()
+        );
+
+        $this->assertDatabaseHas('user_reward_wallets', [
+            'user_id' => $user->id,
+            'balance' => 10,
+        ]);
+    }
+
     public function test_comment_delete_requires_owner_or_admin_and_updates_counter(): void
     {
         $owner = User::factory()->create();
@@ -156,6 +183,55 @@ class ClipApiTest extends TestCase
 
         $this->assertDatabaseMissing('clip_comments', ['id' => $commentId]);
         $this->assertDatabaseHas('audit_logs', ['action' => 'clips.comment.deleted']);
+    }
+
+    public function test_comment_rewards_are_shared_between_main_comment_and_reply_and_reply_depth_is_limited(): void
+    {
+        $firstUser = User::factory()->create();
+        $secondUser = User::factory()->create();
+        $clip = Clip::factory()->create(['comments_count' => 0]);
+
+        Sanctum::actingAs($firstUser);
+        $firstComment = $this->postJson('/api/clips/'.$clip->id.'/comments', [
+            'body' => 'Premier commentaire',
+        ]);
+        $firstComment->assertCreated();
+
+        Sanctum::actingAs($secondUser);
+        $secondComment = $this->postJson('/api/clips/'.$clip->id.'/comments', [
+            'body' => 'Deuxieme commentaire',
+        ]);
+        $secondComment->assertCreated();
+
+        Sanctum::actingAs($firstUser);
+        $reply = $this->postJson('/api/clips/'.$clip->id.'/comments', [
+            'body' => 'Reponse rapide',
+            'parent_id' => $secondComment->json('data.id'),
+        ]);
+        $reply->assertCreated();
+
+        Sanctum::actingAs($secondUser);
+        $tooDeep = $this->postJson('/api/clips/'.$clip->id.'/comments', [
+            'body' => 'Je reponds a la reponse',
+            'parent_id' => $reply->json('data.id'),
+        ]);
+
+        $tooDeep->assertStatus(422)
+            ->assertJsonPath('message', 'Maximum reply depth reached.');
+
+        $this->assertSame(
+            1,
+            CommunityRewardGrant::query()
+                ->where('user_id', $firstUser->id)
+                ->where('domain', 'clips')
+                ->where('action', 'comment')
+                ->count()
+        );
+
+        $this->assertDatabaseHas('user_reward_wallets', [
+            'user_id' => $firstUser->id,
+            'balance' => 20,
+        ]);
     }
 
     public function test_public_feed_and_detail_expose_only_published_clips(): void

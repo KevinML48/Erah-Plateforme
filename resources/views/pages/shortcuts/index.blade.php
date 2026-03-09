@@ -61,8 +61,12 @@
                                 >
                             </label>
 
-                            <button type="button" class="btn btn-secondary btn-sm" data-order-step="-1">&uarr;</button>
-                            <button type="button" class="btn btn-secondary btn-sm" data-order-step="1">&darr;</button>
+                            <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm" data-order-step="-1">
+                                <span data-hover="Monter">&uarr;</span>
+                            </button>
+                            <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm" data-order-step="1">
+                                <span data-hover="Descendre">&darr;</span>
+                            </button>
                         </div>
 
                         <p class="meta" style="word-break: break-all;">{{ $item['url'] }}</p>
@@ -71,13 +75,17 @@
             </div>
 
             <div class="actions actions-stack-mobile">
-                <button type="submit" class="btn btn-primary">Enregistrer mes raccourcis</button>
+                <button type="submit" class="tt-btn tt-btn-primary">
+                    <span data-hover="Enregistrer mes raccourcis">Enregistrer mes raccourcis</span>
+                </button>
             </div>
         </form>
 
         <form method="POST" action="{{ route('app.shortcuts.reset') }}" class="actions actions-stack-mobile">
             @csrf
-            <button type="submit" class="btn btn-outline">Reinitialiser par defaut</button>
+            <button type="submit" class="tt-btn tt-btn-outline">
+                <span data-hover="Reinitialiser par defaut">Reinitialiser par defaut</span>
+            </button>
         </form>
     </section>
 

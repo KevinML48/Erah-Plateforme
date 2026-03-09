@@ -8,6 +8,10 @@
     @include('pages.community.partials.styles')
 @endsection
 
+@section('page_scripts')
+    @include('marketing.partials.theme-scripts')
+@endsection
+
 @section('content')
     @php
         $isPublicApp = request()->routeIs('app.*');
@@ -44,7 +48,7 @@
                     <article class="community-kpi"><strong>{{ $quiz->questions->count() }}</strong><span>Questions</span></article>
                     <article class="community-kpi"><strong>{{ (int) $quiz->pass_score }}</strong><span>Score minimum</span></article>
                     <article class="community-kpi"><strong>+{{ (int) $quiz->xp_reward }}</strong><span>XP si valide</span></article>
-                    <article class="community-kpi"><strong>+{{ (int) $quiz->reward_points }}</strong><span>Points si valide</span></article>
+                    <article class="community-kpi"><strong>+{{ (int) $quiz->reward_points }}</strong><span>Points plateforme si valide</span></article>
                 </div>
 
                 <section class="community-surface">
@@ -61,14 +65,30 @@
                                     @if(filled($question->explanation))
                                         <p class="no-margin">{{ $question->explanation }}</p>
                                     @endif
-                                    <div class="community-form-grid">
-                                        @foreach($question->answers as $answer)
+                                    @if($question->question_type === \App\Models\QuizQuestion::TYPE_SHORT_TEXT)
+                                        <div class="community-form-grid">
                                             <label class="community-card" style="padding:14px;">
-                                                <input type="radio" name="answers[{{ $question->id }}]" value="{{ $answer->id }}" @checked((int) old('answers.'.$question->id) === (int) $answer->id)>
-                                                <span>{{ $answer->label }}</span>
+                                                <span class="community-meta">Reponse courte</span>
+                                                <input
+                                                    type="text"
+                                                    name="answers[{{ $question->id }}]"
+                                                    value="{{ old('answers.'.$question->id) }}"
+                                                    class="tt-form-control margin-top-10"
+                                                    placeholder="Saisissez votre reponse"
+                                                    autocomplete="off"
+                                                >
                                             </label>
-                                        @endforeach
-                                    </div>
+                                        </div>
+                                    @else
+                                        <div class="community-form-grid">
+                                            @foreach($question->answers as $answer)
+                                                <label class="community-card" style="padding:14px;">
+                                                    <input type="radio" name="answers[{{ $question->id }}]" value="{{ $answer->id }}" @checked((int) old('answers.'.$question->id) === (int) $answer->id)>
+                                                    <span>{{ $answer->label }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                 </article>
                             @endforeach
                         </div>

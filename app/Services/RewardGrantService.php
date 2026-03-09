@@ -36,12 +36,14 @@ class RewardGrantService
         bool $allowPartialRewardDebit = false,
         bool $allowPartialBetDebit = false
     ): CommunityRewardGrant {
+        $normalizedRewards = $this->normalizeRewards($rewards);
+
         return DB::transaction(function () use (
             $user,
             $domain,
             $action,
             $dedupeKey,
-            $rewards,
+            $normalizedRewards,
             $actor,
             $subjectType,
             $subjectId,
@@ -58,11 +60,11 @@ class RewardGrantService
                 return $existing;
             }
 
-            $xp = (int) ($rewards['xp'] ?? 0);
-            $rankPoints = (int) ($rewards['rank_points'] ?? 0);
-            $rewardPoints = (int) ($rewards['reward_points'] ?? 0);
-            $betPoints = (int) ($rewards['bet_points'] ?? 0);
-            $duelScore = (int) ($rewards['duel_score'] ?? 0);
+            $xp = (int) ($normalizedRewards['xp'] ?? 0);
+            $rankPoints = (int) ($normalizedRewards['rank_points'] ?? 0);
+            $rewardPoints = (int) ($normalizedRewards['points'] ?? 0);
+            $betPoints = (int) ($normalizedRewards['bet_points'] ?? 0);
+            $duelScore = (int) ($normalizedRewards['duel_score'] ?? 0);
 
             if ($xp > 0) {
                 $this->addPointsAction->execute(
@@ -89,7 +91,7 @@ class RewardGrantService
             }
 
             if ($rewardPoints !== 0) {
-                $walletResult = $this->walletService->adjustRewardPoints(
+                $walletResult = $this->walletService->adjustPoints(
                     user: $user,
                     amount: $rewardPoints,
                     uniqueKey: 'community.reward.'.$dedupeKey,
@@ -118,11 +120,17 @@ class RewardGrantService
 
                 if ($progress) {
                     $progress->duel_score += $duelScore;
-                    if ($duelScore > 0) {
+                    if ($domain === 'duels' && $action === 'win') {
                         $progress->duel_wins += 1;
+                        $progress->duel_current_streak += 1;
+                        $progress->duel_best_streak = max(
+                            (int) $progress->duel_best_streak,
+                            (int) $progress->duel_current_streak
+                        );
                     }
-                    if ($duelScore < 0) {
+                    if ($domain === 'duels' && $action === 'loss') {
                         $progress->duel_losses += 1;
+                        $progress->duel_current_streak = 0;
                     }
                     $progress->save();
                 }
@@ -182,5 +190,20 @@ class RewardGrantService
             ->where('action', $action)
             ->whereDate('granted_on', now()->toDateString())
             ->count();
+    }
+
+    /**
+     * @param array<string, int> $rewards
+     * @return array{xp: int, rank_points: int, points: int, bet_points: int, duel_score: int}
+     */
+    private function normalizeRewards(array $rewards): array
+    {
+        return [
+            'xp' => (int) ($rewards['xp'] ?? 0),
+            'rank_points' => (int) ($rewards['rank_points'] ?? 0),
+            'points' => (int) ($rewards['points'] ?? $rewards['reward_points'] ?? 0),
+            'bet_points' => (int) ($rewards['bet_points'] ?? 0),
+            'duel_score' => (int) ($rewards['duel_score'] ?? 0),
+        ];
     }
 }

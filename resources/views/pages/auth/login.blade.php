@@ -5,6 +5,8 @@
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('content')
+    @php($participationRequired = request()->query('required') === 'participation')
+
     <div id="page-header" class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-caption-parallax ph-image-parallax">
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
@@ -12,7 +14,7 @@
                     <h2 class="ph-caption-subtitle">ERAH Plateforme</h2>
                     <h1 class="ph-caption-title">Connexion</h1>
                     <div class="ph-caption-description max-width-700">
-                        Connectez-vous pour retrouver vos duels, missions et progression.
+                        {{ $participationRequired ? 'Creez un compte pour participer, gagner des points et progresser sur la plateforme.' : 'Connectez-vous pour retrouver vos duels, missions et progression.' }}
                     </div>
                 </div>
             </div>
@@ -76,6 +78,12 @@
                     <div class="tt-col-xl-7 padding-left-xlg-40">
                         <form method="POST" action="{{ route('auth.login') }}" class="tt-form tt-form-creative tt-form-lg">
                             @csrf
+
+                            @if($participationRequired)
+                                <div class="tt-alert tt-alert-danger margin-bottom-30" role="alert">
+                                    Creez un compte pour participer, gagner des points et progresser sur la plateforme.
+                                </div>
+                            @endif
 
                             <div class="tt-form-group">
                                 <label for="email">Adresse email</label>

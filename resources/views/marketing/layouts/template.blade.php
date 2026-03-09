@@ -198,14 +198,19 @@
         return;
       }
 
-      var isLocalhost = ['localhost', '127.0.0.1'].indexOf(window.location.hostname) !== -1;
-      if (window.location.protocol !== 'https:' && !isLocalhost) {
-        return;
-      }
-
-      navigator.serviceWorker.register('/sw.js').catch(function () {
-        // Additive registration only.
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        registrations.forEach(function (registration) {
+          registration.unregister();
+        });
       });
+
+      if ('caches' in window) {
+        caches.keys().then(function (keys) {
+          keys.forEach(function (key) {
+            caches.delete(key);
+          });
+        });
+      }
     });
   </script>
 

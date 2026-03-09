@@ -64,7 +64,11 @@ class NotifyAction
                 SendNotificationChannelJob::dispatch($notification->id, 'email');
             }
 
-            $hasActiveDevice = $user->devices()
+            $hasPushEndpoint = $user->pushSubscriptions()
+                ->where('is_active', true)
+                ->exists();
+
+            $hasActiveDevice = $hasPushEndpoint || $user->devices()
                 ->where('is_active', true)
                 ->exists();
 

@@ -394,11 +394,13 @@
 @section('content')
     @php
         $isPublicApp = request()->routeIs('app.*');
+        $isGuest = auth()->guest();
+        $participationLoginUrl = route('login', ['required' => 'participation']);
         $indexRouteName = $isPublicApp ? 'app.clips.index' : 'clips.index';
         $showRouteName = $isPublicApp ? 'app.clips.show' : 'clips.show';
         $favoritesUrl = $isPublicApp
-            ? (auth()->check() ? route('app.clips.favorites') : route('login'))
-            : route('clips.favorites');
+            ? (auth()->check() ? route('app.clips.favorites') : $participationLoginUrl)
+            : ($isGuest ? $participationLoginUrl : route('clips.favorites'));
         $favoritesLabel = auth()->check() ? 'Mes clips favoris' : 'Connexion';
         $commentStoreRouteName = $isPublicApp ? 'app.clips.comment' : 'clips.comment';
         $commentDeleteRouteName = $isPublicApp ? 'app.clips.comment.delete' : 'clips.comment.delete';
@@ -561,7 +563,7 @@
                                 </span>
                             </div>
 
-                            @if(!$isPublicApp)
+                            @if(auth()->check())
                                 <div class="clip-engagement-actions">
                                     @if($isLiked)
                                         <form method="POST" action="{{ route('clips.unlike', $clip->id) }}">
@@ -596,17 +598,20 @@
                             @else
                                 <div class="clip-engagement-actions">
                                     <p class="clip-public-note">
-                                        Mode /app: commentaires ouverts aux membres connectes. Pour les likes et favoris, ouvrez la console complete.
+                                        Creez un compte pour participer, gagner des points et progresser sur la plateforme.
                                     </p>
-                                    @guest
-                                        <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                            <span data-hover="Se connecter">Se connecter</span>
-                                        </a>
-                                    @else
+                                    @if($isPublicApp && auth()->check())
                                         <a href="{{ route('clips.show', $clip->slug) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                                             <span data-hover="Version interactive">Version interactive</span>
                                         </a>
-                                    @endguest
+                                    @else
+                                        <a href="{{ $participationLoginUrl }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                            <span data-hover="Se connecter">Se connecter</span>
+                                        </a>
+                                        <a href="{{ route('register') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                            <span data-hover="Creer un compte">Creer un compte</span>
+                                        </a>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -679,7 +684,7 @@
                                     @elseif(auth()->check())
                                         Votre compte n a pas de support actif sur ce moment.
                                     @else
-                                        Connectez-vous puis activez Supporter ERAH pour debloquer ces interactions.
+                                        Creez un compte puis activez Supporter ERAH pour debloquer ces interactions.
                                     @endif
                                 </p>
                             @endif

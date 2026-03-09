@@ -131,6 +131,20 @@
             margin-bottom: 10px;
         }
 
+        .lb-profile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: inherit;
+            color: inherit;
+            text-decoration: none;
+            transition: opacity .2s ease, transform .2s ease;
+        }
+
+        .lb-profile-link:hover {
+            opacity: .92;
+            transform: translateY(-1px);
+        }
+
         .lb-podium-avatar {
             width: 40px;
             height: 40px;
@@ -311,6 +325,7 @@
         $totalXp = (int) $entries->sum('total_xp');
         $topThree = $entries->take(3);
         $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
+        $publicProfileRouteName = 'users.public';
     @endphp
 
     <div id="page-header" class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -422,19 +437,35 @@
                     <section class="lb-podium">
                         @foreach($topThree as $entry)
                             @php($avatar = (string) ($entry['avatar_url'] ?? $avatarFallback))
+                            @php($profileUrl = !empty($entry['user_id']) ? route($publicProfileRouteName, $entry['user_id']) : null)
                             <article class="lb-podium-item tt-anim-fadeinup">
                                 <span class="lb-podium-rank">#{{ (int) ($entry['position'] ?? 0) }}</span>
                                 <div class="lb-podium-user">
-                                    <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-podium-avatar">
-                                    <div>
-                                        <div class="lb-podium-name">{{ $entry['name'] ?? 'Joueur inconnu' }}</div>
-                                        @if(($currentUserId ?? null) === ($entry['user_id'] ?? null))
-                                            <small class="text-muted">Vous</small>
-                                        @endif
-                                        @if($entry['is_supporter'] ?? false)
-                                            <span class="lb-supporter-badge">Supporter</span>
-                                        @endif
-                                    </div>
+                                    @if($profileUrl)
+                                        <a href="{{ $profileUrl }}" class="lb-profile-link">
+                                            <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-podium-avatar">
+                                            <div>
+                                                <div class="lb-podium-name">{{ $entry['name'] ?? 'Joueur inconnu' }}</div>
+                                                @if(($currentUserId ?? null) === ($entry['user_id'] ?? null))
+                                                    <small class="text-muted">Vous</small>
+                                                @endif
+                                                @if($entry['is_supporter'] ?? false)
+                                                    <span class="lb-supporter-badge">Supporter</span>
+                                                @endif
+                                            </div>
+                                        </a>
+                                    @else
+                                        <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-podium-avatar">
+                                        <div>
+                                            <div class="lb-podium-name">{{ $entry['name'] ?? 'Joueur inconnu' }}</div>
+                                            @if(($currentUserId ?? null) === ($entry['user_id'] ?? null))
+                                                <small class="text-muted">Vous</small>
+                                            @endif
+                                            @if($entry['is_supporter'] ?? false)
+                                                <span class="lb-supporter-badge">Supporter</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="lb-podium-meta">
                                     {{ (int) ($entry['total_rank_points'] ?? 0) }} points rank
@@ -458,20 +489,36 @@
                         @foreach($entries as $entry)
                             @php($avatar = (string) ($entry['avatar_url'] ?? $avatarFallback))
                             @php($isMe = (($currentUserId ?? null) === ($entry['user_id'] ?? null)))
+                            @php($profileUrl = !empty($entry['user_id']) ? route($publicProfileRouteName, $entry['user_id']) : null)
                             <article class="lb-row {{ $isMe ? 'is-me' : '' }}">
                                 <div class="lb-rank-value">#{{ (int) ($entry['position'] ?? 0) }}</div>
 
                                 <div class="lb-user-wrap">
-                                    <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-user-avatar">
-                                    <div>
-                                        <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
-                                        @if($isMe)
-                                            <span class="lb-you-badge">Vous</span>
-                                        @endif
-                                        @if($entry['is_supporter'] ?? false)
-                                            <span class="lb-supporter-badge">Supporter</span>
-                                        @endif
-                                    </div>
+                                    @if($profileUrl)
+                                        <a href="{{ $profileUrl }}" class="lb-profile-link">
+                                            <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-user-avatar">
+                                            <div>
+                                                <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
+                                                @if($isMe)
+                                                    <span class="lb-you-badge">Vous</span>
+                                                @endif
+                                                @if($entry['is_supporter'] ?? false)
+                                                    <span class="lb-supporter-badge">Supporter</span>
+                                                @endif
+                                            </div>
+                                        </a>
+                                    @else
+                                        <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-user-avatar">
+                                        <div>
+                                            <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
+                                            @if($isMe)
+                                                <span class="lb-you-badge">Vous</span>
+                                            @endif
+                                            @if($entry['is_supporter'] ?? false)
+                                                <span class="lb-supporter-badge">Supporter</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="lb-value">

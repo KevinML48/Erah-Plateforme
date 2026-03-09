@@ -6,6 +6,54 @@ window.Alpine = Alpine;
 
 Alpine.start();
 
+const initTemplateButtons = () => {
+    const buttons = document.querySelectorAll('.tt-btn');
+
+    buttons.forEach((button) => {
+        if (button.querySelector(':scope > .tt-btn-inner')) {
+            return;
+        }
+
+        const inner = document.createElement('span');
+        inner.className = 'tt-btn-inner';
+        const childNodes = Array.from(button.childNodes);
+
+        childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const value = node.textContent?.trim();
+                if (!value) {
+                    return;
+                }
+
+                const span = document.createElement('span');
+                span.textContent = value;
+                span.setAttribute('data-hover', value);
+                inner.appendChild(span);
+                return;
+            }
+
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return;
+            }
+
+            if (!node.classList.contains('tt-btn-icon') && !node.hasAttribute('data-hover')) {
+                const label = node.textContent?.trim();
+                if (label) {
+                    node.setAttribute('data-hover', label);
+                }
+            }
+
+            inner.appendChild(node);
+        });
+
+        if (!inner.childNodes.length) {
+            return;
+        }
+
+        button.appendChild(inner);
+    });
+};
+
 const initMobileNavigation = () => {
     const roots = document.querySelectorAll('[data-mobile-nav-root]');
 
@@ -97,23 +145,49 @@ const initMobileNavigation = () => {
     });
 };
 
-document.addEventListener('DOMContentLoaded', initMobileNavigation);
+document.addEventListener('DOMContentLoaded', () => {
+    initTemplateButtons();
+    initMobileNavigation();
+});
 
 const initPwaRegistration = () => {
     if (!('serviceWorker' in navigator)) {
         return;
     }
 
-    const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    if (window.location.protocol !== 'https:' && !isLocalhost) {
-        return;
-    }
-
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {
-            // Silent fail: PWA support is additive and must not break the app.
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => {
+                registration.unregister();
+            });
+        }).catch(() => {
+            // Silent fail: cache cleanup must not break the app.
         });
+
+        if ('caches' in window) {
+            caches.keys().then((keys) => {
+                keys.forEach((key) => {
+                    caches.delete(key);
+                });
+            }).catch(() => {
+                // Silent fail: cache cleanup is additive.
+            });
+        }
     });
 };
+
+const disableLegacyPageCache = () => {
+    window.addEventListener('pageshow', (event) => {
+        if (!event.persisted) {
+            return;
+        }
+
+        window.location.reload();
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    disableLegacyPageCache();
+});
 
 initPwaRegistration();

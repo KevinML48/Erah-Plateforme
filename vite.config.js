@@ -8,6 +8,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/dev-console.css',
                 'resources/js/app.js',
+                'resources/js/help-center.jsx',
                 'resources/js/dev-console.js',
             ],
             refresh: true,

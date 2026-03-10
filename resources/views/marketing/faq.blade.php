@@ -57,6 +57,46 @@
     </div>
 
     <div id="tt-page-content">
+        <div class="tt-section padding-top-lg-60 padding-top-60 padding-bottom-lg-60 padding-bottom-60 border-top">
+            <div class="tt-section-inner tt-wrap">
+                <div class="tt-row">
+                    <div class="tt-col-lg-7">
+                        <div class="tt-heading tt-heading-lg">
+                            <h3 class="tt-heading-subtitle tt-text-uppercase">Nouveau centre d aide</h3>
+                            <h2 class="tt-heading-title tt-text-reveal">Aller plus loin que la FAQ</h2>
+                            <div class="tt-heading-desc max-width-700">
+                                Retrouvez le centre d aide complet, la visite guidee, les categories detaillees et les articles relies aux vrais modules de la plateforme.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tt-col-lg-5 tt-align-self-end">
+                        <div class="margin-top-20 margin-top-lg-0">
+                            <div class="tt-btn-wrap margin-bottom-15">
+                                <a href="{{ route('help.index') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                    <span data-hover="Ouvrir">Centre d aide</span>
+                                </a>
+                            </div>
+                            <div class="tt-btn-wrap margin-bottom-15">
+                                <a href="{{ route('help.index') }}#tour-guide" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                    <span data-hover="Lancer">Commencer la visite</span>
+                                </a>
+                            </div>
+                            <div class="tt-btn-wrap margin-bottom-15">
+                                <a href="{{ route('help.categories.show', 'matchs-et-paris') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Explorer">Matchs et paris</span>
+                                </a>
+                            </div>
+                            <div class="tt-btn-wrap">
+                                <a href="{{ route('help.categories.show', 'missions-points-et-progression') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Explorer">Missions et progression</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="tt-section padding-top-lg-80 padding-bottom-lg-120 padding-bottom-80 border-top">
             <div class="tt-section-inner tt-wrap">
                 <div class="tt-heading tt-heading-lg tt-heading-center margin-bottom-120">

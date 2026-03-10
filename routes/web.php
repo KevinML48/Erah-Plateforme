@@ -27,9 +27,11 @@ use App\Http\Controllers\Web\ClubReviewPageController;
 use App\Http\Controllers\Web\ClipSupporterController;
 use App\Http\Controllers\Web\ClipsPageController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\HelpAssistantController;
 use App\Http\Controllers\Web\DuelLeaderboardPageController;
 use App\Http\Controllers\Web\DuelsPageController;
 use App\Http\Controllers\Web\GiftPageController;
+use App\Http\Controllers\Web\HelpCenterController;
 use App\Http\Controllers\Web\LiveCodePageController;
 use App\Http\Controllers\Web\LeaderboardPageController;
 use App\Http\Controllers\Web\MatchPageController;
@@ -50,6 +52,7 @@ use App\Http\Controllers\Web\AchievementPageController;
 use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use App\Http\Controllers\Web\Admin\ClubReviewAdminController;
+use App\Http\Controllers\Web\Admin\AdminHelpCenterController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
@@ -160,6 +163,8 @@ Route::prefix('console')->middleware('throttle:feed-public')->group(function () 
         ->name('leaderboards.show');
     Route::get('/statistics', StatisticsPageController::class)->name('statistics.index');
     Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('duels.leaderboard');
+    Route::get('/help', [HelpCenterController::class, 'console'])->name('console.help');
+    Route::get('/help/assistant', [HelpCenterController::class, 'consoleAssistant'])->name('console.help.assistant');
 });
 
 Route::middleware('auth')->group(function () {
@@ -347,6 +352,20 @@ Route::middleware('auth')->group(function () {
             Route::delete('/events/{eventId}', [AdminPlatformEventController::class, 'destroy'])->name('admin.events.destroy');
             Route::post('/duels/{duelId}/result', [AdminDuelResultController::class, 'store'])->name('admin.duels.result.store');
 
+            Route::get('/help', [AdminHelpCenterController::class, 'index'])->name('admin.help.index');
+            Route::post('/help/categories', [AdminHelpCenterController::class, 'storeCategory'])->name('admin.help.categories.store');
+            Route::put('/help/categories/{category}', [AdminHelpCenterController::class, 'updateCategory'])->name('admin.help.categories.update');
+            Route::delete('/help/categories/{category}', [AdminHelpCenterController::class, 'destroyCategory'])->name('admin.help.categories.destroy');
+            Route::post('/help/articles', [AdminHelpCenterController::class, 'storeArticle'])->name('admin.help.articles.store');
+            Route::put('/help/articles/{article}', [AdminHelpCenterController::class, 'updateArticle'])->name('admin.help.articles.update');
+            Route::delete('/help/articles/{article}', [AdminHelpCenterController::class, 'destroyArticle'])->name('admin.help.articles.destroy');
+            Route::post('/help/glossary', [AdminHelpCenterController::class, 'storeGlossary'])->name('admin.help.glossary.store');
+            Route::put('/help/glossary/{term}', [AdminHelpCenterController::class, 'updateGlossary'])->name('admin.help.glossary.update');
+            Route::delete('/help/glossary/{term}', [AdminHelpCenterController::class, 'destroyGlossary'])->name('admin.help.glossary.destroy');
+            Route::post('/help/tour-steps', [AdminHelpCenterController::class, 'storeTourStep'])->name('admin.help.tour-steps.store');
+            Route::put('/help/tour-steps/{tourStep}', [AdminHelpCenterController::class, 'updateTourStep'])->name('admin.help.tour-steps.update');
+            Route::delete('/help/tour-steps/{tourStep}', [AdminHelpCenterController::class, 'destroyTourStep'])->name('admin.help.tour-steps.destroy');
+
             Route::get('/gallery-photos', [GalleryPhotoAdminController::class, 'index'])->name('admin.gallery-photos.index');
             Route::post('/gallery-photos', [GalleryPhotoAdminController::class, 'store'])->name('admin.gallery-photos.store');
             Route::put('/gallery-photos/{photoId}', [GalleryPhotoAdminController::class, 'update'])->name('admin.gallery-photos.update');
@@ -357,6 +376,13 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+Route::get('/aide', [HelpCenterController::class, 'index'])->name('help.index');
+Route::get('/aide/assistant', [HelpCenterController::class, 'assistant'])->name('help.assistant.page');
+Route::post('/aide/assistant', HelpAssistantController::class)
+    ->middleware('throttle:20,1')
+    ->name('help.assistant.ask');
+Route::get('/aide/categorie/{slug}', [HelpCenterController::class, 'category'])->name('help.categories.show');
+Route::get('/aide/article/{slug}', [HelpCenterController::class, 'article'])->name('help.articles.show');
 Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
 Route::get('/avis', [ClubReviewPageController::class, 'index'])->name('reviews.index');
 Route::get('/', function () {
@@ -373,8 +399,8 @@ Route::get('/index.html', function () {
         ->header('Pragma', 'no-cache')
         ->header('Expires', '0');
 });
-Route::view('/faq', 'marketing.faq')->name('marketing.faq');
-Route::view('/faq.html', 'marketing.faq');
+Route::get('/faq', fn () => redirect()->to(route('help.index').'#faq-center'))->name('marketing.faq');
+Route::get('/faq.html', fn () => redirect()->to(route('help.index').'#faq-center'));
 Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');
 Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
 Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');

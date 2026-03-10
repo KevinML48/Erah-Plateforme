@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             SupporterProgramSeeder::class,
             ClubReviewSeeder::class,
             CommunityPlatformSeeder::class,
+            HelpCenterSeeder::class,
         ]);
     }
 }

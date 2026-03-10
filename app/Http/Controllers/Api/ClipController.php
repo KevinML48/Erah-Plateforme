@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Clip;
 use App\Models\ClipComment;
 use App\Services\ClipRewardService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,10 +50,16 @@ class ClipController extends Controller
             $query->orderByDesc('published_at')->orderByDesc('id');
         }
 
-        return response()->json([
-            'sort' => $sort,
-            'data' => $query->limit($limit)->get(),
-        ]);
+        $payload = Cache::remember(
+            sprintf('api.clips.index.%s.%d', $sort, $limit),
+            now()->addSeconds(60),
+            fn (): array => [
+                'sort' => $sort,
+                'data' => $query->limit($limit)->get()->toArray(),
+            ],
+        );
+
+        return response()->json($payload);
     }
 
     public function show(Request $request, string $slug, ClipRewardService $clipRewardService): JsonResponse

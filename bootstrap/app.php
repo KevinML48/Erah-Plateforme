@@ -3,6 +3,7 @@
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\EnsureSupporterActive;
+use App\Http\Middleware\ApplyPlatformSecurityHeaders;
 use App\Http\Middleware\LocalOnly;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -18,6 +19,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,
+            ApplyPlatformSecurityHeaders::class,
+        ]);
+
+        $middleware->api(append: [
+            ApplyPlatformSecurityHeaders::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('login', [

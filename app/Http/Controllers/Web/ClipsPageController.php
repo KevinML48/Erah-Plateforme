@@ -16,6 +16,8 @@ use App\Models\ClipVoteCampaign;
 use App\Services\ClipRewardService;
 use App\Services\PrioritizeClipComments;
 use App\Services\SupporterAccessResolver;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -40,7 +42,16 @@ class ClipsPageController extends Controller
             $query->orderByDesc('published_at');
         }
 
-        $clips = $query->paginate(12)->withQueryString();
+        $page = max(1, (int) $request->integer('page', 1));
+        $perPage = 12;
+        $clips = $this->cachedPaginator(
+            query: $query,
+            cachePrefix: 'web.clips.index.'.$sort,
+            perPage: $perPage,
+            page: $page,
+            path: $request->url(),
+            queryString: $request->query(),
+        );
         $clipIds = $clips->getCollection()->pluck('id')->all();
         $userId = auth()->id();
 
@@ -283,5 +294,31 @@ class ClipsPageController extends Controller
         $share = $shareClipAction->execute(auth()->user(), $clip, $validated['channel'] ?? 'link');
 
         return back()->with('success', 'Lien partage: '.$share->shared_url);
+    }
+
+    private function cachedPaginator(
+        \Illuminate\Database\Eloquent\Builder $query,
+        string $cachePrefix,
+        int $perPage,
+        int $page,
+        string $path,
+        array $queryString
+    ): LengthAwarePaginator {
+        $total = Cache::remember(
+            $cachePrefix.'.total',
+            now()->addSeconds(60),
+            fn (): int => (clone $query)->toBase()->getCountForPagination()
+        );
+
+        $items = Cache::remember(
+            $cachePrefix.'.page.'.$page,
+            now()->addSeconds(60),
+            fn () => (clone $query)->forPage($page, $perPage)->get()
+        );
+
+        return new LengthAwarePaginator($items, $total, $perPage, $page, [
+            'path' => $path,
+            'query' => $queryString,
+        ]);
     }
 }

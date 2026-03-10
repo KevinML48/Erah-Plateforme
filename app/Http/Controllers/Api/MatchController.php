@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\EsportMatch;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -51,8 +52,15 @@ class MatchController extends Controller
             $query->where('status', $validated['status']);
         }
 
-        return response()->json([
-            'data' => $query->limit($limit)->get(),
-        ]);
+        $status = (string) ($validated['status'] ?? 'all');
+        $payload = Cache::remember(
+            sprintf('api.matches.index.%s.%d', $status, $limit),
+            now()->addSeconds(60),
+            fn (): array => [
+                'data' => $query->limit($limit)->get()->toArray(),
+            ],
+        );
+
+        return response()->json($payload);
     }
 }

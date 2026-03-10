@@ -44,7 +44,7 @@ class GalleryPhotosFeatureTest extends TestCase
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->get(route('admin.gallery-photos.index'))
-            ->assertRedirect(route('login'));
+            ->assertRedirect(route('login', ['required' => 'participation']));
 
         $this->actingAs($regularUser)
             ->get(route('admin.gallery-photos.index'))

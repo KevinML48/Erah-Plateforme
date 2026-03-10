@@ -91,7 +91,7 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->middleware('throttle:stripe-webhook')
     ->name('stripe.webhook');
 
-Route::prefix('app')->group(function () {
+Route::prefix('app')->middleware('throttle:feed-public')->group(function () {
     Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
     Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])
         ->where('leagueKey', '(?!me$)[A-Za-z0-9\-_]+')
@@ -145,7 +145,7 @@ Route::prefix('app')->middleware('auth')->group(function () {
     Route::post('/raccourcis/reset', [ShortcutController::class, 'reset'])->name('app.shortcuts.reset');
 });
 
-Route::prefix('console')->group(function () {
+Route::prefix('console')->middleware('throttle:feed-public')->group(function () {
     Route::get('/matches', [MatchPageController::class, 'index'])->name('matches.index');
     Route::get('/matches/{matchId}', [MatchPageController::class, 'show'])
         ->whereNumber('matchId')

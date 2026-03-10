@@ -17,10 +17,10 @@ use App\Http\Controllers\Api\RankingController;
 use App\Http\Controllers\Api\UserDeviceController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('throttle:auth-login')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-});
+Route::post('/register', [AuthController::class, 'register'])
+    ->middleware('throttle:auth-register');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:auth-login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -68,9 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('throttle:duels-actions');
 });
 
-Route::get('/leagues', [RankingController::class, 'leagues']);
-Route::get('/leagues/{key}/leaderboard', [RankingController::class, 'leaderboard']);
-Route::get('/community/leaderboards', CommunityLeaderboardController::class);
+Route::get('/leagues', [RankingController::class, 'leagues'])
+    ->middleware('throttle:feed-public');
+Route::get('/leagues/{key}/leaderboard', [RankingController::class, 'leaderboard'])
+    ->middleware('throttle:feed-public');
+Route::get('/community/leaderboards', CommunityLeaderboardController::class)
+    ->middleware('throttle:feed-public');
 
 Route::middleware('throttle:clips-feed')->group(function () {
     Route::get('/clips', [ClipController::class, 'index']);

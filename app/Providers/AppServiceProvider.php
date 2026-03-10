@@ -69,7 +69,25 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('auth-login', function (Request $request) {
             $email = Str::lower((string) $request->input('email'));
 
-            return Limit::perMinute(10)->by($request->ip().'|'.$email);
+            return Limit::perMinute(6)->by($request->ip().'|'.$email);
+        });
+
+        RateLimiter::for('auth-register', function (Request $request) {
+            $email = Str::lower((string) $request->input('email'));
+
+            return Limit::perMinute(4)->by($request->ip().'|'.$email);
+        });
+
+        RateLimiter::for('password-reset', function (Request $request) {
+            $email = Str::lower((string) $request->input('email'));
+
+            return Limit::perMinute(5)->by($request->ip().'|'.$email);
+        });
+
+        RateLimiter::for('feed-public', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(90)->by($identifier);
         });
 
         RateLimiter::for('social-auth', function (Request $request) {

@@ -137,6 +137,43 @@ Resultat:
 
 - `109 passed`
 
+## Exploitation production
+
+Recommandations pour reduire la charge CPU / RAM / DB en production:
+
+- `php artisan config:cache`
+- `php artisan route:cache`
+- `php artisan view:cache`
+- `php artisan optimize`
+- activer OPcache cote PHP
+- utiliser une base MySQL ou PostgreSQL
+- preferer `CACHE_STORE=redis`
+- preferer `QUEUE_CONNECTION=redis`
+- preferer `SESSION_DRIVER=redis`
+
+Un exemple de variables ciblees est fourni dans `.env.production.example`.
+
+## SEO technique
+
+Fichiers publics a maintenir:
+
+- `public/robots.txt`
+- `public/sitemap.xml`
+
+Generation du sitemap:
+
+```bash
+php artisan seo:generate-sitemap
+```
+
+Les zones privees / auth / admin recoivent un header `X-Robots-Tag: noindex, nofollow, noarchive`.
+
+## Audit dependances
+
+`composer audit` remonte actuellement `CVE-2026-30838` sur `league/commonmark <= 2.8.0`.
+Le correctif n a pas ete applique ici pour respecter la contrainte “pas de bump de dependance sans validation”.
+Prevoir un bump minimal des dependances markdown des que la fenetre de maintenance le permet.
+
 ## Notes
 
 - Le systeme de ligues competitives existant base sur les `rank_points` est conserve pour compatibilite.

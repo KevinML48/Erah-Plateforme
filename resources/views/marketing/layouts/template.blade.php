@@ -37,7 +37,6 @@
   <link rel="stylesheet" href="/template/assets/css/theme.css">
   <link rel="stylesheet" href="/template/assets/css/theme-light.css">
   <link rel="stylesheet" href="/template/assets/css/platform-responsive.css">
-  <link rel="stylesheet" href="/template/assets/css/platform-motion.css">
 
   <link rel="preload" href="/template/assets/vendor/fontawesome/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <link rel="preload" href="/template/assets/vendor/fancybox/css/fancybox.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -191,6 +190,70 @@
           mobileToggle.click();
         });
       });
+
+      if (window.matchMedia('(max-width: 1024px)').matches) {
+        return;
+      }
+
+      var pageHeader = document.getElementById('page-header');
+      if (!pageHeader) {
+        return;
+      }
+
+      var caption = pageHeader.querySelector('.page-header-inner:not(.ph-mask) .ph-caption');
+      var mask = pageHeader.querySelector('.ph-mask');
+      if (!caption || !mask) {
+        return;
+      }
+
+      document.body.classList.add('ph-mask-on');
+
+      var latestX = null;
+      var latestY = null;
+      var ticking = false;
+
+      var paintMask = function () {
+        ticking = false;
+
+        if (latestX === null || latestY === null) {
+          return;
+        }
+
+        var rect = mask.getBoundingClientRect();
+        if (!rect.width || !rect.height) {
+          return;
+        }
+
+        var xPercent = ((latestX - rect.left) / rect.width) * 100;
+        var yPercent = ((latestY - rect.top) / rect.height) * 100;
+
+        mask.style.setProperty('--x', xPercent.toFixed(2) + '%');
+        mask.style.setProperty('--y', yPercent.toFixed(2) + '%');
+      };
+
+      var scheduleMask = function (clientX, clientY) {
+        latestX = clientX;
+        latestY = clientY;
+
+        if (ticking) {
+          return;
+        }
+
+        ticking = true;
+        window.requestAnimationFrame(paintMask);
+      };
+
+      pageHeader.addEventListener('mousemove', function (event) {
+        scheduleMask(event.clientX, event.clientY);
+      });
+
+      caption.addEventListener('mouseenter', function () {
+        document.body.classList.add('ph-mask-active');
+      });
+
+      caption.addEventListener('mouseleave', function () {
+        document.body.classList.remove('ph-mask-active');
+      });
     });
 
     window.addEventListener('load', function () {
@@ -215,6 +278,5 @@
   </script>
 
   @yield('page_scripts')
-  <script src="/template/assets/js/platform-motion.js" defer></script>
 </body>
 </html>

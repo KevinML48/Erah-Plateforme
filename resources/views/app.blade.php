@@ -6,7 +6,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'ERAH') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="/template/assets/css/platform-motion.css">
 </head>
 <body class="platform-app">
 <main class="container main-content">
@@ -16,6 +15,5 @@
         <p><a href="{{ route('dashboard') }}">Ouvrir la console</a></p>
     </section>
 </main>
-<script src="/template/assets/js/platform-motion.js" defer></script>
 </body>
 </html>

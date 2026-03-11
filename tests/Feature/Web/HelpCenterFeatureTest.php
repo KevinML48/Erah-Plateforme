@@ -19,7 +19,7 @@ class HelpCenterFeatureTest extends TestCase
         $this->get(route('help.index'))
             ->assertOk()
             ->assertViewIs('pages.help.index')
-            ->assertSee('Comprendre ERAH, explorer ses modules et savoir quoi faire ensuite.')
+            ->assertSee('Comprendre ERAH sans se perdre.')
             ->assertSee('FAQ detaillee')
             ->assertSee('Assistant ERAH');
     }
@@ -66,16 +66,79 @@ class HelpCenterFeatureTest extends TestCase
             ->assertSee('Assistant ERAH');
     }
 
+    public function test_help_center_global_search_returns_results_for_points(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->get(route('help.index', ['search' => 'points']))
+            ->assertOk()
+            ->assertSee('Resultats pour "points"', false)
+            ->assertSee('Gagner des points avec les missions quotidiennes');
+    }
+
+    public function test_help_center_global_search_returns_guided_step_results(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->get(route('help.index', ['search' => 'etapes']))
+            ->assertOk()
+            ->assertSee('Resultats pour "etapes"', false)
+            ->assertSee('Etape guidee');
+    }
+
     public function test_help_assistant_returns_a_knowledge_base_answer(): void
     {
         $this->seed(HelpCenterSeeder::class);
 
-        $this->postJson(route('help.assistant.ask'), [
+        $response = $this->postJson(route('help.assistant.ask'), [
             'message' => 'Comment gagner des points avec les missions ?',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.answer', 'Oui, je peux t expliquer ca simplement. Les missions quotidiennes structurent l activite et donnent des recompenses directes en points et progression.')
+            ->assertJsonPath('data.sources.0.type', 'article');
+
+        $this->assertStringStartsWith('/', (string) $response->json('data.sources.0.url'));
+        $this->assertStringNotContainsString('127.0.0.1', (string) $response->json('data.sources.0.url'));
+    }
+
+    public function test_help_assistant_requests_precision_for_a_broad_but_relevant_question(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->postJson(route('help.assistant.ask'), [
+            'message' => 'comment ca marche',
         ])
             ->assertOk()
-            ->assertJsonPath('data.answer', 'Les missions quotidiennes structurent l activite et donnent des recompenses directes en points et progression.')
-            ->assertJsonPath('data.sources.0.type', 'article');
+            ->assertJsonPath('data.confidence', 'clarification')
+            ->assertJsonPath('data.answer', 'Je peux t aider, mais ta question est assez large. Tu veux comprendre le fonctionnement global de la plateforme, les points, les matchs, les missions ou une autre partie precise ?')
+            ->assertJsonCount(0, 'data.sources');
+    }
+
+    public function test_help_assistant_does_not_force_an_answer_for_an_incomprehensible_question(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->postJson(route('help.assistant.ask'), [
+            'message' => 'banane nuage moteur',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.confidence', 'out_of_scope')
+            ->assertJsonPath('data.answer', 'Je n ai pas bien compris ta question. Tu peux la reformuler ?')
+            ->assertJsonCount(0, 'data.sources');
+    }
+
+    public function test_help_assistant_detects_out_of_scope_questions(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->postJson(route('help.assistant.ask'), [
+            'message' => 'Quelle est la capitale de l Espagne ?',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.confidence', 'out_of_scope')
+            ->assertJsonPath('data.answer', 'Je n ai pas trouve de lien clair avec la plateforme ERAH. Tu peux reformuler ta demande ?')
+            ->assertJsonCount(0, 'data.sources');
     }
 
     public function test_help_assistant_can_add_user_context_when_authenticated(): void
@@ -93,6 +156,22 @@ class HelpCenterFeatureTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('data.user_context.league', 'Bronze');
+    }
+
+    public function test_help_center_shows_connected_member_profile_summary_when_authenticated(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+            'bio' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('help.index'))
+            ->assertOk()
+            ->assertSee('Votre profil ERAH')
+            ->assertSee($user->name);
     }
 
     public function test_admin_can_manage_help_content(): void

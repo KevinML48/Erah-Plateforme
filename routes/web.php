@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\App\ShortcutController;
+use App\Http\Controllers\Web\Assistant\AssistantConsoleController;
+use App\Http\Controllers\Web\Assistant\AssistantConversationController;
+use App\Http\Controllers\Web\Assistant\AssistantMessageController;
 use App\Http\Controllers\TestConsole\AdminGiftConsoleController;
 use App\Http\Controllers\TestConsole\RankingConsoleController;
 use App\Http\Controllers\TestConsole\UsersConsoleController;
@@ -23,6 +26,7 @@ use App\Http\Controllers\Marketing\ContactController as MarketingContactControll
 use App\Http\Controllers\Marketing\GalleryPhotoPageController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
+use App\Http\Controllers\Web\AssistantFavoriteController;
 use App\Http\Controllers\Web\ClubReviewPageController;
 use App\Http\Controllers\Web\ClipSupporterController;
 use App\Http\Controllers\Web\ClipsPageController;
@@ -31,6 +35,7 @@ use App\Http\Controllers\Web\HelpAssistantController;
 use App\Http\Controllers\Web\DuelLeaderboardPageController;
 use App\Http\Controllers\Web\DuelsPageController;
 use App\Http\Controllers\Web\GiftPageController;
+use App\Http\Controllers\Web\GuidedTourController;
 use App\Http\Controllers\Web\HelpCenterController;
 use App\Http\Controllers\Web\LiveCodePageController;
 use App\Http\Controllers\Web\LeaderboardPageController;
@@ -53,6 +58,7 @@ use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use App\Http\Controllers\Web\Admin\ClubReviewAdminController;
 use App\Http\Controllers\Web\Admin\AdminHelpCenterController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
@@ -164,11 +170,18 @@ Route::prefix('console')->middleware('throttle:feed-public')->group(function () 
     Route::get('/statistics', StatisticsPageController::class)->name('statistics.index');
     Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('duels.leaderboard');
     Route::get('/help', [HelpCenterController::class, 'console'])->name('console.help');
-    Route::get('/help/assistant', [HelpCenterController::class, 'consoleAssistant'])->name('console.help.assistant');
+    Route::get('/help/assistant', function (Request $request) {
+        return redirect()->route('assistant.index', array_filter([
+            'article' => $request->string('article')->toString(),
+            'prompt' => $request->string('prompt')->toString(),
+        ]));
+    })->name('console.help.assistant');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => redirect()->route('dashboard'));
+    Route::post('/assistant/favorites', [AssistantFavoriteController::class, 'store'])->name('assistant.favorites.store');
+    Route::delete('/assistant/favorites/{favorite}', [AssistantFavoriteController::class, 'destroy'])->name('assistant.favorites.destroy');
 
     Route::prefix('console')->group(function () {
         Route::get('/', fn () => redirect()->route('dashboard'));
@@ -176,6 +189,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
         Route::get('/onboarding', [OnboardingController::class, 'show'])->name('onboarding');
         Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
+        Route::get('/assistant', AssistantConsoleController::class)->name('assistant.index');
+        Route::get('/guided-tour', [GuidedTourController::class, 'show'])->name('guided-tour.show');
+        Route::post('/guided-tour/start', [GuidedTourController::class, 'start'])->name('guided-tour.start');
+        Route::post('/guided-tour/restart', [GuidedTourController::class, 'restart'])->name('guided-tour.restart');
+        Route::patch('/guided-tour', [GuidedTourController::class, 'update'])->name('guided-tour.update');
+        Route::post('/assistant/messages', [AssistantMessageController::class, 'store'])
+            ->middleware('throttle:assistant-chat')
+            ->name('assistant.messages.store');
+        Route::post('/assistant/messages/stream', [AssistantMessageController::class, 'stream'])
+            ->middleware('throttle:assistant-chat')
+            ->name('assistant.messages.stream');
+        Route::patch('/assistant/conversations/{conversation}', [AssistantConversationController::class, 'update'])
+            ->name('assistant.conversations.update');
+        Route::delete('/assistant/conversations/{conversation}', [AssistantConversationController::class, 'destroy'])
+            ->name('assistant.conversations.destroy');
 
         Route::get('/users', [UsersConsoleController::class, 'index'])->name('users.index');
         Route::post('/users/role', [UsersConsoleController::class, 'updateRole'])

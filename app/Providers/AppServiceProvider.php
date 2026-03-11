@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Services\AI\Providers\AssistantProvider;
+use App\Services\AI\Providers\NullAssistantProvider;
+use App\Services\AI\Providers\OpenAIChatProvider;
 use App\Models\Clip;
 use App\Models\ClipComment;
 use App\Policies\ClipPolicy;
@@ -32,6 +35,13 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         Cashier::ignoreRoutes();
+
+        $this->app->bind(AssistantProvider::class, function () {
+            return match ((string) config('assistant.provider', 'none')) {
+                'openai' => new OpenAIChatProvider(),
+                default => new NullAssistantProvider(),
+            };
+        });
     }
 
     /**
@@ -200,6 +210,12 @@ class AppServiceProvider extends ServiceProvider
             $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
 
             return Limit::perMinute(45)->by($identifier);
+        });
+
+        RateLimiter::for('assistant-chat', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(24)->by($identifier);
         });
 
         RateLimiter::for('stripe-webhook', function (Request $request) {

@@ -190,7 +190,7 @@
         <div class="tt-section padding-bottom-xlg-120">
             <div class="tt-section-inner tt-wrap">
                 @if(($clips ?? null) && $clips->count())
-                    <div id="blog-list" class="bli-compact bli-image-cropped">
+                    <div id="blog-list" class="bli-compact bli-image-cropped" data-tour="clips-feed">
                         @foreach($clips as $clip)
                             @php
                                 $isLiked = in_array($clip->id, $likedIds ?? [], true);

@@ -7,6 +7,7 @@ use App\Models\HelpCategory;
 use App\Models\HelpGlossaryTerm;
 use App\Models\HelpTourStep;
 use App\Models\User;
+use App\Services\GuidedTour\PlatformGuidedTourService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class HelpCenterService
 
     public function __construct(
         private readonly RankService $rankService,
+        private readonly PlatformGuidedTourService $platformGuidedTourService,
     ) {
     }
 
@@ -211,6 +213,9 @@ class HelpCenterService
             $search,
             $categorySlug,
         );
+        $globalSearchResults = $search !== ''
+            ? $this->buildGlobalSearchResults($base, $search, $mode)
+            : [];
         $activeArticle = $articleSlug !== ''
             ? collect($base['faq']['items'])->firstWhere('slug', $articleSlug)
             : null;
@@ -233,7 +238,11 @@ class HelpCenterService
             'featureHighlights' => $this->buildFeatureHighlights($base['featureGrid']['items']),
             'featuredFaqs' => collect($base['faq']['featured'])->take(4)->values()->all(),
             'starterPaths' => $this->buildStarterPaths($mode),
-            'searchResults' => $search !== '' ? $filteredFaqItems->take(6)->values()->all() : [],
+            'searchResults' => $globalSearchResults,
+            'starterJourney' => [
+                ...$base['starterJourney'],
+                'interactive' => $this->platformGuidedTourService->entryPayload($user),
+            ],
             'hero' => [
                 ...$base['hero'],
                 'tour_url' => '#tour-guide',
@@ -251,7 +260,7 @@ class HelpCenterService
             'assistant' => [
                 ...$base['assistant'],
                 'page_url' => $mode === 'console'
-                    ? route('console.help.assistant')
+                    ? route('assistant.index')
                     : route('help.assistant.page'),
                 'user_preview' => $this->buildUserPreview($user),
             ],
@@ -394,7 +403,7 @@ class HelpCenterService
             'eyebrow' => $mode === 'console' ? 'Aide in-app' : 'Centre d aide / FAQ',
             'title' => $mode === 'console'
                 ? 'Trouver la bonne reponse sans quitter votre espace.'
-                : 'Comprendre ERAH, explorer ses modules et savoir quoi faire ensuite.',
+                : 'Comprendre ERAH sans se perdre.',
             'subtitle' => $mode === 'console'
                 ? "Le hub d'aide central pour retrouver vite une reponse, relancer un parcours et repartir vers la bonne page du produit."
                 : "Une seule page pour decouvrir la logique de la plateforme, parcourir la FAQ centrale, comprendre les vrais modules et utiliser un assistant cadre par la base de connaissance.",
@@ -651,28 +660,257 @@ class HelpCenterService
      */
     private function filterFaqItems(Collection $items, string $search, string $categorySlug): Collection
     {
-        $query = Str::of($search)->lower()->ascii()->squish()->toString();
+        $query = $this->normalizeSearchQuery($search);
+        $tokens = $this->searchTokens($search);
 
-        return $items->filter(function (array $item) use ($query, $categorySlug): bool {
-            if ($categorySlug !== '' && (($item['category']['slug'] ?? null) !== $categorySlug)) {
-                return false;
+        return $items
+            ->map(function (array $item) use ($query, $tokens, $categorySlug): array {
+                if ($categorySlug !== '' && (($item['category']['slug'] ?? null) !== $categorySlug)) {
+                    return [
+                        'score' => -1,
+                        'item' => $item,
+                    ];
+                }
+
+                if ($query === '') {
+                    return [
+                        'score' => 1,
+                        'item' => $item,
+                    ];
+                }
+
+                $score = $this->searchScore(
+                    $query,
+                    $tokens,
+                    implode(' ', array_filter([
+                        $item['title'] ?? null,
+                        $item['summary'] ?? null,
+                        $item['short_answer'] ?? null,
+                        $item['body'] ?? null,
+                        $item['category']['title'] ?? null,
+                        implode(' ', $item['keywords'] ?? []),
+                    ])),
+                    (string) ($item['title'] ?? '')
+                );
+
+                return [
+                    'score' => $score,
+                    'item' => $item,
+                ];
+            })
+            ->filter(fn (array $entry): bool => $entry['score'] > 0)
+            ->sortByDesc('score')
+            ->map(fn (array $entry): array => $entry['item'])
+            ->values();
+    }
+
+    /**
+     * @param array<string, mixed> $base
+     * @return array<int, array<string, string>>
+     */
+    private function buildGlobalSearchResults(array $base, string $search, string $mode): array
+    {
+        $query = $this->normalizeSearchQuery($search);
+        $tokens = $this->searchTokens($search);
+
+        if ($query === '') {
+            return [];
+        }
+
+        $results = collect();
+
+        foreach ($base['categories'] ?? [] as $category) {
+            $results->push($this->buildSearchResult(
+                badge: 'Categorie',
+                title: (string) ($category['title'] ?? ''),
+                excerpt: (string) ($category['description'] ?? $category['intro'] ?? ''),
+                url: (string) ($category['url'] ?? route('help.index')),
+                searchable: implode(' ', array_filter([
+                    $category['title'] ?? null,
+                    $category['description'] ?? null,
+                    $category['intro'] ?? null,
+                    $category['bucket'] ?? null,
+                    'categorie categories aide faq',
+                ])),
+                query: $query,
+                tokens: $tokens,
+            ));
+        }
+
+        foreach ($base['faq']['items'] ?? [] as $article) {
+            $results->push($this->buildSearchResult(
+                badge: 'FAQ',
+                title: (string) ($article['title'] ?? ''),
+                excerpt: (string) ($article['short_answer'] ?? $article['summary'] ?? ''),
+                url: (string) ($article['url'] ?? route('help.index').'#faq-center'),
+                searchable: implode(' ', array_filter([
+                    $article['title'] ?? null,
+                    $article['summary'] ?? null,
+                    $article['short_answer'] ?? null,
+                    $article['body'] ?? null,
+                    $article['category']['title'] ?? null,
+                    implode(' ', $article['keywords'] ?? []),
+                    'faq article question reponse aide',
+                ])),
+                query: $query,
+                tokens: $tokens,
+            ));
+        }
+
+        foreach (($base['starterJourney']['steps'] ?? []) as $step) {
+            $results->push($this->buildSearchResult(
+                badge: 'Etape guidee',
+                title: (string) ($step['title'] ?? ''),
+                excerpt: (string) ($step['summary'] ?? $step['visual_body'] ?? ''),
+                url: (string) ($step['cta_url'] ?? '#starter-journey'),
+                searchable: implode(' ', array_filter([
+                    $step['title'] ?? null,
+                    $step['summary'] ?? null,
+                    $step['body'] ?? null,
+                    $step['visual_title'] ?? null,
+                    $step['visual_body'] ?? null,
+                    'etape etapes guide guidee visite parcours demarrage',
+                ])),
+                query: $query,
+                tokens: $tokens,
+            ));
+        }
+
+        foreach (($base['featureGrid']['items'] ?? []) as $feature) {
+            $results->push($this->buildSearchResult(
+                badge: 'Module',
+                title: (string) ($feature['title'] ?? ''),
+                excerpt: (string) ($feature['description'] ?? ''),
+                url: (string) ($feature['href'] ?? route('help.index')),
+                searchable: implode(' ', array_filter([
+                    $feature['title'] ?? null,
+                    $feature['description'] ?? null,
+                    implode(' ', $feature['bullets'] ?? []),
+                    $feature['access'] ?? null,
+                    'module fonctionnalite plateforme erah',
+                ])),
+                query: $query,
+                tokens: $tokens,
+            ));
+        }
+
+        foreach (($base['glossary'] ?? []) as $term) {
+            $results->push($this->buildSearchResult(
+                badge: 'Glossaire',
+                title: (string) ($term['term'] ?? ''),
+                excerpt: (string) ($term['short_answer'] ?? $term['definition'] ?? ''),
+                url: $mode === 'console' ? route('assistant.index') : route('help.assistant.page'),
+                searchable: implode(' ', array_filter([
+                    $term['term'] ?? null,
+                    $term['definition'] ?? null,
+                    $term['short_answer'] ?? null,
+                    'glossaire terme definition',
+                ])),
+                query: $query,
+                tokens: $tokens,
+            ));
+        }
+
+        return $results
+            ->filter()
+            ->sortByDesc('score')
+            ->unique(fn (array $item): string => $item['badge'].'|'.$item['title'])
+            ->take(6)
+            ->map(fn (array $item): array => [
+                'badge' => $item['badge'],
+                'title' => $item['title'],
+                'excerpt' => $item['excerpt'],
+                'url' => $item['url'],
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @param array<int, string> $tokens
+     * @return array<string, string|int>|null
+     */
+    private function buildSearchResult(
+        string $badge,
+        string $title,
+        string $excerpt,
+        string $url,
+        string $searchable,
+        string $query,
+        array $tokens,
+    ): ?array {
+        $score = $this->searchScore($query, $tokens, $searchable, $title);
+
+        if ($score <= 0) {
+            return null;
+        }
+
+        return [
+            'badge' => $badge,
+            'title' => $title,
+            'excerpt' => Str::limit($excerpt, 160, '...'),
+            'url' => $url,
+            'score' => $score,
+        ];
+    }
+
+    /**
+     * @param array<int, string> $tokens
+     */
+    private function searchScore(string $query, array $tokens, string $haystack, string $title = ''): int
+    {
+        $normalizedHaystack = $this->normalizeSearchQuery($haystack);
+        $normalizedTitle = $this->normalizeSearchQuery($title);
+        $score = 0;
+        $matchedTokens = 0;
+
+        if ($query !== '' && Str::contains($normalizedTitle, $query)) {
+            $score += 12;
+        } elseif ($query !== '' && Str::contains($normalizedHaystack, $query)) {
+            $score += 8;
+        }
+
+        foreach ($tokens as $token) {
+            if (Str::contains($normalizedTitle, $token)) {
+                $score += 5;
+                $matchedTokens++;
+
+                continue;
             }
 
-            if ($query === '') {
-                return true;
+            if (Str::contains($normalizedHaystack, $token)) {
+                $score += 3;
+                $matchedTokens++;
             }
+        }
 
-            $haystack = Str::of(implode(' ', array_filter([
-                $item['title'] ?? null,
-                $item['summary'] ?? null,
-                $item['short_answer'] ?? null,
-                $item['body'] ?? null,
-                $item['category']['title'] ?? null,
-                implode(' ', $item['keywords'] ?? []),
-            ])))->lower()->ascii()->squish()->toString();
+        if ($matchedTokens > 1) {
+            $score += 2;
+        }
 
-            return Str::contains($haystack, $query);
-        })->values();
+        return $score;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function searchTokens(string $search): array
+    {
+        return collect(explode(' ', $this->normalizeSearchQuery($search)))
+            ->filter(fn (string $token): bool => mb_strlen($token) >= 2)
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function normalizeSearchQuery(string $value): string
+    {
+        return Str::of($value)
+            ->lower()
+            ->ascii()
+            ->replaceMatches('/[^a-z0-9\s]+/', ' ')
+            ->squish()
+            ->toString();
     }
 
     /**
@@ -717,7 +955,7 @@ class HelpCenterService
                 'description' => "ERAH relie les matchs, les paris, les clips, les missions, les duels, les notifications et les cadeaux dans un meme espace coherent.",
                 'items' => ['Modules relies', 'XP et points visibles', 'Rewards concrets'],
                 'cta_label' => 'Voir l assistant',
-                'cta_url' => $mode === 'console' ? route('console.help.assistant') : route('help.assistant.page'),
+                'cta_url' => $mode === 'console' ? route('assistant.index') : route('help.assistant.page'),
             ],
         ];
     }
@@ -836,7 +1074,10 @@ class HelpCenterService
 
         return [
             'name' => $user->name,
+            'avatar_url' => $user->avatar_url,
             'profile_url' => route('users.public', $user),
+            'dashboard_url' => route('dashboard'),
+            'internal_profile_url' => route('profile.show'),
             'league' => $league['name'],
             'xp' => (int) ($progress?->total_xp ?? 0),
             'points' => $points,

@@ -293,6 +293,135 @@
             font-size: 14px;
         }
 
+        .profile-assistant-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .profile-assistant-card {
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 18px;
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(8, 9, 14, .96));
+            box-shadow: 0 18px 42px rgba(0, 0, 0, .18);
+        }
+
+        .profile-assistant-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .profile-assistant-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 220, 120, .28);
+            background: rgba(255, 214, 78, .08);
+            color: #ffe7a7;
+            font-size: 11px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        .profile-assistant-question {
+            margin: 0;
+            font-size: 21px;
+            line-height: 1.35;
+        }
+
+        .profile-assistant-answer {
+            margin: 16px 0 0;
+            color: rgba(255, 255, 255, .82);
+            line-height: 1.75;
+        }
+
+        .profile-assistant-details {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .profile-assistant-detail {
+            margin: 0;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .03);
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.7;
+        }
+
+        .profile-assistant-meta {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .profile-assistant-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 36px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .03);
+            color: rgba(255, 255, 255, .72);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .profile-assistant-sources {
+            margin-top: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .profile-assistant-source {
+            display: block;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .03);
+            color: rgba(255, 255, 255, .82);
+            transition: border-color .24s ease, color .24s ease;
+        }
+
+        .profile-assistant-source:hover {
+            border-color: rgba(216, 7, 7, .35);
+            color: #fff;
+        }
+
+        .profile-assistant-foot {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .profile-assistant-date {
+            color: rgba(255, 255, 255, .56);
+            font-size: 13px;
+        }
+
+        .profile-assistant-empty {
+            border: 1px dashed rgba(255, 255, 255, .14);
+            border-radius: 18px;
+            padding: 28px;
+            background: rgba(255, 255, 255, .02);
+            color: rgba(255, 255, 255, .64);
+        }
+
         @media (max-width: 991.98px) {
             .profile-form-card,
             .profile-side-card {
@@ -322,6 +451,7 @@
             : array_column($currentShortcuts, 'key');
         $minShortcuts = (int) ($minShortcuts ?? 1);
         $maxShortcuts = (int) ($maxShortcuts ?? 5);
+        $assistantFavorites = $assistantFavorites ?? collect();
     @endphp
 
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -482,7 +612,7 @@
                     </div>
 
                     <div class="tt-col-xl-5">
-                        <div class="profile-side-card margin-bottom-30">
+                        <div class="profile-side-card margin-bottom-30" data-tour="profile-overview">
                             <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview>
                             <h4 class="no-margin">{{ $user->name }}</h4>
                             <p class="tt-form-text no-margin">{{ $user->email }}</p>
@@ -685,6 +815,99 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top" id="assistant-favorites">
+            <div class="tt-section-inner tt-wrap max-width-1000">
+                <div class="tt-heading tt-heading-lg margin-bottom-20">
+                    <h3 class="tt-heading-subtitle">Memo assistant</h3>
+                    <h2 class="tt-heading-title">Mes reponses favorites</h2>
+                </div>
+                <div class="profile-inline-actions margin-bottom-30">
+                    <span class="tt-form-text">Retrouvez ici les reponses du bot que vous avez decide de garder sous la main.</span>
+                    <a href="{{ route('help.assistant.page') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                        <span data-hover="Retour a l assistant">Retour a l assistant</span>
+                    </a>
+                </div>
+
+                @if($assistantFavorites->count())
+                    <div class="profile-assistant-grid">
+                        @foreach($assistantFavorites as $favorite)
+                            @php
+                                $details = collect($favorite->details ?? [])->take(3);
+                                $sources = collect($favorite->sources ?? [])->take(3);
+                                $nextSteps = collect($favorite->next_steps ?? [])->take(4);
+                            @endphp
+                            <article class="profile-assistant-card">
+                                <div class="profile-assistant-head">
+                                    <div>
+                                        <span class="profile-assistant-badge">Favori assistant</span>
+                                        <h3 class="profile-assistant-question margin-top-15">{{ $favorite->question }}</h3>
+                                    </div>
+                                    <form method="POST" action="{{ route('assistant.favorites.destroy', $favorite) }}" onsubmit="return confirm('Supprimer cette reponse favorite de votre profil ?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                            <span data-hover="Supprimer">Supprimer</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <p class="profile-assistant-answer">{{ $favorite->answer }}</p>
+
+                                @if($details->isNotEmpty())
+                                    <div class="profile-assistant-details">
+                                        @foreach($details as $detail)
+                                            <p class="profile-assistant-detail">{{ $detail }}</p>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                @if($sources->isNotEmpty())
+                                    <div class="profile-assistant-sources">
+                                        @foreach($sources as $source)
+                                            @if(!empty($source['url']))
+                                                <a href="{{ $source['url'] }}" class="profile-assistant-source">
+                                                    {{ $source['title'] ?? 'Source ERAH' }}
+                                                    @if(!empty($source['category']))
+                                                        - {{ $source['category'] }}
+                                                    @endif
+                                                </a>
+                                            @else
+                                                <div class="profile-assistant-source">
+                                                    {{ $source['title'] ?? 'Source ERAH' }}
+                                                    @if(!empty($source['category']))
+                                                        - {{ $source['category'] }}
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                @if($nextSteps->isNotEmpty())
+                                    <div class="profile-assistant-meta">
+                                        @foreach($nextSteps as $step)
+                                            <span class="profile-assistant-pill">{{ $step }}</span>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <div class="profile-assistant-foot">
+                                    <span class="profile-assistant-date">Ajoute le {{ optional($favorite->created_at)->format('d/m/Y H:i') }}</span>
+                                    <a href="{{ route('help.assistant.page') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                        <span data-hover="Poser une autre question">Poser une autre question</span>
+                                    </a>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="profile-assistant-empty">
+                        Aucune reponse favorite pour le moment. Depuis l assistant, vous pourrez enregistrer les reponses utiles avec l icone etoile pour les retrouver ici plus tard.
+                    </div>
+                @endif
             </div>
         </div>
 

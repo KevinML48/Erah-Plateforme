@@ -296,7 +296,7 @@
     </div>
 
     <div id="tt-page-content">
-        <div class="tt-section padding-top-60 border-top">
+        <div class="tt-section padding-top-60 border-top" data-tour="matches-overview">
             <div class="tt-section-inner tt-wrap max-width-1800">
                 <div class="match-tabs">
                     @foreach(['upcoming' => 'A venir', 'live' => 'En direct', 'finished' => 'Termines'] as $tabKey => $tabLabel)

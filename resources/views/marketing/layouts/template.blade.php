@@ -4,6 +4,7 @@
   <title>@yield('title', 'ERAH Esport')</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="@yield('meta_description', 'ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.')">
   <meta name="keywords" content="@yield('meta_keywords', 'ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique')">
   <meta name="author" content="@yield('meta_author', 'ERAH Esport')">
@@ -278,5 +279,6 @@
   </script>
 
   @yield('page_scripts')
+  @include('marketing.partials.guided-tour')
 </body>
 </html>

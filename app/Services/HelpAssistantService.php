@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\HelpArticle;
 use App\Models\HelpGlossaryTerm;
 use App\Models\User;
+use App\Services\AI\AssistantQueryClassifier;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ class HelpAssistantService
 {
     public function __construct(
         private readonly RankService $rankService,
+        private readonly AssistantQueryClassifier $assistantQueryClassifier,
     ) {
     }
 
@@ -21,83 +23,110 @@ class HelpAssistantService
      */
     public function ask(string $message, ?User $user = null): array
     {
-        $normalized = Str::of($message)->lower()->ascii()->replaceMatches('/[^a-z0-9\s]+/', ' ')->squish()->toString();
-        $tokens = collect(explode(' ', $normalized))
+        $classification = $this->assistantQueryClassifier->classify($message);
+        $userContext = $this->userContext($user);
+
+        if ($classification->isOutOfScope()) {
+            return $this->guardPayload(
+                answer: (string) $classification->fallbackMessage,
+                confidence: 'out_of_scope',
+                userContext: $userContext,
+                nextSteps: [
+                    'Reformule ta question autour des points, missions, matchs, paris, recompenses ou profil.',
+                ],
+            );
+        }
+
+        if ($classification->needsClarification()) {
+            return $this->guardPayload(
+                answer: (string) $classification->fallbackMessage,
+                confidence: 'clarification',
+                userContext: $userContext,
+                nextSteps: [
+                    'Tu peux me demander par exemple comment gagner des points, suivre les matchs ou ameliorer ton profil.',
+                ],
+            );
+        }
+
+        $normalized = $classification->normalized;
+        $tokens = collect($classification->tokens)
             ->filter(fn (string $token): bool => mb_strlen($token) >= 3)
             ->unique()
             ->values();
 
-        $articles = $this->articles();
-        $glossary = $this->glossary();
+        $matches = $this->knowledgeMatches($normalized, $tokens);
+        $bestArticle = $matches['article'];
+        $bestGlossary = $matches['glossary'];
+        $bestScore = max((int) ($bestArticle['score'] ?? 0), (int) ($bestGlossary['score'] ?? 0));
+        $minimumKnowledgeScore = (int) config('assistant.qualification.knowledge_min_score', 6);
+        $strongKnowledgeScore = (int) config('assistant.qualification.knowledge_strong_score', 10);
 
-        $bestArticle = $articles
-            ->map(fn (HelpArticle $article) => [
-                'article' => $article,
-                'score' => $this->scoreArticle($article, $normalized, $tokens),
-            ])
-            ->sortByDesc('score')
-            ->first();
+        if ($bestScore < $minimumKnowledgeScore) {
+            if (in_array('next_step', $classification->matchedTopics, true)) {
+                return $this->nextStepPayload($userContext);
+            }
 
-        $bestGlossary = $glossary
-            ->map(fn (HelpGlossaryTerm $term) => [
-                'term' => $term,
-                'score' => $this->scoreGlossary($term, $normalized, $tokens),
-            ])
-            ->sortByDesc('score')
-            ->first();
+            if (in_array('overview', $classification->matchedTopics, true)) {
+                return $this->overviewPayload($userContext);
+            }
 
-        if (($bestArticle['score'] ?? 0) <= 0 && ($bestGlossary['score'] ?? 0) <= 0) {
-            return [
-                'mode' => config('help-center.assistant.mode', 'knowledge_base'),
-                'answer' => "Je n'ai pas de reponse suffisamment fiable pour cette question. Essayez un sujet plus precis ou utilisez une des questions suggerees.",
-                'confidence' => 'fallback',
-                'sources' => [],
-                'next_steps' => [
-                    'Parcourir la FAQ centrale pour retrouver la bonne categorie.',
-                    'Utiliser des mots cles comme matchs, missions, points, clips, duels ou cadeaux.',
+            return $this->guardPayload(
+                answer: 'Je vois le sujet, mais je n ai pas trouve de reponse assez fiable pour te repondre au hasard.',
+                confidence: 'fallback',
+                userContext: $userContext,
+                nextSteps: [
+                    'Essaie une question plus precise avec un mot-cle comme points, missions, matchs, paris, recompenses ou profil.',
+                    'Tu peux aussi parcourir la FAQ centrale pour retrouver la bonne categorie.',
                 ],
-                'user_context' => $this->userContext($user),
-            ];
+            );
         }
 
         if (($bestGlossary['score'] ?? 0) > ($bestArticle['score'] ?? 0)) {
             /** @var HelpGlossaryTerm $term */
             $term = $bestGlossary['term'];
+            $answer = trim(implode(' ', array_filter([
+                'Sur ERAH, l idee est simple :',
+                $term->short_answer ?: $term->definition,
+            ])));
 
             return [
                 'mode' => config('help-center.assistant.mode', 'knowledge_base'),
-                'answer' => $term->short_answer ?: $term->definition,
-                'confidence' => 'medium',
+                'answer' => $answer,
+                'confidence' => ($bestGlossary['score'] ?? 0) >= $strongKnowledgeScore ? 'high' : 'medium',
                 'sources' => [[
                     'type' => 'glossary',
                     'title' => $term->term,
-                    'url' => route('help.index').'#faq-center',
+                    'url' => $this->relativeRoute('help.index').'#faq-center',
                 ]],
-                'next_steps' => ['Consultez la FAQ centrale si vous voulez une explication plus detaillee.'],
-                'user_context' => $this->userContext($user),
+                'next_steps' => ['Si tu veux aller plus loin, ouvre la FAQ centrale pour lire le terme dans son contexte.'],
+                'user_context' => $userContext,
             ];
         }
 
         /** @var HelpArticle $article */
         $article = $bestArticle['article'];
         $paragraphs = $this->paragraphs($article->body);
+        $answer = trim(implode(' ', array_filter([
+            'Oui, je peux t expliquer ca simplement.',
+            $article->short_answer ?: ($article->summary ?: ($paragraphs[0] ?? '')),
+        ])));
 
         return [
             'mode' => config('help-center.assistant.mode', 'knowledge_base'),
-            'answer' => $article->short_answer ?: ($article->summary ?: ($paragraphs[0] ?? '')),
-            'confidence' => ($bestArticle['score'] ?? 0) >= 8 ? 'high' : 'medium',
+            'answer' => $answer,
+            'confidence' => ($bestArticle['score'] ?? 0) >= $strongKnowledgeScore ? 'high' : 'medium',
             'details' => array_slice($paragraphs, 0, 2),
             'sources' => [[
                 'type' => 'article',
                 'title' => $article->title,
                 'category' => $article->category?->title,
-                'url' => route('help.index', ['article' => $article->slug]).'#faq-center',
+                'url' => $this->relativeRoute('help.index', ['article' => $article->slug]).'#faq-center',
             ]],
             'next_steps' => array_values(array_filter([
-                $article->cta_label && $article->cta_url ? $article->cta_label.' -> '.$article->cta_url : null,
-                'Ouvrez la section FAQ si vous voulez plus de contexte ou une categorie voisine.',
+                $article->cta_label ?: null,
+                'Ouvre la section FAQ si tu veux plus de contexte ou une categorie voisine.',
             ])),
-            'user_context' => $this->userContext($user),
+            'user_context' => $userContext,
         ];
     }
 
@@ -189,6 +218,40 @@ class HelpAssistantService
     }
 
     /**
+     * @param Collection<int, string> $tokens
+     * @return array{
+     *     article: array{article: HelpArticle, score: int}|null,
+     *     glossary: array{term: HelpGlossaryTerm, score: int}|null
+     * }
+     */
+    private function knowledgeMatches(string $normalized, Collection $tokens): array
+    {
+        $articles = $this->articles();
+        $glossary = $this->glossary();
+
+        $bestArticle = $articles
+            ->map(fn (HelpArticle $article) => [
+                'article' => $article,
+                'score' => $this->scoreArticle($article, $normalized, $tokens),
+            ])
+            ->sortByDesc('score')
+            ->first();
+
+        $bestGlossary = $glossary
+            ->map(fn (HelpGlossaryTerm $term) => [
+                'term' => $term,
+                'score' => $this->scoreGlossary($term, $normalized, $tokens),
+            ])
+            ->sortByDesc('score')
+            ->first();
+
+        return [
+            'article' => $bestArticle,
+            'glossary' => $bestGlossary,
+        ];
+    }
+
+    /**
      * @return array<int, string>
      */
     private function paragraphs(?string $body): array
@@ -219,5 +282,85 @@ class HelpAssistantService
             'xp' => (int) ($progress?->total_xp ?? 0),
             'league' => $league['name'],
         ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $userContext
+     * @param array<int, string> $nextSteps
+     * @return array<string, mixed>
+     */
+    private function guardPayload(string $answer, string $confidence, ?array $userContext, array $nextSteps = []): array
+    {
+        return [
+            'mode' => config('help-center.assistant.mode', 'knowledge_base'),
+            'answer' => $answer,
+            'confidence' => $confidence,
+            'sources' => [],
+            'next_steps' => $nextSteps,
+            'user_context' => $userContext,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $userContext
+     * @return array<string, mixed>
+     */
+    private function overviewPayload(?array $userContext): array
+    {
+        $answer = 'Sur ERAH, l idee est de centraliser la progression, les missions, les matchs, les paris, le profil, les notifications et les recompenses dans un meme espace.';
+
+        if ($userContext) {
+            $answer .= sprintf(
+                ' En ce moment, ton compte visible remonte %d points, %d XP et la ligue %s.',
+                (int) ($userContext['points'] ?? 0),
+                (int) ($userContext['xp'] ?? 0),
+                (string) ($userContext['league'] ?? 'Bronze')
+            );
+        }
+
+        return $this->guardPayload(
+            answer: $answer,
+            confidence: 'medium',
+            userContext: $userContext,
+            nextSteps: [
+                'Commence par la FAQ centrale si tu veux la vue d ensemble.',
+                'Ensuite, pose une question plus precise sur les points, les missions, les matchs, les paris ou le profil.',
+            ],
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $userContext
+     * @return array<string, mixed>
+     */
+    private function nextStepPayload(?array $userContext): array
+    {
+        $answer = 'En general, le plus utile est de completer ton profil, verifier les missions actives, puis regarder les matchs et les recompenses selon ton objectif.';
+
+        if ($userContext) {
+            $answer .= sprintf(
+                ' Pour toi, le contexte visible remonte %d points, %d XP et la ligue %s.',
+                (int) ($userContext['points'] ?? 0),
+                (int) ($userContext['xp'] ?? 0),
+                (string) ($userContext['league'] ?? 'Bronze')
+            );
+        }
+
+        return $this->guardPayload(
+            answer: $answer,
+            confidence: 'medium',
+            userContext: $userContext,
+            nextSteps: [
+                'Si tu veux, demande-moi ensuite quoi faire pour gagner des points ou progresser plus vite.',
+            ],
+        );
+    }
+
+    /**
+     * @param array<string, scalar|null> $parameters
+     */
+    private function relativeRoute(string $name, array $parameters = []): string
+    {
+        return route($name, $parameters, false);
     }
 }

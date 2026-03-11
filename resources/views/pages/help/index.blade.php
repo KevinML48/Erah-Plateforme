@@ -57,7 +57,7 @@
         .erah-help-assistant-grid,
         .erah-help-video-grid {
             display: grid;
-            gap: 26px;
+            gap: 36px;
             grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
         }
         .erah-help-anchor-row,
@@ -66,7 +66,21 @@
         .erah-help-faq-filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
+        }
+        .erah-help-search-actions {
+            gap: 16px;
+            align-items: center;
+        }
+        .erah-help-search-actions .tt-btn,
+        .erah-help-footer-actions .tt-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 58px;
+            padding: 0 30px;
+            border-radius: 18px;
+            text-align: center;
         }
         .erah-help-anchor-row a,
         .erah-help-chip,
@@ -103,14 +117,21 @@
         .erah-help-faq-grid,
         .erah-help-timeline {
             display: grid;
-            gap: 20px;
+            gap: 24px;
         }
-        .erah-help-stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 26px; }
+        .erah-help-stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 28px;
+            margin-top: 34px;
+        }
         .erah-help-stat {
-            padding: 18px 18px 16px;
+            padding: 22px 22px 20px;
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,.1);
             background: rgba(255,255,255,.03);
+        }
+        .erah-help-stat:last-child {
+            grid-column: span 2;
         }
         .erah-help-stat-label {
             display: block;
@@ -176,6 +197,349 @@
             background: rgba(255,255,255,.03);
             color: rgba(255,255,255,.76);
         }
+        .erah-help-search-form {
+            display: grid;
+            gap: 22px;
+        }
+        .erah-help-hero-search-form {
+            max-width: 760px;
+            margin-top: 40px;
+            gap: 24px;
+        }
+        .erah-help-search-field {
+            display: grid;
+            gap: 14px;
+        }
+        .erah-help-search-copy {
+            display: grid;
+            gap: 8px;
+            max-width: 700px;
+        }
+        .erah-help-search-label {
+            margin: 0;
+            color: #fff;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -.02em;
+            line-height: 1.15;
+        }
+        .erah-help-search-help {
+            margin: 0;
+            color: rgba(255,255,255,.58);
+            font-size: 14px;
+            line-height: 1.75;
+        }
+        .erah-help-search-shell {
+            position: relative;
+            overflow: hidden;
+            padding: 18px 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,.12);
+            background:
+                radial-gradient(circle at top right, rgba(216,7,7,.12), transparent 42%),
+                linear-gradient(180deg, rgba(10,11,16,.96), rgba(255,255,255,.03));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.03),
+                0 18px 34px rgba(0,0,0,.18);
+            transition:
+                border-color .28s ease,
+                box-shadow .28s ease,
+                transform .28s ease,
+                background .28s ease;
+        }
+        .erah-help-search-shell::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 23px;
+            background: radial-gradient(circle at top right, rgba(216,7,7,.08), transparent 48%);
+            pointer-events: none;
+        }
+        .erah-help-search-shell:focus-within {
+            border-color: rgba(216,7,7,.44);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.06),
+                0 0 0 1px rgba(216,7,7,.16),
+                0 24px 48px rgba(216,7,7,.1);
+            transform: translateY(-1px);
+        }
+        .erah-help-search-shell--hero {
+            display: grid;
+            gap: 10px;
+            padding: 22px 24px;
+            border-radius: 26px;
+            background:
+                radial-gradient(circle at top left, rgba(216,7,7,.14), transparent 42%),
+                linear-gradient(180deg, rgba(12,13,19,.98), rgba(255,255,255,.035));
+        }
+        .erah-help-search-kicker {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            color: rgba(255,255,255,.5);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+        }
+        .erah-help-search-kicker::before {
+            content: "";
+            width: 22px;
+            height: 1px;
+            background: rgba(216,7,7,.82);
+        }
+        .erah-help-search-input-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+        .erah-help-search-input {
+            display: block;
+            width: 100%;
+            min-height: 28px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #fff;
+            font-family: inherit;
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.6;
+            letter-spacing: .01em;
+            appearance: none;
+            -webkit-appearance: none;
+            box-shadow: none;
+        }
+        .erah-help-search-input::placeholder {
+            color: rgba(255,255,255,.3);
+            opacity: 1;
+        }
+        .erah-help-search-input--hero {
+            min-height: 34px;
+            font-size: 18px;
+            line-height: 1.65;
+        }
+        .erah-help-search-input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .erah-help-search-clear {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 999px;
+            background: rgba(255,255,255,.04);
+            color: rgba(255,255,255,.62);
+            font-size: 16px;
+            line-height: 1;
+            flex-shrink: 0;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(.92);
+            transition: opacity .22s ease, transform .22s ease, border-color .22s ease, color .22s ease, background-color .22s ease;
+        }
+        .erah-help-search-clear:hover {
+            border-color: rgba(216,7,7,.42);
+            background: rgba(216,7,7,.1);
+            color: #fff;
+        }
+        .erah-help-search-clear.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+        .erah-help-search-results {
+            display: grid;
+            gap: 24px;
+            margin-top: 34px;
+        }
+        .erah-help-hero-recap {
+            display: grid;
+        }
+        .erah-help-hero-pills {
+            margin-top: 40px;
+            padding-top: 6px;
+        }
+        .erah-help-search-results-grid {
+            display: grid;
+            gap: 22px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .erah-help-search-result-card {
+            position: relative;
+            overflow: hidden;
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,.1);
+            background:
+                radial-gradient(circle at top left, rgba(216,7,7,.1), transparent 44%),
+                rgba(255,255,255,.03);
+        }
+        .erah-help-search-result-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+            pointer-events: none;
+        }
+        .erah-help-search-result-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        .erah-help-search-result-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .erah-help-search-result-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.04);
+            color: rgba(255,255,255,.72);
+            font-size: 11px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .erah-help-search-result-copy {
+            margin: 0;
+            color: rgba(255,255,255,.72);
+            line-height: 1.7;
+        }
+        .erah-help-search-result-summary {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .erah-help-footer-cta-card {
+            background:
+                radial-gradient(circle at top left, rgba(216,7,7,.18), transparent 44%),
+                linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.018));
+        }
+        .erah-help-footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: center;
+        }
+        .erah-help-member-card {
+            display: grid;
+            gap: 26px;
+        }
+        .erah-help-member-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+        }
+        .erah-help-member-avatar {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 78px;
+            height: 78px;
+            overflow: hidden;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,.12);
+            background:
+                radial-gradient(circle at top left, rgba(216,7,7,.22), transparent 52%),
+                linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,.05),
+                0 18px 32px rgba(0,0,0,.18);
+            color: #fff;
+            font-family: "Big Shoulders Display", sans-serif;
+            font-size: 34px;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .erah-help-member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .erah-help-member-meta {
+            display: grid;
+            gap: 8px;
+            flex: 1;
+        }
+        .erah-help-member-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,.56);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+        }
+        .erah-help-member-kicker::before {
+            content: "";
+            width: 20px;
+            height: 1px;
+            background: rgba(216,7,7,.8);
+        }
+        .erah-help-member-name {
+            margin: 0;
+            color: #fff;
+            font-size: 30px;
+            line-height: .98;
+        }
+        .erah-help-member-stats {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .erah-help-member-stat {
+            padding: 16px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255,255,255,.035);
+        }
+        .erah-help-member-stat-label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,.46);
+            font-size: 11px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        .erah-help-member-stat-value {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -.01em;
+        }
+        .erah-help-member-suggestions {
+            display: grid;
+            gap: 12px;
+        }
+        .erah-help-member-suggestion {
+            padding: 14px 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,.08);
+            background: rgba(255,255,255,.03);
+            color: rgba(255,255,255,.76);
+            line-height: 1.65;
+        }
         .erah-help-faq-card.is-active {
             border-color: rgba(216,7,7,.55);
             box-shadow: 0 20px 40px rgba(216,7,7,.08);
@@ -237,6 +601,56 @@
             height: 100%;
             padding: 28px;
         }
+        .erah-help-tour-launch {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+            margin-bottom: 26px;
+            padding: 28px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,.12);
+            background:
+                radial-gradient(circle at top left, rgba(216,7,7,.16), transparent 40%),
+                linear-gradient(145deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            box-shadow: 0 22px 54px rgba(0,0,0,.18);
+        }
+        .erah-help-tour-meta {
+            display: grid;
+            gap: 16px;
+            align-content: start;
+        }
+        .erah-help-tour-status {
+            display: grid;
+            gap: 10px;
+            padding: 20px 22px;
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(0,0,0,.22);
+        }
+        .erah-help-tour-status-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            width: fit-content;
+            padding: 0 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(216,7,7,.28);
+            background: rgba(216,7,7,.1);
+            color: #fff;
+            font-size: 11px;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        .erah-help-tour-progress {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -.01em;
+        }
+        .erah-help-tour-current {
+            color: rgba(255,255,255,.66);
+            line-height: 1.65;
+        }
         .erah-help-step-card {
             padding: 26px;
             border-radius: 24px;
@@ -271,10 +685,12 @@
             .erah-help-faq-toolbar,
             .erah-help-assistant-grid,
             .erah-help-video-grid { grid-template-columns: 1fr; }
+            .erah-help-search-results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 1199.98px) {
             .erah-help-discovery-grid,
             .erah-help-timeline { grid-template-columns: 1fr 1fr; }
+            .erah-help-tour-launch { grid-template-columns: 1fr; }
         }
         @media (max-width: 1024px) {
             .erah-help-overlap { margin-top: -38px; }
@@ -291,9 +707,36 @@
             .erah-help-assistant-panel { padding: 24px; border-radius: 24px; }
             .erah-help-stat-grid,
             .erah-help-discovery-grid,
-            .erah-help-timeline { grid-template-columns: 1fr; }
+            .erah-help-timeline,
+            .erah-help-search-results-grid { grid-template-columns: 1fr; }
+            .erah-help-stat-grid { grid-template-columns: 1fr; gap: 18px; }
+            .erah-help-stat:last-child { grid-column: span 1; }
             .erah-help-stat-value { font-size: 42px; }
             .erah-help-lead { font-size: 17px; }
+            .erah-help-search-label { font-size: 20px; }
+            .erah-help-search-shell { padding: 16px 18px; border-radius: 20px; }
+            .erah-help-search-input { font-size: 16px; }
+            .erah-help-hero-search-form { margin-top: 32px; }
+            .erah-help-search-shell--hero { padding: 18px 18px 20px; border-radius: 22px; }
+            .erah-help-search-input--hero { font-size: 16px; }
+            .erah-help-search-input-row { gap: 10px; }
+            .erah-help-search-clear { width: 34px; height: 34px; }
+            .erah-help-hero-pills { margin-top: 32px; }
+            .erah-help-search-actions,
+            .erah-help-footer-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .erah-help-search-actions .tt-btn,
+            .erah-help-footer-actions .tt-btn {
+                width: 100%;
+            }
+            .erah-help-member-head {
+                flex-direction: column;
+            }
+            .erah-help-member-stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 @endsection
@@ -301,6 +744,8 @@
 @section('content')
     @php($search = $page['filters']['search'] ?? '')
     @php($baseRoute = $mode === 'console' ? route('console.help') : route('help.index'))
+    @php($userPreview = $page['assistant']['user_preview'] ?? null)
+    @php($tourEntry = $page['starterJourney']['interactive'] ?? [])
     <div id="page-header" class="ph-full ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
@@ -341,15 +786,32 @@
                         <div class="erah-help-surface">
                             <div class="erah-help-overline">{{ $mode === 'console' ? 'Trouver la bonne reponse vite' : 'Une seule page canonique pour tout comprendre' }}</div>
                             <div class="tt-heading tt-heading-xxlg margin-bottom-20">
-                                <h2 class="tt-heading-title">{{ $mode === 'console' ? 'Retrouver un module, une regle ou un parcours sans quitter votre espace.' : 'Comprendre ERAH, son fonctionnement, ses modules et ses bonnes pratiques sans se perdre.' }}</h2>
+                                <h2 class="tt-heading-title">{{ $page['hero']['title'] }}</h2>
                             </div>
                             <p class="erah-help-lead">{{ $page['hero']['microcopy'] }}</p>
-                            <form method="GET" action="{{ $baseRoute }}" class="margin-top-40">
-                                <div class="tt-form-group">
-                                    <label>Recherche globale</label>
-                                    <input type="text" name="search" value="{{ $search }}" placeholder="{{ $page['hero']['search_placeholder'] }}">
+                            <form method="GET" action="{{ $baseRoute }}#search-results" class="erah-help-search-form erah-help-hero-search-form">
+                                <div class="erah-help-search-field">
+                                    <div class="erah-help-search-copy">
+                                        <label for="hero-help-search" class="erah-help-search-label">Recherche globale</label>
+                                        <p class="erah-help-search-help">Cherche directement une question, un module ou une action. Plus ta recherche est concrete, plus tu retombes vite sur la bonne reponse.</p>
+                                    </div>
+                                    <div class="erah-help-search-shell erah-help-search-shell--hero">
+                                        <span class="erah-help-search-kicker">Recherche guidee</span>
+                                        <div class="erah-help-search-input-row">
+                                            <input
+                                                id="hero-help-search"
+                                                type="text"
+                                                name="search"
+                                                class="erah-help-search-input erah-help-search-input--hero"
+                                                value="{{ $search }}"
+                                                placeholder="{{ $page['hero']['search_placeholder'] }}"
+                                                data-search-input
+                                            >
+                                            <button type="button" class="erah-help-search-clear{{ $search !== '' ? ' is-visible' : '' }}" aria-label="Vider la recherche" data-search-clear>&times;</button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="erah-help-search-actions margin-top-25">
+                                <div class="erah-help-search-actions">
                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Chercher">Chercher</span></button>
                                     <a href="#starter-journey" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Parcours">Bien commencer</span></a>
                                     <a href="#faq-center" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="FAQ">Voir la FAQ</span></a>
@@ -363,7 +825,7 @@
                                 <a href="{{ $page['assistant']['page_url'] }}">Assistant</a>
                             </div>
                         </div>
-                        <div class="erah-help-surface">
+                        <div class="erah-help-surface erah-help-hero-recap">
                             <div class="erah-help-overline">{{ $mode === 'console' ? 'Lecture immediate' : 'Repere rapide' }}</div>
                             <div class="tt-heading tt-heading-lg margin-bottom-10">
                                 <h2 class="tt-heading-title">{{ $mode === 'console' ? 'Les bons points d entree depuis votre espace.' : 'Une vue claire des briques qui composent vraiment la plateforme.' }}</h2>
@@ -375,13 +837,13 @@
                                 <div class="erah-help-stat"><span class="erah-help-stat-label">Etapes utiles</span><span class="erah-help-stat-value">{{ $page['overview']['steps'] ?? 0 }}</span></div>
                             </div>
                             @if ($mode === 'console' && ! empty($page['consoleLinks']))
-                                <div class="erah-help-pill-row margin-top-28">
+                                <div class="erah-help-pill-row erah-help-hero-pills">
                                     @foreach ($page['consoleLinks'] as $link)
                                         <span class="erah-help-chip">{{ $link['title'] }}</span>
                                     @endforeach
                                 </div>
                             @else
-                                <div class="erah-help-pill-row margin-top-28">
+                                <div class="erah-help-pill-row erah-help-hero-pills">
                                     <span class="erah-help-chip">Lecture publique sans compte</span>
                                     <span class="erah-help-chip">Participation reservee aux membres</span>
                                     <span class="erah-help-chip">Points, XP, missions et recompenses</span>
@@ -389,6 +851,53 @@
                             @endif
                         </div>
                     </div>
+
+                    @if (($page['filters']['search'] ?? null) !== null)
+                        <div id="search-results" class="erah-help-search-results">
+                            <div class="erah-help-card">
+                                <div class="erah-help-search-result-summary">
+                                    <div>
+                                        <div class="erah-help-overline">Resultats guides</div>
+                                        <div class="tt-heading tt-heading-lg margin-bottom-10">
+                                            <h2 class="tt-heading-title">Resultats pour "{{ $page['filters']['search'] }}"</h2>
+                                        </div>
+                                        <p class="text-muted margin-bottom-0">La recherche parcourt la FAQ, les categories, les etapes guidees, le glossaire et les modules du help center.</p>
+                                    </div>
+                                    <span class="erah-help-chip">{{ count($page['searchResults'] ?? []) }} resultat(s)</span>
+                                </div>
+                            </div>
+
+                            @if (! empty($page['searchResults']))
+                                <div class="erah-help-search-results-grid">
+                                    @foreach ($page['searchResults'] as $result)
+                                        <article class="erah-help-search-result-card">
+                                            <div class="erah-help-search-result-head">
+                                                <span class="erah-help-search-result-badge">{{ $result['badge'] }}</span>
+                                            </div>
+                                            <div class="tt-heading tt-heading-sm margin-bottom-12">
+                                                <h3 class="tt-heading-title">{{ $result['title'] }}</h3>
+                                            </div>
+                                            <p class="erah-help-search-result-copy">{{ $result['excerpt'] }}</p>
+                                            <div class="tt-btn-wrap margin-top-20">
+                                                <a href="{{ $result['url'] }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Voir">Voir le resultat</span></a>
+                                            </div>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="erah-help-card">
+                                    <div class="tt-heading tt-heading-sm margin-bottom-12">
+                                        <h3 class="tt-heading-title">Aucun resultat assez pertinent</h3>
+                                    </div>
+                                    <p class="text-muted margin-bottom-20">Essaie avec des mots comme missions, points, etapes, matchs, paris, profil, cadeaux ou notifications.</p>
+                                    <div class="erah-help-search-actions">
+                                        <a href="{{ $baseRoute }}#faq-center" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="FAQ">Voir la FAQ</span></a>
+                                        <a href="#starter-journey" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Etapes">Voir les etapes</span></a>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -424,6 +933,45 @@
                 <div class="tt-heading tt-heading-xxlg margin-bottom-40">
                     <h3 class="tt-heading-subtitle tt-text-uppercase">Comment bien commencer</h3>
                     <h2 class="tt-heading-title">Un mini parcours premium pour comprendre les bases, activer son espace et savoir quoi faire ensuite.</h2>
+                </div>
+                <div class="erah-help-tour-launch" data-tour="help-tour-entry">
+                    <div>
+                        <div class="erah-help-overline">Visite interactive</div>
+                        <div class="tt-heading tt-heading-lg margin-bottom-15">
+                            <h3 class="tt-heading-title">Une vraie visite pas a pas a travers les pages cles de la plateforme.</h3>
+                        </div>
+                        <p class="text-muted margin-bottom-0">
+                            Le parcours ouvre les vraies pages, met en avant les bons blocs et garde votre progression en memoire si vous quittez au milieu.
+                        </p>
+                    </div>
+                    <div class="erah-help-tour-meta">
+                        <div class="erah-help-tour-status">
+                            <span class="erah-help-tour-status-badge">{{ $tourEntry['status_badge'] ?? 'Visite guidee' }}</span>
+                            <span class="erah-help-tour-progress">{{ $tourEntry['progress_text'] ?? '6 etapes interactives reelles' }}</span>
+                            @if (! empty($tourEntry['current_step_title']))
+                                <span class="erah-help-tour-current">Repere actuel : {{ $tourEntry['current_step_title'] }}</span>
+                            @endif
+                        </div>
+                        <div class="erah-help-search-actions">
+                            @if (! empty($tourEntry['primary_url']))
+                                <a href="{{ $tourEntry['primary_url'] }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                    <span data-hover="{{ $tourEntry['primary_label'] }}">{{ $tourEntry['primary_label'] }}</span>
+                                </a>
+                            @elseif (! empty($tourEntry['primary_action']))
+                                <button type="button" class="tt-btn tt-btn-primary tt-magnetic-item" data-guided-tour-action="{{ $tourEntry['primary_action'] }}">
+                                    <span data-hover="{{ $tourEntry['primary_label'] }}">{{ $tourEntry['primary_label'] }}</span>
+                                </button>
+                            @endif
+                            @if (! empty($tourEntry['secondary_action']) && ! empty($tourEntry['secondary_label']))
+                                <button type="button" class="tt-btn tt-btn-outline tt-magnetic-item" data-guided-tour-action="{{ $tourEntry['secondary_action'] }}">
+                                    <span data-hover="{{ $tourEntry['secondary_label'] }}">{{ $tourEntry['secondary_label'] }}</span>
+                                </button>
+                            @endif
+                            <a href="{{ $page['assistant']['page_url'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                <span data-hover="Demander a l assistant">Demander a l assistant</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <div class="erah-help-timeline">
                     @foreach (collect($page['starterJourney']['steps'] ?? [])->take(6) as $step)
@@ -559,15 +1107,31 @@
                     <div class="erah-help-card">
                         <div class="erah-help-overline">Rechercher dans la FAQ</div>
                         <p class="text-muted margin-bottom-20">Cherchez un sujet, un module ou une action. Vous pouvez aussi filtrer par categorie juste a droite.</p>
-                        <form method="GET" action="{{ $baseRoute }}">
+                        <form method="GET" action="{{ $baseRoute }}" class="erah-help-search-form">
                             @if (! empty($page['faq']['active_category']))
                                 <input type="hidden" name="category" value="{{ $page['faq']['active_category'] }}">
                             @endif
-                            <div class="tt-form-group">
-                                <label>Question ou mot-cle</label>
-                                <input type="text" name="search" value="{{ $search }}" placeholder="Exemple : missions, points, profil, matchs, cadeaux...">
+                            <div class="erah-help-search-field">
+                                <div class="erah-help-search-copy">
+                                    <label for="help-faq-search" class="erah-help-search-label">Question ou mot-cle</label>
+                                    <p class="erah-help-search-help">Cherche une action concrete, un module ou un blocage. Par exemple : missions, points, profil, matchs, cadeaux ou notifications.</p>
+                                </div>
+                                <div class="erah-help-search-shell">
+                                    <div class="erah-help-search-input-row">
+                                        <input
+                                            id="help-faq-search"
+                                            type="text"
+                                            name="search"
+                                            class="erah-help-search-input"
+                                            value="{{ $search }}"
+                                            placeholder="Exemple : missions, points, profil, matchs, cadeaux..."
+                                            data-search-input
+                                        >
+                                        <button type="button" class="erah-help-search-clear{{ $search !== '' ? ' is-visible' : '' }}" aria-label="Vider la recherche" data-search-clear>&times;</button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="erah-help-search-actions margin-top-25">
+                            <div class="erah-help-search-actions">
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Chercher">Chercher</span></button>
                                 <a href="{{ $baseRoute }}#faq-center" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Reset">Tout voir</span></a>
                             </div>
@@ -696,16 +1260,69 @@
                 </div>
 
                 <div class="erah-help-footer-grid">
-                    <div class="erah-help-card">
-                        <div class="erah-help-overline">Tu es nouveau ?</div>
-                        <div class="tt-heading tt-heading-xxlg margin-bottom-15"><h2 class="tt-heading-title">{{ $page['footerCta']['title'] ?? 'Pret a participer vraiment a la plateforme ?' }}</h2></div>
-                        <p class="text-muted margin-bottom-30">{{ $page['footerCta']['description'] ?? '' }}</p>
-                        <div class="erah-help-search-actions">
-                            <a href="{{ $page['footerCta']['login_url'] ?? route('login') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Connexion">Connexion</span></a>
-                            <a href="{{ $page['footerCta']['register_url'] ?? route('register') }}" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Inscription">Creer un compte</span></a>
-                            <a href="{{ $page['assistant']['page_url'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Assistant">Poser une question</span></a>
+                    @if (! empty($userPreview))
+                        <div class="erah-help-card erah-help-footer-cta-card">
+                            <div class="erah-help-overline">Votre profil ERAH</div>
+                            <div class="erah-help-member-card">
+                                <div class="erah-help-member-head">
+                                    <a href="{{ $userPreview['profile_url'] ?? route('profile.show') }}" class="erah-help-member-avatar" aria-label="Voir le profil">
+                                        @if (! empty($userPreview['avatar_url']))
+                                            <img src="{{ $userPreview['avatar_url'] }}" alt="{{ $userPreview['name'] }}">
+                                        @else
+                                            <span>{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($userPreview['name'] ?? 'E', 0, 1)) }}</span>
+                                        @endif
+                                    </a>
+                                    <div class="erah-help-member-meta">
+                                        <div class="erah-help-member-kicker">{{ ! empty($userPreview['supporter']) ? 'Supporter actif' : 'Membre connecte' }}</div>
+                                        <div class="tt-heading tt-heading-xxlg margin-bottom-0">
+                                            <h2 class="tt-heading-title erah-help-member-name">{{ $userPreview['name'] }}</h2>
+                                        </div>
+                                        <p class="text-muted margin-bottom-0">Vous etes deja connecte. Le plus utile maintenant est de verifier votre progression, completer votre profil puis repartir vers les bons modules sans perdre de temps.</p>
+                                    </div>
+                                </div>
+
+                                <div class="erah-help-member-stats">
+                                    <div class="erah-help-member-stat">
+                                        <span class="erah-help-member-stat-label">Ligue</span>
+                                        <span class="erah-help-member-stat-value">{{ $userPreview['league'] }}</span>
+                                    </div>
+                                    <div class="erah-help-member-stat">
+                                        <span class="erah-help-member-stat-label">Points</span>
+                                        <span class="erah-help-member-stat-value">{{ $userPreview['points'] }}</span>
+                                    </div>
+                                    <div class="erah-help-member-stat">
+                                        <span class="erah-help-member-stat-label">XP</span>
+                                        <span class="erah-help-member-stat-value">{{ $userPreview['xp'] }}</span>
+                                    </div>
+                                </div>
+
+                                @if (! empty($userPreview['suggestions']))
+                                    <div class="erah-help-member-suggestions">
+                                        @foreach ($userPreview['suggestions'] as $suggestion)
+                                            <div class="erah-help-member-suggestion">{{ $suggestion }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                <div class="erah-help-footer-actions">
+                                    <a href="{{ $userPreview['internal_profile_url'] ?? route('profile.show') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Profil">Voir mon profil</span></a>
+                                    <a href="{{ $userPreview['dashboard_url'] ?? route('dashboard') }}" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Console">Ouvrir la console</span></a>
+                                    <a href="{{ $page['assistant']['page_url'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Assistant">Poser une question</span></a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="erah-help-card erah-help-footer-cta-card">
+                            <div class="erah-help-overline">Tu es nouveau ?</div>
+                            <div class="tt-heading tt-heading-xxlg margin-bottom-15"><h2 class="tt-heading-title">{{ $page['footerCta']['title'] ?? 'Pret a participer vraiment a la plateforme ?' }}</h2></div>
+                            <p class="text-muted margin-bottom-30">{{ $page['footerCta']['description'] ?? '' }}</p>
+                            <div class="erah-help-footer-actions">
+                                <a href="{{ $page['footerCta']['login_url'] ?? route('login') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Connexion">Connexion</span></a>
+                                <a href="{{ $page['footerCta']['register_url'] ?? route('register') }}" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Inscription">Creer un compte</span></a>
+                                <a href="{{ $page['assistant']['page_url'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Assistant">Poser une question</span></a>
+                            </div>
+                        </div>
+                    @endif
                     <div class="erah-help-footer-panel">
                         <div class="erah-help-overline">Base de connaissance</div>
                         <div class="tt-heading tt-heading-lg margin-bottom-15"><h2 class="tt-heading-title">Une seule source de verite pour la FAQ et l assistant</h2></div>
@@ -732,6 +1349,28 @@
                 transition.remove();
             }
             document.body.classList.remove('tt-transition');
+
+            document.querySelectorAll('[data-search-input]').forEach(function (input) {
+                var row = input.closest('.erah-help-search-input-row');
+                var clearButton = row ? row.querySelector('[data-search-clear]') : null;
+
+                if (!clearButton) {
+                    return;
+                }
+
+                var syncClearButton = function () {
+                    clearButton.classList.toggle('is-visible', input.value.trim() !== '');
+                };
+
+                clearButton.addEventListener('click', function () {
+                    input.value = '';
+                    syncClearButton();
+                    input.focus();
+                });
+
+                input.addEventListener('input', syncClearButton);
+                syncClearButton();
+            });
         });
     </script>
 @endsection

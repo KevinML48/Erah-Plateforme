@@ -412,6 +412,13 @@
 					'image' => '/app-ui/assets/img/image-menu-plateforme/notifications.png',
 				],
 				[
+					'title' => 'Assistant',
+					'category' => 'Guidage',
+					'description' => 'Discutez avec l assistant ERAH pour comprendre la plateforme et savoir quoi faire ensuite.',
+					'route' => route('assistant.index'),
+					'image' => '/app-ui/assets/img/logo-dark.png',
+				],
+				[
 					'title' => 'Duels',
 					'category' => 'Communaute',
 					'description' => 'Accedez aux confrontations entre membres et aux interactions competitives de la communaute.',
@@ -631,7 +638,7 @@
 							* Use class "pgi-cap-center" to position portfolio grid item caption to center.
 							* Use class "pgi-cap-inside" to position portfolio grid item caption to inside.
 							--> 
-							<div id="portfolio-grid" class="pgi-hover">
+							<div id="portfolio-grid" class="pgi-hover" data-tour="dashboard-module-grid">
 
 								<!-- Begin tt-Grid
 								=================== 

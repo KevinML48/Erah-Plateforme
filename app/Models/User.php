@@ -309,6 +309,21 @@ class User extends Authenticatable
         return $this->hasMany(PushSubscription::class);
     }
 
+    public function assistantConversations(): HasMany
+    {
+        return $this->hasMany(AssistantConversation::class);
+    }
+
+    public function assistantFavorites(): HasMany
+    {
+        return $this->hasMany(AssistantFavorite::class);
+    }
+
+    public function guidedTours(): HasMany
+    {
+        return $this->hasMany(UserGuidedTour::class);
+    }
+
     public function activeSupportSubscription(): ?UserSupportSubscription
     {
         $relation = $this->relationLoaded('supportSubscriptions')

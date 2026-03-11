@@ -43,6 +43,12 @@ class ProfileController extends Controller
         $availableShortcuts = $shortcutService->getAvailableForUser($user);
         $supporterProfile = $supporterAccessResolver->ensurePublicProfile($user);
         $supporterSummary = $supporterAccessResolver->summary($user);
+        $assistantFavorites = Schema::hasTable('assistant_favorites')
+            ? $user->assistantFavorites()
+                ->latest('id')
+                ->limit(12)
+                ->get()
+            : collect();
 
         return view('pages.profile.show', [
             'user' => $user,
@@ -56,6 +62,7 @@ class ProfileController extends Controller
             'maxShortcuts' => $shortcutService->maxShortcuts(),
             'supporterProfile' => $supporterProfile,
             'supporterSummary' => $supporterSummary,
+            'assistantFavorites' => $assistantFavorites,
         ]);
     }
 

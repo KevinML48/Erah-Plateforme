@@ -6,6 +6,7 @@ import Alert from '../Components/Alert';
 const navLinks = [
     { label: 'Centre d aide', href: '/aide' },
     { label: 'FAQ', href: '/aide#faq-center' },
+    { label: 'Assistant', href: '/console/assistant' },
     { label: 'Clips', href: '/console/clips' },
     { label: 'Matchs', href: '/console/matches' },
     { label: 'Classements', href: '/console/leaderboards' },

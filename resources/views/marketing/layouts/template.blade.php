@@ -279,6 +279,7 @@
   </script>
 
   @yield('page_scripts')
+  @include('partials.mission-live-toasts')
   @include('marketing.partials.guided-tour')
 </body>
 </html>

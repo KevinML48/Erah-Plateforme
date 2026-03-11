@@ -56,9 +56,9 @@ class AdminWalletController extends Controller
         }
 
         if ($result['idempotent']) {
-            return back()->with('success', 'Grant deja applique (replay idempotent).');
+            return back()->with('success', 'Cet ajustement a deja ete applique.');
         }
 
-        return back()->with('success', 'Wallet credite. Nouveau solde: '.$result['wallet_balance'].' bet_points.');
+        return back()->with('success', 'Solde mis a jour. Nouveau total: '.$result['wallet_balance'].' points paris.');
     }
 }

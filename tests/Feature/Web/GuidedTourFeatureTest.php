@@ -124,4 +124,17 @@ class GuidedTourFeatureTest extends TestCase
             ->assertJsonPath('data.state.status', 'in_progress')
             ->assertJsonPath('data.state.is_paused', false);
     }
+
+    public function test_dashboard_embeds_guided_tour_and_mission_live_toast_bootstraps(): void
+    {
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('mission-live-toast-data', false)
+            ->assertSee('erah-guided-tour-data', false);
+    }
 }

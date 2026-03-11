@@ -108,6 +108,7 @@ class MissionTrackingService
                 $mission->save();
 
                 if ($mission->completed_at === null) {
+                    $this->notifyMissionProgress($user, $mission, $template);
                     continue;
                 }
 
@@ -168,6 +169,11 @@ class MissionTrackingService
                     'mission_id' => $mission->id,
                     'mission_template_key' => $template->key,
                     'requires_claim' => true,
+                    'toast_kind' => 'claim',
+                    'progress_count' => (int) $mission->progress_count,
+                    'target_count' => max(1, (int) $template->target_count),
+                    'rewards_xp' => (int) ($template->normalizedRewards()['xp'] ?? 0),
+                    'rewards_points' => (int) ($template->normalizedRewards()['points'] ?? 0),
                 ],
             );
 
@@ -202,10 +208,47 @@ class MissionTrackingService
             user: $user,
             category: NotificationCategory::MISSION->value,
             title: 'Mission terminee',
-            message: 'Mission "'.$template->title.'" terminee.',
+            message: sprintf(
+                'Mission "%s" terminee. +%d XP et +%d points.',
+                $template->title,
+                (int) ($rewards['xp'] ?? 0),
+                (int) ($rewards['points'] ?? 0)
+            ),
             data: [
                 'mission_id' => $mission->id,
                 'mission_template_key' => $template->key,
+                'toast_kind' => 'completed',
+                'progress_count' => (int) $mission->progress_count,
+                'target_count' => max(1, (int) $template->target_count),
+                'rewards_xp' => (int) ($rewards['xp'] ?? 0),
+                'rewards_points' => (int) ($rewards['points'] ?? 0),
+            ],
+        );
+    }
+
+    private function notifyMissionProgress(User $user, UserMission $mission, MissionTemplate $template): void
+    {
+        $targetCount = max(1, (int) $template->target_count);
+        $progressCount = min($targetCount, max(0, (int) $mission->progress_count));
+
+        $this->notifyAction->execute(
+            user: $user,
+            category: NotificationCategory::MISSION->value,
+            title: 'Mission en progression',
+            message: sprintf(
+                'Mission "%s" avance : %d/%d.',
+                $template->title,
+                $progressCount,
+                $targetCount
+            ),
+            data: [
+                'mission_id' => $mission->id,
+                'mission_template_key' => $template->key,
+                'toast_kind' => 'progress',
+                'progress_count' => $progressCount,
+                'target_count' => $targetCount,
+                'rewards_xp' => (int) ($template->normalizedRewards()['xp'] ?? 0),
+                'rewards_points' => (int) ($template->normalizedRewards()['points'] ?? 0),
             ],
         );
     }

@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Admin Wallets | ERAH Plateforme')
-@section('meta_description', 'Attribution manuelle de points wallet en console admin.')
+@section('title', 'Admin points | ERAH Plateforme')
+@section('meta_description', 'Ajustement manuel du solde paris historique depuis l administration.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -17,10 +17,10 @@
     @endphp
 
     @include('pages.admin.partials.hero', [
-        'heroSubtitle' => 'ERAH Control Center',
-        'heroTitle' => 'Admin Wallets',
-        'heroDescription' => 'Recherche, selection et credit manuel des wallets bet_points.',
-        'heroMaskDescription' => 'Operations auditees avec idempotency key.',
+        'heroSubtitle' => 'Administration ERAH',
+        'heroTitle' => 'Ajuster les points',
+        'heroDescription' => 'Recherche, selection et ajustement manuel du solde paris historique.',
+        'heroMaskDescription' => 'Operations auditees avec cle idempotente.',
     ])
 
     <div id="tt-page-content">
@@ -32,7 +32,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Recherche utilisateur</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Filtrez par nom ou email avant de crediter un wallet.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Filtrez par nom ou email avant d ajuster un solde.</p>
                         </div>
 
                         <form method="GET" action="{{ route('admin.wallets.grant.create') }}" class="tt-form tt-form-creative adm-form">
@@ -58,7 +58,7 @@
                             </article>
                             <article class="adm-compact-kpi">
                                 <strong>{{ $totalBalance }}</strong>
-                                <span>Solde cumule</span>
+                                <span>Solde paris cumule</span>
                             </article>
                             <article class="adm-compact-kpi">
                                 <strong>{{ auth()->user()?->name }}</strong>
@@ -70,8 +70,8 @@
                     <div class="adm-sub-grid">
                         <section class="adm-surface">
                             <div class="tt-heading tt-heading-lg margin-bottom-20">
-                                <h2 class="tt-heading-title tt-text-reveal">Crediter un wallet</h2>
-                                <p class="max-width-700 tt-anim-fadeinup text-gray">Selectionnez un utilisateur, definissez le montant puis validez.</p>
+                                <h2 class="tt-heading-title tt-text-reveal">Ajuster un solde</h2>
+                                <p class="max-width-700 tt-anim-fadeinup text-gray">Selectionnez un utilisateur, definissez le montant puis validez l operation.</p>
                             </div>
 
                             <form method="POST" action="{{ route('admin.wallets.grant.store') }}" class="tt-form tt-form-creative adm-form">
@@ -127,12 +127,12 @@
                                 </div>
 
                                 <div class="tt-form-group">
-                                    <label for="idempotency_key">Idempotency key</label>
+                                    <label for="idempotency_key">Cle idempotente</label>
                                     <input class="tt-form-control" id="idempotency_key" name="idempotency_key" value="{{ old('idempotency_key', 'grant-'.auth()->id().'-'.now()->timestamp) }}" required>
                                 </div>
 
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Crediter le wallet">Crediter le wallet</span>
+                                    <span data-hover="Crediter le solde">Crediter le solde</span>
                                 </button>
                             </form>
                         </section>
@@ -140,7 +140,7 @@
                         <section class="adm-surface">
                             <div class="tt-heading tt-heading-lg margin-bottom-20">
                                 <h2 class="tt-heading-title tt-text-reveal">Resultats recherche</h2>
-                                <p class="max-width-700 tt-anim-fadeinup text-gray">Apercu rapide des utilisateurs trouves avec leurs soldes actuels.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Apercu rapide des utilisateurs trouves avec leur solde paris actuel.</p>
                             </div>
 
                             @if($usersCount)

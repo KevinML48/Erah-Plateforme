@@ -10,12 +10,55 @@ use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class NotificationsPageController extends Controller
 {
+    public function live(Request $request): JsonResponse
+    {
+        $allowedCategories = array_merge(['all'], NotificationCategory::values());
+        $validated = $request->validate([
+            'limit' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'after_id' => ['nullable', 'integer', 'min:0'],
+            'category' => ['nullable', 'string'],
+        ]);
+
+        $limit = (int) ($validated['limit'] ?? 5);
+        $afterId = (int) ($validated['after_id'] ?? 0);
+        $category = (string) ($validated['category'] ?? 'all');
+
+        if (! in_array($category, $allowedCategories, true)) {
+            $category = 'all';
+        }
+
+        $query = Notification::query()
+            ->where('user_id', $request->user()->id)
+            ->when($category !== 'all', fn ($builder) => $builder->where('category', $category))
+            ->when($afterId > 0, fn ($builder) => $builder->where('id', '>', $afterId))
+            ->orderByDesc('id');
+
+        $rows = $query
+            ->limit($limit)
+            ->get()
+            ->reverse()
+            ->values();
+
+        $latestId = Notification::query()
+            ->where('user_id', $request->user()->id)
+            ->when($category !== 'all', fn ($builder) => $builder->where('category', $category))
+            ->max('id');
+
+        return response()->json([
+            'data' => $rows,
+            'meta' => [
+                'latest_id' => (int) ($latestId ?? 0),
+            ],
+        ]);
+    }
+
     public function index(Request $request): View
     {
         $user = auth()->user();

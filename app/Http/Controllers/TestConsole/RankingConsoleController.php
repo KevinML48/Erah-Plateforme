@@ -81,10 +81,9 @@ class RankingConsoleController extends Controller
         }
 
         if ($result->idempotent) {
-            return back()->with('success', 'Grant deja applique (idempotent).');
+            return back()->with('success', 'Cet ajustement a deja ete applique.');
         }
 
-        return back()->with('success', 'Points accordes avec succes.');
+        return back()->with('success', 'L ajustement du classement a bien ete enregistre.');
     }
 }
-

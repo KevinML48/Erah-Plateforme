@@ -185,6 +185,7 @@ Route::prefix('console')->middleware('throttle:feed-public')->group(function () 
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', fn () => redirect()->route('dashboard'));
+    Route::get('/notifications/live', [NotificationsPageController::class, 'live'])->name('notifications.live');
     Route::post('/assistant/favorites', [AssistantFavoriteController::class, 'store'])->name('assistant.favorites.store');
     Route::delete('/assistant/favorites/{favorite}', [AssistantFavoriteController::class, 'destroy'])->name('assistant.favorites.destroy');
 

@@ -1,7 +1,7 @@
 <section class="adm-surface">
     <div class="tt-heading tt-heading-lg margin-bottom-20">
         <h2 class="tt-heading-title tt-text-reveal">Quiz communautaires</h2>
-        <p class="max-width-700 tt-anim-fadeinup text-gray">CRUD quiz, score minimum, rewards et rattachement mission.</p>
+        <p class="max-width-700 tt-anim-fadeinup text-gray">CRUD quiz, score minimum, recompenses et rattachement mission.</p>
     </div>
 
     <form method="POST" action="{{ route('admin.quizzes.store') }}" class="tt-form tt-form-creative adm-form">
@@ -20,7 +20,7 @@
                 <input class="tt-form-control" type="number" name="pass_score" min="0" value="1" required>
             </div>
             <div class="tt-form-group">
-                <label>XP reward</label>
+                <label>XP accordee</label>
                 <input class="tt-form-control" type="number" name="xp_reward" min="0" value="80">
             </div>
             <div class="tt-form-group">
@@ -28,7 +28,7 @@
                 <input class="tt-form-control" type="number" name="reward_points" min="0" value="40">
             </div>
             <div class="tt-form-group">
-                <label>Mission template lie</label>
+                <label>Template mission lie</label>
                 <input class="tt-form-control" type="number" name="mission_template_id" min="1" placeholder="optionnel">
             </div>
             <div class="tt-form-group adm-col-span-3">

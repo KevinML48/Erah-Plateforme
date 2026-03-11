@@ -19,28 +19,55 @@ class BetPageController extends Controller
     public function index(Request $request, MatchMarketCatalog $matchMarketCatalog): View
     {
         $tab = (string) $request->query('tab', 'active');
+        $userId = auth()->id();
 
-        $query = Bet::query()
-            ->where('user_id', auth()->id())
-            ->with('match.markets.selections')
-            ->orderByDesc('id');
-
-        if ($tab === 'settled') {
-            $query->whereIn('status', [
+        $statusGroups = [
+            'active' => [Bet::STATUS_PENDING, Bet::STATUS_PLACED],
+            'settled' => [
                 Bet::STATUS_WON,
                 Bet::STATUS_LOST,
                 Bet::STATUS_VOID,
                 Bet::STATUS_CANCELLED,
-            ]);
+            ],
+        ];
+
+        $baseQuery = Bet::query()
+            ->where('user_id', $userId);
+
+        $statusCounts = [
+            'active' => (clone $baseQuery)->whereIn('status', $statusGroups['active'])->count(),
+            'settled' => (clone $baseQuery)->whereIn('status', $statusGroups['settled'])->count(),
+            'won' => (clone $baseQuery)->where('status', Bet::STATUS_WON)->count(),
+            'cancelled' => (clone $baseQuery)->where('status', Bet::STATUS_CANCELLED)->count(),
+        ];
+
+        $summary = [
+            'total' => (clone $baseQuery)->count(),
+            'stake_total' => (int) (clone $baseQuery)->sum('stake_points'),
+            'settlement_total' => (int) (clone $baseQuery)->sum('settlement_points'),
+            'active_stake_total' => (int) (clone $baseQuery)->whereIn('status', $statusGroups['active'])->sum('stake_points'),
+            'pending_gain_total' => (int) (clone $baseQuery)->whereIn('status', $statusGroups['active'])->sum('potential_payout'),
+            'won_total' => (int) (clone $baseQuery)->where('status', Bet::STATUS_WON)->sum('settlement_points'),
+        ];
+
+        $query = Bet::query()
+            ->where('user_id', $userId)
+            ->with(['match.markets.selections', 'settlement'])
+            ->orderByDesc('id');
+
+        if ($tab === 'settled') {
+            $query->whereIn('status', $statusGroups['settled']);
         } else {
             $tab = 'active';
-            $query->whereIn('status', [Bet::STATUS_PENDING, Bet::STATUS_PLACED]);
+            $query->whereIn('status', $statusGroups['active']);
         }
 
         return view('pages.bets.index', [
             'tab' => $tab,
             'bets' => $query->paginate(12)->withQueryString(),
             'matchLabelResolver' => $matchMarketCatalog,
+            'statusCounts' => $statusCounts,
+            'summary' => $summary,
         ]);
     }
 

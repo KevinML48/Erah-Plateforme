@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', ($gift->title ?? 'Cadeau').' | Cadeaux ERAH')
-@section('meta_description', 'Detail cadeau ERAH, redemption reward points et suivi des demandes.')
+@section('meta_description', 'Detail cadeau ERAH, demande et suivi depuis le solde points.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('page_styles')
@@ -510,7 +510,7 @@
             ? 'Le stock actuel est epuise. Revenez plus tard pour verifier un reapprovisionnement.'
             : ($giftStock <= 5
                 ? 'Il reste peu d exemplaires. Une fois votre demande envoyee, le stock est reserve immediatement.'
-                : 'La redemption est disponible. Les reward points sont debites a la demande et le stock est bloque.'));
+                : 'La demande est disponible. Les points sont debites a la demande et le stock est bloque.'));
     $latestRedemption = ($myRecentRedemptions ?? collect())->first();
 @endphp
 
@@ -525,10 +525,10 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">ERAH Rewards</h2>
+                    <h2 class="ph-caption-subtitle">Catalogue cadeaux</h2>
                     <h1 class="ph-caption-title">{{ $gift->title }}</h1>
                     <div class="ph-caption-description">
-                        {{ $gift->description ?: 'Une recompense membre a debloquer avec vos reward points sur la plateforme.' }}
+                        {{ $gift->description ?: 'Une recompense membre a debloquer avec vos points sur la plateforme.' }}
                     </div>
                     <div class="gift-detail-header-pills margin-top-30">
                         <span class="gift-detail-pill">{{ $giftCategoryLabel }}</span>
@@ -575,7 +575,7 @@
                     <div class="gift-detail-surface gift-detail-visual tt-anim-fadeinup">
                         <div class="gift-detail-visual-stage">
                             <span class="gift-detail-visual-badge">{{ $giftCategoryLabel }}</span>
-                            <span class="gift-detail-visual-stamp">Reward</span>
+                            <span class="gift-detail-visual-stamp">Cadeau</span>
                             <img class="gift-detail-visual-image" src="{{ $giftCover }}" alt="{{ $gift->title }}">
 
                             <div class="gift-detail-visual-copy">
@@ -589,11 +589,11 @@
                         <div class="gift-detail-usp-grid">
                             <div class="gift-detail-usp-card">
                                 <strong>Debit immediat</strong>
-                                <p>Les reward points sont preleves au moment de la demande.</p>
+                                <p>Les points sont preleves au moment de la demande.</p>
                             </div>
                             <div class="gift-detail-usp-card">
                                 <strong>Stock reserve</strong>
-                                <p>Le stock diminue des que votre redemption est envoyee.</p>
+                                <p>Le stock diminue des que votre demande est envoyee.</p>
                             </div>
                             <div class="gift-detail-usp-card">
                                 <strong>Suivi membre</strong>
@@ -605,11 +605,11 @@
                     <div class="gift-detail-surface gift-detail-panel tt-anim-fadeinup">
                         <span class="gift-detail-eyebrow">Fiche cadeau</span>
                         <h2>{{ $gift->title }}</h2>
-                        <p>{{ $gift->description ?: 'Ce cadeau fait partie du catalogue rewards accessible depuis votre espace membre.' }}</p>
+                        <p>{{ $gift->description ?: 'Ce cadeau fait partie du catalogue accessible depuis votre espace membre.' }}</p>
 
                         <div class="gift-detail-inline-pills">
                             <span class="gift-detail-pill">{{ $giftCategoryLabel }}</span>
-                            <span class="gift-detail-pill">{{ $giftCost }} reward points</span>
+                            <span class="gift-detail-pill">{{ $giftCost }} points</span>
                             <span class="gift-detail-pill">{{ $giftStock > 0 ? 'Stock '.$giftStock : 'Rupture' }}</span>
                         </div>
 
@@ -656,7 +656,7 @@
                             </a>
 
                             <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                <span data-hover="Demandes">Mes redemptions</span>
+                                <span data-hover="Demandes">Mes demandes</span>
                             </a>
                         </div>
 
@@ -690,7 +690,7 @@
                     <div class="gift-detail-surface gift-detail-history tt-anim-fadeinup">
                         <div class="gift-detail-section-heading">
                             <h3>Mes demandes recentes</h3>
-                            <p>Retrouvez le suivi de vos redemptions pour ce cadeau, avec les etapes de validation, expedition ou refus.</p>
+                            <p>Retrouvez le suivi de vos demandes pour ce cadeau, avec les etapes de validation, expedition ou refus.</p>
                         </div>
 
                         @if (($myRecentRedemptions ?? null) && $myRecentRedemptions->count())
@@ -731,7 +731,7 @@
                             </div>
                         @else
                             <div class="gift-detail-empty">
-                                <p>Aucune demande pour ce cadeau pour le moment. Quand vous lancerez votre premiere redemption, elle apparaitra ici avec son suivi.</p>
+                                <p>Aucune demande pour ce cadeau pour le moment. Quand vous lancerez votre premiere demande, elle apparaitra ici avec son suivi.</p>
                             </div>
                         @endif
                     </div>
@@ -744,8 +744,8 @@
                             </div>
 
                             <ul>
-                                <li>Vous lancez la redemption depuis cette fiche cadeau.</li>
-                                <li>Les reward points sont debites immediatement si le solde est suffisant.</li>
+                                <li>Vous lancez la demande depuis cette fiche cadeau.</li>
+                                <li>Les points sont debites immediatement si le solde est suffisant.</li>
                                 <li>Le stock est reserve des l envoi de la demande.</li>
                                 <li>Un admin peut ensuite valider, refuser, expedier ou marquer la livraison.</li>
                             </ul>
@@ -753,7 +753,7 @@
 
                         <aside class="gift-detail-surface gift-detail-side-card tt-anim-fadeinup">
                             <div class="gift-detail-section-heading">
-                                <h3>Reward wallet</h3>
+                                <h3>Portefeuille points</h3>
                                 <p>Consultez votre reserve de points avant de confirmer une nouvelle demande.</p>
                             </div>
 
@@ -761,13 +761,13 @@
                                 <strong>{{ $walletBalance }} pts</strong>
                                 <p>
                                     Votre solde actuel permet
-                                    {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine redemption.' }}
+                                    {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine demande.' }}
                                 </p>
                             </div>
 
                             <div class="gift-detail-actions margin-top-30">
                                 <a href="{{ route('gifts.wallet') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Wallet">Voir mon wallet</span>
+                                    <span data-hover="Points">Voir mes points</span>
                                 </a>
                             </div>
                         </aside>

@@ -140,6 +140,22 @@ class AssistantService
             return $this->sanitizeResponse($guardedResponse);
         }
 
+        if (in_array('supporter', $classification->matchedTopics, true)) {
+            $supporterResponse = $this->assistantFallbackService->reply(
+                message: $latestMessage,
+                user: $user,
+                context: $context,
+                classification: $classification,
+            );
+            $supporterResponse = $this->sanitizeResponse($supporterResponse);
+
+            if ($onDelta) {
+                $this->simulateStream($supporterResponse->content, $onDelta);
+            }
+
+            return $supporterResponse;
+        }
+
         $messages = $this->messageStack($conversation, $context);
 
         if ($this->assistantProvider->configured()) {

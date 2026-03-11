@@ -141,6 +141,7 @@
             var csrf = bootstrap.csrf || '';
             var requestBusy = false;
             var resumeDismissedKey = 'erah-guided-tour-resume-dismissed';
+            var autoOpenKey = 'erah-guided-tour-auto-open';
 
             var root = document.createElement('div');
             root.className = 'erah-guided-tour-root';
@@ -179,9 +180,23 @@
 
             function getCurrentStep() { return steps[currentIndex()] || steps[0] || null; }
 
+            function stepRouteToken(step) {
+                if (!step) return '';
+                return pathnameFromUrl(step.route) + '::' + String(step.id || currentIndex());
+            }
+
             function pathnameFromUrl(url) {
                 try { return new URL(url || window.location.pathname, window.location.origin).pathname; }
                 catch (error) { return window.location.pathname; }
+            }
+
+            function rememberAutoOpen(step) {
+                if (!step) return;
+                window.sessionStorage.setItem(autoOpenKey, stepRouteToken(step));
+            }
+
+            function clearAutoOpen() {
+                window.sessionStorage.removeItem(autoOpenKey);
             }
 
             function progressPercent() {
@@ -192,7 +207,9 @@
 
             function shouldAutoOpen() {
                 var step = getCurrentStep();
-                return !!step && state.status === 'in_progress' && !state.is_paused && pathnameFromUrl(step.route) === window.location.pathname;
+                if (!step || state.status !== 'in_progress' || state.is_paused) return false;
+                return pathnameFromUrl(step.route) === window.location.pathname
+                    || window.sessionStorage.getItem(autoOpenKey) === stepRouteToken(step);
             }
 
             function shouldShowResumePrompt() {
@@ -253,17 +270,25 @@
                 });
             }
 
-            function renderStep() {
+            function renderStep(attempt) {
                 var step = getCurrentStep();
                 if (!step) { hideOverlay(); hideResumePrompt(); return; }
 
+                attempt = Number(attempt || 0);
                 var target = step.selector ? document.querySelector(step.selector) : null;
-                var note = '';
+                var note = step.summary || '';
+
+                if (!target && step.selector && attempt < 6) {
+                    window.setTimeout(function () { renderStep(attempt + 1); }, 180);
+                    return;
+                }
 
                 if (target) {
                     target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
                 } else {
-                    note = step.fallback_body || 'Le bloc cible de cette etape est introuvable sur cette page. Vous pouvez tout de meme continuer.';
+                    note = note
+                        ? note + ' ' + (step.fallback_body || 'Le bloc cible de cette etape est introuvable sur cette page. Vous pouvez tout de meme continuer.')
+                        : (step.fallback_body || 'Le bloc cible de cette etape est introuvable sur cette page. Vous pouvez tout de meme continuer.');
                 }
 
                 kickerElement.textContent = 'Etape ' + step.step_number + ' sur ' + steps.length;
@@ -285,7 +310,10 @@
 
                 root.hidden = false;
                 hideResumePrompt();
-                window.setTimeout(function () { renderPosition(target); }, target ? 260 : 0);
+                window.setTimeout(function () {
+                    renderPosition(target);
+                    clearAutoOpen();
+                }, target ? 260 : 0);
             }
 
             async function send(action) {
@@ -323,7 +351,7 @@
                     state = payload.data.state || state;
                     window.sessionStorage.removeItem(resumeDismissedKey);
                     var step = getCurrentStep();
-                    if (step && pathnameFromUrl(step.route) !== window.location.pathname) { window.location.assign(step.route); return; }
+                    if (step && pathnameFromUrl(step.route) !== window.location.pathname) { rememberAutoOpen(step); window.location.assign(step.route); return; }
                     renderStep();
                 } catch (error) {
                     return;
@@ -337,7 +365,7 @@
                 if (!result) return;
                 window.sessionStorage.removeItem(resumeDismissedKey);
                 var step = getCurrentStep();
-                if (step && pathnameFromUrl(step.route) !== window.location.pathname) { window.location.assign(step.route); return; }
+                if (step && pathnameFromUrl(step.route) !== window.location.pathname) { rememberAutoOpen(step); window.location.assign(step.route); return; }
                 renderStep();
             }
 
@@ -346,13 +374,14 @@
                 if (!result) return;
                 if (state.is_completed) { renderCompletion(); return; }
                 var step = getCurrentStep();
-                if (step && pathnameFromUrl(step.route) !== window.location.pathname) { window.location.assign(step.route); return; }
+                if (step && pathnameFromUrl(step.route) !== window.location.pathname) { rememberAutoOpen(step); window.location.assign(step.route); return; }
                 renderStep();
             }
 
-            async function pauseTour() { await send('pause'); hideOverlay(); showResumePrompt(); }
+            async function pauseTour() { clearAutoOpen(); await send('pause'); hideOverlay(); showResumePrompt(); }
 
             function renderCompletion() {
+                clearAutoOpen();
                 spotlight.classList.remove('is-visible');
                 root.hidden = false;
                 card.classList.add('is-centered');

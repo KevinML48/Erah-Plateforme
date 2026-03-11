@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserMission;
 use App\Services\ExperienceService;
 use App\Services\RankService;
+use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Facades\Cache;
 
 class AssistantContextService
@@ -18,6 +19,7 @@ class AssistantContextService
     public function __construct(
         private readonly RankService $rankService,
         private readonly ExperienceService $experienceService,
+        private readonly SupporterAccessResolver $supporterAccessResolver,
     ) {
     }
 
@@ -33,6 +35,7 @@ class AssistantContextService
         $missions = $this->activeMissions($user);
         $upcomingMatches = $this->upcomingMatches();
         $recommendedActions = $this->recommendedActions($user, $missions, $upcomingMatches, $walletBalance);
+        $supporterSummary = $this->supporterAccessResolver->summary($user);
 
         return [
             'generated_at' => now()->toIso8601String(),
@@ -44,6 +47,7 @@ class AssistantContextService
                 ['label' => 'Profil', 'url' => $this->relativeRoute('profile.show')],
                 ['label' => 'Notifications', 'url' => $this->relativeRoute('notifications.index')],
                 ['label' => 'Cadeaux', 'url' => $this->relativeRoute('gifts.index')],
+                ['label' => 'Supporter', 'url' => $this->relativeRoute('supporter.console')],
                 ['label' => 'Aide', 'url' => $this->relativeRoute('console.help')],
             ],
             'knowledge' => $this->knowledgeSnapshot(),
@@ -66,6 +70,14 @@ class AssistantContextService
                 ],
                 'wallets' => ['points' => $walletBalance],
                 'supporter_active' => $user->isSupporterActive(),
+                'supporter' => [
+                    'is_active' => (bool) ($supporterSummary['is_active'] ?? false),
+                    'current_plan_name' => $supporterSummary['current_plan_name'] ?? null,
+                    'months' => (int) ($supporterSummary['months'] ?? 0),
+                    'is_founder' => (bool) ($supporterSummary['is_founder'] ?? false),
+                    'loyalty_badge' => $supporterSummary['loyalty_badge'] ?? null,
+                    'ends_at' => optional($supporterSummary['ends_at'] ?? null)->toIso8601String(),
+                ],
                 'notifications_unread' => Notification::query()
                     ->where('user_id', $user->id)
                     ->whereNull('read_at')

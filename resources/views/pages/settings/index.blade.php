@@ -1,24 +1,80 @@
 @extends('layouts.app')
 
-@section('title', 'Settings')
+@section('title', 'Parametres')
 
 @section('content')
-    <section class="section">
-        <h1>Settings</h1>
-        <p>Page simple pour centraliser les liens utiles.</p>
+    <div class="page-shell">
+        <section class="section page-hero">
+            <span class="section-kicker">Compte et preferences</span>
+            <h1 class="page-title">Parametres</h1>
+            <p class="page-description">
+                Retrouvez vos reglages utiles au meme endroit: notifications, profil, portefeuille, aide et acces rapides a votre espace membre.
+            </p>
+        </section>
 
-        <ul class="grid">
-            <li><a href="{{ route('notifications.preferences') }}">Preferences notifications</a></li>
-            <li><a href="{{ route('profile.show') }}">Mon profil</a></li>
-            <li><a href="{{ route('wallet.index') }}">Wallet bet_points</a></li>
-            <li><a href="{{ route('gifts.wallet') }}">Wallet reward_points</a></li>
-        </ul>
+        <section class="section">
+            <span class="section-kicker">Acces directs</span>
+            <h2>Les reglages qui servent vraiment</h2>
+            <p class="page-description">Chaque bloc renvoie vers une page deja existante de la plateforme, sans ajouter de parcours parasite.</p>
 
-        <form method="POST" action="{{ route('auth.logout') }}" class="actions actions-stack-mobile">
-            @csrf
-            <button type="submit" class="tt-btn tt-btn-primary">
-                <span data-hover="Se deconnecter">Se deconnecter</span>
-            </button>
-        </form>
-    </section>
+            <div class="link-grid">
+                <a href="{{ route('profile.show') }}" class="link-card">
+                    <span class="link-card-title">Profil</span>
+                    <strong>Mon profil</strong>
+                    <p>Mettre a jour vos informations, vos reseaux et votre presentation membre.</p>
+                </a>
+
+                <a href="{{ route('notifications.preferences') }}" class="link-card">
+                    <span class="link-card-title">Notifications</span>
+                    <strong>Preferences d alertes</strong>
+                    <p>Choisir les canaux et les notifications a recevoir selon vos usages.</p>
+                </a>
+
+                <a href="{{ route('wallet.index') }}" class="link-card">
+                    <span class="link-card-title">Points</span>
+                    <strong>Portefeuille plateforme</strong>
+                    <p>Consulter votre solde unique, vos entrees et vos debits recents.</p>
+                </a>
+
+                <a href="{{ route('missions.index') }}" class="link-card">
+                    <span class="link-card-title">Progression</span>
+                    <strong>Missions et focus</strong>
+                    <p>Suivre vos missions actives, vos priorites et votre progression globale.</p>
+                </a>
+
+                <a href="{{ route('assistant.index') }}" class="link-card">
+                    <span class="link-card-title">Assistant</span>
+                    <strong>Poser une question</strong>
+                    <p>Ouvrir l assistant ERAH pour comprendre un module ou reprendre vos reperes.</p>
+                </a>
+
+                <a href="{{ route('console.help') }}" class="link-card">
+                    <span class="link-card-title">Documentation</span>
+                    <strong>Help center</strong>
+                    <p>Retrouver les guides, les questions frequentes et la visite guidee.</p>
+                </a>
+            </div>
+
+            @if (($user ?? null)?->role === 'admin')
+                <div class="actions">
+                    <a href="{{ route('admin.dashboard') }}" class="tt-btn tt-btn-outline">
+                        <span data-hover="Administration">Ouvrir l administration</span>
+                    </a>
+                </div>
+            @endif
+        </section>
+
+        <section class="section">
+            <span class="section-kicker">Session</span>
+            <h2>Sortir de la session</h2>
+            <p class="page-description">Vous pouvez vous deconnecter ici sans impacter vos donnees ni vos reglages enregistres.</p>
+
+            <form method="POST" action="{{ route('auth.logout') }}" class="actions actions-stack-mobile">
+                @csrf
+                <button type="submit" class="tt-btn tt-btn-primary">
+                    <span data-hover="Se deconnecter">Se deconnecter</span>
+                </button>
+            </form>
+        </section>
+    </div>
 @endsection

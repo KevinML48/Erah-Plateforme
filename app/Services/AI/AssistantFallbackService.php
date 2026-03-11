@@ -42,6 +42,10 @@ class AssistantFallbackService
             return $this->betReply($userContext, $context);
         }
 
+        if ($this->looksLikeSupporterQuestion($normalized)) {
+            return $this->supporterReply($userContext, $context);
+        }
+
         if ($this->looksLikeRewardsQuestion($normalized)) {
             return $this->rewardReply($userContext, $context);
         }
@@ -244,6 +248,46 @@ class AssistantFallbackService
      * @param array<string, mixed> $userContext
      * @param array<string, mixed> $context
      */
+    private function supporterReply(array $userContext, array $context): AssistantResponse
+    {
+        $supporter = Arr::get($userContext, 'supporter', []);
+        $isActive = (bool) ($supporter['is_active'] ?? false);
+        $planName = (string) ($supporter['current_plan_name'] ?? '');
+        $benefits = [
+            'badge supporter visible sur la plateforme',
+            'missions exclusives et bonus lies au programme',
+            'votes clips, reactions premium et avantages communautaires',
+        ];
+
+        $sections = [];
+
+        if ($isActive) {
+            $sections[] = $planName !== ''
+                ? 'Ton statut supporter est deja actif via la formule '.$planName.'.'
+                : 'Ton statut supporter est deja actif sur ERAH.';
+            $sections[] = 'Le plus utile maintenant est d ouvrir '.($this->contextLink($context, 'Supporter') ?: 'la page Supporter').' pour gerer ton abonnement, verifier tes avantages et suivre tes missions reservees.';
+        } else {
+            $sections[] = 'Oui. Pour devenir supporter sur ERAH, il faut passer par la page Supporter, comparer les formules puis lancer le checkout securise.';
+            $sections[] = "En general, cela debloque notamment :\n- ".implode("\n- ", $benefits);
+            $sections[] = 'Le bon prochain pas : '.($this->contextLink($context, 'Supporter') ?: 'ouvrir la page Supporter').' pour choisir la formule qui te convient.';
+        }
+
+        return new AssistantResponse(
+            content: trim(implode("\n\n", array_filter($sections))),
+            provider: 'knowledge-base',
+            model: 'local-fallback',
+            metadata: [
+                'next_steps' => [
+                    $isActive ? 'Verifier votre console supporter' : 'Comparer les formules supporter puis lancer le checkout',
+                ],
+            ],
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $userContext
+     * @param array<string, mixed> $context
+     */
     private function notificationReply(array $userContext, array $context): AssistantResponse
     {
         $unread = (int) Arr::get($userContext, 'notifications_unread', 0);
@@ -419,6 +463,19 @@ class AssistantFallbackService
     private function looksLikeRewardsQuestion(string $message): bool
     {
         return Str::contains($message, ['reward', 'recompense', 'cadeau', 'cadeaux', 'gift', 'gifts']);
+    }
+
+    private function looksLikeSupporterQuestion(string $message): bool
+    {
+        return Str::contains($message, [
+            'supporter',
+            'devenir supporter',
+            'soutenir erah',
+            'abonnement supporter',
+            'badge supporter',
+            'formule supporter',
+            'avantage supporter',
+        ]);
     }
 
     private function looksLikeNotificationQuestion(string $message): bool

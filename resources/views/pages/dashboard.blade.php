@@ -449,7 +449,7 @@
 				[
 					'title' => 'Cadeaux',
 					'category' => 'Boutique',
-					'description' => 'Explorez les recompenses disponibles, les cadeaux a debloquer et les redemptions.',
+					'description' => 'Explorez les recompenses disponibles, les cadeaux a debloquer et le suivi de vos demandes.',
 					'route' => route('gifts.index'),
 					'image' => '/app-ui/assets/img/image-menu-plateforme/cadeaux.png',
 				],
@@ -1182,7 +1182,9 @@
 		<!-- End body inner -->
 
 
-        
+
+        @include('partials.mission-live-toasts')
+        @include('marketing.partials.guided-tour')
 
 		<!-- ====================
 		///// Scripts below /////

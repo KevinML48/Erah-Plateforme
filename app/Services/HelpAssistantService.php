@@ -54,6 +54,10 @@ class HelpAssistantService
             ->unique()
             ->values();
 
+        if (in_array('supporter', $classification->matchedTopics, true)) {
+            return $this->supporterPayload($user, $userContext);
+        }
+
         $matches = $this->knowledgeMatches($normalized, $tokens);
         $bestArticle = $matches['article'];
         $bestGlossary = $matches['glossary'];
@@ -281,6 +285,7 @@ class HelpAssistantService
             'points' => $points,
             'xp' => (int) ($progress?->total_xp ?? 0),
             'league' => $league['name'],
+            'supporter_active' => $user->isSupporterActive(),
         ];
     }
 
@@ -354,6 +359,35 @@ class HelpAssistantService
                 'Si tu veux, demande-moi ensuite quoi faire pour gagner des points ou progresser plus vite.',
             ],
         );
+    }
+
+    /**
+     * @param array<string, mixed>|null $userContext
+     * @return array<string, mixed>
+     */
+    private function supporterPayload(?User $user, ?array $userContext): array
+    {
+        $isActive = (bool) ($userContext['supporter_active'] ?? false);
+        $answer = $isActive
+            ? 'Tu es deja supporter sur ERAH. Le plus utile est maintenant d ouvrir la page Supporter pour gerer ton abonnement, verifier tes avantages et suivre les missions reservees.'
+            : 'Pour devenir supporter sur ERAH, il faut ouvrir la page Supporter, comparer les formules puis lancer le checkout. C est la porte d entree pour activer le badge supporter, les missions exclusives et les avantages associes.';
+
+        return [
+            'mode' => config('help-center.assistant.mode', 'knowledge_base'),
+            'answer' => $answer,
+            'confidence' => 'high',
+            'sources' => [[
+                'type' => 'page',
+                'title' => 'Supporter ERAH',
+                'url' => $this->relativeRoute('supporter.show'),
+            ]],
+            'next_steps' => [
+                $isActive
+                    ? 'Ouvre la page Supporter pour suivre tes avantages actifs.'
+                    : 'Ouvre la page Supporter pour choisir la formule qui te convient.',
+            ],
+            'user_context' => $userContext,
+        ];
     }
 
     /**

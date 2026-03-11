@@ -300,7 +300,7 @@
                 <header class="lb-console-head tt-anim-fadeinup">
                     <div class="lb-console-title">
                         <h1>Classements</h1>
-                        <p>Vue console des ligues, leaders et volume de joueurs actifs. Les donnees sont calculees en temps reel.</p>
+                        <p>Vue claire des ligues, des leaders et du volume de joueurs actifs. Les donnees sont actualisees en temps reel.</p>
                     </div>
 
                     <div class="lb-console-actions">

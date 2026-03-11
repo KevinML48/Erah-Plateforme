@@ -188,6 +188,18 @@ class AssistantQueryClassifier
             'social',
             'reseaux',
         ],
+        'supporter' => [
+            'supporter',
+            'devenir supporter',
+            'soutenir erah',
+            'abonnement supporter',
+            'badge supporter',
+            'formule supporter',
+            'mission supporter',
+            'avantage supporter',
+            'avantages supporter',
+            'checkout supporter',
+        ],
         'next_step' => [
             'je dois faire quoi',
             'que dois je faire',

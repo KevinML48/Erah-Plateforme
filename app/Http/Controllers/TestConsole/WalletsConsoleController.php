@@ -92,10 +92,10 @@ class WalletsConsoleController extends Controller
         }
 
         if ($result['idempotent']) {
-            return back()->with('success', 'Grant bet_points deja applique.');
+            return back()->with('success', 'Cet ajustement du solde paris a deja ete applique.');
         }
 
-        return back()->with('success', 'bet_points credites.');
+        return back()->with('success', 'Le solde paris a bien ete credite.');
     }
 
     public function grantReward(
@@ -137,10 +137,9 @@ class WalletsConsoleController extends Controller
         );
 
         if ($result['idempotent']) {
-            return back()->with('success', 'Grant reward_points deja applique.');
+            return back()->with('success', 'Cet ajustement des points plateforme a deja ete applique.');
         }
 
-        return back()->with('success', 'reward_points credites.');
+        return back()->with('success', 'Les points plateforme ont bien ete credites.');
     }
 }
-

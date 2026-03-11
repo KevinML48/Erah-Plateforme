@@ -542,12 +542,12 @@
                                 <div class="erah-assistant-context margin-bottom-25">
                                     <div class="erah-assistant-overline">Contexte membre</div>
                                     <div class="tt-heading tt-heading-sm margin-bottom-12"><h3 class="tt-heading-title">{{ $page['assistant']['user_preview']['name'] }}</h3></div>
-                                    <p class="text-muted">L assistant peut repondre en tenant compte de votre situation visible: ligue, points, XP, reward wallet et pistes d amelioration.</p>
+                                    <p class="text-muted">L assistant peut repondre en tenant compte de votre situation visible: ligue, points, XP, portefeuille et pistes d amelioration.</p>
                                     <div class="erah-assistant-context-list">
                                         <div class="erah-assistant-context-item">Ligue : {{ $page['assistant']['user_preview']['league'] }}</div>
                                         <div class="erah-assistant-context-item">Points : {{ $page['assistant']['user_preview']['points'] }}</div>
                                         <div class="erah-assistant-context-item">XP : {{ $page['assistant']['user_preview']['xp'] }}</div>
-                                        <div class="erah-assistant-context-item">Reward wallet : {{ $page['assistant']['user_preview']['reward_balance'] }}</div>
+                                        <div class="erah-assistant-context-item">Portefeuille : {{ $page['assistant']['user_preview']['reward_balance'] }}</div>
                                     </div>
                                 </div>
                             @endif

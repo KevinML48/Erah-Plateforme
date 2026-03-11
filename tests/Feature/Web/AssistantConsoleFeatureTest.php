@@ -235,4 +235,20 @@ class AssistantConsoleFeatureTest extends TestCase
         $this->assertStringContainsString('Ajoutez une bio courte', $content);
         $this->assertStringNotContainsString('127.0.0.1', $content);
     }
+
+    public function test_console_assistant_can_explain_how_to_become_supporter(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->postJson(route('assistant.messages.store'), [
+                'message' => 'Comment devenir supporter ?',
+            ]);
+
+        $response->assertOk();
+        $this->assertStringContainsString(
+            'page Supporter',
+            (string) $response->json('data.assistant_message.content')
+        );
+    }
 }

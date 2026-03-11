@@ -1,10 +1,10 @@
 @php
     $navItems = [
-        ['label' => 'Dashboard', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
-        ['label' => 'Users', 'route' => route('users.index'), 'active' => request()->routeIs('users.*')],
+        ['label' => 'Pilotage', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+        ['label' => 'Utilisateurs', 'route' => route('users.index'), 'active' => request()->routeIs('users.*')],
         ['label' => 'Clips', 'route' => route('admin.clips.index'), 'active' => request()->routeIs('admin.clips.*')],
         ['label' => 'Matchs', 'route' => route('admin.matches.index'), 'active' => request()->routeIs('admin.matches.*')],
-        ['label' => 'Wallets', 'route' => route('admin.wallets.grant.create'), 'active' => request()->routeIs('admin.wallets.*')],
+        ['label' => 'Points', 'route' => route('admin.wallets.grant.create'), 'active' => request()->routeIs('admin.wallets.*')],
         ['label' => 'Cadeaux', 'route' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
         ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
         ['label' => 'Galerie', 'route' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],

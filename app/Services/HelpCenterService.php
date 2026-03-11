@@ -537,9 +537,9 @@ class HelpCenterService
                 ),
                 $this->featureItem(
                     'rewards',
-                    'Cadeaux et reward wallet',
-                    'Transformer votre activite utile en recompenses concretes et suivre vos redemptions.',
-                    ['Reward wallet', 'Catalogue cadeaux', 'Suivi de redemptions'],
+                    'Cadeaux et portefeuille points',
+                    'Transformer votre activite utile en recompenses concretes et suivre vos demandes cadeaux.',
+                    ['Portefeuille points', 'Catalogue cadeaux', 'Suivi des demandes'],
                     $mode === 'console' ? route('gifts.index') : route('login'),
                     $mode === 'console' ? 'Voir les cadeaux' : 'Creer un compte',
                     'Compte requis'
@@ -1194,11 +1194,11 @@ class HelpCenterService
             'utiliser-le-reward-wallet-et-demander-un-cadeau' => [
                 ...$meta,
                 'steps' => [
-                    'Consultez votre reward wallet pour verifier votre reserve.',
+                    'Consultez votre portefeuille points pour verifier votre reserve.',
                     'Ouvrez la fiche detail du cadeau qui vous interesse.',
-                    'Lancez la redemption si votre solde et le stock le permettent.',
+                    'Lancez la demande si votre solde et le stock le permettent.',
                 ],
-                'tips' => ['Le suivi continue ensuite dans votre historique de redemptions.'],
+                'tips' => ['Le suivi continue ensuite dans votre historique de demandes.'],
             ],
             default => $meta,
         };

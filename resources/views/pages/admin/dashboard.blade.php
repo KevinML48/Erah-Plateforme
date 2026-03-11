@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Admin Dashboard | ERAH Plateforme')
-@section('meta_description', 'Console admin centrale pour piloter la plateforme ERAH.')
+@section('title', 'Pilotage admin | ERAH Plateforme')
+@section('meta_description', 'Pilotage admin central pour superviser la plateforme ERAH.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -54,9 +54,9 @@
     @endphp
 
     @include('pages.admin.partials.hero', [
-        'heroSubtitle' => 'ERAH Control Center',
-        'heroTitle' => 'Admin Dashboard',
-        'heroDescription' => 'Vue globale administration: moderation, contenu, matchs, wallets, cadeaux et missions.',
+        'heroSubtitle' => 'Administration ERAH',
+        'heroTitle' => 'Pilotage global',
+        'heroDescription' => 'Vue globale de moderation, contenu, matchs, points, cadeaux et missions.',
         'heroMaskDescription' => 'Supervision complete et actions rapides.',
     ])
 
@@ -75,7 +75,7 @@
                         <div class="adm-kpi-grid">
                             <article class="adm-kpi-card tt-anim-fadeinup">
                                 <strong>{{ (int) ($stats['users_total'] ?? 0) }}</strong>
-                                <span>Users total</span>
+                                <span>Membres</span>
                             </article>
                             <article class="adm-kpi-card tt-anim-fadeinup">
                                 <strong>{{ (int) ($stats['admins_total'] ?? 0) }}</strong>
@@ -99,11 +99,11 @@
                             </article>
                             <article class="adm-kpi-card tt-anim-fadeinup">
                                 <strong>{{ (int) ($stats['redemptions_pending'] ?? 0) }}</strong>
-                                <span>Redemptions pending</span>
+                                <span>Demandes cadeaux en attente</span>
                             </article>
                             <article class="adm-kpi-card tt-anim-fadeinup">
                                 <strong>{{ (int) ($stats['wallet_volume_today'] ?? 0) }}</strong>
-                                <span>Volume wallet jour</span>
+                                <span>Mouvements points du jour</span>
                             </article>
                         </div>
                     </section>

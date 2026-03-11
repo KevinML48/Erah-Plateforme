@@ -15,7 +15,7 @@
         $difficultyOptions = ['simple' => 'Simple', 'medium' => 'Moyenne', 'special' => 'Speciale', 'hard' => 'Difficile'];
     @endphp
 
-    @include('pages.admin.partials.hero', ['heroSubtitle' => 'ERAH Control Center', 'heroTitle' => 'Admin Missions', 'heroDescription' => 'Templates, generation et maintenance du moteur missions.', 'heroMaskDescription' => 'Fondation XP + points prete pour accueillir le futur catalogue.'])
+    @include('pages.admin.partials.hero', ['heroSubtitle' => 'Administration ERAH', 'heroTitle' => 'Pilotage missions', 'heroDescription' => 'Templates, generation et maintenance du moteur missions.', 'heroMaskDescription' => 'Fondation XP + points prete pour accueillir le futur catalogue.'])
 
     <div id="tt-page-content">
         <div class="tt-section padding-top-60 border-top">
@@ -31,9 +31,9 @@
                             <article class="adm-kpi-card"><strong>{{ (int) (($overview['active_live_codes'] ?? 0) + ($overview['active_events'] ?? 0)) }}</strong><span>Live codes + events</span></article>
                         </div>
                         <div class="adm-row-actions" style="margin-top:14px;">
-                            <form method="POST" action="{{ route('missions.generate.daily') }}">@csrf<button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Daily">Regenerer daily</span></button></form>
-                            <form method="POST" action="{{ route('missions.generate.weekly') }}">@csrf<button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Weekly">Regenerer weekly</span></button></form>
-                            <form method="POST" action="{{ route('missions.generate.event-window') }}">@csrf<button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Event window">Regenerer event window</span></button></form>
+                            <form method="POST" action="{{ route('missions.generate.daily') }}">@csrf<button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Quotidiennes">Regenerer les quotidiennes</span></button></form>
+                            <form method="POST" action="{{ route('missions.generate.weekly') }}">@csrf<button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Hebdomadaires">Regenerer les hebdomadaires</span></button></form>
+                            <form method="POST" action="{{ route('missions.generate.event-window') }}">@csrf<button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Fenetre">Regenerer la fenetre evenement</span></button></form>
                             <form method="POST" action="{{ route('missions.repair') }}">@csrf<button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Reparer">Reparer et resynchroniser</span></button></form>
                         </div>
                     </section>
@@ -46,7 +46,7 @@
                                 <div class="tt-form-group"><label>Categorie</label><select class="tt-form-control" name="category" data-lenis-prevent><option value="">Toutes</option>@foreach($categories as $category)<option value="{{ $category }}" {{ ($filters['category'] ?? '') === $category ? 'selected' : '' }}>{{ $category }}</option>@endforeach</select></div>
                                 <div class="tt-form-group"><label>Difficulte</label><select class="tt-form-control" name="difficulty" data-lenis-prevent><option value="">Toutes</option>@foreach($difficultyOptions as $difficultyKey => $difficultyLabel)<option value="{{ $difficultyKey }}" {{ ($filters['difficulty'] ?? '') === $difficultyKey ? 'selected' : '' }}>{{ $difficultyLabel }}</option>@endforeach</select></div>
                             </div>
-                            <div class="adm-row-actions"><button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Filtrer">Filtrer</span></button><a href="{{ route('admin.missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Reset">Reset</span></a></div>
+                            <div class="adm-row-actions"><button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Filtrer">Filtrer</span></button><a href="{{ route('admin.missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Reinitialiser">Reinitialiser</span></a></div>
                         </form>
                     </section>
 
@@ -77,9 +77,9 @@
                                 <div class="tt-form-group adm-col-span-4"><label>UI meta JSON</label><textarea class="tt-form-control" name="ui_meta_json" rows="2">{{ old('ui_meta_json') }}</textarea></div>
                                 <div class="tt-form-group"><label>Debut</label><input class="tt-form-control" type="datetime-local" name="start_at" value="{{ old('start_at') }}"></div>
                                 <div class="tt-form-group"><label>Fin</label><input class="tt-form-control" type="datetime-local" name="end_at" value="{{ old('end_at') }}"></div>
-                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_discovery" name="is_discovery" value="1" @checked(old('is_discovery'))><label for="mission_is_discovery">Discovery</label></div></div>
-                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_featured" name="is_featured" value="1" @checked(old('is_featured'))><label for="mission_is_featured">Featured</label></div></div>
-                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_repeatable" name="is_repeatable" value="1" @checked(old('is_repeatable'))><label for="mission_is_repeatable">Repeatable</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_discovery" name="is_discovery" value="1" @checked(old('is_discovery'))><label for="mission_is_discovery">Mise en avant decouverte</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_featured" name="is_featured" value="1" @checked(old('is_featured'))><label for="mission_is_featured">Mise en avant</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_repeatable" name="is_repeatable" value="1" @checked(old('is_repeatable'))><label for="mission_is_repeatable">Rejouable</label></div></div>
                                 <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_requires_claim" name="requires_claim" value="1" @checked(old('requires_claim'))><label for="mission_requires_claim">Reclamation manuelle</label></div></div>
                                 <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_is_active" name="is_active" value="1" @checked(old('is_active', true))><label for="mission_is_active">Actif</label></div></div>
                             </div>
@@ -95,7 +95,7 @@
                                     @php $rewards = $template->normalizedRewards(); $constraintsJson = $template->constraints ? json_encode($template->constraints, JSON_UNESCAPED_SLASHES) : ''; $prerequisitesJson = $template->prerequisites ? json_encode($template->prerequisites, JSON_UNESCAPED_SLASHES) : ''; $uiMetaJson = $template->ui_meta ? json_encode($template->ui_meta, JSON_UNESCAPED_SLASHES) : ''; @endphp
                                     <article class="adm-mission-card">
                                         <div class="adm-mission-head"><div><h3 class="adm-mission-title">{{ $template->title }}</h3><p class="adm-meta">{{ $template->key }} - {{ $template->event_type }}</p></div><span class="adm-pill">{{ $template->is_active ? 'Actif' : 'Inactif' }}</span></div>
-                                        <div class="adm-row-actions"><span class="adm-pill">{{ $template->scope }}</span><span class="adm-pill">{{ $template->category ?: 'general' }}</span><span class="adm-pill">XP {{ (int) $rewards['xp'] }}</span><span class="adm-pill">Points {{ (int) $rewards['points'] }}</span><span class="adm-pill">Objectif {{ (int) $template->target_count }}</span>@if($template->requires_claim)<span class="adm-pill">Claim manuel</span>@endif</div>
+                                        <div class="adm-row-actions"><span class="adm-pill">{{ $template->scope }}</span><span class="adm-pill">{{ $template->category ?: 'general' }}</span><span class="adm-pill">XP {{ (int) $rewards['xp'] }}</span><span class="adm-pill">Points {{ (int) $rewards['points'] }}</span><span class="adm-pill">Objectif {{ (int) $template->target_count }}</span>@if($template->requires_claim)<span class="adm-pill">Reclamation manuelle</span>@endif</div>
                                         <form method="POST" action="{{ route('admin.missions.update', $template->id) }}" class="tt-form tt-form-creative adm-form">
                                             @csrf @method('PUT')
                                             <div class="adm-form-grid-4">
@@ -122,10 +122,10 @@
                                                 <div class="tt-form-group"><label>Debut</label><input class="tt-form-control" type="datetime-local" name="start_at" value="{{ optional($template->start_at)->format('Y-m-d\\TH:i') }}"></div>
                                                 <div class="tt-form-group"><label>Fin</label><input class="tt-form-control" type="datetime-local" name="end_at" value="{{ optional($template->end_at)->format('Y-m-d\\TH:i') }}"></div>
                                                 <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_active_{{ $template->id }}" name="is_active" value="1" {{ $template->is_active ? 'checked' : '' }}><label for="mission_active_{{ $template->id }}">Actif</label></div></div>
-                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_discovery_{{ $template->id }}" name="is_discovery" value="1" {{ $template->is_discovery ? 'checked' : '' }}><label for="mission_discovery_{{ $template->id }}">Discovery</label></div></div>
-                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_featured_{{ $template->id }}" name="is_featured" value="1" {{ $template->is_featured ? 'checked' : '' }}><label for="mission_featured_{{ $template->id }}">Featured</label></div></div>
-                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_repeatable_{{ $template->id }}" name="is_repeatable" value="1" {{ $template->is_repeatable ? 'checked' : '' }}><label for="mission_repeatable_{{ $template->id }}">Repeatable</label></div></div>
-                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_claim_{{ $template->id }}" name="requires_claim" value="1" {{ $template->requires_claim ? 'checked' : '' }}><label for="mission_claim_{{ $template->id }}">Claim manuel</label></div></div>
+                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_discovery_{{ $template->id }}" name="is_discovery" value="1" {{ $template->is_discovery ? 'checked' : '' }}><label for="mission_discovery_{{ $template->id }}">Mise en avant decouverte</label></div></div>
+                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_featured_{{ $template->id }}" name="is_featured" value="1" {{ $template->is_featured ? 'checked' : '' }}><label for="mission_featured_{{ $template->id }}">Mise en avant</label></div></div>
+                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_repeatable_{{ $template->id }}" name="is_repeatable" value="1" {{ $template->is_repeatable ? 'checked' : '' }}><label for="mission_repeatable_{{ $template->id }}">Rejouable</label></div></div>
+                                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="mission_claim_{{ $template->id }}" name="requires_claim" value="1" {{ $template->requires_claim ? 'checked' : '' }}><label for="mission_claim_{{ $template->id }}">Reclamation manuelle</label></div></div>
                                             </div>
                                             <div class="adm-row-actions"><button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Mettre a jour">Mettre a jour</span></button></div>
                                         </form>

@@ -133,7 +133,7 @@ class GiftPageController extends Controller
         }
 
         if ($result['idempotent']) {
-            return back()->with('success', 'Demande deja enregistree (replay idempotent).');
+            return back()->with('success', 'Cette demande cadeau a deja ete prise en compte.');
         }
 
         return back()->with('success', 'Demande de cadeau envoyee avec succes.');

@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Admin Cadeaux | ERAH Plateforme')
-@section('meta_description', 'Gestion du catalogue cadeaux et moderation des redemptions.')
+@section('meta_description', 'Gestion du catalogue cadeaux et suivi des demandes.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -16,10 +16,10 @@
     @endphp
 
     @include('pages.admin.partials.hero', [
-        'heroSubtitle' => 'ERAH Control Center',
+        'heroSubtitle' => 'Administration ERAH',
         'heroTitle' => 'Admin Cadeaux',
         'heroDescription' => 'Catalogue cadeaux, images, stocks et moderation des demandes.',
-        'heroMaskDescription' => 'Gestion gifts + redemptions.',
+        'heroMaskDescription' => 'Gestion cadeaux et suivi des demandes.',
     ])
 
     <div id="tt-page-content">
@@ -185,7 +185,7 @@
 
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
-                            <h2 class="tt-heading-title tt-text-reveal">Redemptions</h2>
+                            <h2 class="tt-heading-title tt-text-reveal">Demandes cadeaux</h2>
                             <p class="max-width-700 tt-anim-fadeinup text-gray">Traitez les demandes en attente puis suivez l'expedition et la livraison.</p>
                         </div>
 
@@ -234,7 +234,7 @@
 
                                                         <form method="POST" action="{{ route('admin.redemptions.reject', $redemption->id) }}" class="adm-inline-form">
                                                             @csrf
-                                                            <input class="adm-inline-input" name="reason" placeholder="Motif refus">
+                                                            <input class="adm-inline-input" name="reason" placeholder="Motif du refus">
                                                             <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
                                                                 <span data-hover="Refuser">Refuser</span>
                                                             </button>
@@ -242,7 +242,7 @@
 
                                                         <form method="POST" action="{{ route('admin.redemptions.ship', $redemption->id) }}" class="adm-inline-form">
                                                             @csrf
-                                                            <input class="adm-inline-input" name="tracking_code" placeholder="Code tracking">
+                                                            <input class="adm-inline-input" name="tracking_code" placeholder="Code de suivi">
                                                             <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
                                                                 <span data-hover="Expedier">Expedier</span>
                                                             </button>
@@ -264,7 +264,7 @@
 
                             <div class="adm-pagin">{{ $redemptions->links() }}</div>
                         @else
-                            <div class="adm-empty">Aucune redemption pour ce filtre.</div>
+                            <div class="adm-empty">Aucune demande pour ce filtre.</div>
                         @endif
                     </section>
                 </div>

@@ -46,6 +46,6 @@ class OnboardingController extends Controller
         $request->session()->put('onboarding_done', true);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Onboarding termine.');
+            ->with('success', 'Preferences enregistrees. Votre espace est pret.');
     }
 }

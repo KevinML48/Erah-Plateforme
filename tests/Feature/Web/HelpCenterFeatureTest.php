@@ -102,6 +102,19 @@ class HelpCenterFeatureTest extends TestCase
         $this->assertStringNotContainsString('127.0.0.1', (string) $response->json('data.sources.0.url'));
     }
 
+    public function test_help_assistant_can_explain_how_to_become_a_supporter(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $this->postJson(route('help.assistant.ask'), [
+            'message' => 'Comment devenir supporter ERAH ?',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.confidence', 'high')
+            ->assertJsonPath('data.sources.0.title', 'Supporter ERAH')
+            ->assertJsonPath('data.sources.0.url', route('supporter.show', [], false));
+    }
+
     public function test_help_assistant_requests_precision_for_a_broad_but_relevant_question(): void
     {
         $this->seed(HelpCenterSeeder::class);

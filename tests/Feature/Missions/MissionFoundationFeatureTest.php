@@ -3,10 +3,12 @@
 namespace Tests\Feature\Missions;
 
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
+use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\MissionCompletion;
 use App\Models\MissionEventRecord;
 use App\Models\MissionInstance;
 use App\Models\MissionTemplate;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserMission;
 use App\Services\MissionCatalogService;
@@ -115,6 +117,57 @@ class MissionFoundationFeatureTest extends TestCase
         $this->assertSame(1, MissionEventRecord::query()->where('user_id', $user->id)->count());
         $this->assertSame(120, (int) $user->progress?->total_xp);
         $this->assertSame(60, (int) $user->rewardWallet?->balance);
+    }
+
+    public function test_mission_progress_and_completion_create_live_notification_payloads(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.notify.clip-comment',
+            'title' => 'Commenter deux clips',
+            'event_type' => 'clip.comment',
+            'target_count' => 2,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'rewards' => ['xp' => 40, 'points' => 20],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        app(MissionEngine::class)->recordEvent($user, 'clip.comment', 1, [
+            'event_key' => 'clip.comment.notify.1',
+            'subject_type' => 'clip-comment',
+            'subject_id' => '1',
+        ]);
+
+        $progressNotification = Notification::query()
+            ->where('user_id', $user->id)
+            ->where('category', NotificationCategory::MISSION->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('Mission en progression', $progressNotification->title);
+        $this->assertSame('progress', $progressNotification->data['toast_kind'] ?? null);
+        $this->assertSame(1, $progressNotification->data['progress_count'] ?? null);
+        $this->assertSame(2, $progressNotification->data['target_count'] ?? null);
+
+        app(MissionEngine::class)->recordEvent($user, 'clip.comment', 1, [
+            'event_key' => 'clip.comment.notify.2',
+            'subject_type' => 'clip-comment',
+            'subject_id' => '2',
+        ]);
+
+        $completionNotification = Notification::query()
+            ->where('user_id', $user->id)
+            ->where('category', NotificationCategory::MISSION->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('Mission terminee', $completionNotification->title);
+        $this->assertSame('completed', $completionNotification->data['toast_kind'] ?? null);
+        $this->assertSame(40, $completionNotification->data['rewards_xp'] ?? null);
+        $this->assertSame(20, $completionNotification->data['rewards_points'] ?? null);
     }
 
     public function test_user_cannot_focus_more_than_three_missions(): void
@@ -402,8 +455,8 @@ class MissionFoundationFeatureTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.missions.index'))
             ->assertOk()
-            ->assertSee('Admin Missions')
-            ->assertSee('Regenerer event window')
+            ->assertSee('Pilotage missions')
+            ->assertSee('Regenerer la fenetre evenement')
             ->assertSee('Reparer et resynchroniser');
     }
 }

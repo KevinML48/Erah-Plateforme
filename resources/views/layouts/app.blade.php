@@ -4,10 +4,13 @@
     <title>@yield('title', 'ERAH Plateforme')</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Plateforme ERAH">
+    <meta name="description" content="ERAH Plateforme, espace membre, progression, missions et modules competitifs.">
     <meta name="theme-color" content="#d80707">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Big+Shoulders+Display:wght@100..900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .app-toast-stack { position: fixed; top: 16px; right: 16px; width: min(420px, calc(100vw - 24px)); display: grid; gap: 10px; z-index: 2000; pointer-events: none; }
@@ -30,10 +33,11 @@
             ['label' => 'Dashboard', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
             ['label' => 'Matchs', 'href' => route('matches.index'), 'active' => request()->routeIs('matches.*')],
             ['label' => 'Clips', 'href' => route('clips.index'), 'active' => request()->routeIs('clips.*')],
+            ['label' => 'Paris', 'href' => route('bets.index'), 'active' => request()->routeIs('bets.*')],
             ['label' => 'Classements', 'href' => route('leaderboards.index'), 'active' => request()->routeIs('leaderboards.*') || request()->routeIs('ranking.*')],
             ['label' => 'Missions', 'href' => route('missions.index'), 'active' => request()->routeIs('missions.*')],
             ['label' => 'Cadeaux', 'href' => route('gifts.index'), 'active' => request()->routeIs('gifts.*')],
-            ['label' => 'Notifications', 'href' => route('notifications.index'), 'active' => request()->routeIs('notifications.*')],
+            ['label' => 'Duels', 'href' => route('duels.index'), 'active' => request()->routeIs('duels.*')],
         ]
         : [
             ['label' => 'Accueil site', 'href' => route('marketing.index'), 'active' => request()->routeIs('marketing.*')],
@@ -53,7 +57,9 @@
     $sessionLinks = $isAuthenticated
         ? [
             ['label' => 'Mon profil', 'href' => route('profile.show'), 'active' => request()->routeIs('profile.*')],
-            ['label' => 'Vue publique /app', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
+            ['label' => 'Points', 'href' => route('wallet.index'), 'active' => request()->routeIs('wallet.*') || request()->routeIs('wallets.*')],
+            ['label' => 'Notifications', 'href' => route('notifications.index'), 'active' => request()->routeIs('notifications.*')],
+            ['label' => 'Aide', 'href' => route('console.help'), 'active' => request()->routeIs('console.help') || request()->routeIs('assistant.*')],
         ]
         : [
             ['label' => 'Se connecter', 'href' => route('login'), 'active' => request()->routeIs('login')],
@@ -67,7 +73,7 @@
         <div class="header-row">
             <div class="header-main">
                 <a class="brand" href="{{ $isAuthenticated ? route('dashboard') : route('marketing.index') }}">
-                    Plateforme ERAH
+                    ERAH Plateforme
                 </a>
 
                 <nav class="nav-links desktop-nav" aria-label="Navigation principale">
@@ -122,8 +128,8 @@
         <div class="mobile-nav-shell">
             <div class="mobile-nav-head">
                 <div>
-                    <p class="mobile-nav-kicker">Navigation mobile</p>
-                    <strong>Acces rapide a la plateforme</strong>
+                    <p class="mobile-nav-kicker">Navigation</p>
+                    <strong>Acces rapide a votre espace</strong>
                 </div>
                 <button type="button" class="mobile-nav-close" data-mobile-nav-close aria-label="Fermer le menu">
                     Fermer
@@ -223,7 +229,7 @@
 
 <footer>
     <div class="container">
-        ERAH Plateforme - Base restauree.
+        ERAH Plateforme - espace membre, progression et modules competitifs.
     </div>
 </footer>
 <script>
@@ -260,5 +266,6 @@
         }, 5200);
     });
 </script>
+@include('partials.mission-live-toasts')
 </body>
 </html>

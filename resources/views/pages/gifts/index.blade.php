@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Portfolio Classic | Cadeaux ERAH')
-@section('meta_description', 'Catalogue cadeaux ERAH en mode portfolio classic.')
+@section('title', 'Cadeaux ERAH')
+@section('meta_description', 'Catalogue cadeaux ERAH et demandes depuis le solde points.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('content')
@@ -9,10 +9,10 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">ERAH Rewards</h2>
-                    <h1 class="ph-caption-title">Gift Store</h1>
+                    <h2 class="ph-caption-subtitle">Catalogue cadeaux</h2>
+                    <h1 class="ph-caption-title">Cadeaux ERAH</h1>
                     <div class="ph-caption-description max-width-700">
-                        Echangez vos reward points contre des cadeaux exclusifs.
+                        Utilisez vos points plateforme pour debloquer des cadeaux et suivre vos demandes.
                     </div>
                 </div>
             </div>
@@ -22,10 +22,10 @@
             <div class="ph-mask-inner tt-wrap">
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">My Work</h2>
-                        <h1 class="ph-caption-title">Projects</h1>
+                        <h2 class="ph-caption-subtitle">Catalogue</h2>
+                        <h1 class="ph-caption-title">Cadeaux</h1>
                         <div class="ph-caption-description max-width-700">
-                            Discover a showcase of my creative journey that reflects my passion for crafting engaging digital experiences
+                            Choisissez une recompense, verifiez votre solde et lancez votre demande depuis votre espace membre.
                         </div>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <path d="M50,250c0-110.5,89.5-200,200-200s200,89.5,200,200s-89.5,200-200,200S50,360.5,50,250" id="textcircle"></path>
                     </defs>
                     <text dy="30">
-                        <textPath xlink:href="#textcircle">Scroll to Explore - Scroll to Explore -</textPath>
+                        <textPath xlink:href="#textcircle">Voir le catalogue - Voir le catalogue -</textPath>
                     </text>
                 </svg>
             </a>
@@ -66,7 +66,7 @@
                                 <div class="ttgr-cat-classic-nav ttgr-cat-classic-center">
                                     <ul class="ttgr-cat-classic-list">
                                         <li class="ttgr-cat-classic-item">
-                                            <a href="{{ route('gifts.index') }}" data-offset="80" class="{{ $selectedCategory === 'all' ? 'active' : '' }}">All</a>
+                                            <a href="{{ route('gifts.index') }}" data-offset="80" class="{{ $selectedCategory === 'all' ? 'active' : '' }}">Tous</a>
                                         </li>
                                         @foreach($categories as $category)
                                             <li class="ttgr-cat-classic-item">
@@ -88,7 +88,7 @@
                                 @php
                                     $gift = $item['gift'];
                                     $cover = $gift->image_url ?: '/template/assets/img/logo.png';
-                                    $stockLabel = ((int) $gift->stock > 0) ? ((int) $gift->stock.' in stock') : 'Out of stock';
+                                    $stockLabel = ((int) $gift->stock > 0) ? ((int) $gift->stock.' en stock') : 'Rupture';
                                 @endphp
                                 <div class="tt-grid-item isotope-item {{ $item['category_key'] }}">
                                     <div class="ttgr-item-inner">
@@ -124,9 +124,9 @@
                                         <div class="portfolio-grid-item">
                                             <div class="pgi-caption">
                                                 <div class="pgi-caption-inner">
-                                                    <h2 class="pgi-title">No gifts available</h2>
+                                                    <h2 class="pgi-title">Aucun cadeau disponible</h2>
                                                     <div class="pgi-categories-wrap">
-                                                        <div class="pgi-category">Try another category</div>
+                                                        <div class="pgi-category">Essayez une autre categorie</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -145,13 +145,13 @@
                 <div class="tt-row">
                     <div class="tt-col-lg-3">
                         <div class="tt-heading tt-heading-lg">
-                            <h3 class="tt-heading-subtitle tt-text-reveal">Need help?</h3>
-                            <h2 class="tt-heading-title tt-text-reveal">FAQ<br>Gifts</h2>
+                            <h3 class="tt-heading-subtitle tt-text-reveal">Besoin d aide ?</h3>
+                            <h2 class="tt-heading-title tt-text-reveal">FAQ<br>Cadeaux</h2>
                         </div>
 
                         <p class="text-muted">
                             Comprendre comment gagner des points, debloquer des cadeaux
-                            et suivre vos demandes de redemption.
+                            et suivre vos demandes.
                         </p>
 
                         <a href="{{ route('marketing.faq') }}" class="tt-btn tt-btn-secondary margin-top-30">
@@ -168,7 +168,7 @@
                                 <div class="tt-accordion-heading">
                                     <div class="tt-ac-head cursor-alter">
                                         <div class="tt-ac-head-inner">
-                                            <h4 class="tt-ac-head-title">Comment gagner des reward points ?</h4>
+                                            <h4 class="tt-ac-head-title">Comment gagner des points ?</h4>
                                         </div>
                                     </div>
                                     <div class="tt-accordion-caret">
@@ -181,8 +181,8 @@
                                 </div>
                                 <div class="tt-accordion-content max-width-900">
                                     <p>
-                                        Les reward points viennent surtout des missions quotidiennes/hebdo,
-                                        de certains resultats de paris et des grants admin. Plus vous jouez
+                                        Les points viennent surtout des missions quotidiennes ou hebdomadaires,
+                                        de certaines activites valides sur la plateforme et des ajustements admin. Plus vous jouez
                                         regulierement, plus vous cumulez vite.
                                     </p>
                                 </div>
@@ -192,7 +192,7 @@
                                 <div class="tt-accordion-heading">
                                     <div class="tt-ac-head cursor-alter">
                                         <div class="tt-ac-head-inner">
-                                            <h4 class="tt-ac-head-title">Quelle difference entre bet, rank et reward points ?</h4>
+                                            <h4 class="tt-ac-head-title">A quoi servent les points ?</h4>
                                         </div>
                                     </div>
                                     <div class="tt-accordion-caret">
@@ -205,9 +205,7 @@
                                 </div>
                                 <div class="tt-accordion-content max-width-900">
                                     <p>
-                                        <strong>Bet points</strong> servent a parier, <strong>rank points</strong>
-                                        servent au classement/ligues, et <strong>reward points</strong> servent
-                                        uniquement au store cadeaux.
+                                        Les points servent a vos usages de plateforme, notamment les cadeaux et les autres modules relies au portefeuille. La progression, elle, se lit surtout avec l XP et votre rang.
                                     </p>
                                 </div>
                             </div>
@@ -253,7 +251,7 @@
                                 </div>
                                 <div class="tt-accordion-content max-width-900">
                                     <p>
-                                        Ouvrez un cadeau, cliquez sur Redeem, puis confirmez. Le cout en reward points
+                                        Ouvrez un cadeau, cliquez sur Demander, puis confirmez. Le cout en points
                                         est debite a la demande et le stock est reserve immediatement.
                                     </p>
                                 </div>
@@ -276,7 +274,7 @@
                                 </div>
                                 <div class="tt-accordion-content max-width-900">
                                     <p>
-                                        Si une redemption est rejetee par un admin, vos reward points sont rembourses
+                                        Si une demande est rejetee par un admin, vos points sont rembourses
                                         automatiquement et le stock est restaure.
                                     </p>
                                 </div>

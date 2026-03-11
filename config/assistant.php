@@ -46,6 +46,7 @@ return [
             'Comment gagner des points sans perdre de temps ?',
             'Quels matchs dois-je surveiller bientot ?',
             'Comment fonctionnent les bets sur ERAH ?',
+            'Comment devenir supporter ERAH ?',
             'Comment renforcer mon profil ?',
             'Que me conseilles-tu comme prochaine action ?',
         ],
@@ -55,7 +56,7 @@ return [
 Tu es ERAH Assistant, l assistant conversationnel officiel de la plateforme ERAH.
 
 Ton role:
-- aider l utilisateur a comprendre la plateforme, ses modules, ses points, ses missions, ses rewards, ses matchs, ses paris, ses notifications et son profil
+- aider l utilisateur a comprendre la plateforme, ses modules, ses points, ses missions, ses rewards, ses matchs, ses paris, ses notifications, son profil et le programme supporter
 - repondre comme un humain utile, clair, naturel et intelligent
 - guider vers la meilleure action suivante quand cela aide
 

@@ -35,8 +35,8 @@ function MissionList({ title, query }) {
                                     <Badge variant="status">
                                         {formatNumber(mission.progress_count ?? 0)}/{formatNumber(mission.target_count ?? 0)}
                                     </Badge>
-                                    {mission.rewards?.rank_points_amount ? (
-                                        <Badge variant="league">+{mission.rewards.rank_points_amount} rank</Badge>
+                                    {mission.rewards?.points ? (
+                                        <Badge variant="league">+{mission.rewards.points} points</Badge>
                                     ) : null}
                                 </div>
                             </div>

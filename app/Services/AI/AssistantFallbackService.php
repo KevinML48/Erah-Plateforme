@@ -106,12 +106,11 @@ class AssistantFallbackService
     {
         $league = Arr::get($userContext, 'progress.league', 'Bronze');
         $xp = (int) Arr::get($userContext, 'progress.xp', 0);
-        $betPoints = (int) Arr::get($userContext, 'wallets.bet_points', 0);
-        $rewardPoints = (int) Arr::get($userContext, 'wallets.reward_points', 0);
+        $points = (int) Arr::get($userContext, 'wallets.points', 0);
 
         $content = trim(implode("\n\n", array_filter([
             'Si tu veux comprendre ERAH dans les grandes lignes, l idee est simple : tout est rassemble dans la meme console pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
-            "Dans ton contexte actuel, tu es en ligue {$league} avec {$xp} XP, {$betPoints} bet points et {$rewardPoints} reward points.",
+            "Dans ton contexte actuel, tu es en ligue {$league} avec {$xp} XP et {$points} points disponibles sur la plateforme.",
             'Le plus utile maintenant, c est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
         ])));
 
@@ -184,12 +183,12 @@ class AssistantFallbackService
      */
     private function betReply(array $userContext, array $context): AssistantResponse
     {
-        $betPoints = (int) Arr::get($userContext, 'wallets.bet_points', 0);
+        $points = (int) Arr::get($userContext, 'wallets.points', 0);
         $matches = collect($userContext['upcoming_matches'] ?? [])->take(2);
 
         $sections = [
             'Sur ERAH, les bets se preparent a partir des matchs disponibles. Le plus utile est de miser avec du contexte, pas a l aveugle.',
-            "Ton solde actuel est de {$betPoints} bet points.",
+            "Ton solde actuel est de {$points} points.",
         ];
 
         if ($matches->isNotEmpty()) {
@@ -213,11 +212,11 @@ class AssistantFallbackService
      */
     private function rewardReply(array $userContext, array $context): AssistantResponse
     {
-        $rewardPoints = (int) Arr::get($userContext, 'wallets.reward_points', 0);
+        $points = (int) Arr::get($userContext, 'wallets.points', 0);
         $gifts = collect($userContext['gift_highlights'] ?? [])->take(3);
 
         $sections = [
-            "Ton reward wallet contient actuellement {$rewardPoints} points.",
+            "Tu disposes actuellement de {$points} points sur la plateforme.",
         ];
 
         if ($gifts->isNotEmpty()) {
@@ -269,13 +268,12 @@ class AssistantFallbackService
      */
     private function pointsReply(array $userContext, array $context): AssistantResponse
     {
-        $betPoints = (int) Arr::get($userContext, 'wallets.bet_points', 0);
-        $rewardPoints = (int) Arr::get($userContext, 'wallets.reward_points', 0);
+        $points = (int) Arr::get($userContext, 'wallets.points', 0);
         $xp = (int) Arr::get($userContext, 'progress.xp', 0);
         $actions = collect($userContext['recommended_actions'] ?? [])->take(3);
 
         $sections = [
-            "A ce stade, tu as {$betPoints} bet points, {$rewardPoints} reward points et {$xp} XP.",
+            "A ce stade, tu as {$points} points et {$xp} XP.",
             'Pour gagner ou relancer ta progression, les missions actives et le suivi des matchs restent en general les premiers leviers a regarder.',
         ];
 

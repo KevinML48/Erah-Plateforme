@@ -7,6 +7,7 @@ use App\Application\Actions\Notifications\NotifyAction;
 use App\Jobs\ExpireDuelJob;
 use App\Models\Duel;
 use App\Models\User;
+use App\Services\MissionEngine;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ class CreateDuelAction
 {
     public function __construct(
         private readonly RecordDuelEventAction $recordDuelEventAction,
+        private readonly MissionEngine $missionEngine,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
@@ -117,6 +119,12 @@ class CreateDuelAction
                         'expires_at' => $expiresAt->toIso8601String(),
                     ],
                 );
+
+                $this->missionEngine->recordEvent($challenger, 'duel.sent', 1, [
+                    'event_key' => 'duel.sent.'.$duel->id,
+                    'subject_type' => Duel::class,
+                    'subject_id' => (string) $duel->id,
+                ]);
 
                 DB::afterCommit(function () use ($duel, $expiresAt): void {
                     ExpireDuelJob::dispatch($duel->id)->delay($expiresAt);

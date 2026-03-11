@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Wallet | ERAH Plateforme')
-@section('meta_description', 'Centre wallet bet_points: solde, flux et historique dynamique.')
+@section('meta_description', 'Centre points ERAH: solde unifie, flux et historique dynamique.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -316,12 +316,22 @@
 
         $typeLabels = [
             'all' => 'Tous types',
-            \App\Models\WalletTransaction::TYPE_STAKE => 'Mise',
-            \App\Models\WalletTransaction::TYPE_REFUND => 'Remboursement',
-            \App\Models\WalletTransaction::TYPE_PAYOUT => 'Gain',
-            \App\Models\WalletTransaction::TYPE_GRANT => 'Credit',
-            \App\Models\WalletTransaction::TYPE_ADJUST => 'Ajustement',
-            \App\Models\WalletTransaction::TYPE_VOID_REFUND => 'Void refund',
+            \App\Models\RewardWalletTransaction::TYPE_GRANT => 'Credit',
+            \App\Models\RewardWalletTransaction::TYPE_MISSION_REWARD => 'Mission',
+            \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Redemption',
+            \App\Models\RewardWalletTransaction::TYPE_REDEEM_REFUND => 'Remboursement cadeau',
+            \App\Models\RewardWalletTransaction::TYPE_ADJUST => 'Ajustement',
+            \App\Models\RewardWalletTransaction::TYPE_GIFT_PURCHASE => 'Achat cadeau',
+            \App\Models\RewardWalletTransaction::TYPE_BET_STAKE => 'Mise',
+            \App\Models\RewardWalletTransaction::TYPE_BET_PAYOUT => 'Gain de pari',
+            \App\Models\RewardWalletTransaction::TYPE_BET_REFUND => 'Remboursement pari',
+            \App\Models\RewardWalletTransaction::TYPE_DUEL_STAKE => 'Duel engage',
+            \App\Models\RewardWalletTransaction::TYPE_DUEL_WIN => 'Duel gagne',
+            \App\Models\RewardWalletTransaction::TYPE_DUEL_REFUND => 'Remboursement duel',
+            \App\Models\RewardWalletTransaction::TYPE_ADMIN_ADJUSTMENT => 'Admin',
+            \App\Models\RewardWalletTransaction::TYPE_STREAK_REWARD => 'Streak',
+            \App\Models\RewardWalletTransaction::TYPE_SHOP_PURCHASE => 'Boutique',
+            \App\Models\RewardWalletTransaction::TYPE_ACTIVITY_REWARD => 'Activite',
         ];
 
         if (! array_key_exists($currentType, $typeLabels)) {
@@ -372,10 +382,10 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">ERAH Betting Wallet</h2>
+                    <h2 class="ph-caption-subtitle">ERAH Points Wallet</h2>
                     <h1 class="ph-caption-title">Wallet</h1>
                     <div class="ph-caption-description max-width-900">
-                        Solde actuel: {{ (int) ($wallet->balance ?? 0) }} bet_points - {{ (int) ($summary['filtered'] ?? 0) }} transaction(s) dans le filtre.
+                        Solde actuel: {{ (int) ($wallet->balance ?? 0) }} points - {{ (int) ($summary['filtered'] ?? 0) }} transaction(s) dans le filtre.
                     </div>
                 </div>
             </div>
@@ -385,10 +395,10 @@
             <div class="ph-mask-inner tt-wrap">
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">ERAH Betting Wallet</h2>
+                        <h2 class="ph-caption-subtitle">ERAH Points Wallet</h2>
                         <h1 class="ph-caption-title">Wallet</h1>
                         <div class="ph-caption-description max-width-900">
-                            Historique dynamique des flux bet_points.
+                            Historique dynamique des points utilises pour les cadeaux, paris, duels et rewards.
                         </div>
                     </div>
                 </div>
@@ -462,7 +472,7 @@
                 <section class="wallet-kpi-grid">
                     <article class="wallet-kpi-card kpi-balance tt-anim-fadeinup">
                         <strong>{{ (int) ($wallet->balance ?? 0) }}</strong>
-                        <span>Solde bet_points</span>
+                        <span>Solde points</span>
                     </article>
                     <article class="wallet-kpi-card kpi-in tt-anim-fadeinup">
                         <strong>+{{ (int) ($summary['in_total'] ?? 0) }}</strong>
@@ -489,13 +499,17 @@
                                 $isIn = (int) $tx->amount >= 0;
                                 $impactClass = $isIn ? 'is-in' : 'is-out';
                                 $amountValue = abs((int) $tx->amount);
-                                $amountLabel = ($isIn ? '+' : '-').$amountValue.' bet_points';
+                                $amountLabel = ($isIn ? '+' : '-').$amountValue.' points';
 
                                 $typeKey = (string) $tx->type;
                                 $typeLabel = $typeLabels[$typeKey] ?? \Illuminate\Support\Str::headline(str_replace('_', ' ', $typeKey));
 
                                 $sourceLabelMap = [
+                                    'mission' => 'Mission',
+                                    'gift' => 'Cadeau',
                                     'bet' => 'Pari',
+                                    'duel' => 'Duel',
+                                    'shop' => 'Boutique',
                                     'admin' => 'Admin',
                                     'system' => 'Systeme',
                                 ];
@@ -503,12 +517,22 @@
                                 $sourceLabel = $sourceLabelMap[$sourceType] ?? \Illuminate\Support\Str::headline($sourceType);
 
                                 $typeMessageMap = [
-                                    \App\Models\WalletTransaction::TYPE_STAKE => 'Mise placee sur un match.',
-                                    \App\Models\WalletTransaction::TYPE_REFUND => 'Remboursement suite a annulation.',
-                                    \App\Models\WalletTransaction::TYPE_PAYOUT => 'Gain de pari verse dans le wallet.',
-                                    \App\Models\WalletTransaction::TYPE_GRANT => 'Credit manuel de points.',
-                                    \App\Models\WalletTransaction::TYPE_ADJUST => 'Ajustement manuel du solde.',
-                                    \App\Models\WalletTransaction::TYPE_VOID_REFUND => 'Remboursement apres resultat void.',
+                                    \App\Models\RewardWalletTransaction::TYPE_MISSION_REWARD => 'Recompense de mission creditee.',
+                                    \App\Models\RewardWalletTransaction::TYPE_GIFT_PURCHASE => 'Points utilises pour demander un cadeau.',
+                                    \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Debit lors d une redemption cadeau.',
+                                    \App\Models\RewardWalletTransaction::TYPE_REDEEM_REFUND => 'Remboursement apres annulation ou rejet cadeau.',
+                                    \App\Models\RewardWalletTransaction::TYPE_BET_STAKE => 'Mise placee sur un match.',
+                                    \App\Models\RewardWalletTransaction::TYPE_BET_PAYOUT => 'Gain de pari verse.',
+                                    \App\Models\RewardWalletTransaction::TYPE_BET_REFUND => 'Pari rembourse.',
+                                    \App\Models\RewardWalletTransaction::TYPE_DUEL_STAKE => 'Points engages sur un duel.',
+                                    \App\Models\RewardWalletTransaction::TYPE_DUEL_WIN => 'Gain ou recompense duel creditee.',
+                                    \App\Models\RewardWalletTransaction::TYPE_DUEL_REFUND => 'Duel rembourse.',
+                                    \App\Models\RewardWalletTransaction::TYPE_GRANT => 'Credit manuel de points.',
+                                    \App\Models\RewardWalletTransaction::TYPE_ADMIN_ADJUSTMENT => 'Ajustement admin du solde.',
+                                    \App\Models\RewardWalletTransaction::TYPE_STREAK_REWARD => 'Bonus de connexion credite.',
+                                    \App\Models\RewardWalletTransaction::TYPE_SHOP_PURCHASE => 'Achat boutique en points.',
+                                    \App\Models\RewardWalletTransaction::TYPE_ACTIVITY_REWARD => 'Recompense d activite creditee.',
+                                    \App\Models\RewardWalletTransaction::TYPE_ADJUST => 'Ajustement manuel du solde.',
                                 ];
                                 $message = $typeMessageMap[$typeKey] ?? 'Mouvement wallet enregistre.';
 
@@ -549,7 +573,7 @@
                                 <p class="wallet-message">{{ $message }}</p>
 
                                 <div class="wallet-meta">
-                                    <span>Solde apres: <strong>{{ (int) $tx->balance_after }}</strong> bet_points</span>
+                                    <span>Solde apres: <strong>{{ (int) $tx->balance_after }}</strong> points</span>
                                     <span class="wallet-meta-pill">{{ $sourceLabel }}</span>
                                     @foreach($metaParts as $metaText)
                                         <span>{{ $metaText }}</span>

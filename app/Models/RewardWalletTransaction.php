@@ -15,6 +15,17 @@ class RewardWalletTransaction extends Model
     public const TYPE_REDEEM_COST = 'redeem_cost';
     public const TYPE_REDEEM_REFUND = 'redeem_refund';
     public const TYPE_ADJUST = 'adjust';
+    public const TYPE_GIFT_PURCHASE = 'gift_purchase';
+    public const TYPE_BET_STAKE = 'bet_stake';
+    public const TYPE_BET_PAYOUT = 'bet_payout';
+    public const TYPE_BET_REFUND = 'bet_refund';
+    public const TYPE_DUEL_STAKE = 'duel_stake';
+    public const TYPE_DUEL_WIN = 'duel_win';
+    public const TYPE_DUEL_REFUND = 'duel_refund';
+    public const TYPE_ADMIN_ADJUSTMENT = 'admin_adjustment';
+    public const TYPE_STREAK_REWARD = 'streak_reward';
+    public const TYPE_SHOP_PURCHASE = 'shop_purchase';
+    public const TYPE_ACTIVITY_REWARD = 'activity_reward';
 
     public const REF_TYPE_MISSION = 'mission';
     public const REF_TYPE_GIFT = 'gift';
@@ -57,6 +68,17 @@ class RewardWalletTransaction extends Model
             self::TYPE_REDEEM_COST,
             self::TYPE_REDEEM_REFUND,
             self::TYPE_ADJUST,
+            self::TYPE_GIFT_PURCHASE,
+            self::TYPE_BET_STAKE,
+            self::TYPE_BET_PAYOUT,
+            self::TYPE_BET_REFUND,
+            self::TYPE_DUEL_STAKE,
+            self::TYPE_DUEL_WIN,
+            self::TYPE_DUEL_REFUND,
+            self::TYPE_ADMIN_ADJUSTMENT,
+            self::TYPE_STREAK_REWARD,
+            self::TYPE_SHOP_PURCHASE,
+            self::TYPE_ACTIVITY_REWARD,
         ];
     }
 

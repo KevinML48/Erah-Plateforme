@@ -41,6 +41,8 @@ use App\Http\Controllers\Web\LiveCodePageController;
 use App\Http\Controllers\Web\LeaderboardPageController;
 use App\Http\Controllers\Web\MatchPageController;
 use App\Http\Controllers\Web\MissionPageController;
+use App\Http\Controllers\Web\MissionFocusController;
+use App\Http\Controllers\Web\MissionClaimController;
 use App\Http\Controllers\Web\NotificationsPageController;
 use App\Http\Controllers\Web\OnboardingController;
 use App\Http\Controllers\Web\QuizPageController;
@@ -124,6 +126,9 @@ Route::prefix('app')->middleware('auth')->group(function () {
 
     Route::get('/ma-ligue', [LeaderboardPageController::class, 'me'])->name('app.leaderboards.me');
     Route::get('/missions', [MissionPageController::class, 'index'])->name('app.missions.index');
+    Route::post('/missions/{template}/focus', [MissionFocusController::class, 'store'])->name('app.missions.focus.store');
+    Route::delete('/missions/{template}/focus', [MissionFocusController::class, 'destroy'])->name('app.missions.focus.destroy');
+    Route::post('/missions/{mission}/claim', [MissionClaimController::class, 'store'])->name('app.missions.claim');
     Route::get('/quizzes', [QuizPageController::class, 'index'])->name('app.quizzes.index');
     Route::get('/quizzes/{slug}', [QuizPageController::class, 'show'])->name('app.quizzes.show');
     Route::post('/quizzes/{slug}/attempts', [QuizPageController::class, 'attempt'])->name('app.quizzes.attempt');
@@ -257,12 +262,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/leaderboards/me', [LeaderboardPageController::class, 'me'])->name('leaderboards.me');
 
         Route::get('/missions', [MissionPageController::class, 'index'])->name('missions.index');
+        Route::post('/missions/{template}/focus', [MissionFocusController::class, 'store'])->name('missions.focus.store');
+        Route::delete('/missions/{template}/focus', [MissionFocusController::class, 'destroy'])->name('missions.focus.destroy');
+        Route::post('/missions/{mission}/claim', [MissionClaimController::class, 'store'])->name('missions.claim');
         Route::post('/missions/generate/daily', [AdminMissionController::class, 'generateDaily'])
             ->middleware('admin')
             ->name('missions.generate.daily');
         Route::post('/missions/generate/weekly', [AdminMissionController::class, 'generateWeekly'])
             ->middleware('admin')
             ->name('missions.generate.weekly');
+        Route::post('/missions/generate/event-window', [AdminMissionController::class, 'generateEventWindow'])
+            ->middleware('admin')
+            ->name('missions.generate.event-window');
+        Route::post('/missions/repair', [AdminMissionController::class, 'repair'])
+            ->middleware('admin')
+            ->name('missions.repair');
 
         Route::get('/quizzes', [QuizPageController::class, 'index'])->name('quizzes.index');
         Route::get('/quizzes/{slug}', [QuizPageController::class, 'show'])->name('quizzes.show');

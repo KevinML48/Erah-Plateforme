@@ -3,26 +3,21 @@
 namespace App\Services;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
-use App\Application\Actions\Bets\ApplyWalletTransactionAction;
-use App\Application\Actions\Rewards\ApplyRewardWalletTransactionAction;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
-use App\Models\UserRewardWallet;
-use App\Models\UserWallet;
 use App\Models\WalletTransaction;
 
 class WalletService
 {
     public function __construct(
-        private readonly ApplyRewardWalletTransactionAction $applyRewardWalletTransactionAction,
-        private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
     }
 
     /**
      * @param array<string, mixed> $meta
-     * @return array{wallet: UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int}
+     * @return array{wallet: \App\Models\UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int, legacy_transaction: \App\Models\WalletTransaction|null}
      */
     public function adjustPoints(
         User $user,
@@ -31,23 +26,15 @@ class WalletService
         array $meta = [],
         bool $allowPartialDebit = false
     ): array {
-        $actualAmount = $amount;
-        if ($amount < 0 && $allowPartialDebit) {
-            $currentBalance = (int) ($user->rewardWallet?->balance
-                ?? UserRewardWallet::query()->where('user_id', $user->id)->value('balance')
-                ?? 0);
-
-            $actualAmount = -min($currentBalance, abs($amount));
-        }
-
-        $result = $this->applyRewardWalletTransactionAction->execute(
+        $result = $this->platformPointService->apply(
             user: $user,
+            amount: $amount,
             type: RewardWalletTransaction::TYPE_ADJUST,
-            amount: $actualAmount,
             uniqueKey: $uniqueKey,
+            meta: $meta,
             refType: RewardWalletTransaction::REF_TYPE_SYSTEM,
             refId: $uniqueKey,
-            metadata: $meta,
+            allowPartialDebit: $allowPartialDebit,
         );
 
         $this->storeAuditLogAction->execute(
@@ -56,17 +43,17 @@ class WalletService
             target: $result['transaction'],
             context: [
                 'requested_amount' => $amount,
-                'actual_amount' => $actualAmount,
+                'actual_amount' => $result['actual_amount'],
                 'unique_key' => $uniqueKey,
             ],
         );
 
-        return $result + ['actual_amount' => $actualAmount];
+        return $result;
     }
 
     /**
      * @param array<string, mixed> $meta
-     * @return array{wallet: UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int}
+     * @return array{wallet: \App\Models\UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int, legacy_transaction: \App\Models\WalletTransaction|null}
      */
     public function adjustRewardPoints(
         User $user,
@@ -80,7 +67,7 @@ class WalletService
 
     /**
      * @param array<string, mixed> $meta
-     * @return array{wallet: UserWallet, transaction: WalletTransaction, idempotent: bool, actual_amount: int}
+     * @return array{wallet: \App\Models\UserRewardWallet, transaction: RewardWalletTransaction, idempotent: bool, actual_amount: int, legacy_transaction: WalletTransaction|null}
      */
     public function adjustBetPoints(
         User $user,
@@ -89,43 +76,35 @@ class WalletService
         array $meta = [],
         bool $allowPartialDebit = false
     ): array {
-        $actualAmount = $amount;
-        if ($amount < 0 && $allowPartialDebit) {
-            $currentBalance = (int) ($user->wallet?->balance
-                ?? UserWallet::query()->where('user_id', $user->id)->value('balance')
-                ?? 0);
-
-            $actualAmount = -min($currentBalance, abs($amount));
-        }
-
-        $result = $this->applyWalletTransactionAction->execute(
+        $result = $this->platformPointService->apply(
             user: $user,
-            type: WalletTransaction::TYPE_ADJUST,
-            amount: $actualAmount,
+            amount: $amount,
+            type: RewardWalletTransaction::TYPE_ADJUST,
             uniqueKey: $uniqueKey,
+            meta: $meta,
             refType: WalletTransaction::REF_TYPE_SYSTEM,
             refId: $uniqueKey,
-            metadata: $meta,
+            allowPartialDebit: $allowPartialDebit,
+            mirrorLegacyBetLedger: true,
+            legacyWalletType: WalletTransaction::TYPE_ADJUST,
         );
 
         $this->storeAuditLogAction->execute(
             action: 'wallet.bet.adjusted',
             actor: $user,
-            target: $result['transaction'],
+            target: $result['legacy_transaction'] ?? $result['transaction'],
             context: [
                 'requested_amount' => $amount,
-                'actual_amount' => $actualAmount,
+                'actual_amount' => $result['actual_amount'],
                 'unique_key' => $uniqueKey,
             ],
         );
 
-        return $result + ['actual_amount' => $actualAmount];
+        return $result;
     }
 
     public function pointsBalance(User $user): int
     {
-        return (int) ($user->rewardWallet?->balance
-            ?? UserRewardWallet::query()->where('user_id', $user->id)->value('balance')
-            ?? 0);
+        return $this->platformPointService->balance($user);
     }
 }

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Schema;
 class StreakService
 {
     public function __construct(
-        private readonly WalletService $walletService,
+        private readonly PlatformPointService $platformPointService,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
@@ -68,9 +68,10 @@ class StreakService
         $streak->save();
 
         if ($rewardPoints > 0) {
-            $this->walletService->adjustPoints(
+            $this->platformPointService->credit(
                 user: $user,
                 amount: $rewardPoints,
+                type: \App\Models\RewardWalletTransaction::TYPE_STREAK_REWARD,
                 uniqueKey: 'streak.login.'.$user->id.'.'.$today,
                 meta: [
                     'current_streak' => $streak->current_streak,
@@ -78,6 +79,17 @@ class StreakService
                 ],
             );
         }
+
+        app(MissionEngine::class)->recordEvent(
+            user: $user,
+            eventType: 'login.daily',
+            amount: 1,
+            context: [
+                'date' => $today,
+                'is_daily_login' => true,
+                'current_streak' => (int) $streak->current_streak,
+            ],
+        );
 
         $this->notifyAction->execute(
             user: $user,

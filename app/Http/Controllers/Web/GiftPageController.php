@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\RedeemGiftRequest;
 use App\Models\Gift;
 use App\Models\GiftRedemption;
-use App\Models\RewardWalletTransaction;
 use App\Models\UserRewardWallet;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -153,24 +152,9 @@ class GiftPageController extends Controller
         ]);
     }
 
-    public function wallet(): View
+    public function wallet(): RedirectResponse
     {
-        $user = auth()->user();
-
-        $wallet = UserRewardWallet::query()->firstOrCreate(
-            ['user_id' => $user->id],
-            ['balance' => 0]
-        );
-
-        $transactions = RewardWalletTransaction::query()
-            ->where('user_id', $user->id)
-            ->latest('created_at')
-            ->paginate(25);
-
-        return view('pages.gifts.wallet', [
-            'wallet' => $wallet,
-            'transactions' => $transactions,
-        ]);
+        return redirect()->route('wallet.index');
     }
 
     private function resolveCategoryKey(Gift $gift): string

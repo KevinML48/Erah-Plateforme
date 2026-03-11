@@ -14,19 +14,34 @@ use App\Models\PlatformEvent;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\User;
+use App\Services\MissionMaintenanceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdminMissionController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $scope = (string) $request->query('scope', 'all');
+        $status = (string) $request->query('status', 'all');
+        $category = trim((string) $request->query('category', ''));
+        $difficulty = trim((string) $request->query('difficulty', ''));
+
         $templates = MissionTemplate::query()
+            ->when($scope !== 'all', fn ($query) => $query->where('scope', $scope))
+            ->when($status === 'active', fn ($query) => $query->where('is_active', true))
+            ->when($status === 'inactive', fn ($query) => $query->where('is_active', false))
+            ->when($category !== '', fn ($query) => $query->where('category', $category))
+            ->when($difficulty !== '', fn ($query) => $query->where('difficulty', $difficulty))
             ->orderByDesc('is_active')
+            ->orderByDesc('is_discovery')
+            ->orderBy('sort_order')
             ->orderBy('scope')
             ->orderBy('key')
-            ->paginate(25);
+            ->paginate(25)
+            ->withQueryString();
 
         $activeTemplatesCount = MissionTemplate::query()->where('is_active', true)->count();
         $activeDailyCount = MissionTemplate::query()->where('is_active', true)->where('scope', MissionTemplate::SCOPE_DAILY)->count();
@@ -41,6 +56,17 @@ class AdminMissionController extends Controller
         return view('pages.admin.missions.index', [
             'templates' => $templates,
             'scopes' => MissionTemplate::scopes(),
+            'filters' => [
+                'scope' => $scope,
+                'status' => $status,
+                'category' => $category,
+                'difficulty' => $difficulty,
+            ],
+            'categories' => MissionTemplate::query()
+                ->whereNotNull('category')
+                ->distinct()
+                ->orderBy('category')
+                ->pluck('category'),
             'quizzes' => Quiz::query()->withCount('attempts')->latest('id')->limit(8)->get(),
             'liveCodes' => LiveCode::query()->withCount('redemptions')->latest('id')->limit(8)->get(),
             'events' => PlatformEvent::query()->latest('id')->limit(8)->get(),
@@ -97,6 +123,32 @@ class AdminMissionController extends Controller
         return back()->with('success', 'Generation weekly forcee pour '.$usersCount.' utilisateurs.');
     }
 
+    public function generateEventWindow(EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction): RedirectResponse
+    {
+        $usersCount = $this->generateForUsers($ensureCurrentMissionInstancesAction);
+
+        return back()->with('success', 'Generation event_window forcee pour '.$usersCount.' utilisateurs.');
+    }
+
+    public function repair(MissionMaintenanceService $missionMaintenanceService): RedirectResponse
+    {
+        $result = ['users' => 0, 'expired_marked' => 0, 'pruned_focuses' => 0];
+
+        User::query()->orderBy('id')->chunkById(200, function (Collection $users) use ($missionMaintenanceService, &$result): void {
+            $chunkResult = $missionMaintenanceService->repairMany($users);
+            $result['users'] += $chunkResult['users'];
+            $result['expired_marked'] += $chunkResult['expired_marked'];
+            $result['pruned_focuses'] += $chunkResult['pruned_focuses'];
+        });
+
+        return back()->with(
+            'success',
+            'Reparation missions terminee pour '.$result['users'].' utilisateurs. '
+            .$result['expired_marked'].' mission(s) expiree(s) marquee(s), '
+            .$result['pruned_focuses'].' focus nettoye(s).'
+        );
+    }
+
     private function generateForUsers(EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction): int
     {
         $total = 0;
@@ -117,26 +169,47 @@ class AdminMissionController extends Controller
      */
     private function payloadFromValidated(array $validated, bool $isActive): array
     {
+        $constraints = $this->mergeDifficultyConstraint(
+            $this->decodeJsonOrNull($validated['constraints_json'] ?? null),
+            $validated['difficulty'] ?? null,
+        );
+
         return [
             'key' => $validated['key'],
             'title' => $validated['title'],
+            'short_description' => $validated['short_description'] ?? null,
             'description' => $validated['description'] ?? null,
-            'event_type' => $validated['event_type'],
+            'long_description' => $validated['long_description'] ?? ($validated['description'] ?? null),
+            'category' => $validated['category'] ?? $this->resolveCategory((string) $validated['event_type']),
+            'type' => $validated['type'] ?? $this->resolveType((string) $validated['scope']),
+            'event_type' => MissionTemplate::normalizeEventType((string) $validated['event_type']),
             'target_count' => (int) $validated['target_count'],
             'scope' => $validated['scope'],
+            'difficulty' => $validated['difficulty'] ?? null,
+            'estimated_minutes' => $validated['estimated_minutes'] ?? null,
+            'is_discovery' => (bool) ($validated['is_discovery'] ?? false),
+            'is_featured' => (bool) ($validated['is_featured'] ?? false),
+            'is_repeatable' => (bool) ($validated['is_repeatable'] ?? in_array($validated['scope'], [
+                MissionTemplate::SCOPE_DAILY,
+                MissionTemplate::SCOPE_WEEKLY,
+                MissionTemplate::SCOPE_MONTHLY,
+            ], true)),
+            'requires_claim' => (bool) ($validated['requires_claim'] ?? false),
+            'sort_order' => (int) ($validated['sort_order'] ?? 0),
             'start_at' => $validated['start_at'] ?? null,
             'end_at' => $validated['end_at'] ?? null,
-            'constraints' => $this->mergeDifficultyConstraint(
-                $this->decodeJsonOrNull($validated['constraints_json'] ?? null),
-                $validated['difficulty'] ?? null,
-            ),
+            'constraints' => $constraints,
             'rewards' => [
                 'xp' => (int) ($validated['rewards_xp'] ?? 0),
-                'rank_points' => (int) ($validated['rewards_rank_points'] ?? 0),
-                'points' => (int) ($validated['rewards_reward_points'] ?? 0),
-                'reward_points' => (int) ($validated['rewards_reward_points'] ?? 0),
-                'bet_points' => (int) ($validated['rewards_bet_points'] ?? 0),
+                'points' => (int) ($validated['rewards_points'] ?? 0),
             ],
+            'prerequisites' => $this->decodeJsonOrNull($validated['prerequisites_json'] ?? null),
+            'icon' => $validated['icon'] ?? null,
+            'badge_label' => $validated['badge_label'] ?? null,
+            'ui_meta' => array_filter([
+                'source' => 'admin',
+                'featured' => (bool) ($validated['is_featured'] ?? false),
+            ] + ($this->decodeJsonOrNull($validated['ui_meta_json'] ?? null) ?? []), fn (mixed $value): bool => $value !== null),
             'is_active' => $isActive,
         ];
     }
@@ -171,5 +244,19 @@ class AdminMissionController extends Controller
         }
 
         return $payload === [] ? null : $payload;
+    }
+
+    private function resolveCategory(string $eventType): string
+    {
+        return (string) str($eventType)->before('.')->replace('_', '-')->value();
+    }
+
+    private function resolveType(string $scope): string
+    {
+        return match ($scope) {
+            MissionTemplate::SCOPE_EVENT_WINDOW => 'event',
+            MissionTemplate::SCOPE_ONCE => 'core',
+            default => 'repeatable',
+        };
     }
 }

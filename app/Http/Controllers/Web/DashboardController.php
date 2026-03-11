@@ -10,11 +10,11 @@ use App\Models\Clip;
 use App\Models\ClipFavorite;
 use App\Models\ClipLike;
 use App\Models\Duel;
-use App\Models\League;
 use App\Models\MissionTemplate;
 use App\Models\Notification;
 use App\Models\Bet;
 use App\Models\UserMission;
+use App\Services\ExperienceService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\View\View;
 
@@ -22,24 +22,15 @@ class DashboardController extends Controller
 {
     public function __invoke(
         EnsureUserProgressAction $ensureUserProgressAction,
-        LeaderboardQuery $leaderboardQuery
+        LeaderboardQuery $leaderboardQuery,
+        ExperienceService $experienceService
     ): View {
         $user = auth()->user();
         $progress = $ensureUserProgressAction->execute($user)->load('league');
-
-        $nextLeague = League::query()
-            ->active()
-            ->where('sort_order', '>', (int) $progress->league?->sort_order)
-            ->orderBy('sort_order')
-            ->first();
-
-        $progressPercent = 100;
-        if ($nextLeague) {
-            $currentMin = (int) ($progress->league?->min_rank_points ?? 0);
-            $gap = max(1, $nextLeague->min_rank_points - $currentMin);
-            $done = max(0, $progress->total_rank_points - $currentMin);
-            $progressPercent = (int) min(100, round(($done / $gap) * 100));
-        }
+        $experience = $experienceService->summaryFor($user);
+        $nextLeague = collect(config('community.xp_leagues', []))
+            ->first(fn (array $definition): bool => (int) ($definition['xp_threshold'] ?? 0) > (int) $progress->total_xp);
+        $progressPercent = (int) $experience['progress_percent'];
 
         $leaderboard = null;
         $rankPosition = null;
@@ -117,11 +108,12 @@ class DashboardController extends Controller
             ->all();
 
         $rewardWalletBalance = (int) ($user->rewardWallet()->value('balance') ?? 0);
-        $betWalletBalance = (int) ($user->wallet()->value('balance') ?? config('betting.wallet.initial_balance', 1000));
+        $betWalletBalance = $rewardWalletBalance;
 
         return view('pages.dashboard', [
             'user' => $user,
             'progress' => $progress,
+            'experience' => $experience,
             'nextLeague' => $nextLeague,
             'progressPercent' => $progressPercent,
             'leaderboard' => $leaderboard,

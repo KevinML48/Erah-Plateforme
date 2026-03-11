@@ -38,9 +38,20 @@ class BetService
             );
         }
 
-        $this->missionEngine->recordEvent($bet->user, 'bet.placed');
+        $this->missionEngine->recordEvent($bet->user, 'bet.placed', 1, [
+            'event_key' => 'bet.placed.'.$bet->id,
+            'subject_type' => Bet::class,
+            'subject_id' => (string) $bet->id,
+            'stake_points' => (int) $bet->stake_points,
+        ]);
         if ($bet->status === Bet::STATUS_WON) {
-            $this->missionEngine->recordEvent($bet->user, 'bet.won');
+            $this->missionEngine->recordEvent($bet->user, 'bet.won', 1, [
+                'event_key' => 'bet.won.'.$bet->id,
+                'subject_type' => Bet::class,
+                'subject_id' => (string) $bet->id,
+                'stake_points' => (int) $bet->stake_points,
+                'status' => Bet::STATUS_WON,
+            ]);
         }
 
         $this->achievementService->sync($bet->user);

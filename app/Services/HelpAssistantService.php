@@ -275,10 +275,10 @@ class HelpAssistantService
         $user->loadMissing(['progress', 'wallet', 'rewardWallet']);
         $progress = $user->progress;
         $league = $this->rankService->currentLeague($user);
+        $points = (int) ($user->rewardWallet?->balance ?? $user->wallet?->balance ?? 0);
 
         return [
-            'points' => (int) ($user->wallet?->balance ?? 0),
-            'reward_balance' => (int) ($user->rewardWallet?->balance ?? 0),
+            'points' => $points,
             'xp' => (int) ($progress?->total_xp ?? 0),
             'league' => $league['name'],
         ];

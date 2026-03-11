@@ -57,8 +57,8 @@ export default function ConversationSidebar({
                 <div className="mt-5 grid grid-cols-2 gap-3">
                     <StatCard label="Ligue" value={sidebar.league || 'Bronze'} accent />
                     <StatCard label="XP" value={sidebar.xp ?? 0} />
-                    <StatCard label="Points" value={sidebar.bet_points ?? 0} />
-                    <StatCard label="Rewards" value={sidebar.reward_points ?? 0} />
+                    <StatCard label="Points" value={sidebar.points ?? sidebar.bet_points ?? 0} />
+                    <StatCard label="Niveau" value={sidebar.level ?? 1} />
                 </div>
             </div>
 

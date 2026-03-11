@@ -6,6 +6,7 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Ranking\AddPointsAction;
 use App\Models\CommunityRewardGrant;
 use App\Models\PointsTransaction;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\UserProgress;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,8 @@ class RewardGrantService
 {
     public function __construct(
         private readonly AddPointsAction $addPointsAction,
-        private readonly WalletService $walletService,
+        private readonly ExperienceService $experienceService,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
     }
@@ -63,18 +65,16 @@ class RewardGrantService
             $xp = (int) ($normalizedRewards['xp'] ?? 0);
             $rankPoints = (int) ($normalizedRewards['rank_points'] ?? 0);
             $rewardPoints = (int) ($normalizedRewards['points'] ?? 0);
-            $betPoints = (int) ($normalizedRewards['bet_points'] ?? 0);
             $duelScore = (int) ($normalizedRewards['duel_score'] ?? 0);
 
             if ($xp > 0) {
-                $this->addPointsAction->execute(
+                $this->experienceService->award(
                     user: $user,
-                    kind: PointsTransaction::KIND_XP,
-                    points: $xp,
                     sourceType: 'community.'.$domain.'.'.$action,
                     sourceId: $dedupeKey,
                     actor: $actor,
                     meta: $meta,
+                    xp: $xp,
                 );
             }
 
@@ -91,25 +91,17 @@ class RewardGrantService
             }
 
             if ($rewardPoints !== 0) {
-                $walletResult = $this->walletService->adjustPoints(
+                $walletResult = $this->platformPointService->apply(
                     user: $user,
                     amount: $rewardPoints,
+                    type: $this->resolvePointTransactionType($domain, $action),
                     uniqueKey: 'community.reward.'.$dedupeKey,
                     meta: $meta + ['domain' => $domain, 'action' => $action],
+                    refType: RewardWalletTransaction::REF_TYPE_SYSTEM,
+                    refId: $dedupeKey,
                     allowPartialDebit: $allowPartialRewardDebit,
                 );
                 $rewardPoints = (int) $walletResult['actual_amount'];
-            }
-
-            if ($betPoints !== 0) {
-                $walletResult = $this->walletService->adjustBetPoints(
-                    user: $user,
-                    amount: $betPoints,
-                    uniqueKey: 'community.bet.'.$dedupeKey,
-                    meta: $meta + ['domain' => $domain, 'action' => $action],
-                    allowPartialDebit: $allowPartialBetDebit,
-                );
-                $betPoints = (int) $walletResult['actual_amount'];
             }
 
             if ($duelScore !== 0) {
@@ -146,7 +138,7 @@ class RewardGrantService
                 'xp_amount' => $xp,
                 'rank_points_amount' => $rankPoints,
                 'reward_points_amount' => $rewardPoints,
-                'bet_points_amount' => $betPoints,
+                'bet_points_amount' => 0,
                 'duel_score_amount' => $duelScore,
                 'meta' => $meta,
                 'granted_on' => now()->toDateString(),
@@ -167,7 +159,6 @@ class RewardGrantService
                         'xp' => $xp,
                         'rank_points' => $rankPoints,
                         'reward_points' => $rewardPoints,
-                        'bet_points' => $betPoints,
                         'duel_score' => $duelScore,
                     ],
                 ],
@@ -194,16 +185,48 @@ class RewardGrantService
 
     /**
      * @param array<string, int> $rewards
-     * @return array{xp: int, rank_points: int, points: int, bet_points: int, duel_score: int}
+     * @return array{xp: int, rank_points: int, points: int, duel_score: int}
      */
     private function normalizeRewards(array $rewards): array
     {
+        $points = (int) (
+            $rewards['points']
+            ?? $rewards['reward_points']
+            ?? $rewards['reward_points_amount']
+            ?? 0
+        );
+        $points += (int) ($rewards['bet_points'] ?? $rewards['bet_points_amount'] ?? 0);
+
         return [
             'xp' => (int) ($rewards['xp'] ?? 0),
             'rank_points' => (int) ($rewards['rank_points'] ?? 0),
-            'points' => (int) ($rewards['points'] ?? $rewards['reward_points'] ?? 0),
-            'bet_points' => (int) ($rewards['bet_points'] ?? 0),
+            'points' => $points,
             'duel_score' => (int) ($rewards['duel_score'] ?? 0),
         ];
+    }
+
+    private function resolvePointTransactionType(string $domain, string $action): string
+    {
+        if ($domain === 'missions') {
+            return RewardWalletTransaction::TYPE_MISSION_REWARD;
+        }
+
+        if ($domain === 'duels' && $action === 'win') {
+            return RewardWalletTransaction::TYPE_DUEL_WIN;
+        }
+
+        if ($domain === 'duels' && $action === 'loss') {
+            return RewardWalletTransaction::TYPE_DUEL_REFUND;
+        }
+
+        if ($domain === 'admin') {
+            return RewardWalletTransaction::TYPE_ADMIN_ADJUSTMENT;
+        }
+
+        if ($domain === 'streak') {
+            return RewardWalletTransaction::TYPE_STREAK_REWARD;
+        }
+
+        return RewardWalletTransaction::TYPE_ACTIVITY_REWARD;
     }
 }

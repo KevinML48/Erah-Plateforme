@@ -8,8 +8,10 @@ use App\Models\Bet;
 use App\Models\EsportMatch;
 use App\Models\MatchMarket;
 use App\Models\MatchSelection;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Services\PlatformPointService;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -17,7 +19,7 @@ use RuntimeException;
 class PlaceBetAction
 {
     public function __construct(
-        private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly SyncMatchMarketsAction $syncMatchMarketsAction
     ) {
@@ -111,19 +113,21 @@ class PlaceBetAction
                     'meta' => $payload['meta'] ?? null,
                 ]);
 
-                $this->applyWalletTransactionAction->execute(
+                $this->platformPointService->debit(
                     user: $user,
-                    type: WalletTransaction::TYPE_STAKE,
-                    amount: -$stakePoints,
+                    amount: $stakePoints,
+                    type: RewardWalletTransaction::TYPE_BET_STAKE,
                     uniqueKey: 'bet.stake.'.$bet->id,
                     refType: WalletTransaction::REF_TYPE_BET,
                     refId: (string) $bet->id,
-                    metadata: [
+                    meta: [
                         'match_id' => $match->id,
                         'market_key' => $market->key,
                         'selection_key' => $selectionKey,
                         'prediction' => $prediction,
                     ],
+                    mirrorLegacyBetLedger: true,
+                    legacyWalletType: WalletTransaction::TYPE_STAKE,
                     initialBalanceIfMissing: (int) config('betting.wallet.initial_balance', 1000),
                 );
 

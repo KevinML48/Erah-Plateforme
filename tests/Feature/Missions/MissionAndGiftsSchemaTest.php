@@ -20,6 +20,8 @@ class MissionAndGiftsSchemaTest extends TestCase
         $this->assertTrue(Schema::hasTable('mission_instances'));
         $this->assertTrue(Schema::hasTable('user_missions'));
         $this->assertTrue(Schema::hasTable('mission_completions'));
+        $this->assertTrue(Schema::hasTable('mission_event_records'));
+        $this->assertTrue(Schema::hasTable('user_mission_focuses'));
         $this->assertTrue(Schema::hasTable('user_reward_wallets'));
         $this->assertTrue(Schema::hasTable('reward_wallet_transactions'));
         $this->assertTrue(Schema::hasTable('gifts'));

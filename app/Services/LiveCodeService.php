@@ -103,7 +103,11 @@ class LiveCodeService
                 subjectId: (string) $liveCode->id,
             );
 
-            $this->missionEngine->recordEvent($user, 'live_code.redeem');
+            $this->missionEngine->recordEvent($user, 'live_code.redeem', 1, [
+                'event_key' => 'live_code.redeem.'.$redemption->id,
+                'subject_type' => LiveCode::class,
+                'subject_id' => (string) $liveCode->id,
+            ]);
             $this->achievementService->sync($user);
             $this->notifyAction->execute(
                 user: $user,

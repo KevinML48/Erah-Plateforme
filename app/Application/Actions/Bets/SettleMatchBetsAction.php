@@ -9,9 +9,11 @@ use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\Bet;
 use App\Models\EsportMatch;
 use App\Models\MatchSettlement;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use App\Services\BetService;
+use App\Services\PlatformPointService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +22,7 @@ use RuntimeException;
 class SettleMatchBetsAction
 {
     public function __construct(
-        private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly MatchOutcomeResolver $matchOutcomeResolver,
@@ -94,14 +96,16 @@ class SettleMatchBetsAction
                         $bet->settlement_points = $bet->stake_points;
                         $bet->payout = $bet->stake_points;
 
-                        $this->applyWalletTransactionAction->execute(
+                        $this->platformPointService->credit(
                             user: $bet->user,
-                            type: WalletTransaction::TYPE_VOID_REFUND,
                             amount: (int) $bet->stake_points,
+                            type: RewardWalletTransaction::TYPE_BET_REFUND,
                             uniqueKey: 'bet.void_refund.'.$bet->id,
                             refType: WalletTransaction::REF_TYPE_BET,
                             refId: (string) $bet->id,
-                            metadata: ['match_id' => $match->id]
+                            meta: ['match_id' => $match->id],
+                            mirrorLegacyBetLedger: true,
+                            legacyWalletType: WalletTransaction::TYPE_VOID_REFUND,
                         );
 
                         $voidCount++;
@@ -117,18 +121,20 @@ class SettleMatchBetsAction
                             $bet->settlement_points = $bet->potential_payout;
                             $bet->payout = $bet->potential_payout;
 
-                            $this->applyWalletTransactionAction->execute(
+                            $this->platformPointService->credit(
                                 user: $bet->user,
-                                type: WalletTransaction::TYPE_PAYOUT,
                                 amount: (int) $bet->potential_payout,
+                                type: RewardWalletTransaction::TYPE_BET_PAYOUT,
                                 uniqueKey: 'bet.payout.'.$bet->id,
                                 refType: WalletTransaction::REF_TYPE_BET,
                                 refId: (string) $bet->id,
-                                metadata: [
+                                meta: [
                                     'match_id' => $match->id,
                                     'market_key' => $bet->market_key,
                                     'selection_key' => $bet->selection_key,
-                                ]
+                                ],
+                                mirrorLegacyBetLedger: true,
+                                legacyWalletType: WalletTransaction::TYPE_PAYOUT,
                             );
 
                             $wonCount++;
@@ -241,8 +247,8 @@ class SettleMatchBetsAction
     private function buildBetSettlementMessage(Bet $bet): string
     {
         return match ($bet->status) {
-            Bet::STATUS_WON => 'Pari gagne: +'.$bet->settlement_points.' bet_points.',
-            Bet::STATUS_VOID => 'Pari annule: remboursement '.$bet->settlement_points.' bet_points.',
+            Bet::STATUS_WON => 'Pari gagne: +'.$bet->settlement_points.' points.',
+            Bet::STATUS_VOID => 'Pari annule: remboursement '.$bet->settlement_points.' points.',
             default => 'Pari perdu. Aucun gain.',
         };
     }

@@ -214,6 +214,16 @@ class User extends Authenticatable
         return $this->hasMany(UserMission::class);
     }
 
+    public function missionFocuses(): HasMany
+    {
+        return $this->hasMany(UserMissionFocus::class);
+    }
+
+    public function missionEventRecords(): HasMany
+    {
+        return $this->hasMany(MissionEventRecord::class);
+    }
+
     public function missionCompletions(): HasMany
     {
         return $this->hasMany(MissionCompletion::class);

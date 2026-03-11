@@ -12,7 +12,7 @@ use RuntimeException;
 class ShopService
 {
     public function __construct(
-        private readonly WalletService $walletService,
+        private readonly PlatformPointService $platformPointService,
         private readonly MissionEngine $missionEngine,
         private readonly AchievementService $achievementService,
         private readonly StoreAuditLogAction $storeAuditLogAction
@@ -32,12 +32,12 @@ class ShopService
                 throw new RuntimeException('Article epuise.');
             }
 
-            $this->walletService->adjustRewardPoints(
+            $this->platformPointService->debit(
                 user: $user,
-                amount: -((int) $item->cost_points),
+                amount: (int) $item->cost_points,
+                type: \App\Models\RewardWalletTransaction::TYPE_SHOP_PURCHASE,
                 uniqueKey: 'shop.purchase.'.$user->id.'.'.$item->id.'.'.now()->timestamp,
                 meta: ['shop_item_id' => $item->id],
-                allowPartialDebit: false,
             );
 
             $purchase = UserPurchase::query()->create([
@@ -54,7 +54,11 @@ class ShopService
                 $item->save();
             }
 
-            $this->missionEngine->recordEvent($user, 'shop.purchase');
+            $this->missionEngine->recordEvent($user, 'shop.purchase', 1, [
+                'event_key' => 'shop.purchase.'.$purchase->id,
+                'subject_type' => UserPurchase::class,
+                'subject_id' => (string) $purchase->id,
+            ]);
             $this->achievementService->sync($user);
 
             $this->storeAuditLogAction->execute(

@@ -87,7 +87,11 @@ class QuizService
                 'reward_granted_at' => null,
             ]);
 
-            $this->missionEngine->recordEvent($user, 'quiz.attempt');
+            $this->missionEngine->recordEvent($user, 'quiz.attempt', 1, [
+                'event_key' => 'quiz.attempt.'.$attempt->id,
+                'subject_type' => QuizAttempt::class,
+                'subject_id' => (string) $attempt->id,
+            ]);
 
             if ($attempt->passed) {
                 $this->rewardGrantService->grant(
@@ -97,7 +101,7 @@ class QuizService
                     dedupeKey: 'quiz.pass.'.$user->id.'.'.$quiz->id,
                     rewards: [
                         'xp' => (int) $quiz->xp_reward,
-                        'reward_points' => (int) $quiz->reward_points,
+                        'points' => (int) $quiz->reward_points,
                     ],
                     subjectType: Quiz::class,
                     subjectId: (string) $quiz->id,
@@ -105,7 +109,11 @@ class QuizService
 
                 $attempt->reward_granted_at = now();
                 $attempt->save();
-                $this->missionEngine->recordEvent($user, 'quiz.pass');
+                $this->missionEngine->recordEvent($user, 'quiz.pass', 1, [
+                    'event_key' => 'quiz.pass.'.$attempt->id,
+                    'subject_type' => QuizAttempt::class,
+                    'subject_id' => (string) $attempt->id,
+                ]);
             }
 
             $this->achievementService->sync($user);

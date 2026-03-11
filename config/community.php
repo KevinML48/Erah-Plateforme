@@ -11,6 +11,14 @@ return [
         ['key' => 'erah-prime', 'name' => 'ERAH Prime', 'xp_threshold' => 60000],
     ],
 
+    'progression' => [
+        'level_curve' => [
+            'base_xp' => 250,
+            'growth_per_level' => 75,
+            'max_level' => 200,
+        ],
+    ],
+
     'clips' => [
         'daily_limits' => [
             'view' => 10,

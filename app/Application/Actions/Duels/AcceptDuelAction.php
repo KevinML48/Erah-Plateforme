@@ -6,6 +6,7 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\NotifyAction;
 use App\Models\Duel;
 use App\Models\User;
+use App\Services\MissionEngine;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -14,6 +15,7 @@ class AcceptDuelAction
 {
     public function __construct(
         private readonly RecordDuelEventAction $recordDuelEventAction,
+        private readonly MissionEngine $missionEngine,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
@@ -100,6 +102,12 @@ class AcceptDuelAction
                     ],
                 );
             }
+
+            $this->missionEngine->recordEvent($actor, 'duel.accepted', 1, [
+                'event_key' => 'duel.accepted.'.$duel->id,
+                'subject_type' => Duel::class,
+                'subject_id' => (string) $duel->id,
+            ]);
 
             return [
                 'duel' => $duel->fresh(['challenger:id,name', 'challenged:id,name']),

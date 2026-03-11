@@ -10,13 +10,14 @@ use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
+use App\Services\PlatformPointService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class RedeemGiftAction
 {
     public function __construct(
-        private readonly ApplyRewardWalletTransactionAction $applyRewardWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly NotifyAction $notifyAction
     ) {
@@ -73,19 +74,18 @@ class RedeemGiftAction
                 'delivered_at' => null,
             ]);
 
-            $walletResult = $this->applyRewardWalletTransactionAction->execute(
+            $walletResult = $this->platformPointService->debit(
                 user: $user,
-                type: RewardWalletTransaction::TYPE_REDEEM_COST,
-                amount: -((int) $gift->cost_points),
+                amount: (int) $gift->cost_points,
+                type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,
                 uniqueKey: $transactionKey,
                 refType: RewardWalletTransaction::REF_TYPE_GIFT,
                 refId: (string) $redemption->id,
-                metadata: [
+                meta: [
                     'gift_id' => $gift->id,
                     'gift_title' => $gift->title,
                     'idempotency_key' => $idempotencyKey,
                 ],
-                initialBalanceIfMissing: 0,
             );
 
             if ($walletResult['idempotent']) {
@@ -140,4 +140,3 @@ class RedeemGiftAction
         });
     }
 }
-

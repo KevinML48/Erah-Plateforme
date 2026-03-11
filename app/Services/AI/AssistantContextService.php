@@ -9,6 +9,7 @@ use App\Models\HelpGlossaryTerm;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserMission;
+use App\Services\ExperienceService;
 use App\Services\RankService;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,6 +17,7 @@ class AssistantContextService
 {
     public function __construct(
         private readonly RankService $rankService,
+        private readonly ExperienceService $experienceService,
     ) {
     }
 
@@ -26,11 +28,11 @@ class AssistantContextService
     {
         $user->loadMissing(['progress.league', 'wallet', 'rewardWallet', 'supportSubscriptions']);
         $league = $this->rankService->currentLeague($user);
-        $walletBalance = (int) ($user->wallet?->balance ?? config('betting.wallet.initial_balance', 1000));
-        $rewardBalance = (int) ($user->rewardWallet?->balance ?? 0);
+        $experience = $this->experienceService->summaryFor($user);
+        $walletBalance = (int) ($user->rewardWallet?->balance ?? $user->wallet?->balance ?? 0);
         $missions = $this->activeMissions($user);
         $upcomingMatches = $this->upcomingMatches();
-        $recommendedActions = $this->recommendedActions($user, $missions, $upcomingMatches, $walletBalance, $rewardBalance);
+        $recommendedActions = $this->recommendedActions($user, $missions, $upcomingMatches, $walletBalance);
 
         return [
             'generated_at' => now()->toIso8601String(),
@@ -60,12 +62,9 @@ class AssistantContextService
                 'progress' => [
                     'league' => $league['name'],
                     'xp' => (int) ($user->progress?->total_xp ?? 0),
-                    'rank_points' => (int) ($user->progress?->total_rank_points ?? 0),
+                    'level' => (int) ($experience['level'] ?? 1),
                 ],
-                'wallets' => [
-                    'bet_points' => $walletBalance,
-                    'reward_points' => $rewardBalance,
-                ],
+                'wallets' => ['points' => $walletBalance],
                 'supporter_active' => $user->isSupporterActive(),
                 'notifications_unread' => Notification::query()
                     ->where('user_id', $user->id)
@@ -73,7 +72,7 @@ class AssistantContextService
                     ->count(),
                 'missions' => $missions,
                 'upcoming_matches' => $upcomingMatches,
-                'gift_highlights' => $this->giftHighlights($rewardBalance),
+                'gift_highlights' => $this->giftHighlights($walletBalance),
                 'profile_suggestions' => $this->profileSuggestions($user),
                 'recommended_actions' => $recommendedActions,
             ],
@@ -91,9 +90,8 @@ class AssistantContextService
         return [
             'league' => data_get($userContext, 'progress.league'),
             'xp' => data_get($userContext, 'progress.xp'),
-            'rank_points' => data_get($userContext, 'progress.rank_points'),
-            'bet_points' => data_get($userContext, 'wallets.bet_points'),
-            'reward_points' => data_get($userContext, 'wallets.reward_points'),
+            'level' => data_get($userContext, 'progress.level'),
+            'points' => data_get($userContext, 'wallets.points'),
             'unread_notifications' => data_get($userContext, 'notifications_unread'),
             'recommended_actions' => data_get($userContext, 'recommended_actions', []),
             'upcoming_matches' => data_get($userContext, 'upcoming_matches', []),
@@ -249,7 +247,7 @@ class AssistantContextService
      * @param array<int, array<string, mixed>> $upcomingMatches
      * @return array<int, array<string, string>>
      */
-    private function recommendedActions(User $user, array $missions, array $upcomingMatches, int $walletBalance, int $rewardBalance): array
+    private function recommendedActions(User $user, array $missions, array $upcomingMatches, int $walletBalance): array
     {
         $actions = collect();
 
@@ -277,10 +275,10 @@ class AssistantContextService
             ]);
         }
 
-        if ($rewardBalance > 0) {
+        if ($walletBalance > 0) {
             $actions->push([
                 'label' => 'Explorer les cadeaux',
-                'description' => 'Votre reward wallet peut deja vous ouvrir des recompenses.',
+                'description' => 'Vos points peuvent deja servir pour les cadeaux et les autres usages de plateforme.',
                 'url' => $this->relativeRoute('gifts.index'),
             ]);
         }

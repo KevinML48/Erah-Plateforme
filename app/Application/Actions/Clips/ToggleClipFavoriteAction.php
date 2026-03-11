@@ -6,13 +6,15 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Models\Clip;
 use App\Models\ClipFavorite;
 use App\Models\User;
+use App\Services\ClipRewardService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class ToggleClipFavoriteAction
 {
     public function __construct(
-        private readonly StoreAuditLogAction $storeAuditLogAction
+        private readonly StoreAuditLogAction $storeAuditLogAction,
+        private readonly ClipRewardService $clipRewardService
     ) {
     }
 
@@ -55,6 +57,8 @@ class ToggleClipFavoriteAction
                     'user_id' => $user->id,
                 ],
             );
+
+            $this->clipRewardService->trackFavorite($user, $lockedClip);
 
             return [
                 'clip' => $lockedClip->fresh(),

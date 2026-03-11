@@ -170,12 +170,12 @@ class CommunityPlatformFeatureTest extends TestCase
 
         $this->assertDatabaseHas('user_reward_wallets', [
             'user_id' => $user->id,
-            'balance' => 75,
+            'balance' => 100,
         ]);
 
         $this->assertDatabaseHas('user_wallets', [
             'user_id' => $user->id,
-            'balance' => 25,
+            'balance' => 100,
         ]);
 
         $second = $this->actingAs($user)->post(route('live-codes.redeem'), [

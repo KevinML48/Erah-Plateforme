@@ -298,6 +298,105 @@
             gap: 18px;
         }
 
+        .profile-mission-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .profile-mission-card {
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 18px;
+            padding: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(8, 9, 14, .96));
+        }
+
+        .profile-mission-head,
+        .profile-mission-meta,
+        .profile-mission-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-mission-kicker,
+        .profile-mission-pill,
+        .profile-mission-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-mission-status.is-completed {
+            border-color: rgba(92, 213, 144, .44);
+            color: #d4ffe4;
+        }
+
+        .profile-mission-status.is-pending {
+            border-color: rgba(255, 215, 103, .34);
+            color: #ffeebc;
+        }
+
+        .profile-mission-title {
+            margin: 14px 0 0;
+            font-size: 24px;
+            line-height: 1.18;
+        }
+
+        .profile-mission-description {
+            margin: 14px 0 0;
+            color: rgba(255, 255, 255, .74);
+            line-height: 1.7;
+        }
+
+        .profile-mission-meta {
+            justify-content: flex-start;
+            margin-top: 16px;
+        }
+
+        .profile-mission-progress {
+            margin-top: 18px;
+        }
+
+        .profile-mission-progress-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, .72);
+            font-size: 13px;
+        }
+
+        .profile-mission-progress-track {
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .09);
+            overflow: hidden;
+        }
+
+        .profile-mission-progress-track > span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #d80707 0%, #ff6a3d 100%);
+        }
+
+        .profile-mission-empty {
+            border: 1px dashed rgba(255, 255, 255, .14);
+            border-radius: 18px;
+            padding: 24px;
+            color: rgba(255, 255, 255, .66);
+        }
+
         .profile-assistant-card {
             border: 1px solid rgba(255, 255, 255, .12);
             border-radius: 18px;
@@ -451,6 +550,8 @@
             : array_column($currentShortcuts, 'key');
         $minShortcuts = (int) ($minShortcuts ?? 1);
         $maxShortcuts = (int) ($maxShortcuts ?? 5);
+        $missionFocusCards = $missionFocusCards ?? collect();
+        $missionSummary = $missionSummary ?? [];
         $assistantFavorites = $assistantFavorites ?? collect();
     @endphp
 
@@ -625,9 +726,9 @@
                             </p>
 
                             <ul class="tt-list margin-top-20">
-                                <li><strong>Ligue:</strong> {{ $progress->league->name ?? 'N/A' }}</li>
-                                <li><strong>Rank points:</strong> {{ (int) ($progress->total_rank_points ?? 0) }}</li>
-                                <li><strong>XP total:</strong> {{ (int) ($progress->xp_total ?? 0) }}</li>
+                                <li><strong>Rang:</strong> {{ data_get($experience ?? [], 'rank.name', 'Bronze') }}</li>
+                                <li><strong>Niveau:</strong> {{ (int) data_get($experience ?? [], 'level', 1) }}</li>
+                                <li><strong>XP total:</strong> {{ (int) data_get($experience ?? [], 'total_xp', 0) }}</li>
                             </ul>
 
                             @if($user->twitter_url || $user->instagram_url || $user->tiktok_url || $user->discord_url)
@@ -815,6 +916,73 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top" id="missions-focus">
+            <div class="tt-section-inner tt-wrap max-width-1000">
+                <div class="tt-heading tt-heading-lg margin-bottom-20">
+                    <h3 class="tt-heading-subtitle">Missions focus</h3>
+                    <h2 class="tt-heading-title">Mes priorites du moment</h2>
+                </div>
+                <div class="profile-inline-actions margin-bottom-30">
+                    <span class="tt-form-text">
+                        {{ (int) ($missionSummary['focus'] ?? 0) }} mission(s) en focus sur 3 maximum.
+                    </span>
+                    <a href="{{ route(request()->routeIs('app.*') ? 'app.missions.index' : 'missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                        <span data-hover="Ouvrir les missions">Ouvrir les missions</span>
+                    </a>
+                </div>
+
+                @if($missionFocusCards->count())
+                    <div class="profile-mission-grid">
+                        @foreach($missionFocusCards as $mission)
+                            <article class="profile-mission-card">
+                                <div class="profile-mission-head">
+                                    <span class="profile-mission-kicker">{{ $mission['scope_label'] ?? 'Mission' }}</span>
+                                    <span class="profile-mission-status {{ $mission['status_class'] ?? '' }}">{{ $mission['status_label'] ?? 'En cours' }}</span>
+                                </div>
+
+                                <h3 class="profile-mission-title">{{ $mission['title'] ?? 'Mission' }}</h3>
+                                <p class="profile-mission-description">{{ $mission['short_description'] ?? '' }}</p>
+
+                                <div class="profile-mission-meta">
+                                    <span class="profile-mission-pill">{{ $mission['event_label'] ?? 'Action libre' }}</span>
+                                    <span class="profile-mission-pill">{{ (int) ($mission['estimated_minutes'] ?? 0) > 0 ? ((int) $mission['estimated_minutes'].' min') : 'Mission ERAH' }}</span>
+                                    @if((int) ($mission['rewards']['xp'] ?? 0) > 0)
+                                        <span class="profile-mission-pill">+{{ (int) $mission['rewards']['xp'] }} XP</span>
+                                    @endif
+                                    @if((int) ($mission['rewards']['points'] ?? 0) > 0)
+                                        <span class="profile-mission-pill">+{{ (int) $mission['rewards']['points'] }} pts</span>
+                                    @endif
+                                </div>
+
+                                <div class="profile-mission-progress">
+                                    <div class="profile-mission-progress-head">
+                                        <span>Progression</span>
+                                        <strong>{{ (int) ($mission['progress_count'] ?? 0) }} / {{ (int) ($mission['target_count'] ?? 0) }}</strong>
+                                    </div>
+                                    <div class="profile-mission-progress-track">
+                                        <span style="width: {{ (int) ($mission['progress_percent'] ?? 0) }}%"></span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-mission-foot margin-top-20">
+                                    <span class="tt-form-text">
+                                        {{ optional($mission['period_end'] ?? null)->format('d/m/Y H:i') ? 'Disponible jusqu au '.optional($mission['period_end'])->format('d/m/Y H:i') : 'Sans date de fin proche' }}
+                                    </span>
+                                    <a href="{{ route(request()->routeIs('app.*') ? 'app.missions.index' : 'missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                        <span data-hover="Voir les details">Voir les details</span>
+                                    </a>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="profile-mission-empty">
+                        Aucune mission en focus pour le moment. Depuis la page Missions, vous pouvez epingler jusqu a 3 priorites.
+                    </div>
+                @endif
             </div>
         </div>
 

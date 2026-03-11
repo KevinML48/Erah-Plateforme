@@ -5,8 +5,10 @@ namespace App\Application\Actions\Bets;
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Models\Bet;
 use App\Models\EsportMatch;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Services\PlatformPointService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,7 @@ use RuntimeException;
 class CancelBetAction
 {
     public function __construct(
-        private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
     }
@@ -75,19 +77,20 @@ class CancelBetAction
             $bet->cancelled_at = now();
             $bet->save();
 
-            $this->applyWalletTransactionAction->execute(
+            $this->platformPointService->credit(
                 user: $user,
-                type: WalletTransaction::TYPE_REFUND,
                 amount: (int) $bet->stake_points,
+                type: RewardWalletTransaction::TYPE_BET_REFUND,
                 uniqueKey: 'bet.refund.'.$bet->id.'.'.$idempotencyKey,
                 refType: WalletTransaction::REF_TYPE_BET,
                 refId: (string) $bet->id,
-                metadata: [
+                meta: [
                     'bet_id' => $bet->id,
                     'match_id' => $bet->match_id,
                     'reason' => 'cancel_within_window_before_lock',
                 ],
-                initialBalanceIfMissing: 0,
+                mirrorLegacyBetLedger: true,
+                legacyWalletType: WalletTransaction::TYPE_REFUND,
             );
 
             $this->storeAuditLogAction->execute(

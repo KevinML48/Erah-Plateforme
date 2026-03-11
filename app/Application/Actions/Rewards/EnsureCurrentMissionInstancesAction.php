@@ -9,6 +9,8 @@ use App\Models\UserMission;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class EnsureCurrentMissionInstancesAction
 {
@@ -22,6 +24,16 @@ class EnsureCurrentMissionInstancesAction
      */
     public function execute(User $user): array
     {
+        if (! $this->missionFoundationReady()) {
+            return [
+                'daily' => 0,
+                'weekly' => 0,
+                'monthly' => 0,
+                'once' => 0,
+                'event_window' => 0,
+            ];
+        }
+
         return DB::transaction(function () use ($user) {
             $todayStart = now()->copy()->startOfDay();
             $todayEnd = now()->copy()->endOfDay();
@@ -41,12 +53,20 @@ class EnsureCurrentMissionInstancesAction
 
             $activeTemplates = MissionTemplate::query()
                 ->where('is_active', true)
+                ->orderByDesc('is_discovery')
+                ->orderByDesc('is_featured')
+                ->orderBy('sort_order')
+                ->orderBy('id')
                 ->lockForUpdate()
                 ->get();
 
             $eligibleTemplates = $activeTemplates
                 ->filter(function (MissionTemplate $template) use ($isSupporter): bool {
                     $constraints = is_array($template->constraints) ? $template->constraints : [];
+
+                    if (! $template->isAvailableAt()) {
+                        return false;
+                    }
 
                     return ! (($constraints['supporter_only'] ?? false) && ! $isSupporter);
                 })
@@ -94,6 +114,21 @@ class EnsureCurrentMissionInstancesAction
 
             return $counters;
         });
+    }
+
+    private function missionFoundationReady(): bool
+    {
+        $ready = Schema::hasTable('mission_event_records')
+            && Schema::hasTable('user_mission_focuses');
+
+        if (! $ready) {
+            Log::warning('Mission foundation migration is missing. Mission generation skipped.', [
+                'missing_mission_event_records' => ! Schema::hasTable('mission_event_records'),
+                'missing_user_mission_focuses' => ! Schema::hasTable('user_mission_focuses'),
+            ]);
+        }
+
+        return $ready;
     }
 
     /**
@@ -178,7 +213,7 @@ class EnsureCurrentMissionInstancesAction
     private function templateDifficulty(MissionTemplate $template): string
     {
         $constraints = is_array($template->constraints) ? $template->constraints : [];
-        $difficulty = (string) ($constraints['difficulty'] ?? $constraints['daily_slot'] ?? 'simple');
+        $difficulty = (string) ($template->difficulty ?? $constraints['difficulty'] ?? $constraints['daily_slot'] ?? 'simple');
 
         return in_array($difficulty, ['simple', 'medium', 'special'], true) ? $difficulty : 'simple';
     }

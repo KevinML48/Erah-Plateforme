@@ -53,7 +53,12 @@ class ClipRewardService
             );
         }
 
-        $this->missionEngine->recordEvent($user, 'clip.view');
+        $this->missionEngine->recordEvent($user, 'clip.view', 1, [
+            'event_key' => 'clip.view.'.$view->id,
+            'subject_type' => ClipView::class,
+            'subject_id' => (string) $view->id,
+            'clip_id' => $clip->id,
+        ]);
         $this->achievementService->sync($user);
 
         return $view;
@@ -62,14 +67,59 @@ class ClipRewardService
     public function rewardLike(User $user, Clip $clip): void
     {
         $this->rewardOnce($user, $clip, 'like');
-        $this->missionEngine->recordEvent($user, 'clip.like');
+        $this->missionEngine->recordEvent($user, 'clip.like', 1, [
+            'event_key' => 'clip.like.'.$user->id.'.'.$clip->id,
+            'subject_type' => Clip::class,
+            'subject_id' => (string) $clip->id,
+            'clip_id' => $clip->id,
+        ]);
         $this->achievementService->sync($user);
     }
 
     public function rewardComment(User $user, Clip $clip, ClipComment $comment): void
     {
         $this->rewardOnce($user, $clip, 'comment', subjectId: (string) $comment->id);
-        $this->missionEngine->recordEvent($user, 'clip.comment');
+        $this->missionEngine->recordEvent($user, 'clip.comment', 1, [
+            'event_key' => 'clip.comment.'.$user->id.'.'.$comment->id,
+            'subject_type' => ClipComment::class,
+            'subject_id' => (string) $comment->id,
+            'clip_id' => $clip->id,
+        ]);
+        $this->achievementService->sync($user);
+    }
+
+    public function trackFavorite(User $user, Clip $clip): void
+    {
+        $this->missionEngine->recordEvent(
+            user: $user,
+            eventType: 'clip.favorite',
+            amount: 1,
+            context: [
+                'event_key' => 'clip.favorite.'.$user->id.'.'.$clip->id,
+                'subject_type' => Clip::class,
+                'subject_id' => (string) $clip->id,
+                'clip_id' => $clip->id,
+            ],
+        );
+
+        $this->achievementService->sync($user);
+    }
+
+    public function trackShare(User $user, Clip $clip, string $channel, ?string $shareId = null): void
+    {
+        $this->missionEngine->recordEvent(
+            user: $user,
+            eventType: 'clip.share',
+            amount: 1,
+            context: [
+                'event_key' => 'clip.share.'.$user->id.'.'.($shareId ?: $clip->id.'.'.$channel.'.'.now()->timestamp),
+                'subject_type' => Clip::class,
+                'subject_id' => (string) $clip->id,
+                'channel' => $channel,
+                'clip_id' => $clip->id,
+            ],
+        );
+
         $this->achievementService->sync($user);
     }
 

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserWallet;
-use App\Models\WalletTransaction;
+use App\Models\RewardWalletTransaction;
+use App\Models\UserRewardWallet;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -14,19 +14,12 @@ class WalletPageController extends Controller
     {
         $user = auth()->user();
 
-        $wallet = UserWallet::query()->firstOrCreate(
+        $wallet = UserRewardWallet::query()->firstOrCreate(
             ['user_id' => $user->id],
-            ['balance' => (int) config('betting.wallet.initial_balance', 1000)]
+            ['balance' => 0]
         );
 
-        $allowedTypes = [
-            WalletTransaction::TYPE_STAKE,
-            WalletTransaction::TYPE_REFUND,
-            WalletTransaction::TYPE_PAYOUT,
-            WalletTransaction::TYPE_GRANT,
-            WalletTransaction::TYPE_ADJUST,
-            WalletTransaction::TYPE_VOID_REFUND,
-        ];
+        $allowedTypes = RewardWalletTransaction::types();
         $allowedDirections = ['all', 'in', 'out'];
 
         $type = (string) $request->query('type', 'all');
@@ -44,7 +37,7 @@ class WalletPageController extends Controller
             ? mb_substr($search, 0, 80)
             : substr($search, 0, 80);
 
-        $baseQuery = WalletTransaction::query()
+        $baseQuery = RewardWalletTransaction::query()
             ->where('user_id', $user->id);
 
         $query = clone $baseQuery;

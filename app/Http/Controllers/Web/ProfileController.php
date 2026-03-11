@@ -10,7 +10,10 @@ use App\Models\Bet;
 use App\Models\Duel;
 use App\Models\PointsTransaction;
 use App\Models\User;
+use App\Services\ExperienceService;
 use App\Services\ShortcutService;
+use App\Services\MissionCatalogService;
+use App\Services\MissionFocusService;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -26,11 +29,14 @@ class ProfileController extends Controller
     public function __invoke(
         EnsureUserProgressAction $ensureUserProgressAction,
         ShortcutService $shortcutService,
-        SupporterAccessResolver $supporterAccessResolver
+        SupporterAccessResolver $supporterAccessResolver,
+        MissionCatalogService $missionCatalogService,
+        ExperienceService $experienceService,
     ): View
     {
         $user = auth()->user();
         $progress = $ensureUserProgressAction->execute($user)->load('league');
+        $experience = $experienceService->summaryFor($user);
 
         $transactions = PointsTransaction::query()
             ->where('user_id', $user->id)
@@ -43,6 +49,7 @@ class ProfileController extends Controller
         $availableShortcuts = $shortcutService->getAvailableForUser($user);
         $supporterProfile = $supporterAccessResolver->ensurePublicProfile($user);
         $supporterSummary = $supporterAccessResolver->summary($user);
+        $missionPayload = $missionCatalogService->dashboardPayload($user);
         $assistantFavorites = Schema::hasTable('assistant_favorites')
             ? $user->assistantFavorites()
                 ->latest('id')
@@ -60,8 +67,11 @@ class ProfileController extends Controller
             'availableShortcuts' => $availableShortcuts,
             'minShortcuts' => $shortcutService->minShortcuts(),
             'maxShortcuts' => $shortcutService->maxShortcuts(),
+            'experience' => $experience,
             'supporterProfile' => $supporterProfile,
             'supporterSummary' => $supporterSummary,
+            'missionFocusCards' => collect($missionPayload['focus']),
+            'missionSummary' => $missionPayload['summary'],
             'assistantFavorites' => $assistantFavorites,
         ]);
     }

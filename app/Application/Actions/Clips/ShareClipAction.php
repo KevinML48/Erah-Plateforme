@@ -6,13 +6,15 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Models\Clip;
 use App\Models\ClipShare;
 use App\Models\User;
+use App\Services\ClipRewardService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class ShareClipAction
 {
     public function __construct(
-        private readonly StoreAuditLogAction $storeAuditLogAction
+        private readonly StoreAuditLogAction $storeAuditLogAction,
+        private readonly ClipRewardService $clipRewardService
     ) {
     }
 
@@ -42,6 +44,8 @@ class ShareClipAction
                     'channel' => $channel,
                 ],
             );
+
+            $this->clipRewardService->trackShare($user, $lockedClip, $channel, (string) $share->id);
 
             return $share->fresh();
         });

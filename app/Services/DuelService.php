@@ -119,13 +119,25 @@ class DuelService
             }
 
             if ($winnerEligible) {
-                $this->missionEngine->recordEvent($winner, 'duel.win');
-                $this->missionEngine->recordEvent($winner, 'duel.play');
+                $this->missionEngine->recordEvent($winner, 'duel.win', 1, [
+                    'event_key' => 'duel.win.'.$duel->id.'.'.$winner->id,
+                    'subject_type' => Duel::class,
+                    'subject_id' => (string) $duel->id,
+                ]);
+                $this->missionEngine->recordEvent($winner, 'duel.play', 1, [
+                    'event_key' => 'duel.play.'.$duel->id.'.'.$winner->id,
+                    'subject_type' => Duel::class,
+                    'subject_id' => (string) $duel->id,
+                ]);
                 $this->achievementService->sync($winner);
             }
 
             if ($loserEligible) {
-                $this->missionEngine->recordEvent($loser, 'duel.play');
+                $this->missionEngine->recordEvent($loser, 'duel.play', 1, [
+                    'event_key' => 'duel.play.'.$duel->id.'.'.$loser->id,
+                    'subject_type' => Duel::class,
+                    'subject_id' => (string) $duel->id,
+                ]);
                 $this->achievementService->sync($loser);
             }
 

@@ -27,12 +27,7 @@ class MissionsAndGiftsPagesTest extends TestCase
             'target_count' => 3,
             'scope' => MissionTemplate::SCOPE_DAILY,
             'constraints' => null,
-            'rewards' => [
-                'xp_amount' => 50,
-                'rank_points_amount' => 0,
-                'reward_points_amount' => 100,
-                'bet_points_amount' => 0,
-            ],
+            'rewards' => ['xp' => 50, 'points' => 100],
             'is_active' => true,
         ]);
 
@@ -57,6 +52,89 @@ class MissionsAndGiftsPagesTest extends TestCase
         $this->actingAs($user)->get(route('gifts.index'))
             ->assertOk()
             ->assertSee('Cadeaux');
+    }
+
+    public function test_gift_wallet_route_redirects_to_unified_points_wallet(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('gifts.wallet'))
+            ->assertRedirect(route('wallet.index'));
+    }
+
+    public function test_user_can_add_mission_to_focus_and_see_it_on_profile(): void
+    {
+        $user = User::factory()->create();
+
+        $template = MissionTemplate::query()->create([
+            'key' => 'mission.focus.profile',
+            'title' => 'Mission focus profil',
+            'short_description' => 'Visible sur les deux pages.',
+            'description' => 'Visible sur les deux pages.',
+            'event_type' => 'login.daily',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_DAILY,
+            'is_active' => true,
+            'rewards' => ['xp' => 25, 'points' => 15],
+        ]);
+
+        app(\App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $this->actingAs($user)
+            ->post(route('missions.focus.store', $template))
+            ->assertRedirect();
+
+        $this->actingAs($user)
+            ->get(route('missions.index'))
+            ->assertOk()
+            ->assertSee('Mes 3 missions en focus')
+            ->assertSee('Mission focus profil');
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertSee('Mes priorites du moment')
+            ->assertSee('Mission focus profil');
+    }
+
+    public function test_user_can_filter_mission_board(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.filter.repeatable',
+            'title' => 'Mission repeatable',
+            'short_description' => 'Visible si filtre repeatable.',
+            'event_type' => 'login.daily',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_DAILY,
+            'type' => 'repeatable',
+            'difficulty' => 'simple',
+            'rewards' => ['xp' => 15, 'points' => 10],
+            'is_active' => true,
+        ]);
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.filter.event',
+            'title' => 'Mission event',
+            'short_description' => 'Visible si filtre event.',
+            'event_type' => 'clip.share',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_EVENT_WINDOW,
+            'type' => 'event',
+            'difficulty' => 'special',
+            'start_at' => now()->subHour(),
+            'end_at' => now()->addHour(),
+            'rewards' => ['xp' => 50, 'points' => 25],
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('missions.index', ['type' => 'event']))
+            ->assertOk()
+            ->assertSee('Mission event')
+            ->assertSee('Filtrer');
     }
 
     public function test_user_can_view_gift_detail_page(): void

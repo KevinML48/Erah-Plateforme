@@ -113,7 +113,7 @@ class AssistantFallbackService
         $points = (int) Arr::get($userContext, 'wallets.points', 0);
 
         $content = trim(implode("\n\n", array_filter([
-            'Si tu veux comprendre ERAH dans les grandes lignes, l idee est simple : tout est rassemble dans la meme console pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
+            'Si tu veux comprendre ERAH dans les grandes lignes, l idee est simple : tout est rassemble dans le meme espace pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
             "Dans ton contexte actuel, tu es en ligue {$league} avec {$xp} XP et {$points} points disponibles sur la plateforme.",
             'Le plus utile maintenant, c est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
         ])));
@@ -278,7 +278,7 @@ class AssistantFallbackService
             model: 'local-fallback',
             metadata: [
                 'next_steps' => [
-                    $isActive ? 'Verifier votre console supporter' : 'Comparer les formules supporter puis lancer le checkout',
+                    $isActive ? 'Verifier votre espace supporter' : 'Comparer les formules supporter puis lancer le checkout',
                 ],
             ],
         );
@@ -294,7 +294,7 @@ class AssistantFallbackService
 
         $content = trim(implode("\n\n", array_filter([
             $unread > 0
-                ? "Tu as {$unread} notification".($unread > 1 ? 's non lues' : ' non lue').' dans ta console.'
+                ? "Tu as {$unread} notification".($unread > 1 ? 's non lues' : ' non lue').' dans ton espace.'
                 : 'Je ne vois pas de notification non lue dans le contexte disponible.',
             'Le plus utile est de passer par '.($this->contextLink($context, 'Notifications') ?: 'Notifications').' pour verifier ce qui demande une action ou un simple suivi.',
         ])));

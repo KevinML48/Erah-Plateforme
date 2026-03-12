@@ -50,8 +50,8 @@ class HelpCenterFeatureTest extends TestCase
         $this->get(route('console.help'))
             ->assertOk()
             ->assertViewIs('pages.help.index')
-            ->assertSee('Trouver la bonne reponse sans quitter votre espace.')
-            ->assertSee('Dashboard')
+            ->assertSee('Trouver la bonne reponse depuis votre espace.')
+            ->assertSee('Centre d aide membre')
             ->assertSee('Missions');
     }
 

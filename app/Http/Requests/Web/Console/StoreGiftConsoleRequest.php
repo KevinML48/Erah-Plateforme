@@ -24,6 +24,8 @@ class StoreGiftConsoleRequest extends FormRequest
             'cost_points' => ['required', 'integer', 'min:1', 'max:1000000'],
             'stock' => ['required', 'integer', 'min:0', 'max:1000000'],
             'is_active' => ['nullable', 'boolean'],
+            'is_featured' => ['nullable', 'boolean'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:1000000'],
         ];
     }
 }

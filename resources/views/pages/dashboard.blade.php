@@ -546,7 +546,7 @@
 
 						<div class="ph-caption">
 							<div class="ph-caption-inner">
-								<h2 class="ph-caption-subtitle">Console ERAH</h2>
+								<h2 class="ph-caption-subtitle">Plateforme ERAH</h2>
 								<h1 class="ph-caption-title">Modules</h1>
 								<div class="ph-caption-description max-width-700">
 									Accedez rapidement aux espaces cles de la plateforme et passez d un module a l autre depuis un point d entree unique.

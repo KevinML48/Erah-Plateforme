@@ -259,7 +259,7 @@
                     <h2 class="ph-caption-subtitle">ERAH Ranking</h2>
                     <h1 class="ph-caption-title">Classements</h1>
                     <div class="ph-caption-description max-width-800">
-                        Console des ligues, top joueurs et progression en direct.
+                        Vue des ligues, des leaders et de la progression de la communaute.
                     </div>
                 </div>
             </div>

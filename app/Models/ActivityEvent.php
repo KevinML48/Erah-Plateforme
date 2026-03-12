@@ -19,6 +19,12 @@ class ActivityEvent extends Model
     public const TYPE_DUEL_SENT = 'duel_sent';
     public const TYPE_DUEL_ACCEPTED = 'duel_accepted';
     public const TYPE_LOGIN_DAILY = 'login_daily';
+    public const TYPE_GIFT_CART_ADD = 'gift_cart_add';
+    public const TYPE_GIFT_CART_UPDATE = 'gift_cart_update';
+    public const TYPE_GIFT_CART_REMOVE = 'gift_cart_remove';
+    public const TYPE_GIFT_CART_CHECKOUT = 'gift_cart_checkout';
+    public const TYPE_GIFT_FAVORITE_ADD = 'gift_favorite_add';
+    public const TYPE_GIFT_FAVORITE_REMOVE = 'gift_favorite_remove';
 
     public $timestamps = false;
 
@@ -58,6 +64,12 @@ class ActivityEvent extends Model
             self::TYPE_DUEL_SENT,
             self::TYPE_DUEL_ACCEPTED,
             self::TYPE_LOGIN_DAILY,
+            self::TYPE_GIFT_CART_ADD,
+            self::TYPE_GIFT_CART_UPDATE,
+            self::TYPE_GIFT_CART_REMOVE,
+            self::TYPE_GIFT_CART_CHECKOUT,
+            self::TYPE_GIFT_FAVORITE_ADD,
+            self::TYPE_GIFT_FAVORITE_REMOVE,
         ];
     }
 

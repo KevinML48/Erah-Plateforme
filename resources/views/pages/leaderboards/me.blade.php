@@ -308,7 +308,7 @@
                     <h2 class="ph-caption-subtitle">Mon classement</h2>
                     <h1 class="ph-caption-title">{{ $currentLeagueName }}</h1>
                     <div class="ph-caption-description max-width-800">
-                        {{ $currentPoints }} points rank - position {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.
+                        {{ $currentPoints }} points classement - position {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.
                     </div>
                 </div>
             </div>
@@ -349,7 +349,7 @@
                 <header class="lb-me-head tt-anim-fadeinup">
                     <div class="lb-me-title">
                         <h1>Ma ligue: {{ $currentLeagueName }}</h1>
-                        <p>{{ $currentPoints }} points rank et {{ $currentXp }} XP. Position actuelle: {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.</p>
+                        <p>{{ $currentPoints }} points classement et {{ $currentXp }} XP. Position actuelle: {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.</p>
                     </div>
 
                     <div class="lb-me-actions">
@@ -367,7 +367,7 @@
                 <section class="lb-me-kpi-grid">
                     <article class="lb-me-kpi tt-anim-fadeinup">
                         <strong>{{ $currentPoints }}</strong>
-                        <span>Rank points</span>
+                        <span>Points classement</span>
                     </article>
                     <article class="lb-me-kpi tt-anim-fadeinup">
                         <strong>{{ $currentXp }}</strong>
@@ -423,7 +423,7 @@
                         <div class="lb-me-row header">
                             <div>Position</div>
                             <div>Joueur</div>
-                            <div style="text-align:right;">Rank points</div>
+                            <div style="text-align:right;">Points classement</div>
                             <div style="text-align:right;">XP</div>
                         </div>
 

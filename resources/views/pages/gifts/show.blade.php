@@ -491,14 +491,9 @@
 
 @section('content')
 @php
-    $statusLabels = [
-        'pending' => 'En attente',
-        'approved' => 'Validee',
-        'rejected' => 'Refusee',
-        'shipped' => 'Expediee',
-        'delivered' => 'Livree',
-        'cancelled' => 'Annulee',
-    ];
+    $statusLabels = $statusLabels ?? \App\Models\GiftRedemption::statusLabels();
+    $isAuthenticated = (bool) ($isAuthenticated ?? false);
+    $giftIndexRouteName = $giftIndexRouteName ?? 'gifts.index';
 
     $availabilityState = ! $gift->is_active || $giftStock < 1 ? 'unavailable' : ($giftStock <= 5 ? 'limited' : 'available');
     $availabilityTitle = ! $gift->is_active
@@ -615,7 +610,7 @@
 
                         <div class="gift-detail-metrics">
                             <div class="gift-detail-metric">
-                                <span>Votre solde</span>
+                                <span>{{ $isAuthenticated ? 'Votre solde' : 'Solde membre' }}</span>
                                 <strong>{{ $walletBalance }}</strong>
                             </div>
                             <div class="gift-detail-metric">
@@ -627,8 +622,8 @@
                                 <strong>{{ $giftStock }}</strong>
                             </div>
                             <div class="gift-detail-metric">
-                                <span>{{ $canAffordGift ? 'Etat achat' : 'Points manquants' }}</span>
-                                <strong>{{ $canAffordGift ? 'Pret' : $pointsMissing }}</strong>
+                                <span>{{ $isAuthenticated ? ($canAffordGift ? 'Etat achat' : 'Points manquants') : 'Connexion' }}</span>
+                                <strong>{{ $isAuthenticated ? ($canAffordGift ? 'Pret' : $pointsMissing) : 'Requise' }}</strong>
                             </div>
                         </div>
 
@@ -636,47 +631,81 @@
                             <strong>{{ $availabilityTitle }}</strong>
                             <p>
                                 {{ $availabilityCopy }}
-                                @if (! $canAffordGift)
+                                @if ($isAuthenticated && ! $canAffordGift)
                                     Il vous manque actuellement <strong>{{ $pointsMissing }} points</strong> pour lancer la demande.
                                 @endif
                             </p>
                         </div>
 
                         <div class="gift-detail-actions">
-                            <form method="POST" action="{{ route('gifts.redeem', $gift->id) }}">
-                                @csrf
-                                <input type="hidden" name="idempotency_key" value="redeem-{{ auth()->id() }}-{{ $gift->id }}-{{ now()->timestamp }}">
-                                <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item" {{ (! $isRedeemable || ! $canAffordGift) ? 'disabled' : '' }}>
-                                    <span data-hover="Demander">Demander ce cadeau</span>
-                                </button>
-                            </form>
+                            @if($isAuthenticated)
+                                <form method="POST" action="{{ route('gifts.redeem', $gift->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="idempotency_key" value="redeem-{{ auth()->id() }}-{{ $gift->id }}-{{ now()->timestamp }}">
+                                    <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item" {{ (! $isRedeemable || ! $canAffordGift) ? 'disabled' : '' }}>
+                                        <span data-hover="Demander">Demander ce cadeau</span>
+                                    </button>
+                                </form>
 
-                            <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                <form method="POST" action="{{ route('gifts.cart.add', $gift->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item" {{ (! $isRedeemable) ? 'disabled' : '' }}>
+                                        <span data-hover="Panier">Ajouter au panier {{ (int) ($cartItemQuantity ?? 0) > 0 ? '('.(int) $cartItemQuantity.')' : '' }}</span>
+                                    </button>
+                                </form>
+
+                                <form method="POST" action="{{ route('gifts.favorites.toggle', $gift->id) }}">
+                                    @csrf
+                                    <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                        <span data-hover="{{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}">
+                                            {{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}
+                                        </span>
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                    <span data-hover="Connexion">Se connecter pour commander</span>
+                                </a>
+                            @endif
+
+                            <a href="{{ route($giftIndexRouteName) }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
                                 <span data-hover="Catalogue">Retour catalogue</span>
                             </a>
 
-                            <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                <span data-hover="Demandes">Mes demandes</span>
-                            </a>
+                            @if($isAuthenticated)
+                                <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Demandes">Mes demandes</span>
+                                </a>
+                                <a href="{{ route('gifts.cart') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Panier">Panier cadeaux</span>
+                                </a>
+                            @endif
                         </div>
 
-                        @if ($latestRedemption)
+                        @if ($isAuthenticated && $latestRedemption)
                             <div class="gift-detail-latest">
                                 <div class="gift-detail-latest-head">
-                                    <strong>Derniere demande</strong>
+                                    <strong>Derniere commande: {{ 'CMD-'.str_pad((string) $latestRedemption->id, 6, '0', STR_PAD_LEFT) }}</strong>
                                     <span class="gift-detail-status is-{{ $latestRedemption->status }}">
-                                        {{ $statusLabels[$latestRedemption->status] ?? ucfirst($latestRedemption->status) }}
+                                        {{ $statusLabels[$latestRedemption->status] ?? \Illuminate\Support\Str::headline((string) $latestRedemption->status) }}
                                     </span>
                                 </div>
                                 <p>
                                     Demandee le {{ optional($latestRedemption->requested_at)->format('d/m/Y \\a H:i') ?: '-' }}.
                                     @if ($latestRedemption->tracking_code)
-                                        Suivi: {{ $latestRedemption->tracking_code }}.
+                                        Suivi: {{ $latestRedemption->tracking_code }}
+                                        @if ($latestRedemption->tracking_carrier)
+                                            ({{ $latestRedemption->tracking_carrier }})
+                                        @endif.
                                     @endif
                                     @if ($latestRedemption->reason)
                                         Motif: {{ $latestRedemption->reason }}.
                                     @endif
                                 </p>
+                                <a href="{{ route('gifts.redemptions.show', $latestRedemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
+                                    <span data-hover="Voir le detail">Voir le detail de la commande</span>
+                                </a>
                             </div>
                         @endif
                     </div>
@@ -693,14 +722,17 @@
                             <p>Retrouvez le suivi de vos demandes pour ce cadeau, avec les etapes de validation, expedition ou refus.</p>
                         </div>
 
-                        @if (($myRecentRedemptions ?? null) && $myRecentRedemptions->count())
+                        @if ($isAuthenticated && ($myRecentRedemptions ?? null) && $myRecentRedemptions->count())
                             <div class="gift-detail-history-list">
                                 @foreach ($myRecentRedemptions as $redemption)
                                     <article class="gift-detail-history-item">
                                         <div class="gift-detail-history-top">
-                                            <strong>Demande du {{ optional($redemption->requested_at)->format('d/m/Y') ?: '-' }}</strong>
+                                            <strong>
+                                                {{ 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT) }}
+                                                - {{ optional($redemption->requested_at)->format('d/m/Y') ?: '-' }}
+                                            </strong>
                                             <span class="gift-detail-status is-{{ $redemption->status }}">
-                                                {{ $statusLabels[$redemption->status] ?? ucfirst($redemption->status) }}
+                                                {{ $statusLabels[$redemption->status] ?? \Illuminate\Support\Str::headline((string) $redemption->status) }}
                                             </span>
                                         </div>
 
@@ -714,7 +746,12 @@
                                         <div class="gift-detail-history-meta">
                                             <span>{{ (int) $redemption->cost_points_snapshot }} pts debites</span>
                                             @if ($redemption->tracking_code)
-                                                <span>Suivi {{ $redemption->tracking_code }}</span>
+                                                <span>
+                                                    Suivi {{ $redemption->tracking_code }}
+                                                    @if ($redemption->tracking_carrier)
+                                                        {{ $redemption->tracking_carrier }}
+                                                    @endif
+                                                </span>
                                             @endif
                                             @if ($redemption->approved_at)
                                                 <span>Validee {{ $redemption->approved_at->format('d/m/Y') }}</span>
@@ -726,12 +763,25 @@
                                                 <span>Livree {{ $redemption->delivered_at->format('d/m/Y') }}</span>
                                             @endif
                                         </div>
+
+                                        <a href="{{ route('gifts.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
+                                            <span data-hover="Detail">Voir le detail complet</span>
+                                        </a>
                                     </article>
                                 @endforeach
                             </div>
-                        @else
+                        @elseif($isAuthenticated)
                             <div class="gift-detail-empty">
                                 <p>Aucune demande pour ce cadeau pour le moment. Quand vous lancerez votre premiere demande, elle apparaitra ici avec son suivi.</p>
+                            </div>
+                        @else
+                            <div class="gift-detail-empty">
+                                <p>Connectez-vous pour voir votre historique de demandes cadeaux et leur suivi detaille.</p>
+                                <div class="gift-detail-actions margin-top-20">
+                                    <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                        <span data-hover="Connexion">Se connecter</span>
+                                    </a>
+                                </div>
                             </div>
                         @endif
                     </div>
@@ -757,19 +807,31 @@
                                 <p>Consultez votre reserve de points avant de confirmer une nouvelle demande.</p>
                             </div>
 
-                            <div class="gift-detail-wallet-highlight">
-                                <strong>{{ $walletBalance }} pts</strong>
-                                <p>
-                                    Votre solde actuel permet
-                                    {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine demande.' }}
-                                </p>
-                            </div>
+                            @if($isAuthenticated)
+                                <div class="gift-detail-wallet-highlight">
+                                    <strong>{{ $walletBalance }} pts</strong>
+                                    <p>
+                                        Votre solde actuel permet
+                                        {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine demande.' }}
+                                    </p>
+                                </div>
 
-                            <div class="gift-detail-actions margin-top-30">
-                                <a href="{{ route('gifts.wallet') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Points">Voir mes points</span>
-                                </a>
-                            </div>
+                                <div class="gift-detail-actions margin-top-30">
+                                    <a href="{{ route('gifts.wallet') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                        <span data-hover="Points">Voir mes points</span>
+                                    </a>
+                                </div>
+                            @else
+                                <div class="gift-detail-wallet-highlight">
+                                    <strong>Connexion requise</strong>
+                                    <p>Connectez-vous pour consulter votre solde points, ajouter au panier et enregistrer ce cadeau en favori.</p>
+                                </div>
+                                <div class="gift-detail-actions margin-top-30">
+                                    <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                        <span data-hover="Connexion">Se connecter</span>
+                                    </a>
+                                </div>
+                            @endif
                         </aside>
                     </div>
                 </div>

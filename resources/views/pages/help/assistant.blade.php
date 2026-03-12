@@ -1,6 +1,6 @@
 @extends('marketing.layouts.template')
 
-@section('title', ($mode === 'console' ? 'Assistant Console' : 'Assistant ERAH').' | ERAH Esport')
+@section('title', ($mode === 'console' ? 'Assistant membre' : 'Assistant ERAH').' | ERAH Esport')
 @section('meta_description', "Assistant d'aide ERAH")
 @section('meta_keywords', 'ERAH assistant, aide ERAH, FAQ ERAH, support plateforme')
 @section('body_class', 'tt-noise tt-magic-cursor tt-smooth-scroll')
@@ -490,7 +490,7 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Assistant in-app' : 'Assistant ERAH' }}</h2>
+                    <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Assistant membre' : 'Assistant ERAH' }}</h2>
                     <h1 class="ph-caption-title">Posez une question a la plateforme.</h1>
                     <div class="ph-caption-description max-width-700">Un espace dedie pour interroger la base de connaissance ERAH, comprendre les mecanismes du produit et obtenir une reponse fiable avant d agir.</div>
                 </div>
@@ -500,7 +500,7 @@
             <div class="ph-mask-inner tt-wrap">
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Support contextuel' : 'Knowledge base guidee' }}</h2>
+                        <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Repere contextuel' : 'Base de connaissance guidee' }}</h2>
                         <h1 class="ph-caption-title">Posez une question a la plateforme.</h1>
                         <div class="ph-caption-description max-width-700">L assistant ne devine pas. Il s appuie sur les articles, la FAQ, le glossaire et, si vous etes connecte, sur quelques donnees utiles de votre compte.</div>
                     </div>
@@ -529,7 +529,7 @@
                                 <div class="tt-heading tt-heading-xlg margin-bottom-15"><h2 class="tt-heading-title">{{ $page['assistant']['title'] }}</h2></div>
                                 <p class="text-muted">{{ $page['assistant']['description'] }}</p>
                                 <div class="erah-assistant-pills margin-top-25">
-                                    <span class="erah-assistant-chip">{{ $page['assistant']['status'] ?? 'Knowledge base' }}</span>
+                                    <span class="erah-assistant-chip">{{ $page['assistant']['status'] ?? 'Base de connaissance' }}</span>
                                     <span class="erah-assistant-chip">{{ $page['overview']['faqs'] ?? 0 }} questions reelles</span>
                                     <span class="erah-assistant-chip">{{ $page['overview']['glossary'] ?? 0 }} termes utiles</span>
                                 </div>

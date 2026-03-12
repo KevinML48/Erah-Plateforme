@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Wallet | ERAH Plateforme')
-@section('meta_description', 'Centre points ERAH: solde unifie, flux et historique dynamique.')
+@section('title', 'Portefeuille points | ERAH Plateforme')
+@section('meta_description', 'Portefeuille points ERAH: solde unifie, flux et historique dynamique.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -318,7 +318,7 @@
             'all' => 'Tous types',
             \App\Models\RewardWalletTransaction::TYPE_GRANT => 'Credit',
             \App\Models\RewardWalletTransaction::TYPE_MISSION_REWARD => 'Mission',
-            \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Redemption',
+            \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Demande cadeau',
             \App\Models\RewardWalletTransaction::TYPE_REDEEM_REFUND => 'Remboursement cadeau',
             \App\Models\RewardWalletTransaction::TYPE_ADJUST => 'Ajustement',
             \App\Models\RewardWalletTransaction::TYPE_GIFT_PURCHASE => 'Achat cadeau',
@@ -382,10 +382,10 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">ERAH Points Wallet</h2>
-                    <h1 class="ph-caption-title">Wallet</h1>
+                    <h2 class="ph-caption-subtitle">Points ERAH</h2>
+                    <h1 class="ph-caption-title">Portefeuille</h1>
                     <div class="ph-caption-description max-width-900">
-                        Solde actuel: {{ (int) ($wallet->balance ?? 0) }} points - {{ (int) ($summary['filtered'] ?? 0) }} transaction(s) dans le filtre.
+                        Solde actuel: {{ (int) ($wallet->balance ?? 0) }} points - {{ (int) ($summary['filtered'] ?? 0) }} transaction(s) dans l affichage.
                     </div>
                 </div>
             </div>
@@ -395,10 +395,10 @@
             <div class="ph-mask-inner tt-wrap">
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">ERAH Points Wallet</h2>
-                        <h1 class="ph-caption-title">Wallet</h1>
+                        <h2 class="ph-caption-subtitle">Points ERAH</h2>
+                        <h1 class="ph-caption-title">Portefeuille</h1>
                         <div class="ph-caption-description max-width-900">
-                            Historique dynamique des points utilises pour les cadeaux, paris, duels et rewards.
+                            Historique dynamique des points utilises pour les cadeaux, paris, duels et recompenses.
                         </div>
                     </div>
                 </div>
@@ -413,7 +413,7 @@
                         <path d="M50,250c0-110.5,89.5-200,200-200s200,89.5,200,200s-89.5,200-200,200S50,360.5,50,250" id="textcircle"></path>
                     </defs>
                     <text dy="30">
-                        <textPath xlink:href="#textcircle">Wallet Console - Wallet Console -</textPath>
+                        <textPath xlink:href="#textcircle">Portefeuille ERAH - Portefeuille ERAH -</textPath>
                     </text>
                 </svg>
             </a>
@@ -441,12 +441,12 @@
                         <form method="GET" action="{{ route($indexRouteName) }}" class="wallet-search-form">
                             <input type="hidden" name="type" value="{{ $currentType }}">
                             <input type="hidden" name="direction" value="{{ $currentDirection }}">
-                            <input class="tt-form-control" type="text" name="q" value="{{ $search }}" placeholder="Rechercher (type, source, cle interne)">
+                            <input class="tt-form-control" type="text" name="q" value="{{ $search }}" placeholder="Rechercher (type, source, reference interne)">
                             <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">
                                 <span data-hover="Filtrer">Filtrer</span>
                             </button>
                             <a href="{{ route($indexRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                                <span data-hover="Reset">Reset</span>
+                                <span data-hover="Tout voir">Tout voir</span>
                             </a>
                         </form>
                     </div>
@@ -534,7 +534,7 @@
                                     \App\Models\RewardWalletTransaction::TYPE_ACTIVITY_REWARD => 'Recompense d activite creditee.',
                                     \App\Models\RewardWalletTransaction::TYPE_ADJUST => 'Ajustement manuel du solde.',
                                 ];
-                                $message = $typeMessageMap[$typeKey] ?? 'Mouvement wallet enregistre.';
+                                $message = $typeMessageMap[$typeKey] ?? 'Mouvement de points enregistre.';
 
                                 $meta = is_array($tx->metadata) ? $tx->metadata : [];
                                 $metaLabelMap = [

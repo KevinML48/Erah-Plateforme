@@ -104,7 +104,7 @@
             </div>
         @else
             <div class="home-summary-user tt-text-uppercase">
-                Session non connectee - resume utilisateur indisponible
+                Decouvrez les modules publics puis connectez-vous pour suivre votre progression membre.
             </div>
         @endauth
 
@@ -114,8 +114,8 @@
                 <span>XP cumule</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
-                <strong>{{ (int) ($quickStats['rank_points'] ?? 0) }}</strong>
-                <span>Rank points</span>
+                <strong>{{ (int) ($quickStats['league_points'] ?? 0) }}</strong>
+                <span>Points classement</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
                 <strong>{{ (int) ($quickStats['pending_duels'] ?? 0) }}</strong>

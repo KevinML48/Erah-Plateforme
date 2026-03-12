@@ -680,7 +680,7 @@
                             @else
                                 <p class="clip-supporter-note no-margin">
                                     @if($isPublicApp)
-                                        La version publique affiche les clips sans interactions premium. Ouvrez la console pour retrouver le mode supporter.
+                                        La version publique affiche les clips sans interactions premium. Ouvrez votre espace membre pour retrouver le mode supporter.
                                     @elseif(auth()->check())
                                         Votre compte n a pas de support actif sur ce moment.
                                     @else

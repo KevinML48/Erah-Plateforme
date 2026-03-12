@@ -1,134 +1,108 @@
-# ROUTES MAPPING - Pages -> Data -> Endpoints/Actions
+# Routes Mapping
 
-## 1) Landing (`/`)
-- Data:
-  - Clips récents publiés
-  - Mini leaderboard de la ligue Bronze (fallback première ligue active)
-- Sources:
-  - Query models `Clip::published()`
-  - `LeaderboardQuery` (ou fallback Eloquent sur `user_progress`)
-- Actions:
-  - CTA vers login/register/social redirect
+Cartographie simplifiee des parcours effectivement exposes par l application.
 
-## 2) Auth Login/Register (`/login`, `/register`)
-- Data:
-  - Erreurs de validation + old input
-- Sources:
-  - Forms web (POST) vers API auth existante ou contrôleur web proxy
-- Endpoints métiers existants:
-  - `POST /api/login`
-  - `POST /api/register`
-  - `GET /auth/google/redirect`
-  - `GET /auth/discord/redirect`
+## 1) Entree publique (`/`)
 
-## 3) Onboarding (`/onboarding`)
-- Data:
-  - Règles progression + préférences notifications user
-- Sources:
-  - `UserNotificationChannel`, `NotificationPreference`
-- Actions:
-  - Form POST vers web action update prefs (réutilise `UpdateNotificationPreferencesAction`)
+- Rendu : landing marketing Blade
+- Objectif : faire decouvrir ERAH, ses modules publics et ses appels a l action
+- Points d entree :
+  - login / inscription
+  - parcours public `/app/*`
+  - centre d aide `/aide`
+  - page supporter `/supporter`
 
-## 4) Dashboard (`/dashboard`)
-- Data:
-  - User profile, progress, ligue actuelle
-  - Position classement ligue
-  - Duels pending
-  - Notifications récentes
-  - Clips récents
-- Sources:
-  - `EnsureUserProgressAction`
-  - `LeaderboardQuery`
-  - `Duel::forUser()`
-  - `Notification`
-  - `Clip::published()`
-- Actions:
-  - Likes/favoris/comments/share clips (forms)
-  - Accept/refuse duel
-  - Mark notification read
+## 2) Auth (`/login`, `/register`, social auth)
 
-## 5) Clips (`/clips`, `/clips/{slug}`, `/clips/favorites`)
-- Data:
-  - Feed récent/populaire, détail clip, commentaires, favoris user
-- Sources:
-  - `Clip::published()`, `ClipFavorite`, `ClipComment`
-- Endpoints/actions existants:
-  - `POST/DELETE /api/clips/{id}/like`
-  - `POST/DELETE /api/clips/{id}/favorite`
-  - `POST /api/clips/{id}/comments`
-  - `DELETE /api/clips/{clipId}/comments/{commentId}`
-  - `POST /api/clips/{id}/share`
+- Rendu principal : surfaces Inertia deja branchees
+- Actions :
+  - connexion classique
+  - inscription
+  - redirect Google / Discord
 
-## 6) Classements (`/leaderboards/me`, `/leaderboards`, `/leaderboards/{leagueKey}`)
-- Data:
-  - Ma ligue + progression
-  - Toutes ligues actives
-  - Leaderboard par ligue
-- Sources:
-  - `League`, `UserProgress`, `LeaderboardQuery`
-- Endpoints existants:
-  - `GET /api/leagues`
-  - `GET /api/leagues/{key}/leaderboard`
-  - `GET /api/me/progress`
+## 3) Parcours public `/app/*`
 
-## 7) Notifications (`/notifications`, `/notifications/preferences`)
-- Data:
-  - Notifications user + état read
-  - Préférences globales + catégories
-- Sources:
-  - `Notification`, `UserNotificationChannel`, `NotificationPreference`
-- Endpoints/actions existants:
-  - `GET /api/notifications`
-  - `POST /api/notifications/{id}/read`
-  - `GET/PUT /api/me/notification-preferences`
+Lecture publique ou semi-publique des modules decouverte :
 
-## 8) Duels (`/duels`, `/duels/create`)
-- Data:
-  - Duels user filtrés par status
-  - Liste utilisateurs (sélecteur challenger)
-- Sources:
-  - `Duel::forUser()`, `User`
-- Endpoints/actions existants:
-  - `POST /api/duels`
-  - `POST /api/duels/{id}/accept`
-  - `POST /api/duels/{id}/refuse`
-  - `GET /api/duels`
+- `/app/classement`
+- `/app/classement/{leagueKey}`
+- `/app/clips`
+- `/app/clips/{slug}`
+- `/app/matchs`
+- `/app/matchs/{matchId}`
+- `/app/statistics`
+- `/app/duels/classement`
 
-## 9) Profil (`/profile`)
-- Data:
-  - User + ligue + progress
-  - Stats (likes/comments/duels/bets)
-  - Historique points transactions
-- Sources:
-  - `User`, `UserProgress`, `PointsTransaction`, `ClipLike`, `ClipComment`, `Duel`, `Bet`
+Quand un compte est connecte, `/app/*` expose aussi :
 
-## 10) Admin Clips (`/admin/clips*`)
-- Data:
-  - Liste clips, filtres publié/brouillon
-  - Form create/edit avec preview slug
-- Sources:
-  - `Clip`
-- Endpoints/actions existants:
-  - `POST /api/admin/clips`
-  - `PUT /api/admin/clips/{id}`
-  - `DELETE /api/admin/clips/{id}`
-  - `POST /api/admin/clips/{id}/publish`
+- `/app/ma-ligue`
+- `/app/missions`
+- `/app/paris`
+- `/app/duels`
+- `/app/notifications`
+- `/app/profil`
+- `/app/live-codes`
+- `/app/quizzes`
+- `/app/shop`
+- `/app/achievements`
 
-## 11) Matches/Bets pages (`/admin/matches`, `/matches`, `/bets/me`)
-- Data:
-  - Matches publics
-  - Bets user
-  - Admin settlement
-- Sources:
-  - `EsportMatch`, `Bet`, `MatchSettlement`
-- Endpoints/actions existants:
-  - `GET /api/matches`
-  - `POST /api/bets`
-  - `GET /api/bets/me`
-  - `POST /api/admin/matches`
-  - `POST /api/admin/matches/{id}/settle`
+## 4) Espace membre `/console/*`
 
-## Rendu/Action Strategy (globale)
-- Pages: Blade server render
-- Actions: forms `POST`/`PUT`/`DELETE` + redirect + session flash
-- JS: strictement optionnel (copy share link, interactions non bloquantes)
+Le coeur produit connecte passe par `/console/*`.
+
+- `/console/dashboard`
+- `/console/onboarding`
+- `/console/matches`
+- `/console/clips`
+- `/console/bets`
+- `/console/leaderboards`
+- `/console/missions`
+- `/console/gifts`
+- `/console/duels`
+- `/console/wallet`
+- `/console/notifications`
+- `/console/profile`
+- `/console/settings`
+- `/console/help`
+- `/console/assistant`
+- `/console/supporter`
+
+## 5) Aide et assistant
+
+- Public :
+  - `/aide`
+  - `/aide/assistant`
+- Membre :
+  - `/console/help`
+  - `/console/assistant`
+
+Le centre d aide est Blade-first.
+L assistant membre passe par Inertia cote console.
+
+## 6) Admin `/console/admin/*`
+
+Pilotage principal :
+
+- dashboard admin
+- clips
+- matchs
+- cadeaux / demandes
+- missions
+- live codes
+- quizzes
+- evenements
+- galerie
+- avis
+- moderation profils publics
+
+## 7) Routes de compatibilite
+
+- `/dashboard` redirige vers `/console/dashboard`
+- plusieurs modules conservent des doublons `/app/*` et `/console/*` pour separer decouverte publique et espace membre sans casser les parcours existants
+
+## 8) Strategie de rendu
+
+- Blade pour la majeure partie de l application
+- Inertia uniquement sur les surfaces deja integrees proprement
+- Actions web via formulaires Laravel + flash messages
+- JS leger pour interactions d appoint, PWA, guided tour, assistant et toasts live

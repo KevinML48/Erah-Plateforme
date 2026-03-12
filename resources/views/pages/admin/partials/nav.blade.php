@@ -1,6 +1,6 @@
 @php
     $navItems = [
-        ['label' => 'Pilotage', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+        ['label' => 'Pilotage', 'route' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard') || request()->routeIs('admin.operations')],
         ['label' => 'Utilisateurs', 'route' => route('users.index'), 'active' => request()->routeIs('users.*')],
         ['label' => 'Clips', 'route' => route('admin.clips.index'), 'active' => request()->routeIs('admin.clips.*')],
         ['label' => 'Matchs', 'route' => route('admin.matches.index'), 'active' => request()->routeIs('admin.matches.*')],

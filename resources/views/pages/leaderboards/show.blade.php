@@ -468,7 +468,7 @@
                                     @endif
                                 </div>
                                 <div class="lb-podium-meta">
-                                    {{ (int) ($entry['total_rank_points'] ?? 0) }} points rank
+                                    {{ (int) ($entry['total_rank_points'] ?? 0) }} points classement
                                     <br>
                                     {{ (int) ($entry['total_xp'] ?? 0) }} XP total
                                 </div>
@@ -482,7 +482,7 @@
                         <div class="lb-row lb-row-header">
                             <div>Position</div>
                             <div>Joueur</div>
-                            <div style="text-align:right;">Rank points</div>
+                            <div style="text-align:right;">Points classement</div>
                             <div style="text-align:right;">XP</div>
                         </div>
 
@@ -523,7 +523,7 @@
 
                                 <div class="lb-value">
                                     {{ (int) ($entry['total_rank_points'] ?? 0) }}
-                                    <small>Rank points</small>
+                                    <small>Points classement</small>
                                 </div>
 
                                 <div class="lb-value">

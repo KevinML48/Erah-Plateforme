@@ -1,111 +1,63 @@
 # ERAH Plateforme
 
-Plateforme communautaire esport Laravel 11 pour ERAH, avec modules clips, paris, duels, missions, cadeaux, profils publics, avis membres, galerie, et maintenant un socle communautaire complet:
+ERAH Plateforme est une application Laravel 11 orientee esport/community. Le socle actif est Blade-first, avec quelques surfaces Inertia conservees la ou elles sont deja branchees proprement dans l authentification, l aide et certains ecrans admin.
 
-- ligues communautaires basees sur l XP
-- leaderboards XP / ligues XP / duel
-- rewards clips avec caps journaliers
-- commentaires clips avec reponses niveau 1
-- quiz QCM + reponse courte et tentatives
-- codes live et redemptions
-- resultats de duels admin avec anti-abus et duel streak
-- succes permanents
-- streak de connexion
-- boutique communautaire
-- evenements dynamiques
-- push subscriptions categories + PWA minimale
+La plateforme couvre aujourd hui :
 
-## Architecture
+- landing publique et pages de decouverte
+- espace membre avec dashboard, matchs, clips, paris, missions, cadeaux, duels et profil
+- portefeuille points unifie
+- progression XP, ligues et classements
+- centre d aide, assistant ERAH et visite guidee
+- modules communautaires additionnels: quiz, live codes, succes, boutique et evenements
+- pilotage admin pour clips, matchs, missions, cadeaux, galerie, avis et moderation
 
-Le projet conserve les modules existants et ajoute une couche metier dediee dans `app/Services`:
+## Stack active
 
-- `WalletService`
-- `RewardGrantService`
-- `RankService`
-- `LeaderboardService`
-- `ClipRewardService`
-- `MissionEngine`
-- `QuizService`
-- `LiveCodeService`
-- `DuelService`
-- `BetService`
-- `AchievementService`
-- `StreakService`
-- `ShopService`
-- `PushNotificationService`
-- `EventService`
+- Laravel 11 / PHP 8.3
+- Blade + Tailwind + layouts marketing/app
+- JS leger pour interactions web, PWA et surfaces hybrides
+- Inertia / React conserves sur quelques ecrans deja relies au produit
+- `templates-neuf` utilise comme base de reference pour certains patterns HTML et surfaces premium
 
-Les controllers restent minces et s appuient sur ces services. Les pages web reutilisent les layouts Blade existants et les nouveaux ecrans marketing/admin s alignent sur `templates-neuf`.
+## Entrees principales
 
-## Donnees ajoutees
+### Public
 
-Migrations communautaires:
+- `/` : landing et decouverte ERAH
+- `/app/*` : lecture publique des modules ouverts
+- `/aide` et `/aide/assistant` : FAQ et assistant public
+- `/supporter` : presentation du programme supporter
 
-- `2026_03_09_100000_create_community_platform_foundations.php`
-- `2026_03_09_100100_extend_clip_comments_and_create_views.php`
-- `2026_03_09_100200_create_quiz_tables.php`
-- `2026_03_09_100300_create_live_code_tables.php`
-- `2026_03_09_100400_create_achievement_tables.php`
-- `2026_03_09_100500_create_shop_tables.php`
-- `2026_03_09_100600_create_duel_results_table_and_extend_progress.php`
+### Membre connecte
 
-Seeder communautaire:
+- `/console/dashboard` : espace principal
+- `/console/*` : modules membres et hub d aide
+- `/console/assistant` : assistant conversationnel membre
 
-- `database/seeders/CommunityPlatformSeeder.php`
+### Admin
 
-Ce seeder initialise:
+- `/console/admin/*` : pilotage, moderation et configuration
 
-- les succes par defaut
-- les objets boutique par defaut
-- un quiz communautaire de demonstration
-- un code live publie
-- un evenement dynamique bonus clips
+## Modules principaux
 
-## Routes principales ajoutees
+- Clips et interactions communautaires
+- Matchs et paris
+- Missions, focus missions et recompenses
+- Cadeaux et demandes de redemption
+- Duels et classement duel
+- Notifications, wallet points et historique
+- Profil public, avis membres et supporter
+- Quiz, live codes, succes, boutique et evenements
 
-Web app / console:
+## Structure utile
 
-- `/app/quizzes`, `/console/quizzes`
-- `/app/live-codes`, `/console/live-codes`
-- `/app/statistics`, `/console/statistics`
-- `/app/achievements`, `/console/achievements`
-- `/app/shop`, `/console/shop`
-
-Admin:
-
-- `/console/admin/missions`
-- `/console/admin/quizzes`
-- `/console/admin/live-codes`
-- `/console/admin/events`
-- `/console/admin/duels/{duelId}/result`
-
-API:
-
-- `GET /api/community/leaderboards`
-- `POST /api/me/push-subscriptions`
-- `DELETE /api/me/push-subscriptions`
-
-## PWA
-
-Fichiers publics:
-
-- `public/manifest.json`
-- `public/sw.js`
-
-Le manifest est branche sur les layouts app, guest et marketing. Le service worker est enregistre cote app via `resources/js/app.js` et cote marketing dans le layout template.
-
-Les subscriptions web push sont stockees dans `push_subscriptions`. Le service supporte des categories ciblees (`duel`, `mission`, `quiz`, `live_code`, `comment`, `clips`, `bet`, `match`, `achievement`, `event`, `system`) et degrade proprement en mode log si aucun provider web push n est configure.
-
-## Regles metier finalisees
-
-- Points plateforme: monnaie communautaire principale via `user_reward_wallets`
-- XP: progression, ligues communautaires et leaderboard global
-- Duel score: axe separe pour les duels, avec serie en cours et meilleure serie
-- Clips: vue / like / commentaire recompenses une seule fois par clip et par membre, avec caps journaliers
-- Commentaires clips: profondeur maximale 1
-- Missions daily: mix cible `3 simples / 1 moyenne / 1 speciale`
-- Paris: maximum 20 paris par jour comptent pour l XP communautaire
-- Duels: maximum 10 duels par jour pour la progression et anti-abus contre le meme adversaire
+- `app/Http/Controllers/Web` : controleurs web Blade et surfaces hybrides
+- `app/Services` : logique metier principale
+- `resources/views/pages` : pages Blade produit
+- `resources/views/components` : composants Blade reutilisables
+- `resources/js/Pages` : surfaces Inertia encore actives
+- `docs/` : docs projet, mapping routes et spec UI
 
 ## Mise en route
 
@@ -115,69 +67,40 @@ npm install
 php artisan migrate
 php artisan db:seed
 npm run build
-php artisan view:cache
 php artisan test
 ```
 
-Pour seed uniquement le module communautaire:
+## Commandes utiles
 
 ```bash
+php artisan migrate
 php artisan db:seed --class=CommunityPlatformSeeder
+php artisan db:seed --class=MissionsAndGiftsSeeder
+php artisan test
+php artisan optimize:clear
 ```
 
-## Verification
+## Regles produit a connaitre
 
-Validation effectuee sur cette implementation:
+- Les points plateforme servent de monnaie unique pour cadeaux, paris et duels.
+- L XP fait progresser le membre et alimente sa ligue.
+- Les missions distribuent des rewards simples et lisibles.
+- Les zones privees et admin restent non indexees.
+- Le legacy `rank_points` est encore present dans certains modules historiques mais les ecrans produit privilegient des libelles plus clairs.
 
-- `npm run build`
-- `php artisan view:cache`
-- `php artisan test`
+## Production
 
-Resultat:
-
-- `109 passed`
-
-## Exploitation production
-
-Recommandations pour reduire la charge CPU / RAM / DB en production:
+Recommandations minimales :
 
 - `php artisan config:cache`
 - `php artisan route:cache`
 - `php artisan view:cache`
-- `php artisan optimize`
-- activer OPcache cote PHP
-- utiliser une base MySQL ou PostgreSQL
-- preferer `CACHE_STORE=redis`
-- preferer `QUEUE_CONNECTION=redis`
-- preferer `SESSION_DRIVER=redis`
+- OPcache actif
+- MySQL ou PostgreSQL
+- Redis pour cache, queue et sessions si disponible
 
-Un exemple de variables ciblees est fourni dans `.env.production.example`.
+## Documentation
 
-## SEO technique
-
-Fichiers publics a maintenir:
-
-- `public/robots.txt`
-- `public/sitemap.xml`
-
-Generation du sitemap:
-
-```bash
-php artisan seo:generate-sitemap
-```
-
-Les zones privees / auth / admin recoivent un header `X-Robots-Tag: noindex, nofollow, noarchive`.
-
-## Audit dependances
-
-`composer audit` remonte actuellement `CVE-2026-30838` sur `league/commonmark <= 2.8.0`.
-Le correctif n a pas ete applique ici pour respecter la contrainte “pas de bump de dependance sans validation”.
-Prevoir un bump minimal des dependances markdown des que la fenetre de maintenance le permet.
-
-## Notes
-
-- Le systeme de ligues competitives existant base sur les `rank_points` est conserve pour compatibilite.
-- Les ligues communautaires finales reposent sur l XP via `RankService` et `user_rank_histories`.
-- Les nouvelles recompenses communautaires sont idempotentes via `community_reward_grants`.
-- Les labels front ont ete clarifies pour distinguer les points plateforme des soldes legacy encore presents dans certains modules historiques.
-- Le front desktop existant n est pas refondu; les nouvelles pages et sections reutilisent les patterns Blade / templates deja presents.
+- `docs/ROUTES_MAPPING.md` : cartographie actuelle des parcours
+- `docs/SITEMAP.md` : vue sitemap / navigation
+- `docs/GAME_UI_SPEC.md` : repere UI Blade-first pour l application

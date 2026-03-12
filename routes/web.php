@@ -14,6 +14,7 @@ use App\Http\Controllers\Web\Admin\AdminDuelResultController;
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
 use App\Http\Controllers\Web\Admin\AdminLiveCodeController;
 use App\Http\Controllers\Web\Admin\AdminMissionController;
+use App\Http\Controllers\Web\Admin\AdminOperationsController;
 use App\Http\Controllers\Web\Admin\AdminPlatformEventController;
 use App\Http\Controllers\Web\Admin\AdminQuizController;
 use App\Http\Controllers\Web\Admin\AdminWalletController;
@@ -117,6 +118,10 @@ Route::prefix('app')->middleware('throttle:feed-public')->group(function () {
         ->name('app.matches.show');
     Route::get('/statistics', StatisticsPageController::class)->name('app.statistics.index');
     Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('app.duels.leaderboard');
+    Route::get('/cadeaux', [GiftPageController::class, 'index'])->name('app.gifts.index');
+    Route::get('/cadeaux/{giftId}', [GiftPageController::class, 'show'])
+        ->whereNumber('giftId')
+        ->name('app.gifts.show');
 });
 
 Route::prefix('app')->middleware('auth')->group(function () {
@@ -292,6 +297,26 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/gifts', [GiftPageController::class, 'index'])->name('gifts.index');
         Route::get('/gifts/redemptions', [GiftPageController::class, 'redemptions'])->name('gifts.redemptions');
+        Route::get('/gifts/redemptions/{redemptionId}', [GiftPageController::class, 'redemption'])
+            ->whereNumber('redemptionId')
+            ->name('gifts.redemptions.show');
+        Route::get('/gifts/cart', [GiftPageController::class, 'cart'])->name('gifts.cart');
+        Route::post('/gifts/cart/{giftId}', [GiftPageController::class, 'addToCart'])
+            ->whereNumber('giftId')
+            ->name('gifts.cart.add');
+        Route::patch('/gifts/cart/items/{itemId}', [GiftPageController::class, 'updateCartItem'])
+            ->whereNumber('itemId')
+            ->name('gifts.cart.update');
+        Route::delete('/gifts/cart/items/{itemId}', [GiftPageController::class, 'removeCartItem'])
+            ->whereNumber('itemId')
+            ->name('gifts.cart.remove');
+        Route::post('/gifts/cart/checkout', [GiftPageController::class, 'checkoutCart'])
+            ->middleware('throttle:gifts-redeem')
+            ->name('gifts.cart.checkout');
+        Route::get('/gifts/favorites', [GiftPageController::class, 'favorites'])->name('gifts.favorites');
+        Route::post('/gifts/{giftId}/favorites/toggle', [GiftPageController::class, 'toggleFavorite'])
+            ->whereNumber('giftId')
+            ->name('gifts.favorites.toggle');
         Route::get('/reward-wallet', [GiftPageController::class, 'wallet'])->name('gifts.wallet');
         Route::get('/gifts/{giftId}', [GiftPageController::class, 'show'])->name('gifts.show');
         Route::post('/gifts/{giftId}/redeem', [GiftPageController::class, 'redeem'])
@@ -321,6 +346,12 @@ Route::middleware('auth')->group(function () {
 
         Route::middleware('admin')->prefix('admin')->group(function () {
             Route::get('/dashboard', AdminDashboardController::class)->name('admin.dashboard');
+            Route::get('/operations', AdminDashboardController::class)->name('admin.operations');
+            Route::get('/dashboard/live', [AdminOperationsController::class, 'live'])->name('admin.dashboard.live');
+            Route::post('/operations/gifts/{giftId}/status', [AdminOperationsController::class, 'updateGiftStatus'])->name('admin.operations.gifts.status');
+            Route::post('/operations/gifts/{giftId}/stock', [AdminOperationsController::class, 'updateGiftStock'])->name('admin.operations.gifts.stock');
+            Route::post('/operations/shop-items/{shopItemId}/status', [AdminOperationsController::class, 'updateShopItemStatus'])->name('admin.operations.shop-items.status');
+            Route::post('/operations/shop-items/{shopItemId}/stock', [AdminOperationsController::class, 'updateShopItemStock'])->name('admin.operations.shop-items.stock');
             Route::put('/users/{user}/public-profile', [PublicProfileModerationController::class, 'update'])->name('admin.users.public-profile.update');
             Route::delete('/users/{user}/public-profile', [PublicProfileModerationController::class, 'destroy'])->name('admin.users.public-profile.destroy');
             Route::get('/supporters', [SupportersAdminController::class, 'index'])->name('admin.supporters.index');
@@ -375,10 +406,15 @@ Route::middleware('auth')->group(function () {
             Route::post('/gifts', [AdminGiftConsoleController::class, 'store'])->name('admin.gifts.store');
             Route::put('/gifts/{giftId}', [AdminGiftConsoleController::class, 'update'])->name('admin.gifts.update');
             Route::delete('/gifts/{giftId}', [AdminGiftConsoleController::class, 'destroy'])->name('admin.gifts.destroy');
+            Route::get('/redemptions/{redemptionId}', [AdminGiftConsoleController::class, 'showRedemption'])
+                ->whereNumber('redemptionId')
+                ->name('admin.redemptions.show');
             Route::post('/redemptions/{redemptionId}/approve', [AdminGiftConsoleController::class, 'approve'])->name('admin.redemptions.approve');
             Route::post('/redemptions/{redemptionId}/reject', [AdminGiftConsoleController::class, 'reject'])->name('admin.redemptions.reject');
             Route::post('/redemptions/{redemptionId}/ship', [AdminGiftConsoleController::class, 'ship'])->name('admin.redemptions.ship');
             Route::post('/redemptions/{redemptionId}/deliver', [AdminGiftConsoleController::class, 'deliver'])->name('admin.redemptions.deliver');
+            Route::post('/redemptions/{redemptionId}/note', [AdminGiftConsoleController::class, 'note'])->name('admin.redemptions.note');
+            Route::post('/redemptions/{redemptionId}/refund', [AdminGiftConsoleController::class, 'refund'])->name('admin.redemptions.refund');
 
             Route::get('/missions', [AdminMissionController::class, 'index'])->name('admin.missions.index');
             Route::post('/missions', [AdminMissionController::class, 'storeTemplate'])->name('admin.missions.store');

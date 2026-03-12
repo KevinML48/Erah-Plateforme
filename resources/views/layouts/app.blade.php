@@ -41,11 +41,11 @@
         ]
         : [
             ['label' => 'Accueil site', 'href' => route('marketing.index'), 'active' => request()->routeIs('marketing.*')],
-            ['label' => 'Plateforme /app', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
+            ['label' => 'Explorer la plateforme', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
         ];
     $adminLinks = $isAdmin
         ? [
-            ['label' => 'Console admin', 'href' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
+            ['label' => 'Pilotage admin', 'href' => route('admin.dashboard'), 'active' => request()->routeIs('admin.dashboard')],
             ['label' => 'Matchs admin', 'href' => route('admin.matches.index'), 'active' => request()->routeIs('admin.matches.*')],
             ['label' => 'Clips admin', 'href' => route('admin.clips.index'), 'active' => request()->routeIs('admin.clips.*')],
             ['label' => 'Cadeaux admin', 'href' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
@@ -59,7 +59,7 @@
             ['label' => 'Mon profil', 'href' => route('profile.show'), 'active' => request()->routeIs('profile.*')],
             ['label' => 'Points', 'href' => route('wallet.index'), 'active' => request()->routeIs('wallet.*') || request()->routeIs('wallets.*')],
             ['label' => 'Notifications', 'href' => route('notifications.index'), 'active' => request()->routeIs('notifications.*')],
-            ['label' => 'Aide', 'href' => route('console.help'), 'active' => request()->routeIs('console.help') || request()->routeIs('assistant.*')],
+            ['label' => 'Centre d aide', 'href' => route('console.help'), 'active' => request()->routeIs('console.help') || request()->routeIs('assistant.*')],
         ]
         : [
             ['label' => 'Se connecter', 'href' => route('login'), 'active' => request()->routeIs('login')],

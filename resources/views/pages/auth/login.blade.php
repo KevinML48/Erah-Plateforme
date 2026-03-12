@@ -58,7 +58,7 @@
                             <h3 class="tt-heading-subtitle tt-text-reveal">Bienvenue</h3>
                             <h2 class="tt-heading-title tt-text-reveal">Accedez a votre compte</h2>
                             <p class="max-width-500 tt-anim-fadeinup text-gray">
-                                Entrez vos identifiants pour ouvrir votre console ERAH.
+                                Entrez vos identifiants pour ouvrir votre espace ERAH.
                             </p>
                         </div>
 

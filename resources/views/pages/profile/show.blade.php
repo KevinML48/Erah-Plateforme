@@ -755,7 +755,7 @@
                                     <span data-hover="Page supporter">Page supporter</span>
                                 </a>
                                 <a href="{{ route('supporter.console') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Console supporter">Console supporter</span>
+                                    <span data-hover="Espace supporter">Espace supporter</span>
                                 </a>
                             </div>
                         </div>

@@ -400,17 +400,17 @@ class HelpCenterService
     private function buildHero(string $mode, Collection $categories, Collection $articles, Collection $tourSteps): array
     {
         return [
-            'eyebrow' => $mode === 'console' ? 'Aide in-app' : 'Centre d aide / FAQ',
+            'eyebrow' => $mode === 'console' ? 'Centre d aide membre' : 'Centre d aide / FAQ',
             'title' => $mode === 'console'
-                ? 'Trouver la bonne reponse sans quitter votre espace.'
+                ? 'Trouver la bonne reponse depuis votre espace.'
                 : 'Comprendre ERAH sans se perdre.',
             'subtitle' => $mode === 'console'
-                ? "Le hub d'aide central pour retrouver vite une reponse, relancer un parcours et repartir vers la bonne page du produit."
+                ? "Le point de repere pour retrouver vite une reponse, relancer un parcours et revenir vers le bon module sans perdre le fil."
                 : "Une seule page pour decouvrir la logique de la plateforme, parcourir la FAQ centrale, comprendre les vrais modules et utiliser un assistant cadre par la base de connaissance.",
             'microcopy' => "La lecture reste publique. Les actions qui modifient votre progression, votre profil ou vos ressources demandent un compte connecte.",
             'search_placeholder' => 'Rechercher une question, un module, une action ou un mot-cle',
             'primary_cta' => [
-                'label' => $mode === 'console' ? 'Retour au dashboard' : 'Commencer la visite',
+                'label' => $mode === 'console' ? 'Retour a mon espace' : 'Commencer la visite',
                 'href' => $mode === 'console' ? route('dashboard') : '#starter-journey',
             ],
             'secondary_cta' => [
@@ -456,7 +456,7 @@ class HelpCenterService
             ['label' => 'FAQ', 'href' => '#faq-center'],
             ['label' => 'Video', 'href' => '#video-help'],
             ['label' => 'Assistant', 'href' => '#assistant-panel'],
-            ['label' => $mode === 'console' ? 'Dashboard' : 'Matchs', 'href' => $mode === 'console' ? route('dashboard') : route('matches.index')],
+            ['label' => $mode === 'console' ? 'Mon espace' : 'Matchs', 'href' => $mode === 'console' ? route('dashboard') : route('matches.index')],
         ];
     }
 
@@ -617,9 +617,9 @@ class HelpCenterService
         if ($mode === 'console') {
             return [
                 'eyebrow' => 'Toujours au meme endroit',
-                'title' => "Gardez ce hub d'aide comme point de retour quand un module vous bloque.",
-                'description' => "Vous pouvez passer des questions a l'action sans quitter l'ecosysteme ERAH.",
-                'primary_label' => 'Retour au dashboard',
+                'title' => "Gardez ce centre d aide comme point de retour quand un module vous bloque.",
+                'description' => "Vous pouvez passer d une question a une action sans quitter votre espace ERAH.",
+                'primary_label' => 'Retour a mon espace',
                 'primary_url' => route('dashboard'),
                 'secondary_label' => 'Voir mes notifications',
                 'secondary_url' => route('notifications.index'),
@@ -1185,7 +1185,7 @@ class HelpCenterService
             'voir-un-clip-liker-et-ajouter-en-favoris' => [
                 ...$meta,
                 'steps' => [
-                    'Parcourez le feed clips publiquement ou depuis votre console.',
+                    'Parcourez le feed clips publiquement ou depuis votre espace membre.',
                     'Connectez-vous si vous voulez liker, commenter ou ajouter en favoris.',
                     'Retrouvez vos clips sauvegardes depuis la page favoris.',
                 ],

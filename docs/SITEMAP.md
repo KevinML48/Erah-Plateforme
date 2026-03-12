@@ -1,54 +1,115 @@
-# SITEMAP - Plateforme ERAH
+# Sitemap
 
 ## Public
-- `/` - Landing
-- `/login` - Auth login
-- `/register` - Auth register
-- `/auth/google/redirect`
-- `/auth/discord/redirect`
 
-## Authenticated (User)
-- `/onboarding`
-- `/dashboard`
-- `/clips`
-- `/clips/{slug}`
-- `/clips/favorites`
-- `/leaderboards/me`
-- `/leaderboards`
-- `/leaderboards/{leagueKey}`
-- `/notifications`
-- `/notifications/preferences`
-- `/duels`
-- `/duels/create`
-- `/profile`
-- `/settings`
+- `/`
+- `/login`
+- `/register`
+- `/supporter`
+- `/aide`
+- `/aide/assistant`
+- `/app/classement`
+- `/app/classement/{leagueKey}`
+- `/app/clips`
+- `/app/clips/{slug}`
+- `/app/matchs`
+- `/app/matchs/{matchId}`
+- `/app/statistics`
+- `/app/duels/classement`
+
+## Membre connecte
+
+- `/console/dashboard`
+- `/console/onboarding`
+- `/console/matches`
+- `/console/matches/{matchId}`
+- `/console/clips`
+- `/console/clips/{slug}`
+- `/console/clips/favorites`
+- `/console/bets`
+- `/console/leaderboards`
+- `/console/leaderboards/{leagueKey}`
+- `/console/missions`
+- `/console/gifts`
+- `/console/wallet`
+- `/console/duels`
+- `/console/notifications`
+- `/console/profile`
+- `/console/profile/transactions`
+- `/console/settings`
+- `/console/help`
+- `/console/assistant`
+- `/console/supporter`
+- `/console/quizzes`
+- `/console/live-codes`
+- `/console/statistics`
+- `/console/achievements`
+- `/console/shop`
+
+## Parcours connectes accessibles aussi via `/app`
+
+- `/app/ma-ligue`
+- `/app/missions`
+- `/app/paris`
+- `/app/duels`
+- `/app/notifications`
+- `/app/profil`
+- `/app/quizzes`
+- `/app/live-codes`
+- `/app/achievements`
+- `/app/shop`
 
 ## Admin
-- `/admin/clips`
-- `/admin/clips/create`
-- `/admin/clips/{clip}/edit`
-- `/admin/matches`
-- `/admin/matches/create`
 
-## UI/Dev
-- `/ui-kit` (local/admin)
-- `/status`
+- `/console/admin`
+- `/console/admin/clips`
+- `/console/admin/matches`
+- `/console/admin/gifts`
+- `/console/admin/redemptions`
+- `/console/admin/missions`
+- `/console/admin/quizzes`
+- `/console/admin/live-codes`
+- `/console/admin/events`
+- `/console/admin/gallery-photos`
+- `/console/admin/reviews`
+- `/console/admin/supporters`
 
-## Navigation structure
-### Mobile tab bar
-1. Dashboard (`/dashboard`)
-2. Clips (`/clips`)
-3. Classement (`/leaderboards/me`)
-4. Notifs (`/notifications`)
-5. Duels (`/duels`)
+## Dev local
 
-### Desktop sidebar
-- Dashboard
-- Clips
-- Favoris
+- `/dev/*` uniquement en environnement local
+
+## Navigation produit
+
+### Navigation publique
+
+- Landing
 - Classements
-- Notifications
+- Clips
+- Matchs
+- Aide
+- Supporter
+
+### Navigation membre
+
+- Dashboard
+- Matchs
+- Clips
+- Paris
+- Classements
+- Missions
+- Cadeaux
 - Duels
+- Points
+- Notifications
 - Profil
-- Settings
-- Admin (section visible admin uniquement)
+- Centre d aide
+
+### Navigation admin
+
+- Dashboard admin
+- Matchs
+- Clips
+- Missions
+- Cadeaux
+- Galerie
+- Avis

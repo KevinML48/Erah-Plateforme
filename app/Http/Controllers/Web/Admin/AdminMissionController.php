@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
+use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Console\StoreMissionTemplateRequest;
 use App\Http\Requests\Web\Console\UpdateMissionTemplateRequest;
@@ -84,54 +85,117 @@ class AdminMissionController extends Controller
         ]);
     }
 
-    public function storeTemplate(StoreMissionTemplateRequest $request): RedirectResponse
-    {
+    public function storeTemplate(
+        StoreMissionTemplateRequest $request,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $validated = $request->validated();
-        MissionTemplate::query()->create($this->payloadFromValidated($validated, $request->boolean('is_active')));
+        $template = MissionTemplate::query()->create($this->payloadFromValidated($validated, $request->boolean('is_active')));
+
+        $storeAuditLogAction->execute(
+            action: 'missions.template.created',
+            actor: $request->user(),
+            target: $template,
+            context: [
+                'mission_template_id' => $template->id,
+                'scope' => $template->scope,
+                'event_type' => $template->event_type,
+            ],
+        );
 
         return back()->with('success', 'Template mission cree.');
     }
 
-    public function updateTemplate(UpdateMissionTemplateRequest $request, int $templateId): RedirectResponse
-    {
+    public function updateTemplate(
+        UpdateMissionTemplateRequest $request,
+        int $templateId,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $template = MissionTemplate::query()->findOrFail($templateId);
         $validated = $request->validated();
         $template->fill($this->payloadFromValidated($validated, $request->boolean('is_active')))->save();
 
+        $storeAuditLogAction->execute(
+            action: 'missions.template.updated',
+            actor: $request->user(),
+            target: $template,
+            context: [
+                'mission_template_id' => $template->id,
+                'scope' => $template->scope,
+                'event_type' => $template->event_type,
+            ],
+        );
+
         return back()->with('success', 'Template mission mis a jour.');
     }
 
-    public function destroyTemplate(int $templateId): RedirectResponse
+    public function destroyTemplate(int $templateId, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
         $template = MissionTemplate::query()->findOrFail($templateId);
+        $storeAuditLogAction->execute(
+            action: 'missions.template.deleted',
+            actor: request()->user(),
+            target: $template,
+            context: [
+                'mission_template_id' => $template->id,
+                'scope' => $template->scope,
+                'event_type' => $template->event_type,
+            ],
+        );
         $template->delete();
 
         return back()->with('success', 'Template mission supprime.');
     }
 
-    public function generateDaily(EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction): RedirectResponse
-    {
+    public function generateDaily(
+        EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $usersCount = $this->generateForUsers($ensureCurrentMissionInstancesAction);
+
+        $storeAuditLogAction->execute(
+            action: 'missions.generation.daily',
+            actor: request()->user(),
+            context: ['users_count' => $usersCount],
+        );
 
         return back()->with('success', 'Generation daily forcee pour '.$usersCount.' utilisateurs.');
     }
 
-    public function generateWeekly(EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction): RedirectResponse
-    {
+    public function generateWeekly(
+        EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $usersCount = $this->generateForUsers($ensureCurrentMissionInstancesAction);
+
+        $storeAuditLogAction->execute(
+            action: 'missions.generation.weekly',
+            actor: request()->user(),
+            context: ['users_count' => $usersCount],
+        );
 
         return back()->with('success', 'Generation weekly forcee pour '.$usersCount.' utilisateurs.');
     }
 
-    public function generateEventWindow(EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction): RedirectResponse
-    {
+    public function generateEventWindow(
+        EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $usersCount = $this->generateForUsers($ensureCurrentMissionInstancesAction);
+
+        $storeAuditLogAction->execute(
+            action: 'missions.generation.event_window',
+            actor: request()->user(),
+            context: ['users_count' => $usersCount],
+        );
 
         return back()->with('success', 'Generation event_window forcee pour '.$usersCount.' utilisateurs.');
     }
 
-    public function repair(MissionMaintenanceService $missionMaintenanceService): RedirectResponse
-    {
+    public function repair(
+        MissionMaintenanceService $missionMaintenanceService,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         $result = ['users' => 0, 'expired_marked' => 0, 'pruned_focuses' => 0];
 
         User::query()->orderBy('id')->chunkById(200, function (Collection $users) use ($missionMaintenanceService, &$result): void {
@@ -140,6 +204,12 @@ class AdminMissionController extends Controller
             $result['expired_marked'] += $chunkResult['expired_marked'];
             $result['pruned_focuses'] += $chunkResult['pruned_focuses'];
         });
+
+        $storeAuditLogAction->execute(
+            action: 'missions.repair.run',
+            actor: request()->user(),
+            context: $result,
+        );
 
         return back()->with(
             'success',

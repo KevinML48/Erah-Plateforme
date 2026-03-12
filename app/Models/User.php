@@ -249,6 +249,16 @@ class User extends Authenticatable
         return $this->hasMany(GiftRedemption::class);
     }
 
+    public function giftCartItems(): HasMany
+    {
+        return $this->hasMany(GiftCartItem::class);
+    }
+
+    public function giftFavorites(): HasMany
+    {
+        return $this->hasMany(GiftFavorite::class);
+    }
+
     public function giftRedemptionEvents(): HasMany
     {
         return $this->hasMany(GiftRedemptionEvent::class, 'actor_user_id');

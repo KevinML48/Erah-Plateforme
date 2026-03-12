@@ -26,6 +26,7 @@ class MarketingHomeActivityService
         $quickStats = [
             'total_xp' => 0,
             'rank_points' => 0,
+            'league_points' => 0,
             'league_name' => null,
             'pending_duels' => 0,
             'active_duels' => 0,
@@ -85,6 +86,7 @@ class MarketingHomeActivityService
         $quickStats = [
             'total_xp' => (int) ($progress->total_xp ?? 0),
             'rank_points' => (int) ($progress->total_rank_points ?? 0),
+            'league_points' => (int) ($progress->total_rank_points ?? 0),
             'league_name' => $progress?->league?->name,
             'pending_duels' => (int) $pendingDuels,
             'active_duels' => (int) $activeDuels,
@@ -97,8 +99,8 @@ class MarketingHomeActivityService
         $items = [[
             'type' => 'points',
             'label' => 'Points',
-            'title' => 'Mon progression de classement',
-            'excerpt' => 'XP: '.$quickStats['total_xp'].' - Rank points: '.$quickStats['rank_points'],
+            'title' => 'Ma progression membre',
+            'excerpt' => 'XP: '.$quickStats['total_xp'].' - Points classement: '.$quickStats['league_points'],
             'status' => 'Mon rang',
             'image_url' => null,
             'url' => route('app.profile'),

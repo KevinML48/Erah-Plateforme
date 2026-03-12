@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\NotifyAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\LiveCode;
@@ -17,7 +18,8 @@ class LiveCodeService
         private readonly RewardGrantService $rewardGrantService,
         private readonly MissionEngine $missionEngine,
         private readonly AchievementService $achievementService,
-        private readonly NotifyAction $notifyAction
+        private readonly NotifyAction $notifyAction,
+        private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
     }
 
@@ -28,7 +30,7 @@ class LiveCodeService
     {
         $code = Str::upper((string) ($payload['code'] ?? Str::random(8)));
 
-        return LiveCode::query()->create([
+        $liveCode = LiveCode::query()->create([
             'code' => $code,
             'label' => $payload['label'],
             'description' => $payload['description'] ?? null,
@@ -43,6 +45,19 @@ class LiveCodeService
             'created_by' => $actor->id,
             'meta' => $payload['meta'] ?? null,
         ]);
+
+        $this->storeAuditLogAction->execute(
+            action: 'live-codes.created',
+            actor: $actor,
+            target: $liveCode,
+            context: [
+                'live_code_id' => $liveCode->id,
+                'code' => $liveCode->code,
+                'status' => $liveCode->status,
+            ],
+        );
+
+        return $liveCode;
     }
 
     public function redeem(User $user, string $code): LiveCodeRedemption
@@ -117,6 +132,19 @@ class LiveCodeService
                 data: [
                     'live_code_id' => $liveCode->id,
                     'redemption_id' => $redemption->id,
+                ],
+            );
+
+            $this->storeAuditLogAction->execute(
+                action: 'live-codes.redeemed',
+                actor: $user,
+                target: $liveCode,
+                context: [
+                    'live_code_id' => $liveCode->id,
+                    'redemption_id' => $redemption->id,
+                    'reward_points' => (int) $redemption->reward_points,
+                    'bet_points' => (int) $redemption->bet_points,
+                    'xp_reward' => (int) $redemption->xp_reward,
                 ],
             );
 

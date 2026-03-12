@@ -4,6 +4,7 @@ namespace Tests\Feature\Web;
 
 use App\Models\Gift;
 use App\Models\GiftRedemption;
+use App\Models\GiftRedemptionEvent;
 use App\Models\MissionTemplate;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
@@ -51,7 +52,8 @@ class MissionsAndGiftsPagesTest extends TestCase
 
         $this->actingAs($user)->get(route('gifts.index'))
             ->assertOk()
-            ->assertSee('Cadeaux');
+            ->assertSee('Catalogue cadeaux')
+            ->assertSee('Filtrer');
     }
 
     public function test_gift_wallet_route_redirects_to_unified_points_wallet(): void
@@ -162,6 +164,123 @@ class MissionsAndGiftsPagesTest extends TestCase
             ->assertSee('Mes demandes recentes');
     }
 
+    public function test_user_can_view_gift_redemption_detail_with_timeline_and_history(): void
+    {
+        $user = User::factory()->create();
+
+        $gift = Gift::query()->create([
+            'title' => 'Casquette ERAH',
+            'description' => 'Edition club',
+            'image_url' => null,
+            'cost_points' => 450,
+            'stock' => 12,
+            'is_active' => true,
+        ]);
+
+        $redemption = GiftRedemption::query()->create([
+            'user_id' => $user->id,
+            'gift_id' => $gift->id,
+            'cost_points_snapshot' => 450,
+            'status' => GiftRedemption::STATUS_SHIPPED,
+            'tracking_code' => 'TRK-901',
+            'tracking_carrier' => 'Chronopost',
+            'shipping_note' => 'Laisse en point relais si absent',
+            'requested_at' => now()->subDays(2),
+            'approved_at' => now()->subDay(),
+            'shipped_at' => now()->subHours(10),
+        ]);
+
+        GiftRedemptionEvent::query()->create([
+            'redemption_id' => $redemption->id,
+            'actor_user_id' => $user->id,
+            'type' => 'redeem_requested',
+            'data' => ['cost_points' => 450],
+            'created_at' => now()->subDays(2),
+        ]);
+
+        GiftRedemptionEvent::query()->create([
+            'redemption_id' => $redemption->id,
+            'actor_user_id' => null,
+            'type' => 'admin_shipped',
+            'data' => [
+                'tracking_code' => 'TRK-901',
+                'tracking_carrier' => 'Chronopost',
+                'shipping_note' => 'Laisse en point relais si absent',
+            ],
+            'created_at' => now()->subHours(10),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('gifts.redemptions.show', $redemption->id));
+
+        $response->assertOk()
+            ->assertSee('CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT))
+            ->assertSee('Timeline commande')
+            ->assertSee('Commande expediee')
+            ->assertSee('Historique complet')
+            ->assertSee('TRK-901')
+            ->assertSee('Chronopost');
+    }
+
+    public function test_user_can_see_only_its_own_gift_redemption_detail(): void
+    {
+        $owner = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $gift = Gift::query()->create([
+            'title' => 'Mug Collector',
+            'description' => 'Edition limitee',
+            'image_url' => null,
+            'cost_points' => 300,
+            'stock' => 3,
+            'is_active' => true,
+        ]);
+
+        $otherRedemption = GiftRedemption::query()->create([
+            'user_id' => $otherUser->id,
+            'gift_id' => $gift->id,
+            'cost_points_snapshot' => 300,
+            'status' => GiftRedemption::STATUS_PENDING,
+            'requested_at' => now(),
+        ]);
+
+        $this->actingAs($owner)
+            ->get(route('gifts.redemptions.show', $otherRedemption->id))
+            ->assertNotFound();
+    }
+
+    public function test_user_can_view_redemptions_list_with_filters_and_detail_links(): void
+    {
+        $user = User::factory()->create();
+
+        $gift = Gift::query()->create([
+            'title' => 'Pack Stickers',
+            'description' => 'Pack logo',
+            'image_url' => null,
+            'cost_points' => 120,
+            'stock' => 50,
+            'is_active' => true,
+        ]);
+
+        $redemption = GiftRedemption::query()->create([
+            'user_id' => $user->id,
+            'gift_id' => $gift->id,
+            'cost_points_snapshot' => 120,
+            'status' => GiftRedemption::STATUS_PENDING,
+            'requested_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('gifts.redemptions', [
+            'status' => GiftRedemption::STATUS_PENDING,
+            'search' => 'Pack',
+        ]));
+
+        $response->assertOk()
+            ->assertSee('Mes commandes cadeaux')
+            ->assertSee('Pack Stickers')
+            ->assertSee('CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT))
+            ->assertSee(route('gifts.redemptions.show', $redemption->id), false);
+    }
+
     public function test_user_can_redeem_gift_once_with_idempotent_replay(): void
     {
         $user = User::factory()->create();
@@ -240,7 +359,7 @@ class MissionsAndGiftsPagesTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHas('error');
+        $response->assertSessionHas('error', 'Solde insuffisant: il vous manque des points pour valider cette demande.');
 
         $this->assertDatabaseMissing('gift_redemptions', [
             'user_id' => $user->id,

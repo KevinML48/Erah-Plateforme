@@ -187,7 +187,7 @@
                         @if($reviews->count())
                             <div class="adm-review-list">
                                 @foreach($reviews as $review)
-                                    <article class="adm-review-card tt-anim-fadeinup">
+                                    <article id="review-{{ $review->id }}" class="adm-review-card tt-anim-fadeinup">
                                         <div class="adm-review-head">
                                             <div>
                                                 <div class="adm-row-actions margin-bottom-10">

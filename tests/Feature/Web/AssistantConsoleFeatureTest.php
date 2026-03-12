@@ -28,7 +28,7 @@ class AssistantConsoleFeatureTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Assistant/Show')
-                ->where('page.hero.title', 'Un assistant conversationnel relie a votre console.')
+                ->where('page.hero.title', 'Un assistant conversationnel relie a votre espace.')
                 ->where('page.availability.enabled', true));
     }
 

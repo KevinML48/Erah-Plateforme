@@ -1,6 +1,6 @@
 @extends('marketing.layouts.template')
 
-@section('title', ($mode === 'console' ? 'Help Center Console' : 'Help Center').' | ERAH Esport')
+@section('title', ($mode === 'console' ? 'Centre d aide membre' : 'Centre d aide ERAH').' | ERAH Esport')
 @section('meta_description', $page['hero']['subtitle'] ?? "Centre d'aide ERAH")
 @section('body_class', 'tt-noise tt-magic-cursor tt-smooth-scroll')
 
@@ -750,7 +750,7 @@
         <div class="page-header-inner tt-wrap">
             <div class="ph-caption">
                 <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Support in-app' : 'Help Center / FAQ' }}</h2>
+                    <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Centre d aide membre' : 'Centre d aide / FAQ' }}</h2>
                     <h1 class="ph-caption-title">{{ $page['hero']['title'] }}</h1>
                     <div class="ph-caption-description max-width-700">{{ $page['hero']['subtitle'] }}</div>
                 </div>
@@ -760,7 +760,7 @@
             <div class="ph-mask-inner tt-wrap">
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Navigation guidee' : 'Source de verite ERAH' }}</h2>
+                        <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Repere guide' : 'Source de verite ERAH' }}</h2>
                         <h1 class="ph-caption-title">{{ $page['hero']['title'] }}</h1>
                         <div class="ph-caption-description max-width-700">{{ $page['hero']['subtitle'] }}</div>
                     </div>
@@ -1212,7 +1212,7 @@
             <div class="tt-section-inner tt-wrap">
                 <div class="erah-help-video-grid">
                     <div class="erah-help-card">
-                        <div class="erah-help-overline">Bloc video</div>
+                        <div class="erah-help-overline">Tutoriel video</div>
                         <div class="tt-heading tt-heading-xlg margin-bottom-15"><h2 class="tt-heading-title">{{ $page['video']['title'] }}</h2></div>
                         <p class="text-muted">{{ $page['video']['description'] }}</p>
                         <ul class="erah-help-list">
@@ -1227,8 +1227,8 @@
                                 <iframe src="{{ $page['video']['embed_url'] }}" allowfullscreen loading="lazy" title="Tutoriel ERAH"></iframe>
                             @else
                                 <div class="erah-help-video-empty">
-                                    <div class="erah-help-overline">Video a brancher</div>
-                                    <div class="tt-heading tt-heading-sm margin-bottom-10"><h3 class="tt-heading-title">Ajoutez un tutoriel video quand il sera pret.</h3></div>
+                                    <div class="erah-help-overline">Tutoriel a venir</div>
+                                    <div class="tt-heading tt-heading-sm margin-bottom-10"><h3 class="tt-heading-title">Le tutoriel video sera integre ici des qu il sera disponible.</h3></div>
                                     <p class="text-muted margin-bottom-0">{{ $page['video']['fallback'] }}</p>
                                 </div>
                             @endif
@@ -1306,7 +1306,7 @@
 
                                 <div class="erah-help-footer-actions">
                                     <a href="{{ $userPreview['internal_profile_url'] ?? route('profile.show') }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Profil">Voir mon profil</span></a>
-                                    <a href="{{ $userPreview['dashboard_url'] ?? route('dashboard') }}" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Console">Ouvrir la console</span></a>
+                                    <a href="{{ $userPreview['dashboard_url'] ?? route('dashboard') }}" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Mon espace">Ouvrir mon espace</span></a>
                                     <a href="{{ $page['assistant']['page_url'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Assistant">Poser une question</span></a>
                                 </div>
                             </div>
@@ -1326,11 +1326,11 @@
                     <div class="erah-help-footer-panel">
                         <div class="erah-help-overline">Base de connaissance</div>
                         <div class="tt-heading tt-heading-lg margin-bottom-15"><h2 class="tt-heading-title">Une seule source de verite pour la FAQ et l assistant</h2></div>
-                        <p class="text-muted">Articles, questions, reponses courtes, glossaire et suggestions d actions sont deja structures pour servir de base au futur assistant ERAH.</p>
+                        <p class="text-muted">Articles, questions, reponses courtes, glossaire et suggestions d actions sont deja structures pour alimenter l assistant ERAH et le centre d aide.</p>
                         <div class="erah-help-pill-row margin-top-25">
                             <span class="erah-help-chip">Categories administrables</span>
                             <span class="erah-help-chip">Questions mises en avant</span>
-                            <span class="erah-help-chip">Reponses courtes IA</span>
+                            <span class="erah-help-chip">Reponses courtes fiables</span>
                             <span class="erah-help-chip">{{ $page['assistant']['status'] ?? 'Pret' }}</span>
                         </div>
                     </div>

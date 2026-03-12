@@ -1,6 +1,6 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Console Supporter | ERAH Plateforme')
+@section('title', 'Espace supporter | ERAH Plateforme')
 @section('meta_description', 'Gestion de votre abonnement supporter ERAH, avantages mensuels et preferences de mur public.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
@@ -117,7 +117,7 @@
             <div class="ph-caption">
                 <div class="ph-caption-inner">
                     <h2 class="ph-caption-subtitle">Supporter ERAH</h2>
-                    <h1 class="ph-caption-title">Console supporter</h1>
+                    <h1 class="ph-caption-title">Espace supporter</h1>
                     <div class="ph-caption-description max-width-800">
                         Suivez votre abonnement, vos recompenses mensuelles, vos votes clips et votre visibilite sur le mur des supporters.
                     </div>
@@ -130,7 +130,7 @@
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
                         <h2 class="ph-caption-subtitle">Supporter ERAH</h2>
-                        <h1 class="ph-caption-title">Console supporter</h1>
+                        <h1 class="ph-caption-title">Espace supporter</h1>
                         <div class="ph-caption-description max-width-800">
                             Espace dedie a la gestion de votre statut supporter et de vos interactions premium sur la plateforme.
                         </div>
@@ -147,7 +147,7 @@
                         <path d="M50,250c0-110.5,89.5-200,200-200s200,89.5,200,200s-89.5,200-200,200S50,360.5,50,250" id="textcircle"></path>
                     </defs>
                     <text dy="30">
-                        <textPath xlink:href="#textcircle">Console Supporter - Console Supporter -</textPath>
+                        <textPath xlink:href="#textcircle">Espace Supporter - Espace Supporter -</textPath>
                     </text>
                 </svg>
             </a>
@@ -171,7 +171,7 @@
                             </div>
                             <div class="supporter-console-kpi">
                                 <strong>{{ (int) ($progress->total_rank_points ?? 0) }}</strong>
-                                <span>Rank points</span>
+                                <span>Points classement</span>
                             </div>
                             <div class="supporter-console-kpi">
                                 <strong>{{ (int) ($supporterSummary['months'] ?? 0) }}</strong>
@@ -200,7 +200,7 @@
                                 </form>
                             @endif
                             <a href="{{ route('supporter.show') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                <span data-hover="Retour page supporter">Retour page supporter</span>
+                                <span data-hover="Voir la page supporter">Voir la page supporter</span>
                             </a>
                         </div>
 
@@ -275,7 +275,7 @@
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Profil</strong>
-                                        <div class="supporter-console-muted">Clips favoris visibles, console dediee et options supporter centralisees dans votre espace.</div>
+                                        <div class="supporter-console-muted">Clips favoris visibles, espace dedie et options supporter centralisees dans votre compte.</div>
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Club / IRL</strong>
@@ -430,7 +430,7 @@
                                         </div>
                                         <div class="bli-desc">{{ \Illuminate\Support\Str::limit((string) ($clip->description ?? 'Clip favori supporter.'), 150) }}</div>
                                         <a href="{{ route('clips.show', $clip->slug) }}" class="tt-btn tt-btn-outline">
-                                            <span data-hover="Read More">Read More</span>
+                                            <span data-hover="En savoir plus">En savoir plus</span>
                                         </a>
                                     </div>
                                 </article>

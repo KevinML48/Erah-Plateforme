@@ -819,11 +819,11 @@
                                         <div class="public-profile-admin-toolbar">
                                             <span class="public-profile-pill is-supporter">Moderation en direct</span>
                                             <a href="{{ $adminUsersConsoleUrl }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                                <span data-hover="Console users">Console users</span>
+                                                <span data-hover="Gestion membres">Gestion membres</span>
                                             </a>
                                             @if($reviewsModuleReady ?? false)
                                                 <a href="{{ $adminReviewsConsoleUrl }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                                    <span data-hover="Console avis">Console avis</span>
+                                                    <span data-hover="Gestion avis">Gestion avis</span>
                                                 </a>
                                             @endif
                                         </div>

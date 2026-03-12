@@ -19,7 +19,8 @@ class UpdateGiftRedemptionRequest extends FormRequest
         return [
             'reason' => ['nullable', 'string', 'max:1000'],
             'tracking_code' => ['nullable', 'string', 'max:255'],
+            'tracking_carrier' => ['nullable', 'string', 'max:120'],
+            'shipping_note' => ['nullable', 'string', 'max:1500'],
         ];
     }
 }
-

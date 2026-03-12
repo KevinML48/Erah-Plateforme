@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class GiftRedemption extends Model
 {
@@ -17,6 +18,7 @@ class GiftRedemption extends Model
     public const STATUS_SHIPPED = 'shipped';
     public const STATUS_DELIVERED = 'delivered';
     public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_REFUNDED = 'refunded';
 
     protected $fillable = [
         'user_id',
@@ -25,6 +27,9 @@ class GiftRedemption extends Model
         'status',
         'reason',
         'tracking_code',
+        'tracking_carrier',
+        'shipping_note',
+        'internal_note',
         'requested_at',
         'approved_at',
         'rejected_at',
@@ -58,7 +63,35 @@ class GiftRedemption extends Model
             self::STATUS_SHIPPED,
             self::STATUS_DELIVERED,
             self::STATUS_CANCELLED,
+            self::STATUS_REFUNDED,
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function statusLabels(): array
+    {
+        return [
+            self::STATUS_PENDING => 'En attente',
+            self::STATUS_APPROVED => 'Approuvee',
+            self::STATUS_REJECTED => 'Rejetee',
+            self::STATUS_SHIPPED => 'Expediee',
+            self::STATUS_DELIVERED => 'Livree',
+            self::STATUS_CANCELLED => 'Annulee',
+            self::STATUS_REFUNDED => 'Remboursee',
+        ];
+    }
+
+    public static function statusLabel(?string $status): string
+    {
+        if (! is_string($status) || trim($status) === '') {
+            return 'Inconnu';
+        }
+
+        $labels = self::statusLabels();
+
+        return $labels[$status] ?? Str::headline($status);
     }
 
     public function user(): BelongsTo

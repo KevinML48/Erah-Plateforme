@@ -3,97 +3,18 @@
 namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bet;
-use App\Models\Clip;
-use App\Models\EsportMatch;
-use App\Models\GiftRedemption;
-use App\Models\MissionTemplate;
-use App\Models\Notification;
-use App\Models\User;
-use App\Models\WalletTransaction;
+use App\Services\AdminOperationsCockpitService;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdminDashboardController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(Request $request, AdminOperationsCockpitService $cockpitService): View
     {
-        $stats = [
-            'users_total' => (int) User::query()->count(),
-            'admins_total' => (int) User::query()->where('role', User::ROLE_ADMIN)->count(),
-            'clips_published' => (int) Clip::query()->where('is_published', true)->count(),
-            'clips_draft' => (int) Clip::query()->where('is_published', false)->count(),
-            'matches_open' => (int) EsportMatch::query()
-                ->whereIn('status', [
-                    EsportMatch::STATUS_SCHEDULED,
-                    EsportMatch::STATUS_LOCKED,
-                    EsportMatch::STATUS_LIVE,
-                ])
-                ->count(),
-            'matches_settled' => (int) EsportMatch::query()->whereNotNull('settled_at')->count(),
-            'bets_pending' => (int) Bet::query()
-                ->whereIn('status', [Bet::STATUS_PENDING, Bet::STATUS_PLACED])
-                ->count(),
-            'bets_settled' => (int) Bet::query()
-                ->whereIn('status', [Bet::STATUS_WON, Bet::STATUS_LOST, Bet::STATUS_VOID])
-                ->count(),
-            'notifications_unread' => (int) Notification::query()->whereNull('read_at')->count(),
-            'redemptions_pending' => (int) GiftRedemption::query()
-                ->where('status', GiftRedemption::STATUS_PENDING)
-                ->count(),
-            'missions_active' => (int) MissionTemplate::query()->where('is_active', true)->count(),
-            'wallet_volume_today' => (int) WalletTransaction::query()
-                ->whereDate('created_at', today())
-                ->sum('amount'),
-        ];
-
-        $managementLinks = [
-            [
-                'title' => 'Utilisateurs',
-                'description' => 'Roles, profils et progression globale des membres.',
-                'route' => route('users.index'),
-                'action' => 'Gerer les comptes',
-                'count' => $stats['users_total'],
-            ],
-            [
-                'title' => 'Clips',
-                'description' => 'Publier, modifier ou depublier les clips plateforme.',
-                'route' => route('admin.clips.index'),
-                'action' => 'Gerer les clips',
-                'count' => $stats['clips_published'],
-            ],
-            [
-                'title' => 'Matchs',
-                'description' => 'Creation, statut, resultat et settlement des matchs.',
-                'route' => route('admin.matches.index'),
-                'action' => 'Gerer les matchs',
-                'count' => $stats['matches_open'],
-            ],
-            [
-                'title' => 'Missions',
-                'description' => 'Templates missions, activation et suivi des cycles.',
-                'route' => route('admin.missions.index'),
-                'action' => 'Gerer les missions',
-                'count' => $stats['missions_active'],
-            ],
-            [
-                'title' => 'Cadeaux',
-                'description' => 'Catalogue cadeaux et suivi des demandes en attente.',
-                'route' => route('admin.gifts.index'),
-                'action' => 'Gerer les cadeaux',
-                'count' => $stats['redemptions_pending'],
-            ],
-            [
-                'title' => 'Points',
-                'description' => 'Ajuster le solde paris historique et suivre les mouvements.',
-                'route' => route('admin.wallets.grant.create'),
-                'action' => 'Gerer les points',
-                'count' => $stats['wallet_volume_today'],
-            ],
-        ];
+        $payload = $cockpitService->dashboardPayload($request->query());
 
         return view('pages.admin.dashboard', [
-            'stats' => $stats,
-            'managementLinks' => $managementLinks,
+            ...$payload,
         ]);
     }
 }

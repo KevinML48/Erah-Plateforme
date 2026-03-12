@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\UpsertClubReviewRequest;
 use App\Models\ClubReview;
@@ -11,17 +12,17 @@ use Illuminate\Support\Facades\Schema;
 
 class ProfileClubReviewController extends Controller
 {
-    public function store(UpsertClubReviewRequest $request): RedirectResponse
+    public function store(UpsertClubReviewRequest $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
-        return $this->persist($request, true);
+        return $this->persist($request, true, $storeAuditLogAction);
     }
 
-    public function update(UpsertClubReviewRequest $request): RedirectResponse
+    public function update(UpsertClubReviewRequest $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
-        return $this->persist($request, false);
+        return $this->persist($request, false, $storeAuditLogAction);
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
         if (! $this->isReady()) {
             return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
@@ -38,11 +39,24 @@ class ProfileClubReviewController extends Controller
             'is_featured' => false,
         ])->save();
 
+        $storeAuditLogAction->execute(
+            action: 'reviews.deleted',
+            actor: $request->user(),
+            target: $review,
+            context: [
+                'review_id' => $review->id,
+                'status' => ClubReview::STATUS_HIDDEN,
+            ],
+        );
+
         return back()->with('success', 'Votre avis a ete retire de l espace public.');
     }
 
-    private function persist(UpsertClubReviewRequest $request, bool $isCreate): RedirectResponse
-    {
+    private function persist(
+        UpsertClubReviewRequest $request,
+        bool $isCreate,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         if (! $this->isReady()) {
             return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
         }
@@ -64,6 +78,17 @@ class ProfileClubReviewController extends Controller
         }
 
         $review->save();
+
+        $storeAuditLogAction->execute(
+            action: $review->wasRecentlyCreated ? 'reviews.created' : 'reviews.updated',
+            actor: $request->user(),
+            target: $review,
+            context: [
+                'review_id' => $review->id,
+                'is_create_flow' => $isCreate,
+                'status' => $review->status,
+            ],
+        );
 
         return back()->with('success', $isCreate && $review->wasRecentlyCreated
             ? 'Votre avis a ete publie.'

@@ -1,6 +1,6 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Console Users | ERAH Plateforme')
+@section('title', 'Gestion des membres | ERAH Plateforme')
 @section('meta_description', 'Gestion des utilisateurs, roles et progression globale.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
@@ -21,8 +21,8 @@
     @endphp
 
     @include('pages.admin.partials.hero', [
-        'heroSubtitle' => 'ERAH Control Center',
-        'heroTitle' => 'Console Users',
+        'heroSubtitle' => 'Pilotage ERAH',
+        'heroTitle' => 'Gestion des membres',
         'heroDescription' => 'Vue centralisee des comptes, roles et progression de la communaute.',
         'heroMaskDescription' => 'Gestion utilisateurs et roles.',
     ])
@@ -65,7 +65,7 @@
                             </article>
                             <article class="adm-compact-kpi">
                                 <strong>{{ $avgRankPoints }}</strong>
-                                <span>Rank points moyen</span>
+                                <span>Points classement moyens</span>
                             </article>
                         </div>
                     </section>
@@ -97,16 +97,16 @@
                                             <div class="adm-user-stat">
                                                 <span class="adm-user-stat-title">Progression</span>
                                                 <div class="adm-user-stat-value">
-                                                    Rank: {{ (int) ($u->progress?->total_rank_points ?? 0) }}<br>
+                                                    Points classement: {{ (int) ($u->progress?->total_rank_points ?? 0) }}<br>
                                                     XP: {{ (int) ($u->progress?->total_xp ?? 0) }}
                                                 </div>
                                             </div>
 
                                             <div class="adm-user-stat">
-                                                <span class="adm-user-stat-title">Wallets</span>
+                                                <span class="adm-user-stat-title">Soldes</span>
                                                 <div class="adm-user-stat-value">
-                                                    Bet: {{ (int) ($u->wallet?->balance ?? 0) }}<br>
-                                                    Reward: {{ (int) ($u->rewardWallet?->balance ?? 0) }}
+                                                    Paris: {{ (int) ($u->wallet?->balance ?? 0) }}<br>
+                                                    Points plateforme: {{ (int) ($u->rewardWallet?->balance ?? 0) }}
                                                 </div>
                                             </div>
 
@@ -131,11 +131,11 @@
                                                     @csrf
                                                     <input type="hidden" name="user_id" value="{{ $u->id }}">
                                                     <select name="role" class="adm-inline-select" data-lenis-prevent>
-                                                        <option value="user" {{ $u->role === 'user' ? 'selected' : '' }}>user</option>
-                                                        <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>admin</option>
+                                                        <option value="user" {{ $u->role === 'user' ? 'selected' : '' }}>Membre</option>
+                                                        <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                                     </select>
                                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                                        <span data-hover="MAJ role">MAJ role</span>
+                                                        <span data-hover="Mettre a jour">Mettre a jour</span>
                                                     </button>
                                                 </form>
                                             @endif
@@ -166,9 +166,9 @@
                             </div>
                             <div class="adm-row-actions">
                                 <span class="adm-pill">XP {{ (int) ($selectedUser->progress?->total_xp ?? 0) }}</span>
-                                <span class="adm-pill">Rank {{ (int) ($selectedUser->progress?->total_rank_points ?? 0) }}</span>
-                                <span class="adm-pill">Bet {{ (int) ($selectedUser->wallet?->balance ?? 0) }}</span>
-                                <span class="adm-pill">Reward {{ (int) ($selectedUser->rewardWallet?->balance ?? 0) }}</span>
+                                <span class="adm-pill">Classement {{ (int) ($selectedUser->progress?->total_rank_points ?? 0) }}</span>
+                                <span class="adm-pill">Solde paris {{ (int) ($selectedUser->wallet?->balance ?? 0) }}</span>
+                                <span class="adm-pill">Points plateforme {{ (int) ($selectedUser->rewardWallet?->balance ?? 0) }}</span>
                             </div>
                         @else
                             <div class="adm-empty">Aucun utilisateur selectionne.</div>

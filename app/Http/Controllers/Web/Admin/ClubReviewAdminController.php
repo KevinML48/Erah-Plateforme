@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Admin;
 
+use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Admin\ModerateClubReviewRequest;
 use App\Models\ClubReview;
@@ -95,8 +96,11 @@ class ClubReviewAdminController extends Controller
         ]);
     }
 
-    public function update(ModerateClubReviewRequest $request, int $reviewId): RedirectResponse
-    {
+    public function update(
+        ModerateClubReviewRequest $request,
+        int $reviewId,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
         if (! $this->isReady()) {
             return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
         }
@@ -115,16 +119,36 @@ class ClubReviewAdminController extends Controller
 
         $review->save();
 
+        $storeAuditLogAction->execute(
+            action: 'reviews.moderated',
+            actor: $request->user(),
+            target: $review,
+            context: [
+                'review_id' => $review->id,
+                'status' => $review->status,
+                'is_featured' => $review->is_featured,
+            ],
+        );
+
         return back()->with('success', 'Avis mis a jour.');
     }
 
-    public function destroy(int $reviewId): RedirectResponse
+    public function destroy(int $reviewId, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
         if (! $this->isReady()) {
             return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
         }
 
         $review = ClubReview::query()->findOrFail($reviewId);
+        $storeAuditLogAction->execute(
+            action: 'reviews.deleted_by_admin',
+            actor: request()->user(),
+            target: $review,
+            context: [
+                'review_id' => $review->id,
+                'status' => $review->status,
+            ],
+        );
         $review->delete();
 
         return back()->with('success', 'Avis supprime.');

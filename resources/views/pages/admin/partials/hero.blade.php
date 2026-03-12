@@ -1,9 +1,15 @@
 @php
-    $heroSubtitle = $heroSubtitle ?? 'ERAH Control Center';
-    $heroTitle = $heroTitle ?? 'Admin Console';
+    $heroSubtitle = $heroSubtitle ?? 'Pilotage ERAH';
+    $heroTitle = $heroTitle ?? 'Espace admin';
     $heroDescription = $heroDescription ?? 'Pilotage global de la plateforme.';
     $heroMaskDescription = $heroMaskDescription ?? $heroDescription;
     $heroVideoPoster = $heroVideoPoster ?? '/template/assets/vids/1920/video-1-1920.jpg';
+    if ($heroSubtitle === 'ERAH Control Center') {
+        $heroSubtitle = 'Pilotage ERAH';
+    }
+    if ($heroTitle === 'Admin Console') {
+        $heroTitle = 'Espace admin';
+    }
 @endphp
 
 <div id="page-header" class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-caption-parallax ph-image-parallax">
@@ -50,7 +56,7 @@
                     <path d="M50,250c0-110.5,89.5-200,200-200s200,89.5,200,200s-89.5,200-200,200S50,360.5,50,250" id="textcircle"></path>
                 </defs>
                 <text dy="30">
-                    <textPath xlink:href="#textcircle">Scroll To Explore - Scroll To Explore -</textPath>
+                    <textPath xlink:href="#textcircle">Defiler pour explorer - Defiler pour explorer -</textPath>
                 </text>
             </svg>
         </a>

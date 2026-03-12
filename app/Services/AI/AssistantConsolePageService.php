@@ -57,7 +57,7 @@ class AssistantConsolePageService
             ],
             'hero' => [
                 'eyebrow' => 'ERAH Assistant',
-                'title' => 'Un assistant conversationnel relie a votre console.',
+                'title' => 'Un assistant conversationnel relie a votre espace.',
                 'description' => "Posez une question comme a une vraie personne. L assistant s appuie sur la logique ERAH, la base de connaissance et votre contexte disponible sans jamais inventer.",
             ],
             'starter_prompts' => config('assistant.ui.starter_prompts', []),

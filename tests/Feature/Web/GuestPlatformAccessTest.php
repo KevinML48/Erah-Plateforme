@@ -7,6 +7,7 @@ use App\Models\ClipComment;
 use App\Models\CommunityRewardGrant;
 use App\Models\EsportMatch;
 use App\Models\User;
+use App\Models\UserProgress;
 use Database\Seeders\LeagueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -22,6 +23,18 @@ class GuestPlatformAccessTest extends TestCase
         $member = User::factory()->create([
             'name' => 'Public Member',
             'bio' => 'Profil public consultable.',
+        ]);
+
+        UserProgress::query()->create([
+            'user_id' => $member->id,
+            'current_league_id' => null,
+            'total_xp' => 0,
+            'total_rank_points' => 0,
+            'duel_score' => 120,
+            'duel_wins' => 2,
+            'duel_losses' => 1,
+            'duel_current_streak' => 1,
+            'duel_best_streak' => 2,
         ]);
 
         $clip = Clip::factory()->create([
@@ -65,7 +78,8 @@ class GuestPlatformAccessTest extends TestCase
 
         $this->get(route('duels.leaderboard'))
             ->assertOk()
-            ->assertSee('Classement duel');
+            ->assertSee('Classement duel')
+            ->assertSee(route('users.public', $member), false);
 
         $this->get(route('users.public', $member))
             ->assertOk()

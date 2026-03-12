@@ -174,10 +174,261 @@
             letter-spacing: .08em;
         }
 
+        .match-community-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .match-community-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .match-community-kpi {
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 14px;
+            background: rgba(255,255,255,.02);
+            padding: 12px 14px;
+        }
+
+        .match-community-kpi span {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: rgba(255,255,255,.62);
+            margin-bottom: 6px;
+        }
+
+        .match-community-kpi strong {
+            display: block;
+            font-size: 23px;
+            line-height: 1;
+        }
+
+        .match-community-split {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+            gap: 14px;
+        }
+
+        .match-community-box {
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 16px;
+            padding: 14px;
+            background: rgba(255,255,255,.02);
+            display: grid;
+            gap: 10px;
+            align-content: start;
+        }
+
+        .match-community-box h4 {
+            margin: 0;
+            font-size: 22px;
+            line-height: .95;
+        }
+
+        .match-community-market-list,
+        .match-community-ranked-list {
+            display: grid;
+            gap: 9px;
+        }
+
+        .match-community-market-item {
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 10px;
+            background: rgba(255,255,255,.018);
+            display: grid;
+            gap: 7px;
+        }
+
+        .match-community-market-item-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .match-community-market-item-head strong {
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .match-community-market-item-head small {
+            color: rgba(255,255,255,.62);
+            font-size: 12px;
+        }
+
+        .match-community-bar {
+            width: 100%;
+            border-radius: 999px;
+            height: 6px;
+            background: rgba(255,255,255,.12);
+            overflow: hidden;
+        }
+
+        .match-community-bar > span {
+            display: block;
+            height: 100%;
+            background: rgba(223,11,11,.8);
+        }
+
+        .match-community-table-wrap {
+            overflow-x: auto;
+        }
+
+        .match-community-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        .match-community-table th {
+            text-align: left;
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,.68);
+            border-bottom: 1px solid rgba(255,255,255,.14);
+            padding: 8px 10px;
+        }
+
+        .match-community-table td {
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            padding: 9px 10px;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .match-community-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .match-bettor {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .match-bettor-link,
+        .match-community-user-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .match-bettor-link:hover strong,
+        .match-community-user-link:hover {
+            text-decoration: underline;
+        }
+
+        .match-bettor-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.22);
+            background: rgba(255,255,255,.08);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .match-bettor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .match-community-table td strong {
+            font-size: 15px;
+        }
+
+        .match-community-subtext {
+            margin: 0;
+            color: rgba(255,255,255,.72);
+            font-size: 13px;
+        }
+
+        .match-community-status {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,.22);
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .match-community-status.is-open {
+            border-color: rgba(116, 241, 173, .6);
+            color: #d8ffe8;
+        }
+
+        .match-community-status.is-closed {
+            border-color: rgba(255, 198, 112, .6);
+            color: #ffe8bf;
+        }
+
+        .match-community-status.is-settled {
+            border-color: rgba(133, 194, 255, .6);
+            color: #def2ff;
+        }
+
+        .match-community-results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .match-community-result-card {
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(255,255,255,.02);
+        }
+
+        .match-community-result-card span {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: rgba(255,255,255,.62);
+            margin-bottom: 6px;
+        }
+
+        .match-community-result-card strong {
+            display: block;
+            font-size: 17px;
+            line-height: 1.1;
+        }
+
+        .match-community-filter {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .match-community-filter select {
+            min-width: 220px;
+        }
+
+        .bet-pagin-item-disabled {
+            opacity: .35;
+            pointer-events: none;
+        }
+
         @media (max-width: 1199.98px) {
             .match-detail-grid,
             .match-option-grid,
-            .match-summary-grid {
+            .match-summary-grid,
+            .match-community-kpi-grid,
+            .match-community-split,
+            .match-community-results-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -203,6 +454,15 @@
             .match-panel {
                 padding: 16px;
             }
+
+            .match-community-filter {
+                justify-content: stretch;
+            }
+
+            .match-community-filter select {
+                width: 100%;
+                min-width: 0;
+            }
         }
     </style>
 @endsection
@@ -213,6 +473,7 @@
         $isGuest = auth()->guest();
         $participationLoginUrl = route('login', ['required' => 'participation']);
         $indexRouteName = $isPublicApp ? 'app.matches.index' : 'matches.index';
+        $matchShowRouteName = $isPublicApp ? 'app.matches.show' : 'matches.show';
         $placeBetRouteName = $isPublicApp ? 'app.matches.bets.store' : 'matches.bets.store';
         $betsRouteName = $isPublicApp ? 'app.bets.index' : 'bets.index';
         $cancelRouteName = $isPublicApp ? 'app.bets.cancel' : 'bets.cancel';
@@ -311,6 +572,13 @@
                     </div>
 
                     <div class="match-market-stack">
+                        @include('pages.matches.partials.betting-community', [
+                            'match' => $match,
+                            'matchShowRouteName' => $matchShowRouteName,
+                            'betCommunity' => $betCommunity ?? [],
+                            'matchLabelResolver' => $matchLabelResolver,
+                        ])
+
                         @foreach($markets as $market)
                             @php
                                 $marketBet = $myBetsByMarket[(string) $market->key] ?? null;

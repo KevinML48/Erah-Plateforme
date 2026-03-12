@@ -11,6 +11,7 @@
                 $count = (int) ($alert['count'] ?? 0);
                 $severity = (string) ($alert['severity'] ?? 'warning');
                 $isActive = $count > 0;
+                $alertUrl = (string) ($alert['url'] ?? route('admin.dashboard'));
             @endphp
             <article class="adm-alert-item is-{{ $severity }} {{ $isActive ? 'is-active' : 'is-idle' }}">
                 <div class="adm-alert-head">
@@ -18,11 +19,15 @@
                     <span class="adm-pill">{{ $count }}</span>
                 </div>
                 <p>{{ $alert['description'] ?? '' }}</p>
-                <a href="{{ $alert['url'] ?? route('admin.dashboard') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                <button
+                    type="button"
+                    class="tt-btn tt-btn-outline tt-magnetic-item"
+                    data-investigate-url="{{ $alertUrl }}"
+                    onclick="window.location.assign(this.dataset.investigateUrl)"
+                >
                     <span data-hover="Investiguer">Investiguer</span>
-                </a>
+                </button>
             </article>
         @endforeach
     </div>
 @endif
-

@@ -9,6 +9,9 @@
                     $avatarUrl = $comment->user?->avatar_url ?? '/template/assets/img/blog/avatar.png';
                     $isSupporterComment = (int) ($comment->supporter_priority ?? 0) === 1;
                     $publicProfileUrl = $comment->user ? route('users.public', $comment->user) : null;
+                    $isReplyOpen = auth()->check()
+                        && old('comment_form_type') === 'reply'
+                        && (int) old('parent_id') === (int) $comment->id;
                 @endphp
                 <li class="clip-comment-item {{ $isSupporterComment ? 'is-supporter' : '' }}">
                     @if($publicProfileUrl)
@@ -94,17 +97,47 @@
                         @endif
 
                         @auth
-                            <form method="POST" action="{{ route($commentStoreRouteName, $clip->id) }}" class="margin-top-20">
-                                @csrf
-                                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                <div class="tt-form-group">
-                                    <label for="reply_{{ $comment->id }}">Repondre</label>
-                                    <textarea class="tt-form-control" id="reply_{{ $comment->id }}" name="body" rows="3" maxlength="2000"></textarea>
-                                </div>
-                                <button type="submit" class="tt-btn tt-btn-outline margin-top-10">
-                                    <span data-hover="Publier la reponse">Publier la reponse</span>
+                            <div class="clip-comment-actions">
+                                <button
+                                    type="button"
+                                    class="clip-comment-action {{ $isReplyOpen ? 'is-open' : '' }}"
+                                    data-clip-reply-toggle
+                                    data-target="clip-reply-panel-{{ $comment->id }}"
+                                    data-open-label="Repondre"
+                                    data-close-label="Masquer"
+                                    aria-expanded="{{ $isReplyOpen ? 'true' : 'false' }}"
+                                    aria-controls="clip-reply-panel-{{ $comment->id }}"
+                                >
+                                    {{ $isReplyOpen ? 'Masquer' : 'Repondre' }}
                                 </button>
-                            </form>
+                            </div>
+
+                            <div
+                                id="clip-reply-panel-{{ $comment->id }}"
+                                class="clip-reply-panel"
+                                data-clip-reply-panel
+                                @if(!$isReplyOpen) hidden @endif
+                            >
+                                <div class="clip-reply-panel-header">
+                                    <h5 class="clip-reply-panel-title">Repondre a {{ $commentAuthor }}</h5>
+                                    <button type="button" class="clip-comment-action" data-clip-reply-cancel data-target="clip-reply-panel-{{ $comment->id }}">Annuler</button>
+                                </div>
+                                <p class="clip-reply-panel-copy">Votre reponse sera affichee sous ce commentaire pour garder l’echange clair.</p>
+                                <form method="POST" action="{{ route($commentStoreRouteName, $clip->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                    <input type="hidden" name="comment_form_type" value="reply">
+                                    <div class="tt-form-group">
+                                        <label for="reply_{{ $comment->id }}">Votre reponse</label>
+                                        <textarea class="tt-form-control" id="reply_{{ $comment->id }}" name="body" rows="3" maxlength="2000" placeholder="Ajoutez une reponse concise et utile...">{{ $isReplyOpen ? old('body') : '' }}</textarea>
+                                    </div>
+                                    <div class="clip-reply-panel-actions">
+                                        <button type="submit" class="tt-btn tt-btn-outline">
+                                            <span data-hover="Publier la reponse">Publier la reponse</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         @endauth
                     </div>
                 </li>
@@ -121,6 +154,7 @@
     @auth
         <form id="tt-post-comment-form" method="POST" action="{{ route($commentStoreRouteName, $clip->id) }}" class="margin-top-40">
             @csrf
+            <input type="hidden" name="comment_form_type" value="comment">
             <h4 class="tt-post-comment-form-heading">Ajouter un commentaire:</h4>
             <small class="tt-form-text">Tout utilisateur connecte peut commenter. Les supporters sont affiches en priorite.</small>
             <br>
@@ -139,3 +173,79 @@
         <p class="tt-form-text clip-comments-note margin-top-40">Les commentaires sont visibles publiquement. Connectez-vous pour publier votre message.</p>
     @endauth
 </div>
+
+@once
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var setToggleState = function (panel, isOpen) {
+                if (!panel) {
+                    return;
+                }
+
+                panel.hidden = !isOpen;
+
+                var panelId = panel.getAttribute('id');
+                document.querySelectorAll('[data-clip-reply-toggle][data-target="' + panelId + '"]').forEach(function (toggle) {
+                    var openLabel = toggle.getAttribute('data-open-label') || 'Repondre';
+                    var closeLabel = toggle.getAttribute('data-close-label') || 'Masquer';
+
+                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    toggle.classList.toggle('is-open', isOpen);
+                    toggle.textContent = isOpen ? closeLabel : openLabel;
+                });
+            };
+
+            var closeOtherPanels = function (currentPanelId) {
+                document.querySelectorAll('[data-clip-reply-panel]').forEach(function (panel) {
+                    if (panel.getAttribute('id') === currentPanelId) {
+                        return;
+                    }
+
+                    setToggleState(panel, false);
+                });
+            };
+
+            document.addEventListener('click', function (event) {
+                var toggle = event.target.closest('[data-clip-reply-toggle]');
+                if (toggle) {
+                    var targetId = toggle.getAttribute('data-target');
+                    var panel = targetId ? document.getElementById(targetId) : null;
+                    if (!panel) {
+                        return;
+                    }
+
+                    var isOpening = panel.hidden;
+                    if (isOpening) {
+                        closeOtherPanels(targetId);
+                    }
+
+                    setToggleState(panel, isOpening);
+
+                    if (isOpening) {
+                        var textarea = panel.querySelector('textarea');
+                        if (textarea) {
+                            window.setTimeout(function () {
+                                textarea.focus();
+                            }, 20);
+                        }
+                    }
+
+                    return;
+                }
+
+                var cancel = event.target.closest('[data-clip-reply-cancel]');
+                if (!cancel) {
+                    return;
+                }
+
+                var cancelTarget = cancel.getAttribute('data-target');
+                var cancelPanel = cancelTarget ? document.getElementById(cancelTarget) : null;
+                setToggleState(cancelPanel, false);
+            });
+
+            document.querySelectorAll('[data-clip-reply-panel]:not([hidden])').forEach(function (panel) {
+                setToggleState(panel, true);
+            });
+        });
+    </script>
+@endonce

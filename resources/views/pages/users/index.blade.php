@@ -118,7 +118,12 @@
 
                                         <div class="adm-user-card-actions">
                                             <div class="adm-row-actions">
-                                                <a class="tt-btn tt-btn-outline tt-magnetic-item" href="{{ route('users.index', array_filter(['user_id' => $u->id, 'q' => $search ?: null])) }}">
+                                                @php
+                                                    $adminUserDetailUrl = auth()->user()?->role === 'admin'
+                                                        ? route('admin.users.show', $u->id)
+                                                        : route('users.index', array_filter(['user_id' => $u->id, 'q' => $search ?: null]));
+                                                @endphp
+                                                <a class="tt-btn tt-btn-outline tt-magnetic-item" href="{{ $adminUserDetailUrl }}">
                                                     <span data-hover="Voir">Voir</span>
                                                 </a>
                                                 <a class="tt-btn tt-btn-secondary tt-magnetic-item" href="{{ route('users.public', $u->id) }}" target="_blank" rel="noopener">
@@ -150,7 +155,7 @@
                         @endif
                     </section>
 
-                    <section class="adm-surface">
+                    <section class="adm-surface" id="user-focus">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Focus utilisateur</h2>
                             <p class="max-width-700 tt-anim-fadeinup text-gray">Selectionnez "Voir" pour afficher un resume rapide du compte.</p>
@@ -169,6 +174,11 @@
                                 <span class="adm-pill">Classement {{ (int) ($selectedUser->progress?->total_rank_points ?? 0) }}</span>
                                 <span class="adm-pill">Solde paris {{ (int) ($selectedUser->wallet?->balance ?? 0) }}</span>
                                 <span class="adm-pill">Points plateforme {{ (int) ($selectedUser->rewardWallet?->balance ?? 0) }}</span>
+                                @if(auth()->user()?->role === 'admin')
+                                    <a class="tt-btn tt-btn-secondary tt-magnetic-item" href="{{ route('admin.users.show', $selectedUser->id) }}">
+                                        <span data-hover="Ouvrir le detail admin">Ouvrir le detail admin</span>
+                                    </a>
+                                @endif
                             </div>
                         @else
                             <div class="adm-empty">Aucun utilisateur selectionne.</div>

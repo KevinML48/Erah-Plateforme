@@ -145,16 +145,33 @@
                 right: 12px;
                 bottom: 12px;
                 width: auto;
+                gap: 8px;
             }
             .mission-live-toast {
-                padding: 16px;
+                padding: 14px;
                 border-radius: 18px;
             }
             .mission-live-toast-title {
-                font-size: 24px;
+                margin-top: 8px;
+                font-size: 19px;
+                line-height: 1;
+            }
+            .mission-live-toast-body {
+                margin-top: 10px;
+                font-size: 14px;
+                line-height: 1.45;
+            }
+            .mission-live-toast-pill {
+                font-size: 10px;
+                letter-spacing: .06em;
+            }
+            .mission-live-toast-actions {
+                margin-top: 12px;
             }
             .mission-live-toast-link {
                 width: 100%;
+                min-height: 40px;
+                font-size: 12px;
             }
         }
     </style>
@@ -178,7 +195,9 @@
                 return;
             }
 
+            var isCompactMobile = window.matchMedia('(max-width: 767.98px)').matches;
             var cursorKey = 'erah-mission-toast-last-id:' + bootstrap.user_id;
+            var pendingKey = 'erah-mission-toast-pending:' + bootstrap.user_id;
             var stack = document.createElement('div');
             stack.className = 'mission-live-stack';
             document.body.appendChild(stack);
@@ -186,19 +205,89 @@
             var storedCursor = Number(window.localStorage.getItem(cursorKey) || 0);
             var cursor = Number.isNaN(storedCursor) || storedCursor <= 0
                 ? Number(bootstrap.latest_id || 0)
-                : Math.max(storedCursor, Number(bootstrap.latest_id || 0));
+                : storedCursor;
 
             window.localStorage.setItem(cursorKey, String(cursor));
+
+            function readPendingToasts() {
+                try {
+                    var pending = JSON.parse(window.sessionStorage.getItem(pendingKey) || '[]');
+                    if (!Array.isArray(pending)) {
+                        return [];
+                    }
+
+                    var now = Date.now();
+                    var active = pending.filter(function (item) {
+                        return item
+                            && typeof item === 'object'
+                            && item.notification
+                            && Number(item.expires_at || 0) > now;
+                    });
+
+                    window.sessionStorage.setItem(pendingKey, JSON.stringify(active));
+
+                    return active;
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            function rememberToast(notification, expiresAt) {
+                if (!notification || !notification.id) {
+                    return;
+                }
+
+                var pending = readPendingToasts().filter(function (item) {
+                    return Number((item.notification || {}).id || 0) !== Number(notification.id || 0);
+                });
+
+                pending.push({
+                    notification: notification,
+                    expires_at: Number(expiresAt || 0),
+                });
+
+                window.sessionStorage.setItem(pendingKey, JSON.stringify(pending));
+            }
+
+            function forgetToast(notificationId) {
+                if (!notificationId) {
+                    return;
+                }
+
+                var pending = readPendingToasts().filter(function (item) {
+                    return Number((item.notification || {}).id || 0) !== Number(notificationId || 0);
+                });
+
+                window.sessionStorage.setItem(pendingKey, JSON.stringify(pending));
+            }
 
             function removeToast(node) {
                 if (!node) {
                     return;
                 }
 
+                forgetToast(Number(node.dataset.notificationId || 0));
+
                 node.classList.add('is-leaving');
                 window.setTimeout(function () {
                     node.remove();
                 }, 180);
+            }
+
+            function clearCompactMobileStack(exceptNotificationId) {
+                if (!isCompactMobile) {
+                    return;
+                }
+
+                stack.querySelectorAll('.mission-live-toast').forEach(function (node) {
+                    var existingId = Number(node.dataset.notificationId || 0);
+                    if (exceptNotificationId > 0 && existingId === exceptNotificationId) {
+                        return;
+                    }
+
+                    forgetToast(existingId);
+                    node.remove();
+                });
             }
 
             function toastKind(notification) {
@@ -235,7 +324,23 @@
                 return parts;
             }
 
-            function showToast(notification) {
+            function showToast(notification, options) {
+                options = options || {};
+
+                var notificationId = Number(notification.id || 0);
+                if (notificationId > 0 && stack.querySelector('[data-notification-id="' + notificationId + '"]')) {
+                    return;
+                }
+
+                clearCompactMobileStack(notificationId);
+
+                var expiresAt = Number(options.expiresAt || (Date.now() + 7600));
+                var remainingDuration = expiresAt - Date.now();
+                if (remainingDuration <= 250) {
+                    forgetToast(notificationId);
+                    return;
+                }
+
                 var kind = toastKind(notification);
                 var meta = buildMeta(notification);
                 var title = String(notification.title || 'Mission');
@@ -243,6 +348,7 @@
 
                 var toast = document.createElement('article');
                 toast.className = 'mission-live-toast is-' + kind;
+                toast.dataset.notificationId = String(notificationId);
                 toast.innerHTML =
                     '<div class="mission-live-toast-head">' +
                         '<div>' +
@@ -276,10 +382,11 @@
                     removeToast(toast);
                 });
 
+                rememberToast(notification, expiresAt);
                 stack.appendChild(toast);
                 window.setTimeout(function () {
                     removeToast(toast);
-                }, 7600);
+                }, remainingDuration);
             }
 
             async function poll() {
@@ -303,7 +410,9 @@
                     var notifications = Array.isArray(payload.data) ? payload.data : [];
                     var latestId = Number((payload.meta || {}).latest_id || cursor || 0);
 
-                    notifications.forEach(function (notification) {
+                    var notificationsToShow = isCompactMobile ? notifications.slice(-1) : notifications;
+
+                    notificationsToShow.forEach(function (notification) {
                         showToast(notification);
                         cursor = Math.max(cursor, Number(notification.id || 0));
                     });
@@ -315,6 +424,22 @@
                 }
             }
 
+            var pendingToasts = readPendingToasts()
+                .sort(function (left, right) {
+                    return Number((left.notification || {}).id || 0) - Number((right.notification || {}).id || 0);
+                });
+
+            if (isCompactMobile && pendingToasts.length > 1) {
+                pendingToasts = pendingToasts.slice(-1);
+            }
+
+            pendingToasts.forEach(function (item) {
+                    showToast(item.notification || {}, {
+                        expiresAt: Number(item.expires_at || 0),
+                    });
+                });
+
+            poll();
             window.setInterval(poll, 3200);
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'visible') {

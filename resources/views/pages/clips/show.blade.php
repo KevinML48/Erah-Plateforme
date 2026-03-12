@@ -327,6 +327,86 @@
             letter-spacing: .04em;
         }
 
+        .clip-comment-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 18px;
+        }
+
+        .clip-comment-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 18px;
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .03);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            transition: border-color .22s ease, background-color .22s ease, transform .22s ease;
+        }
+
+        .clip-comment-action:hover,
+        .clip-comment-action:focus-visible {
+            border-color: rgba(224, 34, 34, .55);
+            background: rgba(224, 34, 34, .12);
+            transform: translateY(-1px);
+        }
+
+        .clip-comment-action.is-open {
+            border-color: rgba(224, 34, 34, .68);
+            background: rgba(224, 34, 34, .16);
+        }
+
+        .clip-reply-panel[hidden] {
+            display: none !important;
+        }
+
+        .clip-reply-panel {
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .clip-reply-panel-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .clip-reply-panel-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .8);
+        }
+
+        .clip-reply-panel-copy {
+            margin: 0 0 14px;
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.6;
+        }
+
+        .clip-reply-panel-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
         body.tt-lightmode-on .clip-comments-board {
             border-color: rgba(33, 33, 33, .12);
             background: rgba(255, 255, 255, .76);
@@ -358,6 +438,29 @@
             color: #171717;
         }
 
+        body.tt-lightmode-on .clip-comment-action {
+            border-color: rgba(33, 33, 33, .12);
+            background: rgba(255, 255, 255, .7);
+            color: #171717;
+        }
+
+        body.tt-lightmode-on .clip-comment-action:hover,
+        body.tt-lightmode-on .clip-comment-action:focus-visible,
+        body.tt-lightmode-on .clip-comment-action.is-open {
+            border-color: rgba(224, 34, 34, .3);
+            background: rgba(224, 34, 34, .08);
+        }
+
+        body.tt-lightmode-on .clip-reply-panel {
+            border-color: rgba(33, 33, 33, .1);
+            background: rgba(255, 255, 255, .84);
+        }
+
+        body.tt-lightmode-on .clip-reply-panel-title,
+        body.tt-lightmode-on .clip-reply-panel-copy {
+            color: rgba(23, 23, 23, .72);
+        }
+
         @media (max-width: 767.98px) {
             .clip-engagement-actions,
             .clip-supporter-actions,
@@ -386,6 +489,21 @@
             .clip-comment-avatar {
                 width: 52px;
                 height: 52px;
+            }
+
+            .clip-comment-actions,
+            .clip-reply-panel-actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .clip-comment-action,
+            .clip-reply-panel-actions .tt-btn {
+                width: 100%;
+            }
+
+            .clip-reply-panel {
+                padding: 16px;
             }
         }
     </style>

@@ -174,6 +174,37 @@ class AdminOperationsCockpitTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'shop.items.deactivated', 'target_id' => $shopItem->id]);
     }
 
+    public function test_alerts_render_explicit_investigation_targets(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $member = User::factory()->create(['role' => User::ROLE_USER]);
+
+        $gift = Gift::query()->create([
+            'title' => 'Starter Pack',
+            'description' => 'Pack',
+            'cost_points' => 250,
+            'stock' => 2,
+            'is_active' => true,
+        ]);
+
+        GiftRedemption::query()->create([
+            'user_id' => $member->id,
+            'gift_id' => $gift->id,
+            'cost_points_snapshot' => 250,
+            'status' => GiftRedemption::STATUS_PENDING,
+            'requested_at' => now()->subDays(3),
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('data-investigate-url', false)
+            ->assertSee('status=pending', false)
+            ->assertSee('sort=requested_asc', false)
+            ->assertSee('#gift-redemptions-center', false)
+            ->assertSee('#gift-stock-alerts', false);
+    }
+
     public function test_shipping_action_stores_tracking_carrier_and_note(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
@@ -250,4 +281,3 @@ class AdminOperationsCockpitTest extends TestCase
         ]);
     }
 }
-

@@ -216,6 +216,198 @@ class BettingPagesTest extends TestCase
         ]);
     }
 
+    public function test_match_detail_shows_open_betting_community_breakdown(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $alice = User::factory()->create(['name' => 'Alice Risk']);
+        $bruno = User::factory()->create(['name' => 'Bruno Stake']);
+        $charlie = User::factory()->create(['name' => 'Charlie Sharp']);
+
+        $match = EsportMatch::factory()->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'status' => EsportMatch::STATUS_SCHEDULED,
+            'starts_at' => now()->addHours(3),
+            'locked_at' => now()->addHours(2),
+            'settled_at' => null,
+            'result' => null,
+            'team_a_name' => 'ERAH Alpha',
+            'team_b_name' => 'ERAH Beta',
+        ]);
+
+        $this->createWinnerMarketWithSelections($match, 'ERAH Alpha', 'ERAH Beta');
+
+        Bet::query()->create([
+            'user_id' => $alice->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_A,
+            'prediction' => Bet::PREDICTION_HOME,
+            'stake' => 300,
+            'stake_points' => 300,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 600,
+            'settlement_points' => 0,
+            'status' => Bet::STATUS_PENDING,
+            'idempotency_key' => 'open-community-bet-1',
+            'placed_at' => now()->subMinutes(20),
+        ]);
+
+        Bet::query()->create([
+            'user_id' => $bruno->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_B,
+            'prediction' => Bet::PREDICTION_AWAY,
+            'stake' => 180,
+            'stake_points' => 180,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 360,
+            'settlement_points' => 0,
+            'status' => Bet::STATUS_PENDING,
+            'idempotency_key' => 'open-community-bet-2',
+            'placed_at' => now()->subMinutes(15),
+        ]);
+
+        Bet::query()->create([
+            'user_id' => $charlie->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_A,
+            'prediction' => Bet::PREDICTION_HOME,
+            'stake' => 90,
+            'stake_points' => 90,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 180,
+            'settlement_points' => 0,
+            'status' => Bet::STATUS_PENDING,
+            'idempotency_key' => 'open-community-bet-3',
+            'placed_at' => now()->subMinutes(10),
+        ]);
+
+        $this->get(route('matches.show', $match->id))
+            ->assertOk()
+            ->assertSee('Paris du match')
+            ->assertSee('Paris ouverts')
+            ->assertSee('Top mises')
+            ->assertSee('Participants')
+            ->assertSee('Alice Risk')
+            ->assertSee('Bruno Stake')
+            ->assertSee('570 pts')
+            ->assertSee(route('users.public', $alice->id), false);
+    }
+
+    public function test_match_detail_shows_closed_betting_state_when_lock_reached(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $bettor = User::factory()->create(['name' => 'Locked Bettor']);
+
+        $match = EsportMatch::factory()->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'status' => EsportMatch::STATUS_LOCKED,
+            'starts_at' => now()->addMinutes(20),
+            'locked_at' => now()->subMinutes(1),
+            'settled_at' => null,
+            'result' => null,
+            'team_a_name' => 'ERAH Red',
+            'team_b_name' => 'ERAH Blue',
+        ]);
+
+        $this->createWinnerMarketWithSelections($match, 'ERAH Red', 'ERAH Blue');
+
+        Bet::query()->create([
+            'user_id' => $bettor->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_A,
+            'prediction' => Bet::PREDICTION_HOME,
+            'stake' => 220,
+            'stake_points' => 220,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 440,
+            'settlement_points' => 0,
+            'status' => Bet::STATUS_PENDING,
+            'idempotency_key' => 'locked-community-bet-1',
+            'placed_at' => now()->subMinutes(3),
+        ]);
+
+        $this->get(route('matches.show', $match->id))
+            ->assertOk()
+            ->assertSee('Paris clotures')
+            ->assertSee('Les paris sont fermes')
+            ->assertSee('Locked Bettor')
+            ->assertSee('220 pts');
+    }
+
+    public function test_match_detail_shows_settled_results_with_winners_and_losers(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $winner = User::factory()->create(['name' => 'Winner Pro']);
+        $loser = User::factory()->create(['name' => 'Loser Tilt']);
+
+        $match = EsportMatch::factory()->create([
+            'created_by' => $admin->id,
+            'updated_by' => $admin->id,
+            'status' => EsportMatch::STATUS_FINISHED,
+            'starts_at' => now()->subHours(2),
+            'locked_at' => now()->subHours(2)->subMinutes(5),
+            'settled_at' => now()->subMinutes(10),
+            'result' => EsportMatch::RESULT_TEAM_A,
+            'team_a_name' => 'ERAH Prime',
+            'team_b_name' => 'ERAH Nova',
+        ]);
+
+        $this->createWinnerMarketWithSelections($match, 'ERAH Prime', 'ERAH Nova');
+
+        Bet::query()->create([
+            'user_id' => $winner->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_A,
+            'prediction' => Bet::PREDICTION_HOME,
+            'stake' => 210,
+            'stake_points' => 210,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 420,
+            'settlement_points' => 420,
+            'status' => Bet::STATUS_WON,
+            'idempotency_key' => 'settled-community-bet-1',
+            'placed_at' => now()->subHours(3),
+            'settled_at' => now()->subMinutes(10),
+            'payout' => 420,
+        ]);
+
+        Bet::query()->create([
+            'user_id' => $loser->id,
+            'match_id' => $match->id,
+            'market_key' => MatchMarket::KEY_WINNER,
+            'selection_key' => MatchSelection::KEY_TEAM_B,
+            'prediction' => Bet::PREDICTION_AWAY,
+            'stake' => 280,
+            'stake_points' => 280,
+            'odds_snapshot' => 2.000,
+            'potential_payout' => 560,
+            'settlement_points' => 0,
+            'status' => Bet::STATUS_LOST,
+            'idempotency_key' => 'settled-community-bet-2',
+            'placed_at' => now()->subHours(3),
+            'settled_at' => now()->subMinutes(10),
+            'payout' => 0,
+        ]);
+
+        $this->get(route('matches.show', $match->id))
+            ->assertOk()
+            ->assertSee('Paris regles')
+            ->assertSee('Resultats des paris')
+            ->assertSee('Camp gagnant')
+            ->assertSee('Gagnants / perdants')
+            ->assertSee('Top gains')
+            ->assertSee('Winner Pro')
+            ->assertSee('Loser Tilt')
+            ->assertSee('+420 pts');
+    }
+
     public function test_admin_can_manage_match_and_grant_wallet(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
@@ -303,5 +495,36 @@ class BettingPagesTest extends TestCase
             ->assertOk()
             ->assertSee('RLCS Open Europe #2')
             ->assertSee('ERAH Rocket League');
+    }
+
+    private function createWinnerMarketWithSelections(EsportMatch $match, string $teamA, string $teamB): MatchMarket
+    {
+        $market = MatchMarket::factory()->create([
+            'match_id' => $match->id,
+            'key' => MatchMarket::KEY_WINNER,
+        ]);
+
+        MatchSelection::factory()->create([
+            'market_id' => $market->id,
+            'key' => MatchSelection::KEY_TEAM_A,
+            'label' => $teamA,
+            'odds' => 2.000,
+        ]);
+
+        MatchSelection::factory()->create([
+            'market_id' => $market->id,
+            'key' => MatchSelection::KEY_TEAM_B,
+            'label' => $teamB,
+            'odds' => 2.000,
+        ]);
+
+        MatchSelection::factory()->create([
+            'market_id' => $market->id,
+            'key' => MatchSelection::KEY_DRAW,
+            'label' => 'Match nul',
+            'odds' => 3.000,
+        ]);
+
+        return $market;
     }
 }

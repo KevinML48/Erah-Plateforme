@@ -268,7 +268,7 @@
                         </div>
                     </section>
 
-                    <section class="adm-surface">
+                    <section class="adm-surface" id="admin-alerts">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Alertes operationnelles</h2>
                         </div>
@@ -277,7 +277,7 @@
                         </div>
                     </section>
 
-                    <section class="adm-surface">
+                    <section class="adm-surface" id="admin-pending-ops">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Operations en attente et actions rapides</h2>
                         </div>
@@ -288,7 +288,7 @@
 
                     @include('pages.admin.partials.operations-search-results', ['search' => $search])
 
-                    <section class="adm-surface">
+                    <section class="adm-surface" id="admin-feed">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Flux activite admin</h2>
                             <p class="max-width-700 tt-anim-fadeinup text-gray">Flux centralise, filtrable, trie du plus recent au plus ancien.</p>

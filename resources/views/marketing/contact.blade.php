@@ -45,7 +45,47 @@
 #cookie-banner button#accept-cookies:hover { transform: scale(1.05); background: #45a049; }
 #cookie-banner button#reject-cookies { background: #f44336; color: #fff; }
 #cookie-banner button#reject-cookies:hover { transform: scale(1.05); background: #d7372a; }
+
+.tt-contact-note {
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 14px;
+  padding: 16px 18px;
+  background: rgba(255,255,255,.03);
+}
+
+.tt-contact-note h6 {
+  margin-bottom: 8px;
+}
+
+.tt-contact-note ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.tt-field-error {
+  margin: 8px 0 0;
+  color: #ffbcbc;
+  font-size: 13px;
+  line-height: 1.4;
+}
+@media (max-width: 1024px) {
+  .tt-contact-info-inner {
+    padding-left: 0;
+  }
+
+  .tt-contact-note {
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 @media (max-width: 500px) {
+  .tt-contact-note {
+    max-width: none;
+  }
+
   #cookie-banner div { display: flex; flex-direction: column; gap: 8px; width: 100%; }
   #cookie-banner div button { width: 100%; }
 }
@@ -54,6 +94,10 @@
 @endsection
 
 @section('content')
+@php
+    $contactCategories = $contactCategories ?? \App\Models\ContactMessage::categoryLabels();
+    $contactSubmissionToken = $contactSubmissionToken ?? '';
+@endphp
 <div id="page-header"
     class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
     <div class="page-header-inner tt-wrap">
@@ -151,6 +195,15 @@
                                     <li><a href="https://www.linkedin.com/company/erah-association/" class="tt-magnetic-item" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i></a></li>
                                 </ul>
                             </div>
+
+                            <div class="tt-contact-note tt-anim-fadeinup">
+                                <h6>Pourquoi nous contacter ?</h6>
+                                <ul>
+                                    <li>Reponse rapide sur vos questions club, support et activites.</li>
+                                    <li>Demandes partenariat, evenement, LAN ou intervention.</li>
+                                    <li>Suggestions pour ameliorer la plateforme et la communaute.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -162,8 +215,9 @@
 
                         <div class="tt-hidden-honeypot" aria-hidden="true">
                             <label for="website">Leave this field empty</label>
-                            <input id="website" type="text" name="website" tabindex="-1" autocomplete="off">
+                            <input id="website" type="text" name="website" tabindex="-1" autocomplete="off" value="{{ old('website') }}">
                         </div>
+                        <input type="hidden" name="submission_token" value="{{ $contactSubmissionToken }}">
 
                         <div id="tt-contact-form-messages" role="alert">
                             <div class="tt-cfm-inner"></div>
@@ -175,24 +229,49 @@
                                 <label>Votre pseudo/prenom <span class="required">*</span></label>
                                 <input class="tt-form-control" type="text" name="name"
                                     placeholder="Pseudo ou prenom" value="{{ old('name') }}" required>
+                                @error('name')
+                                    <p class="tt-field-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="tt-form-group tt-anim-fadeinup">
                                 <label>Votre email <span class="required">*</span></label>
                                 <input class="tt-form-control" type="email" name="email"
                                     placeholder="example@gmail.com" value="{{ old('email') }}" required>
+                                @error('email')
+                                    <p class="tt-field-error">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="tt-form-group tt-anim-fadeinup">
+                                <label>Motif de contact</label>
+                                <select class="tt-form-control" name="category">
+                                    <option value="">Selectionner une categorie</option>
+                                    @foreach($contactCategories as $categoryKey => $categoryLabel)
+                                        <option value="{{ $categoryKey }}" @selected(old('category') === $categoryKey)>{{ $categoryLabel }}</option>
+                                    @endforeach
+                                </select>
+                                @error('category')
+                                    <p class="tt-field-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="tt-form-group tt-anim-fadeinup">
                                 <label>Sujet <span class="required">*</span></label>
                                 <input class="tt-form-control" type="text" name="subject"
                                     placeholder="Objet de votre demande" value="{{ old('subject') }}" required>
+                                @error('subject')
+                                    <p class="tt-field-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="tt-form-group tt-anim-fadeinup">
                                 <label>Votre message <span class="required">*</span></label>
                                 <textarea class="tt-form-control" rows="5" name="message"
                                     placeholder="En quoi pouvons-nous vous aider ?" required>{{ old('message') }}</textarea>
+                                @error('message')
+                                    <p class="tt-field-error">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="tt-anim-fadeinup">

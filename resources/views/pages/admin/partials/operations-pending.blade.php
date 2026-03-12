@@ -20,7 +20,7 @@
 </div>
 
 <div class="adm-ops-grid">
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-redemptions-pending">
         <h3>Demandes cadeaux en attente</h3>
         @if($redemptionsPending->isEmpty())
             <div class="adm-empty">Aucune demande pending.</div>
@@ -50,7 +50,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-redemptions-approved">
         <h3>Cadeaux approuves a expedier</h3>
         @if($redemptionsApproved->isEmpty())
             <div class="adm-empty">Aucune demande approuvee.</div>
@@ -75,7 +75,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-redemptions-shipped">
         <h3>Cadeaux expedies a livrer</h3>
         @if($redemptionsShipped->isEmpty())
             <div class="adm-empty">Aucune demande expediee.</div>
@@ -97,7 +97,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-matches-to-settle">
         <h3>Matchs a traiter</h3>
         @if($matchesToSettle->isEmpty())
             <div class="adm-empty">Aucun match en attente.</div>
@@ -116,7 +116,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-low-stock-gifts">
         <h3>Stock cadeaux faible</h3>
         @if($lowStockGifts->isEmpty())
             <div class="adm-empty">Stock cadeaux OK.</div>
@@ -149,7 +149,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-low-stock-shop">
         <h3>Stock shop faible</h3>
         @if($lowStockShopItems->isEmpty())
             <div class="adm-empty">Stock shop OK.</div>
@@ -182,7 +182,7 @@
         @endif
     </article>
 
-    <article class="adm-ops-card">
+    <article class="adm-ops-card" id="ops-reviews-pending">
         <h3>Moderation rapide</h3>
         @if($reviewsPending->isEmpty())
             <div class="adm-empty">Aucun avis en attente.</div>

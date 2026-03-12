@@ -2,8 +2,10 @@
 
 namespace App\Mail;
 
+use App\Models\ContactMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -13,19 +15,18 @@ class MarketingContactMailable extends Mailable
     use Queueable;
     use SerializesModels;
 
-    /**
-     * @param array{name:string,email:string,subject:string,message:string} $payload
-     */
     public function __construct(
-        public array $payload
+        public ContactMessage $contactMessage
     ) {
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[ERAH Contact] '.$this->payload['subject'],
-            replyTo: [$this->payload['email']],
+            subject: '[ERAH Contact] '.$this->contactMessage->subject,
+            replyTo: [
+                new Address($this->contactMessage->email, $this->contactMessage->name),
+            ],
         );
     }
 
@@ -34,9 +35,8 @@ class MarketingContactMailable extends Mailable
         return new Content(
             view: 'emails.marketing.contact',
             with: [
-                'payload' => $this->payload,
+                'contactMessage' => $this->contactMessage,
             ],
         );
     }
 }
-

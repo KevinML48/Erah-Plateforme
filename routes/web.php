@@ -12,6 +12,7 @@ use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
 use App\Http\Controllers\Web\Admin\AdminDuelResultController;
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
+use App\Http\Controllers\Web\Admin\AdminContactMessageController;
 use App\Http\Controllers\Web\Admin\AdminLiveCodeController;
 use App\Http\Controllers\Web\Admin\AdminMissionController;
 use App\Http\Controllers\Web\Admin\AdminOperationsController;
@@ -352,6 +353,12 @@ Route::middleware('auth')->group(function () {
             Route::post('/operations/gifts/{giftId}/stock', [AdminOperationsController::class, 'updateGiftStock'])->name('admin.operations.gifts.stock');
             Route::post('/operations/shop-items/{shopItemId}/status', [AdminOperationsController::class, 'updateShopItemStatus'])->name('admin.operations.shop-items.status');
             Route::post('/operations/shop-items/{shopItemId}/stock', [AdminOperationsController::class, 'updateShopItemStock'])->name('admin.operations.shop-items.stock');
+            Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('admin.contact-messages.index');
+            Route::get('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('admin.contact-messages.show');
+            Route::put('/contact-messages/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->name('admin.contact-messages.status');
+            Route::get('/users/{userId}', [UsersConsoleController::class, 'show'])
+                ->whereNumber('userId')
+                ->name('admin.users.show');
             Route::put('/users/{user}/public-profile', [PublicProfileModerationController::class, 'update'])->name('admin.users.public-profile.update');
             Route::delete('/users/{user}/public-profile', [PublicProfileModerationController::class, 'destroy'])->name('admin.users.public-profile.destroy');
             Route::get('/supporters', [SupportersAdminController::class, 'index'])->name('admin.supporters.index');

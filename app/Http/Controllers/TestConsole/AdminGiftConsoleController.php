@@ -84,6 +84,69 @@ class AdminGiftConsoleController extends Controller
             ->paginate(25, ['*'], 'redemptions_page')
             ->withQueryString();
 
+        $inProgressPool = GiftRedemption::query()
+            ->with(['user:id,name,email', 'gift:id,title'])
+            ->whereIn('status', [
+                GiftRedemption::STATUS_PENDING,
+                GiftRedemption::STATUS_APPROVED,
+                GiftRedemption::STATUS_SHIPPED,
+            ])
+            ->when($giftIdFilter !== null, fn ($query) => $query->where('gift_id', $giftIdFilter))
+            ->when($userIdFilter !== null, fn ($query) => $query->where('user_id', $userIdFilter))
+            ->orderByRaw("CASE status WHEN '".GiftRedemption::STATUS_PENDING."' THEN 0 WHEN '".GiftRedemption::STATUS_APPROVED."' THEN 1 WHEN '".GiftRedemption::STATUS_SHIPPED."' THEN 2 ELSE 9 END")
+            ->orderByDesc('requested_at')
+            ->get();
+
+        $inProgressRedemptions = $inProgressPool
+            ->take(20)
+            ->values();
+
+        $inProgressUserIds = $inProgressPool
+            ->pluck('user_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $historicalOrdersByUser = $inProgressUserIds->isNotEmpty()
+            ? GiftRedemption::query()
+                ->whereIn('user_id', $inProgressUserIds)
+                ->select('user_id', DB::raw('count(*) as aggregate'))
+                ->groupBy('user_id')
+                ->pluck('aggregate', 'user_id')
+            : collect();
+
+        $inProgressByUser = $inProgressPool
+            ->groupBy('user_id')
+            ->map(function ($rows, $userId) use ($historicalOrdersByUser): array {
+                $first = $rows->first();
+                $latestRequestedAt = $rows
+                    ->pluck('requested_at')
+                    ->filter()
+                    ->sortDesc()
+                    ->first();
+
+                return [
+                    'user_id' => (int) $userId,
+                    'user' => $first?->user,
+                    'active_orders' => $rows->count(),
+                    'pending_orders' => $rows->where('status', GiftRedemption::STATUS_PENDING)->count(),
+                    'approved_orders' => $rows->where('status', GiftRedemption::STATUS_APPROVED)->count(),
+                    'shipped_orders' => $rows->where('status', GiftRedemption::STATUS_SHIPPED)->count(),
+                    'total_points_in_progress' => (int) $rows->sum(fn (GiftRedemption $redemption) => (int) ($redemption->cost_points_snapshot ?? 0)),
+                    'historical_orders' => (int) ($historicalOrdersByUser[(int) $userId] ?? 0),
+                    'gift_titles' => $rows
+                        ->map(fn (GiftRedemption $redemption) => $redemption->gift?->title)
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->all(),
+                    'latest_requested_at' => $latestRequestedAt,
+                ];
+            })
+            ->sortByDesc('active_orders')
+            ->values()
+            ->take(12);
+
         $statusCounts = GiftRedemption::query()
             ->select('status', DB::raw('count(*) as aggregate'))
             ->groupBy('status')
@@ -147,6 +210,8 @@ class AdminGiftConsoleController extends Controller
             'userIdFilter' => $userIdFilterRaw,
             'kpis' => $kpis,
             'stockAlerts' => $stockAlerts,
+            'inProgressRedemptions' => $inProgressRedemptions,
+            'inProgressByUser' => $inProgressByUser,
             'mostFavorited' => $mostFavorited,
             'mostAddedToCart' => $mostAddedToCart,
             'mostRequested' => $mostRequested,

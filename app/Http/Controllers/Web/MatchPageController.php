@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\PlaceMatchBetRequest;
 use App\Models\Bet;
 use App\Models\EsportMatch;
+use App\Services\MatchBettingCommunityService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
@@ -87,7 +88,12 @@ class MatchPageController extends Controller
         ]);
     }
 
-    public function show(int $matchId, MatchMarketCatalog $matchMarketCatalog): View
+    public function show(
+        Request $request,
+        int $matchId,
+        MatchMarketCatalog $matchMarketCatalog,
+        MatchBettingCommunityService $matchBettingCommunityService
+    ): View
     {
         $match = EsportMatch::query()
             ->withCount(['bets', 'childMatches'])
@@ -97,12 +103,14 @@ class MatchPageController extends Controller
                     ->withCount('bets')
                     ->orderBy('starts_at'),
                 'markets' => fn ($query) => $query->where('is_active', true)->with('selections'),
+                'settlement:id,match_id,payout_total,won_count,lost_count,void_count,processed_at',
             ])
             ->findOrFail($matchId);
 
         $user = auth()->user();
         $myBetsByMarket = collect();
         $markets = $match->markets;
+        $betIsOpen = $this->isBettingOpen($match);
 
         if ($markets->isEmpty()) {
             $markets = collect($matchMarketCatalog->buildDefaultMarkets($match))
@@ -125,6 +133,14 @@ class MatchPageController extends Controller
                 ->keyBy('market_key');
         }
 
+        $betCommunity = $matchBettingCommunityService->build(
+            match: $match,
+            markets: $markets,
+            matchMarketCatalog: $matchMarketCatalog,
+            betIsOpen: $betIsOpen,
+            marketFilter: (string) $request->query('bettors_market', 'all'),
+        );
+
         $relatedMatches = EsportMatch::query()
             ->whereKeyNot($match->id)
             ->when($match->game_key, fn (Builder $query) => $query->where('game_key', $match->game_key))
@@ -140,7 +156,8 @@ class MatchPageController extends Controller
             'markets' => $markets,
             'myBetsByMarket' => $myBetsByMarket,
             'walletBalance' => (int) ($user->wallet?->balance ?? config('betting.wallet.initial_balance', 1000)),
-            'betIsOpen' => $this->isBettingOpen($match),
+            'betIsOpen' => $betIsOpen,
+            'betCommunity' => $betCommunity,
             'relatedMatches' => $relatedMatches,
             'gameLabel' => $matchMarketCatalog->labelForGame($match->game_key),
             'eventTypeLabel' => $matchMarketCatalog->labelForEventType($match->event_type),

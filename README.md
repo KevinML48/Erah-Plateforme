@@ -28,6 +28,7 @@ La plateforme couvre aujourd hui :
 - `/app/*` : lecture publique des modules ouverts
 - `/aide` et `/aide/assistant` : FAQ et assistant public
 - `/supporter` : presentation du programme supporter
+- `/contact` : formulaire de contact (stockage + notification email)
 
 ### Membre connecte
 
@@ -100,6 +101,11 @@ Recommandations minimales :
 - OPcache actif
 - MySQL ou PostgreSQL
 - Redis pour cache, queue et sessions si disponible
+
+Variables contact a renseigner :
+
+- `MAIL_CONTACT_ADDRESS` : adresse de reception des demandes contact
+- `MAIL_CONTACT_NAME` : nom associe a la boite de reception contact
 
 ## Documentation
 

@@ -452,7 +452,10 @@ class AdminOperationsCockpitService
                 'title' => 'Cadeaux en attente trop longtemps',
                 'description' => 'Demandes pendantes depuis plus de '.self::LONG_PENDING_HOURS.'h.',
                 'count' => (int) $pendingTooLong,
-                'url' => route('admin.gifts.index', ['status' => GiftRedemption::STATUS_PENDING]),
+                'url' => route('admin.gifts.index', [
+                    'status' => GiftRedemption::STATUS_PENDING,
+                    'sort' => 'requested_asc',
+                ]).'#gift-redemptions-center',
             ],
             [
                 'code' => 'gift_shipped_without_tracking',
@@ -460,7 +463,10 @@ class AdminOperationsCockpitService
                 'title' => 'Expeditions sans tracking',
                 'description' => 'Demandes expediees sans code de suivi renseigne.',
                 'count' => (int) $shippedWithoutTracking,
-                'url' => route('admin.gifts.index', ['status' => GiftRedemption::STATUS_SHIPPED]),
+                'url' => route('admin.gifts.index', [
+                    'status' => GiftRedemption::STATUS_SHIPPED,
+                    'sort' => 'updated_desc',
+                ]).'#gift-redemptions-center',
             ],
             [
                 'code' => 'gift_stock_low',
@@ -468,7 +474,7 @@ class AdminOperationsCockpitService
                 'title' => 'Stock cadeaux faible / rupture',
                 'description' => 'Rupture: '.$giftOutOfStock.' | Faible: '.$giftLowStock,
                 'count' => (int) $giftLowStock,
-                'url' => route('admin.gifts.index'),
+                'url' => route('admin.gifts.index').'#gift-stock-alerts',
             ],
             [
                 'code' => 'shop_stock_low',
@@ -476,7 +482,7 @@ class AdminOperationsCockpitService
                 'title' => 'Stock shop faible / rupture',
                 'description' => 'Rupture: '.$shopOutOfStock.' | Faible: '.$shopLowStock,
                 'count' => (int) $shopLowStock,
-                'url' => route('admin.dashboard'),
+                'url' => route('admin.dashboard').'#ops-low-stock-shop',
             ],
             [
                 'code' => 'matches_past_cutoff',
@@ -484,7 +490,7 @@ class AdminOperationsCockpitService
                 'title' => 'Matchs a traiter',
                 'description' => 'Matchs a heure passee encore non traites.',
                 'count' => (int) $matchesPastCutoff,
-                'url' => route('admin.matches.index', ['status' => 'all']),
+                'url' => route('admin.dashboard').'#ops-matches-to-settle',
             ],
             [
                 'code' => 'bets_not_settled',
@@ -492,7 +498,7 @@ class AdminOperationsCockpitService
                 'title' => 'Paris non settles',
                 'description' => 'Paris en attente alors qu un resultat existe deja.',
                 'count' => (int) $betsResultKnownNotSettled,
-                'url' => route('admin.dashboard', ['feed_module' => 'bets']),
+                'url' => route('admin.dashboard', ['feed_module' => 'bets']).'#admin-feed',
             ],
             [
                 'code' => 'wallet_anomaly',

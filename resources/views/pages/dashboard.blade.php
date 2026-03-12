@@ -347,8 +347,7 @@
 				}
 
 				.platform-dashboard-menu-preview {
-					min-height: 280px;
-					border-radius: 24px;
+					display: none;
 				}
 			}
 

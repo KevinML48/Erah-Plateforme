@@ -6,6 +6,21 @@
 
 @section('head_extra')
     @include('pages.community.partials.styles')
+    <style>
+        .community-player-link {
+            color: inherit;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: color .2s ease, border-color .2s ease, opacity .2s ease;
+        }
+
+        .community-player-link:hover,
+        .community-player-link:focus-visible {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, .42);
+            opacity: 1;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -76,9 +91,18 @@
                             </thead>
                             <tbody>
                                 @foreach($duelLeaderboard as $entry)
+                                    @php($playerProfileUrl = filled($entry['user_id']) ? route('users.public', (int) $entry['user_id']) : null)
                                     <tr>
                                         <td>{{ (int) $entry['position'] }}</td>
-                                        <td>{{ $entry['name'] }}</td>
+                                        <td>
+                                            @if($playerProfileUrl)
+                                                <a href="{{ $playerProfileUrl }}" class="community-player-link" aria-label="Voir le profil public de {{ $entry['name'] }}">
+                                                    {{ $entry['name'] }}
+                                                </a>
+                                            @else
+                                                {{ $entry['name'] }}
+                                            @endif
+                                        </td>
                                         <td>{{ number_format((int) $entry['duel_score'], 0, ',', ' ') }}</td>
                                         <td>{{ (int) $entry['duel_current_streak'] }} en cours / {{ (int) $entry['duel_best_streak'] }} max</td>
                                         <td>{{ (int) $entry['duel_wins'] }} V / {{ (int) $entry['duel_losses'] }} D (ratio {{ number_format((float) $entry['duel_ratio'], 2, ',', ' ') }})</td>

@@ -4,7 +4,11 @@ namespace App\Http\Controllers\TestConsole;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Console\UpdateUserRoleRequest;
+use App\Models\Bet;
+use App\Models\Duel;
+use App\Models\GiftRedemption;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -52,5 +56,59 @@ class UsersConsoleController extends Controller
 
         return back()->with('success', 'Role utilisateur mis a jour.');
     }
-}
 
+    public function show(int $userId): View
+    {
+        $user = User::query()
+            ->with([
+                'progress.league',
+                'wallet',
+                'rewardWallet',
+                'loginStreak',
+                'supportSubscriptions' => fn ($query) => $query->latest('id')->limit(1),
+            ])
+            ->findOrFail($userId);
+
+        $redemptions = GiftRedemption::query()
+            ->where('user_id', $user->id)
+            ->with('gift:id,title')
+            ->orderByDesc('requested_at')
+            ->limit(12)
+            ->get();
+
+        $redemptionStatusCounts = GiftRedemption::query()
+            ->where('user_id', $user->id)
+            ->select('status', DB::raw('count(*) as aggregate'))
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $bets = Bet::query()
+            ->where('user_id', $user->id)
+            ->with('match:id,home_team,away_team,starts_at,status,result')
+            ->latest('id')
+            ->limit(10)
+            ->get();
+
+        $duels = Duel::query()
+            ->forUser($user->id)
+            ->with(['challenger:id,name', 'challenged:id,name'])
+            ->latest('id')
+            ->limit(10)
+            ->get();
+
+        $activityEvents = $user->activityEvents()
+            ->latest('occurred_at')
+            ->limit(12)
+            ->get();
+
+        return view('pages.admin.users.show', [
+            'userProfile' => $user,
+            'redemptions' => $redemptions,
+            'redemptionStatusCounts' => $redemptionStatusCounts,
+            'redemptionStatusLabels' => GiftRedemption::statusLabels(),
+            'bets' => $bets,
+            'duels' => $duels,
+            'activityEvents' => $activityEvents,
+        ]);
+    }
+}

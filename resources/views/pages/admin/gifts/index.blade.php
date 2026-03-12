@@ -67,7 +67,7 @@
                 <div class="adm-shell">
                     @include('pages.admin.partials.nav')
 
-                    <section class="adm-surface">
+                    <section class="adm-surface" id="gift-redemptions-center">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Vue operationnelle cadeaux</h2>
                         </div>
@@ -81,7 +81,7 @@
                             <article class="adm-kpi-card"><strong>{{ (int) ($kpis['low_stock_gifts'] ?? 0) }}</strong><span>Stocks faibles</span></article>
                         </div>
                         <div class="adm-sub-grid margin-top-20">
-                            <div class="adm-sub-stack">
+                            <div class="adm-sub-stack" id="gift-stock-alerts">
                                 <h3 class="adm-surface-title">Alertes stock</h3>
                                 @if(($stockAlerts ?? collect())->isNotEmpty())
                                     <div class="adm-tight-list">
@@ -187,7 +187,7 @@
                                     </article>
                                 @endforeach
                             </div>
-                            <div class="adm-pagin">{{ $gifts->links() }}</div>
+                            <div class="adm-pagin">{{ $gifts->onEachSide(1)->links('vendor.pagination.admin') }}</div>
                         @else
                             <div class="adm-empty">Aucun cadeau dans le catalogue.</div>
                         @endif
@@ -195,7 +195,159 @@
 
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20"><h2 class="tt-heading-title tt-text-reveal">Centre de traitement commandes cadeaux</h2></div>
-                        <form method="GET" action="{{ route('admin.gifts.index') }}" class="tt-form tt-form-creative adm-form margin-bottom-20">
+                        <div class="adm-sub-stack margin-bottom-20">
+                            <h3 class="adm-surface-title">Suivi par utilisateur (commandes en cours)</h3>
+                            <p class="adm-meta margin-bottom-10">Vision immediate de qui demande quoi, volume en cours et historique.</p>
+                            @if(($inProgressByUser ?? collect())->count())
+                                <div class="adm-table-wrap">
+                                    <table class="adm-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Utilisateur</th>
+                                                <th>Commandes en cours</th>
+                                                <th>Cadeaux demandes</th>
+                                                <th>Historique</th>
+                                                <th>Derniere demande</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach(($inProgressByUser ?? collect()) as $userQueue)
+                                                <tr>
+                                                    <td>
+                                                        @if($userQueue['user'])
+                                                            <strong>{{ $userQueue['user']->name }}</strong><br>
+                                                            <small>#{{ $userQueue['user_id'] }} - {{ $userQueue['user']->email }}</small>
+                                                        @else
+                                                            <strong>Utilisateur supprime</strong><br>
+                                                            <small>#{{ $userQueue['user_id'] }}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <strong>{{ (int) $userQueue['active_orders'] }}</strong> en cours<br>
+                                                        <small>
+                                                            {{ (int) $userQueue['pending_orders'] }} pending,
+                                                            {{ (int) $userQueue['approved_orders'] }} approuvees,
+                                                            {{ (int) $userQueue['shipped_orders'] }} expediees
+                                                        </small><br>
+                                                        <small>{{ (int) $userQueue['total_points_in_progress'] }} pts engages</small>
+                                                    </td>
+                                                    <td>
+                                                        @if(count($userQueue['gift_titles']))
+                                                            <strong>{{ implode(', ', array_slice($userQueue['gift_titles'], 0, 3)) }}</strong>
+                                                            @if(count($userQueue['gift_titles']) > 3)
+                                                                <br><small>+ {{ count($userQueue['gift_titles']) - 3 }} autres</small>
+                                                            @endif
+                                                        @else
+                                                            <small>-</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ (int) $userQueue['historical_orders'] }} commandes au total</td>
+                                                    <td>{{ optional($userQueue['latest_requested_at'])->format('d/m/Y H:i') ?: '-' }}</td>
+                                                    <td>
+                                                        <div class="adm-row-actions">
+                                                            <form method="GET" action="{{ route('admin.gifts.index') }}#gift-redemptions-center">
+                                                                <input type="hidden" name="user_id" value="{{ $userQueue['user_id'] }}">
+                                                                @if(($status ?? 'all') !== 'all')
+                                                                    <input type="hidden" name="status" value="{{ $status }}">
+                                                                @endif
+                                                                @if(($sort ?? 'requested_desc') !== 'requested_desc')
+                                                                    <input type="hidden" name="sort" value="{{ $sort }}">
+                                                                @endif
+                                                                <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                                                    <span data-hover="Filtrer ses commandes">Filtrer ses commandes</span>
+                                                                </button>
+                                                            </form>
+                                                            @if($userQueue['user'])
+                                                                <a href="{{ route('admin.users.show', $userQueue['user_id']) }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                                                    <span data-hover="Fiche utilisateur">Fiche utilisateur</span>
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="adm-empty">Aucune commande en cours pour le moment.</div>
+                            @endif
+                        </div>
+
+                        <div class="adm-sub-stack margin-bottom-20">
+                            <h3 class="adm-surface-title">Commandes en cours a traiter</h3>
+                            <p class="adm-meta margin-bottom-10">Pending, approuvees et expediees avec acces detail + fiche utilisateur.</p>
+                            @if(($inProgressRedemptions ?? collect())->count())
+                                <div class="adm-table-wrap">
+                                    <table class="adm-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Commande</th>
+                                                <th>Demandeur</th>
+                                                <th>Cadeau</th>
+                                                <th>Statut</th>
+                                                <th>Date demande</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach(($inProgressRedemptions ?? collect()) as $activeRedemption)
+                                                <tr id="redemption-{{ $activeRedemption->id }}">
+                                                    <td><strong>CMD-{{ str_pad((string) $activeRedemption->id, 6, '0', STR_PAD_LEFT) }}</strong><br><small>#{{ $activeRedemption->id }}</small></td>
+                                                    <td>
+                                                        @if($activeRedemption->user)
+                                                            <strong>{{ $activeRedemption->user->name }}</strong><br>
+                                                            <small>{{ $activeRedemption->user->email }}</small>
+                                                        @else
+                                                            <small>Utilisateur supprime</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $activeRedemption->gift->title ?? 'Cadeau supprime' }}</td>
+                                                    <td><span class="adm-pill">{{ $statusLabels[$activeRedemption->status] ?? ucfirst((string) $activeRedemption->status) }}</span></td>
+                                                    <td>{{ optional($activeRedemption->requested_at)->format('d/m/Y H:i') ?: '-' }}</td>
+                                                    <td>
+                                                        <div class="adm-row-actions">
+                                                            <a href="{{ route('admin.redemptions.show', $activeRedemption->id) }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Commande">Commande</span></a>
+                                                            @if($activeRedemption->user)
+                                                                <a href="{{ route('admin.users.show', $activeRedemption->user_id) }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Utilisateur">Utilisateur</span></a>
+                                                            @endif
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="adm-empty">Aucune commande en cours a traiter.</div>
+                            @endif
+                        </div>
+
+                        @if(($userIdFilter ?? '') !== '' || ($giftIdFilter ?? '') !== '' || ($search ?? '') !== '' || ($status ?? 'all') !== 'all')
+                            <div class="adm-row-actions margin-bottom-15">
+                                <span class="adm-pill">
+                                    Filtres actifs
+                                    @if(($userIdFilter ?? '') !== '')
+                                        | utilisateur #{{ $userIdFilter }}
+                                    @endif
+                                    @if(($giftIdFilter ?? '') !== '')
+                                        | cadeau #{{ $giftIdFilter }}
+                                    @endif
+                                    @if(($search ?? '') !== '')
+                                        | recherche "{{ $search }}"
+                                    @endif
+                                    @if(($status ?? 'all') !== 'all')
+                                        | statut {{ $statusLabels[$status] ?? $status }}
+                                    @endif
+                                </span>
+                                <a href="{{ route('admin.gifts.index') }}#gift-redemptions-center" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                    <span data-hover="Reinitialiser">Reinitialiser</span>
+                                </a>
+                            </div>
+                        @endif
+
+                        <form method="GET" action="{{ route('admin.gifts.index') }}#gift-redemptions-center" class="tt-form tt-form-creative adm-form margin-bottom-20">
                             <div class="adm-form-grid-4">
                                 <div class="tt-form-group"><label>Recherche</label><input class="tt-form-control" type="text" name="search" value="{{ $search ?? '' }}" placeholder="ID, tracking, utilisateur, email, cadeau"></div>
                                 <div class="tt-form-group"><label>Statut</label><select class="tt-form-control" name="status"><option value="all" @selected($status === 'all')>Tous les statuts</option>@foreach($statuses as $statusValue)<option value="{{ $statusValue }}" @selected($status === $statusValue)>{{ $statusLabels[$statusValue] ?? ucfirst($statusValue) }}</option>@endforeach</select></div>
@@ -214,7 +366,16 @@
                                         @foreach($redemptions as $redemption)
                                             <tr>
                                                 <td><strong>CMD-{{ str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT) }}</strong><br><small>#{{ $redemption->id }} - {{ (int) $redemption->cost_points_snapshot }} pts</small></td>
-                                                <td>#{{ $redemption->user_id }}<br><strong>{{ $redemption->user->name ?? 'Utilisateur supprime' }}</strong><br><small>{{ $redemption->user->email ?? '-' }}</small></td>
+                                                <td>
+                                                    #{{ $redemption->user_id }}<br>
+                                                    @if($redemption->user)
+                                                        <a href="{{ route('admin.users.show', $redemption->user_id) }}"><strong>{{ $redemption->user->name }}</strong></a><br>
+                                                        <small>{{ $redemption->user->email }}</small>
+                                                    @else
+                                                        <strong>Utilisateur supprime</strong><br>
+                                                        <small>-</small>
+                                                    @endif
+                                                </td>
                                                 <td>#{{ $redemption->gift_id }}<br><strong>{{ $redemption->gift->title ?? 'Cadeau supprime' }}</strong></td>
                                                 <td><span class="adm-pill">{{ $statusLabels[$redemption->status] ?? ucfirst($redemption->status) }}</span></td>
                                                 <td>@if($redemption->tracking_code)<strong>{{ $redemption->tracking_code }}</strong><br><small>{{ $redemption->tracking_carrier ?: 'Transporteur non renseigne' }}</small>@else<small>Aucun tracking</small>@endif</td>
@@ -222,6 +383,9 @@
                                                 <td>
                                                     <div class="adm-row-actions">
                                                         <a href="{{ route('admin.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Detail">Detail</span></a>
+                                                        @if($redemption->user)
+                                                            <a href="{{ route('admin.users.show', $redemption->user_id) }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Utilisateur">Utilisateur</span></a>
+                                                        @endif
                                                         @if($redemption->status === \App\Models\GiftRedemption::STATUS_PENDING)
                                                             <form method="POST" action="{{ route('admin.redemptions.approve', $redemption->id) }}">@csrf<button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Approuver">Approuver</span></button></form>
                                                         @endif
@@ -241,7 +405,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="adm-pagin">{{ $redemptions->links() }}</div>
+                            <div class="adm-pagin">{{ $redemptions->onEachSide(1)->links('vendor.pagination.admin') }}</div>
                         @else
                             <div class="adm-empty">Aucune commande cadeau ne correspond a ce filtre.</div>
                         @endif

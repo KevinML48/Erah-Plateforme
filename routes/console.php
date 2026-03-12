@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Database\Seeders\PlatformPreviewSeeder;
 use App\Services\GrantMonthlySupporterRewards;
 use App\Services\GalleryPhotoImportService;
 use App\Services\SupporterAccessResolver;
@@ -54,5 +55,28 @@ Artisan::command('gallery-photos:import-legacy', function (GalleryPhotoImportSer
     $this->info('Mises a jour: '.$result['updated']);
     $this->info('Ignorees: '.$result['skipped']);
 })->purpose('Import gallery photos from the legacy static Blade source.');
+
+Artisan::command('demo:seed {--fresh : Reinitialise la base avant le seed preview}', function () {
+    if (app()->environment('production')) {
+        $this->error('demo:seed est bloque en production.');
+
+        return self::FAILURE;
+    }
+
+    if ($this->option('fresh')) {
+        $this->call('migrate:fresh', ['--force' => true]);
+    }
+
+    $this->call('db:seed', [
+        '--class' => PlatformPreviewSeeder::class,
+        '--force' => true,
+    ]);
+
+    $this->newLine();
+    $this->info('Mode preview charge: '.PlatformPreviewSeeder::class);
+    $this->line('Comptes demo crees/actualises avec mot de passe: 12345678');
+
+    return self::SUCCESS;
+})->purpose('Charge un dataset de demonstration riche pour local/staging.');
 
 Schedule::command('supporter:grant-monthly-rewards')->monthlyOn(1, '02:10');

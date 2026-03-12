@@ -84,9 +84,9 @@ php artisan optimize:clear
 
 - Les points plateforme servent de monnaie unique pour cadeaux, paris et duels.
 - L XP fait progresser le membre et alimente sa ligue.
+- Les ligues suivent la liste canonique: Bronze, Argent, Gold, Platine, Diamant, Champion, ERAH Prime.
 - Les missions distribuent des rewards simples et lisibles.
 - Les zones privees et admin restent non indexees.
-- Le legacy `rank_points` est encore present dans certains modules historiques mais les ecrans produit privilegient des libelles plus clairs.
 
 ## Production
 
@@ -95,6 +95,8 @@ Recommandations minimales :
 - `php artisan config:cache`
 - `php artisan route:cache`
 - `php artisan view:cache`
+- `php artisan queue:work` (worker actif)
+- `php artisan schedule:run` (cron chaque minute)
 - OPcache actif
 - MySQL ou PostgreSQL
 - Redis pour cache, queue et sessions si disponible
@@ -104,3 +106,4 @@ Recommandations minimales :
 - `docs/ROUTES_MAPPING.md` : cartographie actuelle des parcours
 - `docs/SITEMAP.md` : vue sitemap / navigation
 - `docs/GAME_UI_SPEC.md` : repere UI Blade-first pour l application
+- `docs/PRODUCTION_RUNBOOK.md` : prerequis d'exploitation prod (queue/scheduler/jobs)

@@ -16,6 +16,7 @@ use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\User;
 use App\Services\MissionMaintenanceService;
+use App\Support\MissionEventTypeRegistry;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -68,6 +69,7 @@ class AdminMissionController extends Controller
                 ->distinct()
                 ->orderBy('category')
                 ->pluck('category'),
+            'eventTypes' => MissionEventTypeRegistry::supported(),
             'quizzes' => Quiz::query()->withCount('attempts')->latest('id')->limit(8)->get(),
             'liveCodes' => LiveCode::query()->withCount('redemptions')->latest('id')->limit(8)->get(),
             'events' => PlatformEvent::query()->latest('id')->limit(8)->get(),

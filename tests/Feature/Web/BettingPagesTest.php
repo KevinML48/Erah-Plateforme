@@ -6,6 +6,7 @@ use App\Models\Bet;
 use App\Models\EsportMatch;
 use App\Models\MatchMarket;
 use App\Models\MatchSelection;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -261,11 +262,15 @@ class BettingPagesTest extends TestCase
         $grant->assertRedirect();
         $grant->assertSessionHas('success');
 
-        $this->assertDatabaseHas('wallet_transactions', [
+        $this->assertDatabaseHas('reward_wallet_transactions', [
             'user_id' => $targetUser->id,
-            'type' => WalletTransaction::TYPE_GRANT,
-            'ref_type' => WalletTransaction::REF_TYPE_ADMIN,
+            'type' => RewardWalletTransaction::TYPE_ADMIN_ADJUSTMENT,
+            'ref_type' => RewardWalletTransaction::REF_TYPE_ADMIN,
             'ref_id' => (string) $admin->id,
+        ]);
+        $this->assertDatabaseHas('user_reward_wallets', [
+            'user_id' => $targetUser->id,
+            'balance' => 350,
         ]);
 
         $this->actingAs($admin)->get(route('admin.wallets.grant.create'))->assertOk();

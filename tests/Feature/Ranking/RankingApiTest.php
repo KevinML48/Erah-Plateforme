@@ -58,15 +58,15 @@ class RankingApiTest extends TestCase
         $response = $this->postJson('/api/admin/points/grant', [
             'user_id' => $target->id,
             'kind' => PointsTransaction::KIND_RANK,
-            'points' => 260,
-            'idempotency_key' => 'grant-rank-260',
+            'points' => 3200,
+            'idempotency_key' => 'grant-rank-3200',
             'reason' => 'promotion flow',
         ]);
 
         $response->assertOk()->assertJsonPath('idempotent', false);
 
         $progress = UserProgress::query()->with('league')->findOrFail($target->id);
-        $this->assertSame('or', $progress->league?->key);
+        $this->assertSame('gold', $progress->league?->key);
 
         $this->assertDatabaseCount('league_promotions', 2);
         $this->assertDatabaseHas('audit_logs', [
@@ -83,14 +83,14 @@ class RankingApiTest extends TestCase
 
         Sanctum::actingAs($admin);
 
-        $this->grantRankPoints($topUser, 400, 'lb-top');
-        $this->grantRankPoints($secondUser, 280, 'lb-second');
-        $this->grantRankPoints($argentUser, 120, 'lb-argent');
+        $this->grantXpPoints($topUser, 6200, 'lb-top');
+        $this->grantXpPoints($secondUser, 4100, 'lb-second');
+        $this->grantXpPoints($argentUser, 1400, 'lb-argent');
 
-        $response = $this->getJson('/api/leagues/or/leaderboard');
+        $response = $this->getJson('/api/leagues/gold/leaderboard');
 
         $response->assertOk()
-            ->assertJsonPath('league.key', 'or')
+            ->assertJsonPath('league.key', 'gold')
             ->assertJsonCount(2, 'entries')
             ->assertJsonPath('entries.0.user_id', $topUser->id)
             ->assertJsonPath('entries.1.user_id', $secondUser->id);
@@ -113,11 +113,11 @@ class RankingApiTest extends TestCase
         $response->assertForbidden();
     }
 
-    private function grantRankPoints(User $target, int $points, string $key): void
+    private function grantXpPoints(User $target, int $points, string $key): void
     {
         $response = $this->postJson('/api/admin/points/grant', [
             'user_id' => $target->id,
-            'kind' => PointsTransaction::KIND_RANK,
+            'kind' => PointsTransaction::KIND_XP,
             'points' => $points,
             'idempotency_key' => $key.'-'.Str::random(4),
         ]);

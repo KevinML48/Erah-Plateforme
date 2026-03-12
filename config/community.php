@@ -4,9 +4,9 @@ return [
     'xp_leagues' => [
         ['key' => 'bronze', 'name' => 'Bronze', 'xp_threshold' => 0],
         ['key' => 'argent', 'name' => 'Argent', 'xp_threshold' => 1000],
-        ['key' => 'platine', 'name' => 'Platine', 'xp_threshold' => 3000],
-        ['key' => 'diamant', 'name' => 'Diamant', 'xp_threshold' => 7000],
-        ['key' => 'elite', 'name' => 'Elite', 'xp_threshold' => 15000],
+        ['key' => 'gold', 'name' => 'Gold', 'xp_threshold' => 3000],
+        ['key' => 'platine', 'name' => 'Platine', 'xp_threshold' => 7000],
+        ['key' => 'diamant', 'name' => 'Diamant', 'xp_threshold' => 15000],
         ['key' => 'champion', 'name' => 'Champion', 'xp_threshold' => 30000],
         ['key' => 'erah-prime', 'name' => 'ERAH Prime', 'xp_threshold' => 60000],
     ],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\ShopPurchaseRequest;
 use App\Models\ShopItem;
 use App\Services\ShopService;
 use Illuminate\Http\RedirectResponse;
@@ -29,14 +30,22 @@ class ShopPageController extends Controller
         ]);
     }
 
-    public function purchase(int $shopItemId, ShopService $shopService): RedirectResponse
+    public function purchase(int $shopItemId, ShopPurchaseRequest $request, ShopService $shopService): RedirectResponse
     {
         $item = ShopItem::query()->active()->findOrFail($shopItemId);
 
         try {
-            $shopService->purchase(auth()->user(), $item);
+            $result = $shopService->purchase(
+                user: auth()->user(),
+                item: $item,
+                idempotencyKey: (string) $request->validated('idempotency_key'),
+            );
         } catch (\RuntimeException $exception) {
             return back()->with('error', $exception->getMessage());
+        }
+
+        if ($result['idempotent']) {
+            return back()->with('success', 'Achat deja enregistre (replay idempotent).');
         }
 
         return back()->with('success', 'Achat valide: '.$item->name.'.');

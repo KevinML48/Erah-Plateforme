@@ -90,7 +90,7 @@ return [
             'SUPPORTER_MONTHLY_MISSION_DESCRIPTION',
             'Merci de soutenir ERAH. Reviens chaque mois pour recuperer ton bonus supporter.'
         ),
-        'event_type' => env('SUPPORTER_MONTHLY_EVENT_TYPE', 'supporter_monthly'),
+        'event_type' => env('SUPPORTER_MONTHLY_EVENT_TYPE', 'supporter.monthly'),
         'target_count' => (int) env('SUPPORTER_MONTHLY_TARGET_COUNT', 1),
         'xp_bonus' => (int) env('SUPPORTER_MONTHLY_XP_BONUS', 100),
         'rank_points_bonus' => (int) env('SUPPORTER_MONTHLY_RANK_POINTS_BONUS', 15),

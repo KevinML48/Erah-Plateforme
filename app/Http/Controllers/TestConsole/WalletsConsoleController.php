@@ -86,6 +86,7 @@ class WalletsConsoleController extends Controller
                 amount: (int) $validated['amount'],
                 reason: (string) $validated['reason'],
                 idempotencyKey: (string) $validated['idempotency_key'],
+                mirrorLegacyBetLedger: true,
             );
         } catch (RuntimeException $exception) {
             return back()->withInput()->with('error', $exception->getMessage());

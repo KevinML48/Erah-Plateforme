@@ -139,6 +139,55 @@ class MissionsAndGiftsPagesTest extends TestCase
             ->assertSee('Filtrer');
     }
 
+    public function test_profile_update_emits_profile_completed_event_and_completes_profile_mission(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Kevin',
+            'bio' => null,
+            'avatar_path' => null,
+            'twitter_url' => null,
+            'instagram_url' => null,
+            'tiktok_url' => null,
+            'discord_url' => null,
+        ]);
+
+        MissionTemplate::query()->create([
+            'key' => 'profile.once.completed',
+            'title' => 'Completer ton profil',
+            'short_description' => 'Completer le profil a 75%.',
+            'event_type' => 'profile.completed',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['min_profile_completion' => 75],
+            'rewards' => ['xp' => 120, 'points' => 80],
+            'is_active' => true,
+        ]);
+
+        app(\App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $response = $this->actingAs($user)->put(route('profile.update'), [
+            'name' => 'Kevin ERAH',
+            'bio' => 'Je complete mon profil sur la plateforme.',
+            'twitter_url' => 'https://x.com/erah_member',
+        ]);
+
+        $response->assertRedirect(route('profile.show'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'profile.completed',
+            'event_key' => 'profile.completed.'.$user->id,
+        ]);
+
+        $this->assertNotNull(
+            \App\Models\UserMission::query()
+                ->where('user_id', $user->id)
+                ->whereNotNull('completed_at')
+                ->first()
+        );
+    }
+
     public function test_user_can_view_gift_detail_page(): void
     {
         $user = User::factory()->create();

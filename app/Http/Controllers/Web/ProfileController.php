@@ -11,6 +11,7 @@ use App\Models\Duel;
 use App\Models\PointsTransaction;
 use App\Models\User;
 use App\Services\ExperienceService;
+use App\Services\MissionEngine;
 use App\Services\ShortcutService;
 use App\Services\MissionCatalogService;
 use App\Services\MissionFocusService;
@@ -76,19 +77,24 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function update(UpdateProfileRequest $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
+    public function update(
+        UpdateProfileRequest $request,
+        StoreAuditLogAction $storeAuditLogAction,
+        MissionEngine $missionEngine
+    ): RedirectResponse
     {
         $user = $request->user();
         $validated = $request->validated();
         $isSupporterActive = $user->isSupporterActive();
         $newAvatarPath = null;
         $oldAvatarPath = $user->avatar_path;
+        $profileCompletion = 0;
 
         if ($request->hasFile('avatar')) {
             $newAvatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
-        DB::transaction(function () use ($user, $validated, $newAvatarPath, $storeAuditLogAction, $isSupporterActive, $request) {
+        DB::transaction(function () use ($user, $validated, $newAvatarPath, $storeAuditLogAction, $isSupporterActive, $request, &$profileCompletion) {
             $lockedUser = User::query()
                 ->whereKey($user->id)
                 ->lockForUpdate()
@@ -138,12 +144,23 @@ class ProfileController extends Controller
                     ],
                 ],
             );
+
+            $profileCompletion = $this->calculateProfileCompletion($lockedUser);
         });
 
         if ($newAvatarPath !== null && ! blank($oldAvatarPath) && $oldAvatarPath !== $newAvatarPath) {
             if (! str_starts_with((string) $oldAvatarPath, 'http://') && ! str_starts_with((string) $oldAvatarPath, 'https://')) {
                 Storage::disk('public')->delete((string) $oldAvatarPath);
             }
+        }
+
+        if ($profileCompletion >= 75) {
+            $missionEngine->recordEvent($user->fresh(), 'profile.completed', 1, [
+                'event_key' => 'profile.completed.'.$user->id,
+                'profile_completion' => $profileCompletion,
+                'subject_type' => User::class,
+                'subject_id' => (string) $user->id,
+            ]);
         }
 
         $returnRoute = $request->input('_profile_return') === 'app'
@@ -329,5 +346,19 @@ class ProfileController extends Controller
                     ->where('source_type', 'not like', 'admin_%');
             });
         }
+    }
+
+    private function calculateProfileCompletion(User $user): int
+    {
+        $checkpoints = [
+            ! blank($user->name),
+            ! blank($user->bio),
+            ! blank($user->avatar_path),
+            ! blank($user->twitter_url) || ! blank($user->instagram_url) || ! blank($user->tiktok_url) || ! blank($user->discord_url),
+        ];
+
+        $completed = count(array_filter($checkpoints));
+
+        return (int) round(($completed / max(1, count($checkpoints))) * 100);
     }
 }

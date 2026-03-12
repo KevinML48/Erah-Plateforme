@@ -24,7 +24,7 @@ class AdminWalletController extends Controller
                         ->orWhere('email', 'like', '%'.$search.'%');
                 });
             })
-            ->with('wallet:user_id,balance')
+            ->with('rewardWallet:user_id,balance')
             ->orderBy('name')
             ->limit(80)
             ->get(['id', 'name', 'email']);
@@ -50,6 +50,7 @@ class AdminWalletController extends Controller
                 amount: (int) $validated['amount'],
                 reason: (string) $validated['reason'],
                 idempotencyKey: (string) $validated['idempotency_key'],
+                mirrorLegacyBetLedger: false,
             );
         } catch (RuntimeException $exception) {
             return back()->withInput()->with('error', $exception->getMessage());
@@ -59,6 +60,6 @@ class AdminWalletController extends Controller
             return back()->with('success', 'Cet ajustement a deja ete applique.');
         }
 
-        return back()->with('success', 'Solde mis a jour. Nouveau total: '.$result['wallet_balance'].' points paris.');
+        return back()->with('success', 'Solde mis a jour. Nouveau total: '.$result['wallet_balance'].' points plateforme.');
     }
 }

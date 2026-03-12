@@ -3,15 +3,17 @@
 namespace App\Application\Actions\Bets;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
+use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\DB;
+use App\Services\PlatformPointService;
 use RuntimeException;
 
 class GrantWalletAction
 {
     public function __construct(
-        private readonly ApplyWalletTransactionAction $applyWalletTransactionAction,
+        private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
     }
@@ -24,37 +26,41 @@ class GrantWalletAction
         User $targetUser,
         int $amount,
         string $reason,
-        string $idempotencyKey
+        string $idempotencyKey,
+        bool $mirrorLegacyBetLedger = false
     ): array {
         if ($amount <= 0) {
             throw new RuntimeException('Grant amount must be greater than zero.');
         }
 
-        return DB::transaction(function () use ($actor, $targetUser, $amount, $reason, $idempotencyKey) {
-            $result = $this->applyWalletTransactionAction->execute(
+        return DB::transaction(function () use ($actor, $targetUser, $amount, $reason, $idempotencyKey, $mirrorLegacyBetLedger) {
+            $result = $this->platformPointService->credit(
                 user: $targetUser,
-                type: WalletTransaction::TYPE_GRANT,
                 amount: $amount,
+                type: RewardWalletTransaction::TYPE_ADMIN_ADJUSTMENT,
                 uniqueKey: 'admin.wallet.grant.'.$idempotencyKey,
-                refType: WalletTransaction::REF_TYPE_ADMIN,
+                refType: RewardWalletTransaction::REF_TYPE_ADMIN,
                 refId: (string) $actor->id,
-                metadata: [
+                meta: [
                     'reason' => $reason,
                     'actor_id' => $actor->id,
                 ],
-                initialBalanceIfMissing: (int) config('betting.wallet.initial_balance', 1000),
+                mirrorLegacyBetLedger: $mirrorLegacyBetLedger,
+                legacyWalletType: WalletTransaction::TYPE_GRANT,
+                initialBalanceIfMissing: 0,
             );
 
             $this->storeAuditLogAction->execute(
                 action: 'wallet.grant',
                 actor: $actor,
-                target: $targetUser,
+                target: $result['transaction'],
                 context: [
                     'target_user_id' => $targetUser->id,
                     'amount' => $amount,
                     'reason' => $reason,
                     'idempotency_key' => $idempotencyKey,
                     'idempotent' => $result['idempotent'],
+                    'legacy_mirror' => $mirrorLegacyBetLedger,
                 ],
             );
 

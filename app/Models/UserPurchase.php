@@ -12,6 +12,7 @@ class UserPurchase extends Model
         'user_id',
         'cost_points',
         'status',
+        'idempotency_key',
         'payload',
         'purchased_at',
     ];

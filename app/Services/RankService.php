@@ -6,7 +6,9 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\NotifyAction;
 use App\Application\Actions\Ranking\EnsureUserProgressAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
+use App\Models\League;
 use App\Models\User;
+use App\Models\UserProgress;
 use App\Models\UserRankHistory;
 use Illuminate\Support\Collection;
 
@@ -53,6 +55,7 @@ class RankService
     {
         $progress = $this->ensureUserProgressAction->execute($user);
         $league = $this->resolveLeague((int) $progress->total_xp);
+        $this->syncCurrentLeagueOnProgress($progress, $league);
 
         $latest = UserRankHistory::query()
             ->where('user_id', $user->id)
@@ -116,5 +119,29 @@ class RankService
                 'xp_threshold' => (int) ($definition['xp_threshold'] ?? 0),
             ])
             ->values();
+    }
+
+    /**
+     * @param array{key: string, name: string, xp_threshold: int} $league
+     */
+    private function syncCurrentLeagueOnProgress(UserProgress $progress, array $league): void
+    {
+        if ($league['key'] === '') {
+            return;
+        }
+
+        $databaseLeague = League::query()
+            ->active()
+            ->where('key', $league['key'])
+            ->first();
+
+        if (! $databaseLeague) {
+            return;
+        }
+
+        if ((int) $progress->current_league_id !== (int) $databaseLeague->id) {
+            $progress->current_league_id = $databaseLeague->id;
+            $progress->save();
+        }
     }
 }

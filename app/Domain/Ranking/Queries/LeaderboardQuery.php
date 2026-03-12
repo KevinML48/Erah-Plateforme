@@ -30,14 +30,24 @@ class LeaderboardQuery
                     throw (new ModelNotFoundException())->setModel(League::class, [$leagueKey]);
                 }
 
+                $nextLeague = League::query()
+                    ->active()
+                    ->where('sort_order', '>', $league->sort_order)
+                    ->orderBy('sort_order')
+                    ->first();
+
                 $progressRows = UserProgress::query()
-                    ->where('current_league_id', $league->id)
+                    ->where('total_xp', '>=', (int) $league->min_rank_points)
+                    ->when(
+                        $nextLeague !== null,
+                        fn ($query) => $query->where('total_xp', '<', (int) $nextLeague->min_rank_points)
+                    )
                     ->with([
                         'user:id,name,avatar_path',
                         'user.supportSubscriptions' => fn ($query) => $query->active(),
                     ])
-                    ->orderByDesc('total_rank_points')
                     ->orderByDesc('total_xp')
+                    ->orderByDesc('total_rank_points')
                     ->orderBy('user_id')
                     ->limit($safeLimit)
                     ->get();

@@ -19,15 +19,13 @@ class SupporterProgramSeeder extends Seeder
             [
                 'title' => 'Reaction supporter de la semaine',
                 'description' => 'Ajoutez une reaction supporter a un clip ERAH et votez pour la campagne active.',
-                'event_type' => 'supporter_weekly_clip',
+                'event_type' => 'clip.like',
                 'target_count' => 2,
                 'scope' => MissionTemplate::SCOPE_WEEKLY,
                 'constraints' => ['supporter_only' => true],
                 'rewards' => [
                     'xp' => 60,
-                    'rank_points' => 10,
-                    'reward_points' => 100,
-                    'bet_points' => 0,
+                    'points' => 100,
                 ],
                 'is_active' => true,
             ]
@@ -38,15 +36,13 @@ class SupporterProgramSeeder extends Seeder
             [
                 'title' => 'Supporter exclusif communaute',
                 'description' => 'Revenez sur la plateforme et completez votre passage mensuel supporter.',
-                'event_type' => 'supporter_exclusive_community',
+                'event_type' => 'login.daily',
                 'target_count' => 1,
                 'scope' => MissionTemplate::SCOPE_ONCE,
                 'constraints' => ['supporter_only' => true],
                 'rewards' => [
                     'xp' => 80,
-                    'rank_points' => 12,
-                    'reward_points' => 150,
-                    'bet_points' => 0,
+                    'points' => 150,
                 ],
                 'is_active' => true,
             ]

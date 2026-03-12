@@ -279,10 +279,10 @@
         $currentPoints = (int) ($progress->total_rank_points ?? 0);
         $currentXp = (int) ($progress->total_xp ?? 0);
         $nextMin = $nextLeague ? (int) $nextLeague->min_rank_points : null;
-        $gap = $nextMin !== null ? max(0, $nextMin - $currentPoints) : 0;
+        $gap = $nextMin !== null ? max(0, $nextMin - $currentXp) : 0;
         $currentMin = (int) ($progress->league?->min_rank_points ?? 0);
         $denominator = $nextMin !== null ? max(1, $nextMin - $currentMin) : 1;
-        $numerator = max(0, $currentPoints - $currentMin);
+        $numerator = max(0, $currentXp - $currentMin);
         $progressPercent = $nextMin !== null ? (int) min(100, round(($numerator / $denominator) * 100)) : 100;
         $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
         $myAvatar = (string) (($user->avatar_url ?? '') !== '' ? $user->avatar_url : $avatarFallback);
@@ -308,7 +308,7 @@
                     <h2 class="ph-caption-subtitle">Mon classement</h2>
                     <h1 class="ph-caption-title">{{ $currentLeagueName }}</h1>
                     <div class="ph-caption-description max-width-800">
-                        {{ $currentPoints }} points classement - position {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.
+                        {{ $currentXp }} XP - position {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.
                     </div>
                 </div>
             </div>
@@ -349,7 +349,7 @@
                 <header class="lb-me-head tt-anim-fadeinup">
                     <div class="lb-me-title">
                         <h1>Ma ligue: {{ $currentLeagueName }}</h1>
-                        <p>{{ $currentPoints }} points classement et {{ $currentXp }} XP. Position actuelle: {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.</p>
+                        <p>{{ $currentXp }} XP et {{ $currentPoints }} points classement. Position actuelle: {{ $myPosition > 0 ? '#'.$myPosition : 'non classee' }}.</p>
                     </div>
 
                     <div class="lb-me-actions">
@@ -379,7 +379,7 @@
                     </article>
                     <article class="lb-me-kpi tt-anim-fadeinup">
                         <strong>{{ $nextLeague ? $gap : 0 }}</strong>
-                        <span>Points avant {{ $nextLeague?->name ?? 'max ligue' }}</span>
+                        <span>XP avant {{ $nextLeague?->name ?? 'max ligue' }}</span>
                     </article>
                 </section>
 
@@ -410,7 +410,7 @@
                         </div>
                         <div class="lb-me-progress-note">
                             @if($nextLeague)
-                                Encore <strong>{{ $gap }}</strong> points pour atteindre <strong>{{ $nextLeague->name }}</strong>.
+                                Encore <strong>{{ $gap }}</strong> XP pour atteindre <strong>{{ $nextLeague->name }}</strong>.
                             @else
                                 Vous etes deja dans la ligue la plus haute.
                             @endif

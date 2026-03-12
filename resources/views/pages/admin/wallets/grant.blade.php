@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Admin points | ERAH Plateforme')
-@section('meta_description', 'Ajustement manuel du solde paris historique depuis l administration.')
+@section('meta_description', 'Ajustement manuel du portefeuille points plateforme depuis l administration.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -13,13 +13,13 @@
         $search = $search ?? '';
         $users = collect($users ?? []);
         $usersCount = $users->count();
-        $totalBalance = (int) $users->sum(fn ($user) => (int) ($user->wallet->balance ?? 0));
+        $totalBalance = (int) $users->sum(fn ($user) => (int) (optional($user->rewardWallet)->balance ?? 0));
     @endphp
 
     @include('pages.admin.partials.hero', [
         'heroSubtitle' => 'Administration ERAH',
         'heroTitle' => 'Ajuster les points',
-        'heroDescription' => 'Recherche, selection et ajustement manuel du solde paris historique.',
+        'heroDescription' => 'Recherche, selection et ajustement manuel du portefeuille points canonique.',
         'heroMaskDescription' => 'Operations auditees avec cle idempotente.',
     ])
 
@@ -58,7 +58,7 @@
                             </article>
                             <article class="adm-compact-kpi">
                                 <strong>{{ $totalBalance }}</strong>
-                                <span>Solde paris cumule</span>
+                                <span>Solde points cumule</span>
                             </article>
                             <article class="adm-compact-kpi">
                                 <strong>{{ auth()->user()?->name }}</strong>
@@ -83,7 +83,7 @@
                                             '%s (%s) - solde %d',
                                             $selectedUserOption->name,
                                             $selectedUserOption->email,
-                                            (int) ($selectedUserOption->wallet->balance ?? 0)
+                                            (int) (optional($selectedUserOption->rewardWallet)->balance ?? 0)
                                         )
                                         : '';
                                 @endphp
@@ -108,7 +108,7 @@
                                         <option value="">-- choisir --</option>
                                         @foreach($users as $u)
                                             <option value="{{ $u->id }}" {{ (string) old('user_id') === (string) $u->id ? 'selected' : '' }}>
-                                                {{ $u->name }} ({{ $u->email }}) - solde {{ (int) ($u->wallet->balance ?? 0) }}
+                                                {{ $u->name }} ({{ $u->email }}) - solde {{ (int) (optional($u->rewardWallet)->balance ?? 0) }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -132,7 +132,7 @@
                                 </div>
 
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Crediter le solde">Crediter le solde</span>
+                                    <span data-hover="Crediter les points">Crediter les points</span>
                                 </button>
                             </form>
                         </section>
@@ -140,7 +140,7 @@
                         <section class="adm-surface">
                             <div class="tt-heading tt-heading-lg margin-bottom-20">
                                 <h2 class="tt-heading-title tt-text-reveal">Resultats recherche</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Apercu rapide des utilisateurs trouves avec leur solde paris actuel.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Apercu rapide des utilisateurs trouves avec leur solde points actuel.</p>
                             </div>
 
                             @if($usersCount)
@@ -151,7 +151,7 @@
                                             <small>{{ $u->email }}</small>
                                             <div class="adm-row-actions margin-top-10">
                                                 <span class="adm-pill">ID #{{ $u->id }}</span>
-                                                <span class="adm-pill">Solde {{ (int) ($u->wallet->balance ?? 0) }}</span>
+                                                <span class="adm-pill">Solde {{ (int) (optional($u->rewardWallet)->balance ?? 0) }}</span>
                                             </div>
                                         </article>
                                     @endforeach

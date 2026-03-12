@@ -60,7 +60,11 @@ class LeaderboardPageController extends Controller
                 'min_rank_points' => (int) $league->min_rank_points,
                 'players_count' => (int) $entries->count(),
                 'top_name' => (string) ($topEntry['name'] ?? ''),
+                'top_xp' => (int) ($topEntry['total_xp'] ?? 0),
                 'top_rank_points' => (int) ($topEntry['total_rank_points'] ?? 0),
+                'average_xp' => $entries->count() > 0
+                    ? (int) round((float) $entries->avg('total_xp'))
+                    : 0,
                 'average_rank_points' => $entries->count() > 0
                     ? (int) round((float) $entries->avg('total_rank_points'))
                     : 0,
@@ -68,7 +72,7 @@ class LeaderboardPageController extends Controller
         })->values();
 
         $totalPlayers = (int) $leagueCards->sum('players_count');
-        $bestLeague = $leagueCards->sortByDesc('top_rank_points')->first();
+        $bestLeague = $leagueCards->sortByDesc('top_xp')->first();
         $averagePlayersPerLeague = $leagueCards->count() > 0
             ? (int) round($totalPlayers / $leagueCards->count())
             : 0;

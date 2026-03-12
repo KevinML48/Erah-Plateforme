@@ -24,13 +24,10 @@ class EnsureUserProgressAction
                 ->first();
 
             if ($progress) {
-                return $progress->load('league');
+                return $this->syncLeagueFromXp($progress)->load('league');
             }
 
-            $defaultLeague = League::query()
-                ->active()
-                ->orderBy('sort_order')
-                ->first();
+            $defaultLeague = $this->resolveLeagueFromXp(0);
 
             $progress = UserProgress::query()->create([
                 'user_id' => $user->id,
@@ -51,5 +48,45 @@ class EnsureUserProgressAction
 
             return $progress->load('league');
         });
+    }
+
+    private function syncLeagueFromXp(UserProgress $progress): UserProgress
+    {
+        $targetLeague = $this->resolveLeagueFromXp((int) $progress->total_xp);
+        if (! $targetLeague) {
+            return $progress;
+        }
+
+        if ((int) $progress->current_league_id !== (int) $targetLeague->id) {
+            $progress->current_league_id = $targetLeague->id;
+            $progress->save();
+        }
+
+        return $progress;
+    }
+
+    private function resolveLeagueFromXp(int $xp): ?League
+    {
+        $definition = collect((array) config('community.xp_leagues', []))
+            ->sortBy('xp_threshold')
+            ->filter(fn (array $definition): bool => $xp >= (int) ($definition['xp_threshold'] ?? 0))
+            ->last();
+        $leagueKey = is_array($definition) ? (string) ($definition['key'] ?? '') : '';
+
+        if ($leagueKey !== '') {
+            $league = League::query()
+                ->active()
+                ->where('key', $leagueKey)
+                ->first();
+
+            if ($league) {
+                return $league;
+            }
+        }
+
+        return League::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->first();
     }
 }

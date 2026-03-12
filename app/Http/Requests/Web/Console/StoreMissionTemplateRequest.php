@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Web\Console;
 
 use App\Models\MissionTemplate;
+use App\Support\MissionEventTypeRegistry;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +27,7 @@ class StoreMissionTemplateRequest extends FormRequest
             'long_description' => ['nullable', 'string', 'max:12000'],
             'category' => ['nullable', 'string', 'max:60'],
             'type' => ['nullable', 'string', 'max:40'],
-            'event_type' => ['required', 'string', 'max:64'],
+            'event_type' => ['required', 'string', 'max:64', Rule::in(MissionEventTypeRegistry::supported())],
             'target_count' => ['required', 'integer', 'min:1', 'max:100000'],
             'scope' => ['required', 'string', Rule::in(MissionTemplate::scopes())],
             'difficulty' => ['nullable', 'string', 'max:40'],
@@ -47,5 +48,14 @@ class StoreMissionTemplateRequest extends FormRequest
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:100000'],
             'is_active' => ['nullable', 'boolean'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $eventType = MissionEventTypeRegistry::normalize((string) $this->input('event_type'));
+
+        $this->merge([
+            'event_type' => $eventType,
+        ]);
     }
 }

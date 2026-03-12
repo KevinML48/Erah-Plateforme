@@ -95,10 +95,11 @@
 
         .lb-tone-bronze { --lb-tone: #cf8e4d; }
         .lb-tone-argent { --lb-tone: #a7b7c7; }
-        .lb-tone-or { --lb-tone: #f4c35f; }
+        .lb-tone-gold { --lb-tone: #f4c35f; }
         .lb-tone-platine { --lb-tone: #6ee1d8; }
         .lb-tone-diamant { --lb-tone: #80a9ff; }
-        .lb-tone-master { --lb-tone: #ff8db0; }
+        .lb-tone-champion { --lb-tone: #ff8db0; }
+        .lb-tone-erah-prime { --lb-tone: #9c7bff; }
 
         .lb-league-head {
             display: flex;
@@ -232,14 +233,15 @@
         $cards = collect($leagueCards ?? [])->values();
         $maxLeagueMinPoints = max(1, (int) $cards->max('min_rank_points'));
         $bestLeagueName = (string) (($bestLeague['name'] ?? null) ?: '-');
-        $bestLeagueScore = (int) ($bestLeague['top_rank_points'] ?? 0);
+        $bestLeagueScore = (int) ($bestLeague['top_xp'] ?? 0);
         $leagueToneMap = [
             'bronze' => 'lb-tone-bronze',
             'argent' => 'lb-tone-argent',
-            'or' => 'lb-tone-or',
+            'gold' => 'lb-tone-gold',
             'platine' => 'lb-tone-platine',
             'diamant' => 'lb-tone-diamant',
-            'master' => 'lb-tone-master',
+            'champion' => 'lb-tone-champion',
+            'erah-prime' => 'lb-tone-erah-prime',
         ];
     @endphp
 
@@ -272,7 +274,7 @@
                         <h2 class="ph-caption-subtitle">ERAH Ranking</h2>
                         <h1 class="ph-caption-title">Classements</h1>
                         <div class="ph-caption-description max-width-800">
-                            Explorez les ligues de Bronze a Master.
+                            Explorez les ligues de Bronze a ERAH Prime.
                         </div>
                     </div>
                 </div>
@@ -337,7 +339,7 @@
                     </article>
                     <article class="lb-console-kpi tt-anim-fadeinup">
                         <strong>{{ $bestLeagueName }}</strong>
-                        <span>Top score: {{ $bestLeagueScore }} pts</span>
+                        <span>Top score: {{ $bestLeagueScore }} XP</span>
                     </article>
                 </section>
 
@@ -361,15 +363,15 @@
                                         <span>Joueurs</span>
                                     </div>
                                     <div class="lb-league-metric">
-                                        <strong>{{ (int) ($card['average_rank_points'] ?? 0) }}</strong>
-                                        <span>Moyenne</span>
+                                        <strong>{{ (int) ($card['average_xp'] ?? 0) }}</strong>
+                                        <span>Moyenne XP</span>
                                     </div>
                                 </div>
 
                                 <div class="lb-league-meter">
                                     <div class="lb-league-meter-head">
-                                        <span>Seuil entree</span>
-                                        <strong>{{ (int) ($card['min_rank_points'] ?? 0) }} pts</strong>
+                                        <span>Seuil XP</span>
+                                        <strong>{{ (int) ($card['min_rank_points'] ?? 0) }} XP</strong>
                                     </div>
                                     <div class="lb-league-meter-track">
                                         <span style="width: {{ min(100, max(0, $meterPercent)) }}%"></span>

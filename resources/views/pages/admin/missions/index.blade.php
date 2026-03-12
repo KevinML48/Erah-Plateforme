@@ -12,6 +12,7 @@
         $overview = $overview ?? [];
         $filters = $filters ?? ['scope' => 'all', 'status' => 'all', 'category' => '', 'difficulty' => ''];
         $categories = collect($categories ?? []);
+        $eventTypes = collect($eventTypes ?? []);
         $difficultyOptions = ['simple' => 'Simple', 'medium' => 'Moyenne', 'special' => 'Speciale', 'hard' => 'Difficile'];
     @endphp
 
@@ -52,6 +53,13 @@
 
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20"><h2 class="tt-heading-title tt-text-reveal">Creer un template mission</h2><p class="max-width-700 tt-anim-fadeinup text-gray">Format final strict: rewards = xp + points.</p></div>
+                        @if($eventTypes->count())
+                            <datalist id="mission-event-types">
+                                @foreach($eventTypes as $eventTypeOption)
+                                    <option value="{{ $eventTypeOption }}"></option>
+                                @endforeach
+                            </datalist>
+                        @endif
                         <form method="POST" action="{{ route('admin.missions.store') }}" class="tt-form tt-form-creative adm-form">
                             @csrf
                             <div class="adm-form-grid-4">
@@ -59,7 +67,7 @@
                                 <div class="tt-form-group"><label>Key</label><input class="tt-form-control" name="key" value="{{ old('key') }}" required></div>
                                 <div class="tt-form-group"><label>Categorie</label><input class="tt-form-control" name="category" value="{{ old('category', 'community') }}"></div>
                                 <div class="tt-form-group"><label>Type</label><input class="tt-form-control" name="type" value="{{ old('type', 'repeatable') }}"></div>
-                                <div class="tt-form-group"><label>Event type</label><input class="tt-form-control" name="event_type" value="{{ old('event_type', 'clip.comment') }}" required></div>
+                                <div class="tt-form-group"><label>Event type</label><input class="tt-form-control" name="event_type" value="{{ old('event_type', 'clip.comment') }}" list="mission-event-types" required></div>
                                 <div class="tt-form-group"><label>Scope</label><select class="tt-form-control" name="scope" required data-lenis-prevent>@foreach($scopes as $scope)<option value="{{ $scope }}" {{ old('scope') === $scope ? 'selected' : '' }}>{{ $scope }}</option>@endforeach</select></div>
                                 <div class="tt-form-group"><label>Objectif</label><input class="tt-form-control" type="number" name="target_count" min="1" value="{{ old('target_count', 1) }}" required></div>
                                 <div class="tt-form-group"><label>Ordre</label><input class="tt-form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', 0) }}"></div>
@@ -103,7 +111,7 @@
                                                 <div class="tt-form-group"><label>Key</label><input class="tt-form-control" name="key" value="{{ $template->key }}" required></div>
                                                 <div class="tt-form-group"><label>Categorie</label><input class="tt-form-control" name="category" value="{{ $template->category }}"></div>
                                                 <div class="tt-form-group"><label>Type</label><input class="tt-form-control" name="type" value="{{ $template->type }}"></div>
-                                                <div class="tt-form-group"><label>Event type</label><input class="tt-form-control" name="event_type" value="{{ $template->event_type }}" required></div>
+                                                <div class="tt-form-group"><label>Event type</label><input class="tt-form-control" name="event_type" value="{{ $template->event_type }}" list="mission-event-types" required></div>
                                                 <div class="tt-form-group"><label>Scope</label><select class="tt-form-control" name="scope" required data-lenis-prevent>@foreach($scopes as $scope)<option value="{{ $scope }}" {{ $template->scope === $scope ? 'selected' : '' }}>{{ $scope }}</option>@endforeach</select></div>
                                                 <div class="tt-form-group"><label>Objectif</label><input class="tt-form-control" type="number" name="target_count" min="1" value="{{ (int) $template->target_count }}" required></div>
                                                 <div class="tt-form-group"><label>Ordre</label><input class="tt-form-control" type="number" name="sort_order" min="0" value="{{ (int) $template->sort_order }}"></div>

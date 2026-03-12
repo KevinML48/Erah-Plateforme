@@ -320,8 +320,8 @@
         $leagueName = (string) ($leaderboard['league']['name'] ?? strtoupper((string) $leagueKey));
         $leagueMin = (int) ($leaderboard['league']['min_rank_points'] ?? 0);
         $topEntry = $entries->first();
-        $topScore = (int) ($topEntry['total_rank_points'] ?? 0);
-        $averageScore = $entries->count() > 0 ? (int) round((float) $entries->avg('total_rank_points')) : 0;
+        $topXp = (int) ($topEntry['total_xp'] ?? 0);
+        $averageXp = $entries->count() > 0 ? (int) round((float) $entries->avg('total_xp')) : 0;
         $totalXp = (int) $entries->sum('total_xp');
         $topThree = $entries->take(3);
         $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
@@ -344,7 +344,7 @@
                     <h2 class="ph-caption-subtitle">League Board</h2>
                     <h1 class="ph-caption-title">{{ $leagueName }}</h1>
                     <div class="ph-caption-description max-width-800">
-                        {{ $entries->count() }} joueur(s) classes - minimum {{ $leagueMin }} points.
+                        {{ $entries->count() }} joueur(s) classes - minimum {{ $leagueMin }} XP.
                     </div>
                 </div>
             </div>
@@ -385,7 +385,7 @@
                 <header class="lb-view-head tt-anim-fadeinup">
                     <div class="lb-view-title">
                         <h1>{{ $leagueName }}</h1>
-                        <p>Seuil minimum: {{ $leagueMin }} points. {{ $entries->count() }} joueur(s) classes dans cette ligue.</p>
+                        <p>Seuil minimum: {{ $leagueMin }} XP. {{ $entries->count() }} joueur(s) classes dans cette ligue.</p>
                     </div>
 
                     <div class="lb-view-actions">
@@ -420,12 +420,12 @@
                         <span>Joueurs classes</span>
                     </article>
                     <article class="lb-kpi-card tt-anim-fadeinup">
-                        <strong>{{ $topScore }}</strong>
-                        <span>Top rank points</span>
+                        <strong>{{ $topXp }}</strong>
+                        <span>Top XP</span>
                     </article>
                     <article class="lb-kpi-card tt-anim-fadeinup">
-                        <strong>{{ $averageScore }}</strong>
-                        <span>Moyenne rank points</span>
+                        <strong>{{ $averageXp }}</strong>
+                        <span>Moyenne XP</span>
                     </article>
                     <article class="lb-kpi-card tt-anim-fadeinup">
                         <strong>{{ $totalXp }}</strong>

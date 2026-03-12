@@ -16,6 +16,7 @@ class GrantMonthlySupporterRewards
     public function __construct(
         private readonly SupporterAccessResolver $supporterAccessResolver,
         private readonly EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction,
+        private readonly MissionEngine $missionEngine,
         private readonly NotifyAction $notifyAction
     ) {
     }
@@ -73,18 +74,30 @@ class GrantMonthlySupporterRewards
                 ],
             );
         }
+
+        $eventType = MissionTemplate::normalizeEventType(
+            (string) config('supporter.monthly_reward.event_type', 'supporter.monthly')
+        );
+        $eventDate = $rewardMonth->toDateString();
+        $this->missionEngine->recordEvent($user, $eventType, 1, [
+            'event_key' => 'supporter.monthly.'.$user->id.'.'.$eventDate,
+            'date' => $eventDate,
+            'supporter_monthly' => true,
+            'subject_type' => User::class,
+            'subject_id' => (string) $user->id,
+        ]);
     }
 
     private function ensureMonthlyMissionTemplate(): MissionTemplate
     {
         $config = (array) config('supporter.monthly_reward', []);
 
-        return MissionTemplate::query()->firstOrCreate(
+        return MissionTemplate::query()->updateOrCreate(
             ['key' => (string) ($config['mission_key_prefix'] ?? 'supporter-monthly')],
             [
                 'title' => (string) ($config['mission_title'] ?? 'Mission supporter mensuelle'),
                 'description' => (string) ($config['mission_description'] ?? 'Mission supporter mensuelle.'),
-                'event_type' => (string) ($config['event_type'] ?? 'supporter_monthly'),
+                'event_type' => MissionTemplate::normalizeEventType((string) ($config['event_type'] ?? 'supporter.monthly')),
                 'target_count' => (int) ($config['target_count'] ?? 1),
                 'scope' => MissionTemplate::SCOPE_MONTHLY,
                 'constraints' => [
@@ -93,9 +106,7 @@ class GrantMonthlySupporterRewards
                 ],
                 'rewards' => [
                     'xp' => (int) ($config['xp_bonus'] ?? 0),
-                    'rank_points' => (int) ($config['rank_points_bonus'] ?? 0),
-                    'reward_points' => (int) ($config['reward_points_bonus'] ?? 0),
-                    'bet_points' => 0,
+                    'points' => (int) ($config['reward_points_bonus'] ?? 0),
                 ],
                 'is_active' => true,
             ]

@@ -102,6 +102,32 @@
         color: var(--gift-orders-muted);
     }
 
+    body.tt-lightmode-on .gift-orders-page {
+        --gift-orders-border: rgba(148, 163, 184, 0.24);
+        --gift-orders-muted: rgba(51, 65, 85, 0.78);
+    }
+
+    body.tt-lightmode-on .gift-orders-toolbar {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.88));
+        box-shadow: 0 18px 42px rgba(148, 163, 184, 0.16);
+    }
+
+    body.tt-lightmode-on .gift-orders-toolbar input,
+    body.tt-lightmode-on .gift-orders-toolbar select,
+    body.tt-lightmode-on .gift-order-table,
+    body.tt-lightmode-on .gift-orders-empty {
+        background: rgba(255, 255, 255, 0.94);
+    }
+
+    body.tt-lightmode-on .gift-order-table th {
+        color: rgba(71, 85, 105, 0.82);
+    }
+
+    body.tt-lightmode-on .gift-order-status {
+        background: rgba(255, 255, 255, 0.88);
+        color: #0f172a;
+    }
+
     @media (max-width: 991.98px) {
         .gift-orders-toolbar {
             grid-template-columns: 1fr;

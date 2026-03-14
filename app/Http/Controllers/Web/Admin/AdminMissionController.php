@@ -71,7 +71,18 @@ class AdminMissionController extends Controller
                 ->pluck('category'),
             'eventTypes' => MissionEventTypeRegistry::supported(),
             'quizzes' => Quiz::query()->withCount('attempts')->latest('id')->limit(8)->get(),
-            'liveCodes' => LiveCode::query()->withCount('redemptions')->latest('id')->limit(8)->get(),
+            'liveCodes' => LiveCode::query()
+                ->withCount('redemptions')
+                ->with('missionTemplate:id,title,key,event_type')
+                ->latest('id')
+                ->limit(8)
+                ->get(),
+            'liveCodeMissionTemplates' => MissionTemplate::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_discovery')
+                ->orderBy('sort_order')
+                ->orderBy('title')
+                ->get(['id', 'title', 'key', 'event_type', 'scope', 'category']),
             'events' => PlatformEvent::query()->latest('id')->limit(8)->get(),
             'overview' => [
                 'active_templates' => $activeTemplatesCount,

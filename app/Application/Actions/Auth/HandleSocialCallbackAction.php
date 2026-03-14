@@ -22,7 +22,8 @@ class HandleSocialCallbackAction
         string $provider,
         SocialiteUser $providerUser,
         ?string $ipAddress = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
+        ?int $linkToUserId = null
     ): User {
         $provider = Str::lower($provider);
         $providerUserId = trim((string) $providerUser->getId());
@@ -40,7 +41,8 @@ class HandleSocialCallbackAction
             $name,
             $providerUser,
             $ipAddress,
-            $userAgent
+            $userAgent,
+            $linkToUserId
         ) {
             $socialAccount = SocialAccount::query()
                 ->where('provider', $provider)
@@ -48,12 +50,19 @@ class HandleSocialCallbackAction
                 ->lockForUpdate()
                 ->first();
 
-            $user = null;
+            $user = $linkToUserId
+                ? User::query()->whereKey($linkToUserId)->lockForUpdate()->firstOrFail()
+                : null;
             $isNewUser = false;
             $isLinkingExistingUser = false;
+            $isExplicitLink = $user !== null;
+
+            if ($socialAccount && $user && $socialAccount->user_id !== $user->id) {
+                throw new \RuntimeException('Ce compte '.$provider.' est deja lie a un autre membre.');
+            }
 
             if ($socialAccount) {
-                $user = User::query()->lockForUpdate()->findOrFail($socialAccount->user_id);
+                $user ??= User::query()->lockForUpdate()->findOrFail($socialAccount->user_id);
             }
 
             if (! $user && $email) {
@@ -72,7 +81,7 @@ class HandleSocialCallbackAction
                 $isNewUser = true;
             }
 
-            if ($email && $user->email !== $email) {
+            if (! $isExplicitLink && $email && $user->email !== $email) {
                 $existingEmailOwner = User::query()
                     ->where('email', $email)
                     ->where('id', '!=', $user->id)
@@ -83,11 +92,11 @@ class HandleSocialCallbackAction
                 }
             }
 
-            if (! $user->email_verified_at) {
+            if (! $isExplicitLink && ! $user->email_verified_at) {
                 $user->email_verified_at = now();
             }
 
-            if (blank($user->name) || Str::startsWith($user->name, 'discord_') || Str::startsWith($user->name, 'google_')) {
+            if (! $isExplicitLink && (blank($user->name) || Str::startsWith($user->name, 'discord_') || Str::startsWith($user->name, 'google_'))) {
                 $user->name = $name;
             }
 
@@ -116,6 +125,7 @@ class HandleSocialCallbackAction
                     'provider' => $provider,
                     'provider_user_id' => $providerUserId,
                     'linked_existing_user' => $isLinkingExistingUser,
+                    'explicit_link' => $isExplicitLink,
                     'ip_address' => $ipAddress,
                     'user_agent' => $userAgent,
                 ],

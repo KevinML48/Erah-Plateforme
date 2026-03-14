@@ -286,6 +286,82 @@
             background: rgba(255, 255, 255, .02);
         }
 
+        body.tt-lightmode-on .mission-surface,
+        body.tt-lightmode-on .mission-history-card {
+            border-color: rgba(148, 163, 184, .26);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(244, 247, 252, .94));
+            box-shadow: 0 18px 40px rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .mission-summary-kicker,
+        body.tt-lightmode-on .mission-card-kicker,
+        body.tt-lightmode-on .mission-section-note,
+        body.tt-lightmode-on .mission-summary-note,
+        body.tt-lightmode-on .mission-card-description,
+        body.tt-lightmode-on .mission-progress-head,
+        body.tt-lightmode-on .mission-filter-field label,
+        body.tt-lightmode-on .mission-empty {
+            color: rgba(51, 65, 85, .78);
+        }
+
+        body.tt-lightmode-on .mission-summary-value,
+        body.tt-lightmode-on .mission-section-title,
+        body.tt-lightmode-on .mission-card-title {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .mission-pill,
+        body.tt-lightmode-on .mission-status,
+        body.tt-lightmode-on .mission-reward-chip {
+            border-color: rgba(148, 163, 184, .26);
+            background: rgba(255, 255, 255, .88);
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .mission-status.is-completed {
+            border-color: rgba(34, 197, 94, .26);
+            background: rgba(220, 252, 231, .9);
+            color: #166534;
+        }
+
+        body.tt-lightmode-on .mission-status.is-pending,
+        body.tt-lightmode-on .mission-status.is-claimable {
+            border-color: rgba(249, 115, 22, .24);
+            background: rgba(255, 237, 213, .92);
+            color: #9a3412;
+        }
+
+        body.tt-lightmode-on .mission-status.is-expired {
+            border-color: rgba(239, 68, 68, .24);
+            background: rgba(254, 226, 226, .92);
+            color: #991b1b;
+        }
+
+        body.tt-lightmode-on .mission-status.is-locked {
+            border-color: rgba(59, 130, 246, .24);
+            background: rgba(219, 234, 254, .92);
+            color: #1d4ed8;
+        }
+
+        body.tt-lightmode-on .mission-progress-track {
+            background: rgba(148, 163, 184, .18);
+        }
+
+        body.tt-lightmode-on .mission-card-foot {
+            border-top-color: rgba(148, 163, 184, .2);
+        }
+
+        body.tt-lightmode-on .mission-empty {
+            border-color: rgba(148, 163, 184, .28);
+            background: rgba(255, 255, 255, .72);
+        }
+
+        body.tt-lightmode-on .mission-filter-field .tt-form-control {
+            border-color: rgba(148, 163, 184, .28);
+            background: rgba(255, 255, 255, .9);
+            color: #0f172a;
+        }
+
         .mission-pagin-item-disabled {
             opacity: .35;
             pointer-events: none;

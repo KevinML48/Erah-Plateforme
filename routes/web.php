@@ -141,8 +141,6 @@ Route::prefix('app')->middleware('auth')->group(function () {
     Route::get('/live-codes', [LiveCodePageController::class, 'index'])->name('app.live-codes.index');
     Route::post('/live-codes/redeem', [LiveCodePageController::class, 'redeem'])->name('app.live-codes.redeem');
     Route::get('/achievements', AchievementPageController::class)->name('app.achievements.index');
-    Route::get('/shop', [ShopPageController::class, 'index'])->name('app.shop.index');
-    Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('app.shop.purchase');
     Route::get('/duels', [DuelsPageController::class, 'index'])->name('app.duels.index');
     Route::get('/paris', [BetPageController::class, 'index'])->name('app.bets.index');
     Route::delete('/paris/{betId}', [BetPageController::class, 'cancel'])
@@ -487,6 +485,8 @@ Route::get('/index.html', function () {
 });
 Route::get('/faq', fn () => redirect()->to(route('help.index').'#faq-center'))->name('marketing.faq');
 Route::get('/faq.html', fn () => redirect()->to(route('help.index').'#faq-center'));
+Route::view('/boutique', 'marketing.boutique')->name('marketing.boutique');
+Route::view('/boutique.html', 'marketing.boutique');
 Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');
 Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
 Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');

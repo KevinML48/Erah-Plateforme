@@ -330,6 +330,91 @@
             color: rgba(255, 255, 255, .72);
         }
 
+        body.tt-lightmode-on .bet-tab,
+        body.tt-lightmode-on .bet-pill,
+        body.tt-lightmode-on .bet-status-pill {
+            border-color: rgba(148, 163, 184, .28);
+            background: rgba(255, 255, 255, .9);
+            color: rgba(51, 65, 85, .92);
+            box-shadow: 0 12px 26px rgba(148, 163, 184, .12);
+        }
+
+        body.tt-lightmode-on .bet-tab.active {
+            border-color: rgba(216, 7, 7, .45);
+            background: rgba(216, 7, 7, .12);
+            color: #991b1b;
+        }
+
+        body.tt-lightmode-on .bet-tab-count {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .66);
+            color: inherit;
+        }
+
+        body.tt-lightmode-on .bet-summary-card,
+        body.tt-lightmode-on .bet-quick-band,
+        body.tt-lightmode-on .bet-card,
+        body.tt-lightmode-on .bet-learning-card,
+        body.tt-lightmode-on .bet-card-odds,
+        body.tt-lightmode-on .bet-meta-card,
+        body.tt-lightmode-on .bet-empty {
+            border-color: rgba(148, 163, 184, .22);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(248, 250, 252, .88));
+            box-shadow: 0 20px 44px rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .bet-summary-card span,
+        body.tt-lightmode-on .bet-summary-card p,
+        body.tt-lightmode-on .bet-quick-band-kicker,
+        body.tt-lightmode-on .bet-quick-band-text,
+        body.tt-lightmode-on .bet-card-subtitle,
+        body.tt-lightmode-on .bet-card-odds span,
+        body.tt-lightmode-on .bet-meta-card span,
+        body.tt-lightmode-on .bet-meta-card small,
+        body.tt-lightmode-on .bet-card-note,
+        body.tt-lightmode-on .bet-empty,
+        body.tt-lightmode-on .bet-learning-card p {
+            color: rgba(51, 65, 85, .82);
+        }
+
+        body.tt-lightmode-on .bet-summary-card strong,
+        body.tt-lightmode-on .bet-quick-band-title,
+        body.tt-lightmode-on .bet-card-title,
+        body.tt-lightmode-on .bet-card-odds strong,
+        body.tt-lightmode-on .bet-meta-card strong,
+        body.tt-lightmode-on .bet-learning-card h3 {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .bet-summary-card.tone-danger strong {
+            color: #c2410c;
+        }
+
+        body.tt-lightmode-on .bet-summary-card.tone-success strong {
+            color: #166534;
+        }
+
+        body.tt-lightmode-on .bet-status-pill.is-active {
+            color: #9a5800;
+            border-color: rgba(217, 119, 6, .3);
+        }
+
+        body.tt-lightmode-on .bet-status-pill.is-won {
+            color: #166534;
+            border-color: rgba(22, 101, 52, .24);
+        }
+
+        body.tt-lightmode-on .bet-status-pill.is-lost {
+            color: #b91c1c;
+            border-color: rgba(185, 28, 28, .22);
+        }
+
+        body.tt-lightmode-on .bet-status-pill.is-void,
+        body.tt-lightmode-on .bet-status-pill.is-cancelled {
+            color: #1d4ed8;
+            border-color: rgba(29, 78, 216, .22);
+        }
+
         .bet-pagin-item-disabled {
             opacity: .35;
             pointer-events: none;

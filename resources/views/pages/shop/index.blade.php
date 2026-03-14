@@ -46,7 +46,7 @@
                                 <span class="community-pill">{{ (int) $item->cost_points }} points</span>
                                 <span class="community-pill">{{ $item->stock === null ? 'Stock illimite' : 'Stock '.$item->stock }}</span>
                             </div>
-                            <form method="POST" action="{{ request()->routeIs('app.*') ? route('app.shop.purchase', $item->id) : route('shop.purchase', $item->id) }}">
+                            <form method="POST" action="{{ route('shop.purchase', $item->id) }}">
                                 @csrf
                                 <input type="hidden" name="idempotency_key" value="shop-{{ auth()->id() }}-{{ \Illuminate\Support\Str::uuid() }}">
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">

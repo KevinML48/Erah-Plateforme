@@ -279,6 +279,75 @@
             color: rgba(255, 255, 255, .72);
         }
 
+        body.tt-lightmode-on .lb-view-title p,
+        body.tt-lightmode-on .lb-switch-link,
+        body.tt-lightmode-on .lb-kpi-card span,
+        body.tt-lightmode-on .lb-podium-meta,
+        body.tt-lightmode-on .lb-supporter-badge,
+        body.tt-lightmode-on .lb-row-header,
+        body.tt-lightmode-on .lb-value small,
+        body.tt-lightmode-on .lb-empty,
+        body.tt-lightmode-on .lb-you-badge {
+            color: rgba(51, 65, 85, .76);
+        }
+
+        body.tt-lightmode-on .lb-switch,
+        body.tt-lightmode-on .lb-kpi-card,
+        body.tt-lightmode-on .lb-podium-item,
+        body.tt-lightmode-on .lb-board,
+        body.tt-lightmode-on .lb-row-header {
+            border-color: rgba(148, 163, 184, .24);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(244, 247, 252, .94));
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .lb-row {
+            border-bottom-color: rgba(148, 163, 184, .18);
+            background: rgba(255, 255, 255, .72);
+        }
+
+        body.tt-lightmode-on .lb-row.is-me {
+            background: rgba(219, 234, 254, .82);
+        }
+
+        body.tt-lightmode-on .lb-switch-link {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .84);
+        }
+
+        body.tt-lightmode-on .lb-switch-link:hover,
+        body.tt-lightmode-on .lb-switch-link.active {
+            border-color: rgba(59, 130, 246, .34);
+            color: #1d4ed8;
+            background: rgba(219, 234, 254, .92);
+        }
+
+        body.tt-lightmode-on .lb-kpi-card strong,
+        body.tt-lightmode-on .lb-podium-name,
+        body.tt-lightmode-on .lb-user-wrap strong,
+        body.tt-lightmode-on .lb-rank-value,
+        body.tt-lightmode-on .lb-value {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .lb-podium-rank,
+        body.tt-lightmode-on .lb-supporter-badge,
+        body.tt-lightmode-on .lb-you-badge {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .84);
+        }
+
+        body.tt-lightmode-on .lb-podium-avatar,
+        body.tt-lightmode-on .lb-user-avatar {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .84);
+        }
+
+        body.tt-lightmode-on .lb-empty {
+            border-color: rgba(148, 163, 184, .26);
+            background: rgba(255, 255, 255, .76);
+        }
+
         @media (max-width: 1199.98px) {
             .lb-kpi-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));

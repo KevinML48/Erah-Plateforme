@@ -91,6 +91,8 @@
 
 								<li><a href="/mende">Mende</a></li>
 
+								<li><a href="{{ route('marketing.boutique') }}">Boutique</a></li>
+
 								<li><a href="/contact">Postuler</a></li>
 
 							</ul>
@@ -152,4 +154,3 @@
 	</div>
 
 </header>
-

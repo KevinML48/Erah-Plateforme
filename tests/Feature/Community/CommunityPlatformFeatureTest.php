@@ -9,6 +9,7 @@ use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\QuizQuestion;
 use App\Models\User;
+use App\Models\UserMission;
 use App\Models\UserProgress;
 use App\Services\BetService;
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
@@ -190,6 +191,61 @@ class CommunityPlatformFeatureTest extends TestCase
             'user_id' => $user->id,
             'category' => 'live_code',
         ]);
+    }
+
+    public function test_admin_can_link_a_live_code_to_a_mission_and_redemption_progresses_that_mission(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $user = User::factory()->create();
+
+        $template = MissionTemplate::query()->create([
+            'key' => 'mission.live.linked-code',
+            'title' => 'Mission code live ciblee',
+            'short_description' => 'Valider la mission avec un code du direct.',
+            'description' => 'Valider la mission avec un code du direct.',
+            'event_type' => 'clip.view',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'category' => 'live',
+            'type' => 'event',
+            'rewards' => ['xp' => 120, 'points' => 80],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $storeResponse = $this->actingAs($admin)->post(route('admin.live-codes.store'), [
+            'code' => 'MISSIONLIVE',
+            'label' => 'Code mission live',
+            'description' => 'Code du stream pour valider la mission.',
+            'status' => 'published',
+            'reward_points' => 30,
+            'bet_points' => 0,
+            'xp_reward' => 20,
+            'per_user_limit' => 1,
+            'mission_template_id' => $template->id,
+            'expires_at' => now()->addHour()->toDateTimeString(),
+        ]);
+
+        $storeResponse->assertRedirect();
+
+        $liveCode = LiveCode::query()->where('code', 'MISSIONLIVE')->firstOrFail();
+        $this->assertSame($template->id, (int) $liveCode->mission_template_id);
+
+        $redeemResponse = $this->actingAs($user)->post(route('live-codes.redeem'), [
+            'code' => 'MISSIONLIVE',
+        ]);
+
+        $redeemResponse->assertRedirect();
+        $redeemResponse->assertSessionHas('success');
+
+        $mission = UserMission::query()
+            ->where('user_id', $user->id)
+            ->whereHas('instance', fn ($query) => $query->where('mission_template_id', $template->id))
+            ->firstOrFail();
+
+        $this->assertSame(1, (int) $mission->progress_count);
+        $this->assertNotNull($mission->completed_at);
     }
 
     public function test_admin_can_record_duel_result_and_apply_rewards(): void

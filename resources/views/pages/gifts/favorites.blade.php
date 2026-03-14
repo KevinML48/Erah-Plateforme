@@ -102,6 +102,25 @@
         color: var(--gift-favorites-muted);
     }
 
+    body.tt-lightmode-on .gift-favorites-page {
+        --gift-favorites-border: rgba(148, 163, 184, 0.24);
+        --gift-favorites-muted: rgba(51, 65, 85, 0.78);
+    }
+
+    body.tt-lightmode-on .gift-favorites-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.88));
+        box-shadow: 0 20px 46px rgba(148, 163, 184, 0.16);
+    }
+
+    body.tt-lightmode-on .gift-favorites-card h3,
+    body.tt-lightmode-on .gift-favorites-pill {
+        color: #0f172a;
+    }
+
+    body.tt-lightmode-on .gift-favorites-pill {
+        background: rgba(255, 255, 255, 0.88);
+    }
+
     @media (max-width: 1199.98px) {
         .gift-favorites-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,4 +236,3 @@
     <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js"></script>
     <script src="/template/assets/js/theme.js"></script>
 @endsection
-

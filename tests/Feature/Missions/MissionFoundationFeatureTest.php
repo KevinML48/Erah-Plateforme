@@ -600,6 +600,7 @@ class MissionFoundationFeatureTest extends TestCase
             ->get(route('admin.missions.index'))
             ->assertOk()
             ->assertSee('Pilotage missions')
+            ->assertSee('Mission associee')
             ->assertSee('Regenerer la fenetre evenement')
             ->assertSee('Reparer et resynchroniser');
     }

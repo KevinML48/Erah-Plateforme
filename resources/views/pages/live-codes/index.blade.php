@@ -65,6 +65,9 @@
                                 @if((int) $code->bet_points > 0)
                                     <span class="community-pill">+{{ (int) $code->bet_points }} points paris</span>
                                 @endif
+                                @if($code->missionTemplate)
+                                    <span class="community-pill">Mission: {{ $code->missionTemplate->title }}</span>
+                                @endif
                             </div>
                         </article>
                     @endforeach

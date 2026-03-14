@@ -6,6 +6,8 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Auth\HandleSocialCallbackAction;
 use App\Application\Actions\Auth\IssueApiTokenAction;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Services\MissionEngine;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,9 +23,19 @@ class SocialAuthController extends Controller
      */
     private const SUPPORTED_PROVIDERS = ['google', 'discord'];
 
-    public function redirect(string $provider): RedirectResponse
+    public function redirect(Request $request, string $provider): RedirectResponse
     {
         $driver = $this->resolveDriver($provider);
+
+        if ($request->user() && $request->query('intent') === 'link') {
+            $request->session()->put('social_auth.link', [
+                'provider' => $provider,
+                'user_id' => $request->user()->id,
+                'return_route' => (string) $request->query('return_route', 'profile.show'),
+            ]);
+        } else {
+            $request->session()->forget('social_auth.link');
+        }
 
         return $driver->redirect();
     }
@@ -33,28 +45,46 @@ class SocialAuthController extends Controller
         string $provider,
         HandleSocialCallbackAction $handleSocialCallbackAction,
         IssueApiTokenAction $issueApiTokenAction,
-        StoreAuditLogAction $storeAuditLogAction
+        StoreAuditLogAction $storeAuditLogAction,
+        MissionEngine $missionEngine
     ): JsonResponse|RedirectResponse {
         $driver = $this->resolveDriver($provider);
+        $linkContext = $this->resolveLinkContext($request, $provider);
+
         try {
             $socialiteUser = $driver->user();
+            $user = $handleSocialCallbackAction->execute(
+                provider: $provider,
+                providerUser: $socialiteUser,
+                ipAddress: $request->ip(),
+                userAgent: $request->userAgent(),
+                linkToUserId: $linkContext['user_id'],
+            );
         } catch (Throwable $exception) {
             return $this->buildSocialFailureResponse(
                 request: $request,
                 provider: $provider,
                 exception: $exception,
                 storeAuditLogAction: $storeAuditLogAction,
+                returnRoute: $linkContext['return_route'],
             );
         }
 
-        $user = $handleSocialCallbackAction->execute(
-            provider: $provider,
-            providerUser: $socialiteUser,
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-        );
+        $this->emitProfileCompletionIfEligible($user->fresh(['socialAccounts']), $missionEngine);
 
         if (! $request->expectsJson()) {
+            if ($linkContext['user_id'] !== null) {
+                if (! Auth::check() || (int) Auth::id() !== (int) $linkContext['user_id']) {
+                    Auth::loginUsingId((int) $linkContext['user_id'], true);
+                }
+
+                $request->session()->regenerate();
+
+                return redirect()
+                    ->route($linkContext['return_route'])
+                    ->with('success', 'Compte '.$provider.' lie a votre profil.');
+            }
+
             Auth::login($user, true);
             $request->session()->regenerate();
 
@@ -83,7 +113,8 @@ class SocialAuthController extends Controller
         Request $request,
         string $provider,
         Throwable $exception,
-        StoreAuditLogAction $storeAuditLogAction
+        StoreAuditLogAction $storeAuditLogAction,
+        ?string $returnRoute = null
     ): JsonResponse|RedirectResponse {
         $rawMessage = $exception->getMessage();
         $reason = str_contains(strtolower($rawMessage), 'invalid_grant')
@@ -91,8 +122,8 @@ class SocialAuthController extends Controller
             : 'oauth_error';
 
         $hint = $reason === 'invalid_grant'
-            ? 'OAuth code invalide/expire ou redirect URI Google non conforme.'
-            : 'Erreur OAuth durant le callback.';
+            ? 'OAuth code invalide/expire ou redirect URI non conforme.'
+            : ($rawMessage !== '' ? $rawMessage : 'Erreur OAuth durant le callback.');
 
         $storeAuditLogAction->execute(
             action: 'auth.social.failed',
@@ -119,8 +150,64 @@ class SocialAuthController extends Controller
         }
 
         return redirect()
-            ->route('login')
-            ->with('error', 'Echec login '.$provider.': '.$hint);
+            ->route($returnRoute ?: 'login')
+            ->with('error', 'Echec '.$provider.': '.$hint);
+    }
+
+    /**
+     * @return array{user_id:int|null,return_route:string}
+     */
+    private function resolveLinkContext(Request $request, string $provider): array
+    {
+        $payload = $request->session()->pull('social_auth.link');
+
+        if (! is_array($payload) || ($payload['provider'] ?? null) !== $provider) {
+            return ['user_id' => null, 'return_route' => 'profile.show'];
+        }
+
+        $userId = isset($payload['user_id']) ? (int) $payload['user_id'] : null;
+        $returnRoute = (string) ($payload['return_route'] ?? 'profile.show');
+
+        return [
+            'user_id' => $userId > 0 ? $userId : null,
+            'return_route' => $returnRoute !== '' ? $returnRoute : 'profile.show',
+        ];
+    }
+
+    private function emitProfileCompletionIfEligible(User $user, MissionEngine $missionEngine): void
+    {
+        $completion = $this->calculateProfileCompletion($user);
+
+        if ($completion < 75) {
+            return;
+        }
+
+        $missionEngine->recordEvent($user, 'profile.completed', 1, [
+            'event_key' => 'profile.completed.'.$user->id,
+            'profile_completion' => $completion,
+            'subject_type' => User::class,
+            'subject_id' => (string) $user->id,
+        ]);
+    }
+
+    private function calculateProfileCompletion(User $user): int
+    {
+        $hasSocialPresence = ! blank($user->twitter_url)
+            || ! blank($user->instagram_url)
+            || ! blank($user->tiktok_url)
+            || ! blank($user->discord_url)
+            || $user->socialAccounts->contains(fn ($account) => $account->provider === 'discord');
+
+        $checkpoints = [
+            ! blank($user->name),
+            ! blank($user->bio),
+            ! blank($user->avatar_path),
+            $hasSocialPresence,
+        ];
+
+        $completed = count(array_filter($checkpoints));
+
+        return (int) round(($completed / max(1, count($checkpoints))) * 100);
     }
 
     private function resolveDriver(string $provider): mixed

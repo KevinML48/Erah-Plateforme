@@ -155,6 +155,31 @@
         color: var(--gift-cart-muted);
     }
 
+    body.tt-lightmode-on .gift-cart-page {
+        --gift-cart-border: rgba(148, 163, 184, 0.24);
+        --gift-cart-muted: rgba(51, 65, 85, 0.78);
+    }
+
+    body.tt-lightmode-on .gift-cart-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.88));
+        box-shadow: 0 22px 48px rgba(148, 163, 184, 0.16);
+    }
+
+    body.tt-lightmode-on .gift-cart-table th {
+        color: rgba(71, 85, 105, 0.82);
+    }
+
+    body.tt-lightmode-on .gift-cart-table td,
+    body.tt-lightmode-on .gift-cart-gift strong,
+    body.tt-lightmode-on .gift-cart-summary-row {
+        color: #0f172a;
+    }
+
+    body.tt-lightmode-on .gift-cart-input {
+        background: rgba(255, 255, 255, 0.96);
+        color: #0f172a;
+    }
+
     @media (max-width: 1199.98px) {
         .gift-cart-layout {
             grid-template-columns: 1fr;
@@ -350,4 +375,3 @@
     <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js"></script>
     <script src="/template/assets/js/theme.js"></script>
 @endsection
-

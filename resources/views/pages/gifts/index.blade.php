@@ -28,6 +28,14 @@
     .gift-order-head strong { color: #fff; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; }
     .gift-order-status { display: inline-flex; align-items: center; min-height: 30px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
     .gift-order-card p, .gift-favorite-card p { margin: 0; color: rgba(255, 255, 255, 0.74); line-height: 1.7; }
+    body.tt-lightmode-on .gift-catalog-toolbar { border-color: rgba(148, 163, 184, 0.24); background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.88)); box-shadow: 0 20px 44px rgba(148, 163, 184, 0.16); }
+    body.tt-lightmode-on .gift-toolbar-grid input, body.tt-lightmode-on .gift-toolbar-grid select { border-color: rgba(148, 163, 184, 0.28); background: rgba(255, 255, 255, 0.96); color: #0f172a; box-shadow: 0 12px 28px rgba(148, 163, 184, 0.12); }
+    body.tt-lightmode-on .gift-balance-chip { border-color: rgba(148, 163, 184, 0.26); background: rgba(255, 255, 255, 0.9); color: #0f172a; box-shadow: 0 16px 36px rgba(148, 163, 184, 0.16); }
+    body.tt-lightmode-on .gift-card-copy, body.tt-lightmode-on .gift-order-card p, body.tt-lightmode-on .gift-favorite-card p { color: rgba(51, 65, 85, 0.86); }
+    body.tt-lightmode-on .gift-card-foot span, body.tt-lightmode-on .gift-order-status { border-color: rgba(148, 163, 184, 0.26); background: rgba(255, 255, 255, 0.86); color: #334155; }
+    body.tt-lightmode-on .gift-order-card, body.tt-lightmode-on .gift-favorite-card { border-color: rgba(148, 163, 184, 0.24); background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.88)); box-shadow: 0 18px 42px rgba(148, 163, 184, 0.16); }
+    body.tt-lightmode-on .gift-order-head strong { color: #0f172a; }
+    body.tt-lightmode-on .gift-card-warning { color: #9a5800; }
     @media (max-width: 1199.98px) { .gift-toolbar-grid { grid-template-columns: 1fr 1fr; } .gift-toolbar-grid .tt-btn { width: 100%; } }
     @media (max-width: 767.98px) { .gift-toolbar-grid { grid-template-columns: 1fr; } }
 </style>

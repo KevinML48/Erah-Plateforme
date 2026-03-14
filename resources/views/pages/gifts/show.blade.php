@@ -253,6 +253,54 @@
         background: rgba(219, 8, 18, 0.08);
     }
 
+    body.tt-lightmode-on .gift-detail-page {
+        --gift-border: rgba(148, 163, 184, 0.24);
+        --gift-text-muted: rgba(51, 65, 85, 0.82);
+        --gift-card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.9));
+    }
+
+    body.tt-lightmode-on .gift-detail-surface,
+    body.tt-lightmode-on .gift-detail-usp-card,
+    body.tt-lightmode-on .gift-detail-metric,
+    body.tt-lightmode-on .gift-detail-state,
+    body.tt-lightmode-on .gift-detail-latest,
+    body.tt-lightmode-on .gift-detail-history-item,
+    body.tt-lightmode-on .gift-detail-side-card,
+    body.tt-lightmode-on .gift-detail-wallet-highlight {
+        box-shadow: 0 24px 52px rgba(148, 163, 184, 0.16);
+    }
+
+    body.tt-lightmode-on .gift-detail-pill,
+    body.tt-lightmode-on .gift-detail-visual-badge {
+        background: rgba(255, 255, 255, 0.9);
+        color: #0f172a;
+    }
+
+    body.tt-lightmode-on .gift-detail-panel h2,
+    body.tt-lightmode-on .gift-detail-usp-card strong,
+    body.tt-lightmode-on .gift-detail-metric strong,
+    body.tt-lightmode-on .gift-detail-state strong,
+    body.tt-lightmode-on .gift-detail-section-heading h3,
+    body.tt-lightmode-on .gift-detail-history-top strong,
+    body.tt-lightmode-on .gift-detail-wallet-highlight strong {
+        color: #0f172a;
+    }
+
+    body.tt-lightmode-on .gift-detail-visual-stage {
+        border-color: rgba(148, 163, 184, 0.22);
+        background:
+            radial-gradient(circle at 18% 20%, rgba(219, 8, 18, 0.18), transparent 38%),
+            radial-gradient(circle at 82% 78%, rgba(15, 23, 42, 0.05), transparent 32%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.36), rgba(226, 232, 240, 0.56));
+    }
+
+    body.tt-lightmode-on .gift-detail-visual-copy p,
+    body.tt-lightmode-on .gift-detail-history-meta,
+    body.tt-lightmode-on .gift-detail-empty,
+    body.tt-lightmode-on .gift-detail-empty p {
+        color: rgba(51, 65, 85, 0.82);
+    }
+
     .gift-detail-state strong {
         display: block;
         margin-bottom: 8px;

@@ -182,6 +182,32 @@
         line-height: 1.65;
     }
 
+    body.tt-lightmode-on .gift-order-detail-page {
+        --gift-order-border: rgba(148, 163, 184, 0.24);
+        --gift-order-muted: rgba(51, 65, 85, 0.78);
+    }
+
+    body.tt-lightmode-on .gift-order-card,
+    body.tt-lightmode-on .gift-order-meta-item,
+    body.tt-lightmode-on .gift-order-info,
+    body.tt-lightmode-on .gift-order-step,
+    body.tt-lightmode-on .gift-order-event {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.88));
+        box-shadow: 0 18px 42px rgba(148, 163, 184, 0.16);
+    }
+
+    body.tt-lightmode-on .gift-order-head h2,
+    body.tt-lightmode-on .gift-order-meta-item strong,
+    body.tt-lightmode-on .gift-order-step strong,
+    body.tt-lightmode-on .gift-order-event-head strong {
+        color: #0f172a;
+    }
+
+    body.tt-lightmode-on .gift-order-status {
+        background: rgba(255, 255, 255, 0.88);
+        color: #0f172a;
+    }
+
     @media (max-width: 1199.98px) {
         .gift-order-layout {
             grid-template-columns: 1fr;

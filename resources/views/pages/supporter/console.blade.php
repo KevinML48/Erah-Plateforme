@@ -87,6 +87,30 @@
             font-size: 12px;
             color: #ffd86b;
         }
+        body.tt-lightmode-on .supporter-console-card,
+        body.tt-lightmode-on .supporter-console-kpi,
+        body.tt-lightmode-on .supporter-reward-item,
+        body.tt-lightmode-on .supporter-mission-item,
+        body.tt-lightmode-on .supporter-campaign-item,
+        body.tt-lightmode-on .supporter-campaign-option,
+        body.tt-lightmode-on .supporter-console-badge-card,
+        body.tt-lightmode-on .supporter-console-highlight-item {
+            border-color: rgba(148, 163, 184, .26);
+            background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
+            box-shadow: 0 18px 36px rgba(148, 163, 184, .16);
+        }
+        body.tt-lightmode-on .supporter-console-kpi span,
+        body.tt-lightmode-on .supporter-console-badge-label,
+        body.tt-lightmode-on .supporter-console-muted {
+            color: rgba(51, 65, 85, .78);
+        }
+        body.tt-lightmode-on .supporter-console-badge-value,
+        body.tt-lightmode-on .supporter-console-kpi strong {
+            color: #0f172a;
+        }
+        body.tt-lightmode-on .supporter-console-highlight-item strong {
+            color: #9a3412;
+        }
         @media (max-width: 1199.98px) {
             .supporter-console-grid { grid-template-columns: 1fr; }
             .supporter-console-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }

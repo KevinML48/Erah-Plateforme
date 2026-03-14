@@ -115,6 +115,7 @@ class GuestPlatformAccessTest extends TestCase
         $this->get(route('duels.index'))->assertRedirect($loginUrl);
         $this->get(route('clips.favorites'))->assertRedirect($loginUrl);
         $this->get(route('shop.index'))->assertRedirect($loginUrl);
+        $this->get('/app/shop')->assertNotFound();
     }
 
     public function test_guest_viewing_a_clip_never_receives_rewards(): void

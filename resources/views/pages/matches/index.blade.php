@@ -179,6 +179,49 @@
             pointer-events: none;
         }
 
+        body.tt-lightmode-on .match-tab {
+            border-color: rgba(148,163,184,.28);
+            background: rgba(255,255,255,.9);
+            color: rgba(51,65,85,.9);
+            box-shadow: 0 12px 26px rgba(148,163,184,.12);
+        }
+
+        body.tt-lightmode-on .match-tab.active {
+            background: rgba(216,7,7,.1);
+            border-color: rgba(216,7,7,.36);
+            color: #991b1b;
+        }
+
+        body.tt-lightmode-on .match-tab-count,
+        body.tt-lightmode-on .match-pill {
+            border-color: rgba(148,163,184,.24);
+            background: rgba(255,255,255,.78);
+            color: inherit;
+        }
+
+        body.tt-lightmode-on .match-index-kpi,
+        body.tt-lightmode-on .match-event-card,
+        body.tt-lightmode-on .match-meta-card,
+        body.tt-lightmode-on .match-empty {
+            border-color: rgba(148,163,184,.22);
+            background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(248,250,252,.88));
+            box-shadow: 0 20px 44px rgba(148,163,184,.16);
+        }
+
+        body.tt-lightmode-on .match-index-kpi strong,
+        body.tt-lightmode-on .match-section-title,
+        body.tt-lightmode-on .match-event-title,
+        body.tt-lightmode-on .match-meta-card strong {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .match-index-kpi span,
+        body.tt-lightmode-on .match-event-subtitle,
+        body.tt-lightmode-on .match-meta-card span,
+        body.tt-lightmode-on .match-empty {
+            color: rgba(51,65,85,.82);
+        }
+
         @media (max-width: 1199.98px) {
             .match-toolbar-grid,
             .match-index-kpis,

@@ -153,6 +153,53 @@ class AuthApiTest extends TestCase
         ]);
     }
 
+    public function test_authenticated_user_can_link_discord_account_from_profile(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'player-profile@example.com',
+            'name' => 'Profile Player',
+        ]);
+
+        $this->mockSocialiteProvider('discord', [
+            'id' => 'discord-link-321',
+            'email' => 'other-discord@example.com',
+            'name' => 'Discord Link',
+            'avatar' => 'https://cdn.example.com/avatar-discord-link.png',
+            'token' => 'plain-discord-link-token',
+            'refresh_token' => 'plain-discord-link-refresh',
+            'expires_in' => 3600,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->withSession([
+                'social_auth.link' => [
+                    'provider' => 'discord',
+                    'user_id' => $user->id,
+                    'return_route' => 'profile.show',
+                ],
+            ])
+            ->get('/auth/discord/callback');
+
+        $response->assertRedirect(route('profile.show'));
+        $response->assertSessionHas('success', 'Compte discord lie a votre profil.');
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(1, User::query()->count());
+
+        $this->assertDatabaseHas('social_accounts', [
+            'user_id' => $user->id,
+            'provider' => 'discord',
+            'provider_user_id' => 'discord-link-321',
+            'email' => 'other-discord@example.com',
+        ]);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'auth.social.linked',
+            'actor_id' => $user->id,
+            'actor_type' => User::class,
+        ]);
+    }
+
     public function test_admin_user_seeder_is_idempotent_and_audited(): void
     {
         Artisan::call('db:seed', ['--class' => AdminUserSeeder::class]);

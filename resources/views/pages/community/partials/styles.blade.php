@@ -140,6 +140,41 @@
         color: rgba(255, 255, 255, .7);
     }
 
+    body.tt-lightmode-on .community-head p {
+        color: rgba(15, 23, 42, .68);
+    }
+
+    body.tt-lightmode-on .community-kpi,
+    body.tt-lightmode-on .community-card,
+    body.tt-lightmode-on .community-surface {
+        border-color: rgba(148, 163, 184, .28);
+        background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(244, 247, 252, .94));
+        box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
+    }
+
+    body.tt-lightmode-on .community-kpi span,
+    body.tt-lightmode-on .community-pill,
+    body.tt-lightmode-on .community-table th,
+    body.tt-lightmode-on .community-empty {
+        color: rgba(51, 65, 85, .74);
+    }
+
+    body.tt-lightmode-on .community-pill {
+        border-color: rgba(148, 163, 184, .28);
+        background: rgba(255, 255, 255, .84);
+    }
+
+    body.tt-lightmode-on .community-table th,
+    body.tt-lightmode-on .community-table td,
+    body.tt-lightmode-on .community-table tr {
+        border-color: rgba(148, 163, 184, .22);
+    }
+
+    body.tt-lightmode-on .community-empty {
+        border-color: rgba(148, 163, 184, .28);
+        background: rgba(255, 255, 255, .72);
+    }
+
     @media (max-width: 1199.98px) {
         .community-kpis {
             grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -25,6 +25,11 @@ return [
             'route' => 'app.matches.index',
             'requires_auth' => false,
         ],
+        'boutique' => [
+            'label' => 'Boutique',
+            'route' => 'marketing.boutique',
+            'requires_auth' => false,
+        ],
         'missions' => [
             'label' => 'Missions',
             'route' => 'app.missions.index',
@@ -72,4 +77,3 @@ return [
         'profil',
     ],
 ];
-

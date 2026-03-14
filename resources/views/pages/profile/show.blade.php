@@ -69,6 +69,140 @@
             align-items: center;
         }
 
+        .profile-connected-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .profile-connected-card {
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 14px;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .profile-connected-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-connected-provider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-connected-provider i {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .04);
+            font-size: 18px;
+        }
+
+        .profile-connected-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-connected-status.is-linked {
+            border-color: rgba(91, 214, 143, .44);
+            color: #d6ffe6;
+        }
+
+        .profile-connected-copy {
+            margin: 12px 0 0;
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.55;
+        }
+
+        .profile-connected-meta {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 14px;
+            color: rgba(255, 255, 255, .68);
+            font-size: 13px;
+        }
+
+        .profile-field-note {
+            display: block;
+            margin-top: 8px;
+            color: rgba(255, 255, 255, .62);
+            line-height: 1.45;
+        }
+
+        body.tt-lightmode-on .profile-form-card,
+        body.tt-lightmode-on .profile-side-card,
+        body.tt-lightmode-on .profile-kpi-card,
+        body.tt-lightmode-on .profile-shortcut-card,
+        body.tt-lightmode-on .profile-mission-card,
+        body.tt-lightmode-on .profile-connected-card {
+            border-color: rgba(148, 163, 184, .24);
+            background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .profile-avatar,
+        body.tt-lightmode-on .profile-connected-provider i {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255,255,255,.84);
+        }
+
+        body.tt-lightmode-on .profile-avatar-upload .tt-file-info,
+        body.tt-lightmode-on .profile-security-note,
+        body.tt-lightmode-on .profile-history-extra,
+        body.tt-lightmode-on .profile-history-story,
+        body.tt-lightmode-on .profile-review-counter,
+        body.tt-lightmode-on .profile-review-note,
+        body.tt-lightmode-on .profile-mission-description,
+        body.tt-lightmode-on .profile-connected-copy,
+        body.tt-lightmode-on .profile-connected-meta,
+        body.tt-lightmode-on .profile-field-note {
+            color: rgba(51, 65, 85, .76);
+        }
+
+        body.tt-lightmode-on .profile-shortcut-url {
+            color: rgba(71, 85, 105, .72);
+        }
+
+        body.tt-lightmode-on .profile-shortcut-badge,
+        body.tt-lightmode-on .profile-shortcut-count,
+        body.tt-lightmode-on .profile-history-kind,
+        body.tt-lightmode-on .profile-review-status,
+        body.tt-lightmode-on .profile-review-counter,
+        body.tt-lightmode-on .profile-mission-kicker,
+        body.tt-lightmode-on .profile-mission-pill,
+        body.tt-lightmode-on .profile-mission-status,
+        body.tt-lightmode-on .profile-connected-status {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255,255,255,.84);
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .profile-connected-status.is-linked,
+        body.tt-lightmode-on .profile-history-kind.is-xp,
+        body.tt-lightmode-on .profile-review-status.is-published,
+        body.tt-lightmode-on .profile-mission-status.is-completed {
+            border-color: rgba(34, 197, 94, .24);
+            background: rgba(220, 252, 231, .88);
+            color: #166534;
+        }
+
         .profile-shortcut-card {
             border: 1px solid rgba(255, 255, 255, .12);
             border-radius: 10px;
@@ -540,10 +674,17 @@
         $isPublicApp = request()->routeIs('app.*');
         $historyRouteName = $isPublicApp ? 'app.profile.transactions' : 'profile.transactions';
         $deleteRouteName = $isPublicApp ? 'app.profile.destroy' : 'profile.destroy';
+        $profileReturnRoute = $isPublicApp ? 'app.profile' : 'profile.show';
         $supporterProfile = $supporterProfile ?? null;
         $supporterSummary = $supporterSummary ?? [];
         $currentShortcuts = $currentShortcuts ?? [];
         $availableShortcuts = $availableShortcuts ?? [];
+        $socialConnections = $socialConnections ?? collect();
+        $discordConnection = $socialConnections->get('discord');
+        $discordLinkUrl = url('/auth/discord/redirect?'.http_build_query([
+            'intent' => 'link',
+            'return_route' => $profileReturnRoute,
+        ]));
         $oldShortcutKeys = old('shortcuts');
         $selectedShortcutKeys = is_array($oldShortcutKeys)
             ? array_values(array_unique(array_map('strval', $oldShortcutKeys)))
@@ -693,8 +834,11 @@
                                 </div>
                                 <div class="tt-col-lg-6">
                                     <div class="tt-form-group">
-                                        <label for="discord_url">Discord</label>
+                                        <label for="discord_url">Discord public</label>
                                         <input class="tt-form-control" id="discord_url" name="discord_url" type="url" value="{{ old('discord_url', $user->discord_url) }}" placeholder="https://discord.gg/...">
+                                        <small class="tt-form-text profile-field-note">
+                                            Ce champ affiche seulement un lien public sur votre profil. Pour relier votre vrai compte Discord a ERAH, utilisez le bloc "Comptes connectes".
+                                        </small>
                                     </div>
                                 </div>
                             </div>
@@ -776,6 +920,54 @@
                             <div class="profile-kpi-card">
                                 <span class="profile-kpi-value">{{ (int) ($stats['bets'] ?? 0) }}</span>
                                 <span class="tt-form-text">Bets</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-side-card margin-top-30">
+                            <h5 class="margin-bottom-10">Comptes connectes</h5>
+                            <p class="profile-security-note">
+                                Reliez ici votre vrai compte Discord. Cela est distinct du lien public affiche sur votre profil et permet d'utiliser les parcours sociaux et les missions associees.
+                            </p>
+
+                            <div class="profile-connected-grid">
+                                <article class="profile-connected-card">
+                                    <div class="profile-connected-head">
+                                        <div class="profile-connected-provider">
+                                            <i class="fa-brands fa-discord"></i>
+                                            <span>Discord</span>
+                                        </div>
+                                        <span class="profile-connected-status {{ $discordConnection ? 'is-linked' : '' }}">
+                                            {{ $discordConnection ? 'Compte lie' : 'Non lie' }}
+                                        </span>
+                                    </div>
+
+                                    <p class="profile-connected-copy">
+                                        @if($discordConnection)
+                                            Votre compte Discord est deja relie a ce profil. Vous pouvez le reconnecter si vous souhaitez rafraichir la liaison.
+                                        @else
+                                            Reliez votre compte Discord pour debloquer les parcours qui demandent une vraie connexion de compte, sans exposer vos identifiants sur le profil public.
+                                        @endif
+                                    </p>
+
+                                    @if($discordConnection)
+                                        <div class="profile-connected-meta">
+                                            @if($discordConnection->email)
+                                                <span class="profile-assistant-pill">{{ $discordConnection->email }}</span>
+                                            @endif
+                                            <span class="profile-assistant-pill">
+                                                Derniere liaison: {{ optional($discordConnection->updated_at)->format('d/m/Y H:i') }}
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    <div class="profile-inline-actions margin-top-20">
+                                        <a href="{{ $discordLinkUrl }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                            <span data-hover="{{ $discordConnection ? 'Reconnecter Discord' : 'Lier mon compte Discord' }}">
+                                                {{ $discordConnection ? 'Reconnecter Discord' : 'Lier mon compte Discord' }}
+                                            </span>
+                                        </a>
+                                    </div>
+                                </article>
                             </div>
                         </div>
 

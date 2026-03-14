@@ -52,6 +52,7 @@ class MissionTrackingService
         $this->ensureCurrentMissionInstancesAction->execute($user);
 
         $completed = DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
+            $linkedMissionTemplateId = max(0, (int) ($context['linked_mission_template_id'] ?? 0));
             $event = MissionEventRecord::query()
                 ->where('user_id', $user->id)
                 ->where('event_key', $eventKey)
@@ -88,6 +89,30 @@ class MissionTrackingService
                 ->with(['instance.template', 'completion'])
                 ->lockForUpdate()
                 ->get();
+
+            if ($linkedMissionTemplateId > 0 && ! $missions->contains(function (UserMission $mission) use ($linkedMissionTemplateId): bool {
+                return (int) ($mission->instance?->mission_template_id ?? 0) === $linkedMissionTemplateId;
+            })) {
+                $linkedMission = UserMission::query()
+                    ->where('user_id', $user->id)
+                    ->whereNull('completed_at')
+                    ->where(function (Builder $query): void {
+                        $query->whereNull('expired_at')->orWhere('expired_at', '>', now());
+                    })
+                    ->whereHas('instance', function (Builder $query) use ($linkedMissionTemplateId): void {
+                        $query->where('period_start', '<=', now())
+                            ->where('period_end', '>=', now())
+                            ->where('mission_template_id', $linkedMissionTemplateId);
+                    })
+                    ->with(['instance.template', 'completion'])
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($linkedMission) {
+                    $missions->push($linkedMission);
+                    $missions = $missions->unique('id')->values();
+                }
+            }
 
             $completed = collect();
 
@@ -379,7 +404,7 @@ class MissionTrackingService
             'duel.win',
             'quiz.attempt',
             'quiz.pass',
-            'live_code.redeem',
+            'live.code.redeem',
             'gift.redeemed',
             'shop.purchase',
         ];

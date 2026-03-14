@@ -122,6 +122,8 @@ class LiveCodeService
                 'event_key' => 'live_code.redeem.'.$redemption->id,
                 'subject_type' => LiveCode::class,
                 'subject_id' => (string) $liveCode->id,
+                'live_code_id' => $liveCode->id,
+                'linked_mission_template_id' => $liveCode->mission_template_id,
             ]);
             $this->achievementService->sync($user);
             $this->notifyAction->execute(

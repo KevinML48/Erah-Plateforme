@@ -335,6 +335,63 @@
         .supporter-campaign-clips { display: grid; gap: 10px; margin-top: 14px; }
         .supporter-campaign-clip { display: flex; align-items: center; gap: 10px; }
         .supporter-campaign-clip img { width: 72px; height: 50px; object-fit: cover; border-radius: 10px; }
+        body.tt-lightmode-on .supporter-card,
+        body.tt-lightmode-on .supporter-plan-card,
+        body.tt-lightmode-on .supporter-pricing-fill,
+        body.tt-lightmode-on .supporter-note-tile,
+        body.tt-lightmode-on .supporter-side-panel,
+        body.tt-lightmode-on .supporter-side-tile,
+        body.tt-lightmode-on .supporter-side-fill,
+        body.tt-lightmode-on .supporter-side-fill-item,
+        body.tt-lightmode-on .supporter-pricing-fill-item,
+        body.tt-lightmode-on .supporter-benefit-card,
+        body.tt-lightmode-on .supporter-campaign-card,
+        body.tt-lightmode-on .supporter-wall-item,
+        body.tt-lightmode-on .supporter-kpi,
+        body.tt-lightmode-on .supporter-plan-details li {
+            border-color: rgba(148, 163, 184, .26);
+            background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
+        }
+        body.tt-lightmode-on .supporter-plan-card.is-recommended {
+            border-color: rgba(216, 7, 7, .26);
+            background: linear-gradient(180deg, rgba(255, 241, 241, .98), rgba(255,255,255,.94));
+            box-shadow: inset 0 0 0 1px rgba(216, 7, 7, .08), 0 22px 42px rgba(216, 7, 7, .10);
+        }
+        body.tt-lightmode-on .supporter-plan-tag,
+        body.tt-lightmode-on .supporter-badge,
+        body.tt-lightmode-on .supporter-note-tile strong,
+        body.tt-lightmode-on .supporter-side-fill-item span,
+        body.tt-lightmode-on .supporter-pricing-fill-item span,
+        body.tt-lightmode-on .supporter-kpi span {
+            color: rgba(51, 65, 85, .78);
+            border-color: rgba(148, 163, 184, .24);
+        }
+        body.tt-lightmode-on .supporter-plan-price span,
+        body.tt-lightmode-on .supporter-plan-meta,
+        body.tt-lightmode-on .supporter-note-tile span,
+        body.tt-lightmode-on .supporter-side-panel p,
+        body.tt-lightmode-on .supporter-benefit-card p {
+            color: rgba(51, 65, 85, .80);
+        }
+        body.tt-lightmode-on .supporter-plan-details strong,
+        body.tt-lightmode-on .supporter-pricing-fill-item strong,
+        body.tt-lightmode-on .supporter-side-fill-item strong,
+        body.tt-lightmode-on .supporter-side-tile strong,
+        body.tt-lightmode-on .supporter-side-tile span,
+        body.tt-lightmode-on .supporter-benefit-card h4,
+        body.tt-lightmode-on .supporter-kpi strong {
+            color: #0f172a;
+        }
+        body.tt-lightmode-on .supporter-plan-tag.is-saving,
+        body.tt-lightmode-on .supporter-badge.is-progress {
+            background: rgba(255, 237, 213, .9);
+            color: #9a3412;
+        }
+        body.tt-lightmode-on .supporter-progress-line {
+            background: rgba(148, 163, 184, .16);
+            border-color: rgba(148, 163, 184, .2);
+        }
         @media (max-width: 1199.98px) {
             .supporter-overview,
             .supporter-campaign-grid { grid-template-columns: 1fr; }

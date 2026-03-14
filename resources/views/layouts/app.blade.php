@@ -37,11 +37,13 @@
             ['label' => 'Classements', 'href' => route('leaderboards.index'), 'active' => request()->routeIs('leaderboards.*') || request()->routeIs('ranking.*')],
             ['label' => 'Missions', 'href' => route('missions.index'), 'active' => request()->routeIs('missions.*')],
             ['label' => 'Cadeaux', 'href' => route('gifts.index'), 'active' => request()->routeIs('gifts.*')],
+            ['label' => 'Boutique', 'href' => route('marketing.boutique'), 'active' => request()->routeIs('marketing.boutique')],
             ['label' => 'Duels', 'href' => route('duels.index'), 'active' => request()->routeIs('duels.*')],
         ]
         : [
             ['label' => 'Accueil site', 'href' => route('marketing.index'), 'active' => request()->routeIs('marketing.*')],
             ['label' => 'Explorer la plateforme', 'href' => route('app.leaderboards.index'), 'active' => request()->routeIs('app.*')],
+            ['label' => 'Boutique', 'href' => route('marketing.boutique'), 'active' => request()->routeIs('marketing.boutique')],
         ];
     $adminLinks = $isAdmin
         ? [

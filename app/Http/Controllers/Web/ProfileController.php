@@ -51,6 +51,11 @@ class ProfileController extends Controller
         $supporterProfile = $supporterAccessResolver->ensurePublicProfile($user);
         $supporterSummary = $supporterAccessResolver->summary($user);
         $missionPayload = $missionCatalogService->dashboardPayload($user);
+        $socialConnections = $user->socialAccounts()
+            ->whereIn('provider', ['discord', 'google'])
+            ->orderBy('provider')
+            ->get()
+            ->keyBy('provider');
         $assistantFavorites = Schema::hasTable('assistant_favorites')
             ? $user->assistantFavorites()
                 ->latest('id')
@@ -73,6 +78,7 @@ class ProfileController extends Controller
             'supporterSummary' => $supporterSummary,
             'missionFocusCards' => collect($missionPayload['focus']),
             'missionSummary' => $missionPayload['summary'],
+            'socialConnections' => $socialConnections,
             'assistantFavorites' => $assistantFavorites,
         ]);
     }
@@ -354,7 +360,11 @@ class ProfileController extends Controller
             ! blank($user->name),
             ! blank($user->bio),
             ! blank($user->avatar_path),
-            ! blank($user->twitter_url) || ! blank($user->instagram_url) || ! blank($user->tiktok_url) || ! blank($user->discord_url),
+            ! blank($user->twitter_url)
+                || ! blank($user->instagram_url)
+                || ! blank($user->tiktok_url)
+                || ! blank($user->discord_url)
+                || $user->socialAccounts()->where('provider', 'discord')->exists(),
         ];
 
         $completed = count(array_filter($checkpoints));

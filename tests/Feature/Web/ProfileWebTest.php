@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Web;
 
+use App\Models\SocialAccount;
 use App\Models\User;
 use Database\Seeders\LeagueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -82,5 +83,41 @@ class ProfileWebTest extends TestCase
         $this->actingAs($viewer)->get(route('users.public', $user))
             ->assertOk()
             ->assertSee('Public Player');
+    }
+
+    public function test_profile_page_offers_a_real_discord_link_button(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('profile.show'));
+
+        $response->assertOk();
+        $response->assertSee('Discord public');
+        $response->assertSee('Lier mon compte Discord');
+        $response->assertSee('/auth/discord/redirect?intent=link&amp;return_route=profile.show', false);
+    }
+
+    public function test_profile_page_shows_when_discord_is_already_linked(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create();
+
+        SocialAccount::query()->create([
+            'user_id' => $user->id,
+            'provider' => 'discord',
+            'provider_user_id' => 'discord-profile-999',
+            'email' => 'linked-discord@example.com',
+            'avatar_url' => 'https://cdn.example.com/discord-profile.png',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('profile.show'));
+
+        $response->assertOk();
+        $response->assertSee('Compte lie');
+        $response->assertSee('Reconnecter Discord');
+        $response->assertSee('linked-discord@example.com');
     }
 }

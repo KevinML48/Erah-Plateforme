@@ -206,6 +206,44 @@
             color: rgba(255, 255, 255, .74);
         }
 
+        body.tt-lightmode-on .lb-console-title p,
+        body.tt-lightmode-on .lb-console-kpi span,
+        body.tt-lightmode-on .lb-league-key,
+        body.tt-lightmode-on .lb-league-metric span,
+        body.tt-lightmode-on .lb-league-meter-head,
+        body.tt-lightmode-on .lb-league-champion,
+        body.tt-lightmode-on .lb-empty {
+            color: rgba(51, 65, 85, .76);
+        }
+
+        body.tt-lightmode-on .lb-console-kpi,
+        body.tt-lightmode-on .lb-league-card,
+        body.tt-lightmode-on .lb-league-metric {
+            border-color: rgba(148, 163, 184, .24);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(244, 247, 252, .94));
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .lb-console-kpi strong,
+        body.tt-lightmode-on .lb-league-name,
+        body.tt-lightmode-on .lb-league-metric strong {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .lb-league-key {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .84);
+        }
+
+        body.tt-lightmode-on .lb-league-meter-track {
+            background: rgba(148, 163, 184, .16);
+        }
+
+        body.tt-lightmode-on .lb-empty {
+            border-color: rgba(148, 163, 184, .26);
+            background: rgba(255, 255, 255, .76);
+        }
+
         @media (max-width: 1199.98px) {
             .lb-console-kpis {
                 grid-template-columns: repeat(2, minmax(0, 1fr));

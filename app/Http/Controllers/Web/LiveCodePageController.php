@@ -15,6 +15,7 @@ class LiveCodePageController extends Controller
     {
         $codes = LiveCode::query()
             ->redeemable()
+            ->with('missionTemplate:id,title,key')
             ->withCount('redemptions')
             ->latest('id')
             ->paginate(12)
@@ -38,10 +39,15 @@ class LiveCodePageController extends Controller
             return back()->with('error', $exception->getMessage());
         }
 
-        return back()->with(
-            'success',
-            'Code valide: +'.$redemption->xp_reward.' XP / +'.$redemption->reward_points.' points'
-            .($redemption->bet_points > 0 ? ' / +'.$redemption->bet_points.' points paris' : '')
-        );
+        $redemption->load('liveCode.missionTemplate');
+
+        $success = 'Code valide: +'.$redemption->xp_reward.' XP / +'.$redemption->reward_points.' points'
+            .($redemption->bet_points > 0 ? ' / +'.$redemption->bet_points.' points paris' : '');
+
+        if ($redemption->liveCode?->missionTemplate) {
+            $success .= ' · mission associee prise en compte: '.$redemption->liveCode->missionTemplate->title;
+        }
+
+        return back()->with('success', $success);
     }
 }

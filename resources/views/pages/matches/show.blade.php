@@ -422,6 +422,60 @@
             pointer-events: none;
         }
 
+        body.tt-lightmode-on .match-detail-status,
+        body.tt-lightmode-on .match-pill,
+        body.tt-lightmode-on .match-community-status {
+            border-color: rgba(148,163,184,.28);
+            background: rgba(255,255,255,.88);
+            color: rgba(51,65,85,.9);
+            box-shadow: 0 10px 24px rgba(148,163,184,.1);
+        }
+
+        body.tt-lightmode-on .match-panel,
+        body.tt-lightmode-on .match-market-card,
+        body.tt-lightmode-on .match-option-label,
+        body.tt-lightmode-on .match-summary-card,
+        body.tt-lightmode-on .match-community-kpi,
+        body.tt-lightmode-on .match-community-box,
+        body.tt-lightmode-on .match-community-market-item,
+        body.tt-lightmode-on .match-community-result-card {
+            border-color: rgba(148,163,184,.22);
+            background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(248,250,252,.88));
+            box-shadow: 0 20px 44px rgba(148,163,184,.16);
+        }
+
+        body.tt-lightmode-on .match-market-title,
+        body.tt-lightmode-on .match-option-label strong,
+        body.tt-lightmode-on .match-summary-card strong,
+        body.tt-lightmode-on .match-community-kpi strong,
+        body.tt-lightmode-on .match-community-box h4,
+        body.tt-lightmode-on .match-community-market-item-head strong,
+        body.tt-lightmode-on .match-community-result-card strong,
+        body.tt-lightmode-on .match-community-table td,
+        body.tt-lightmode-on .match-community-table td strong {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .match-market-note,
+        body.tt-lightmode-on .match-option-label span,
+        body.tt-lightmode-on .match-summary-card span,
+        body.tt-lightmode-on .match-community-kpi span,
+        body.tt-lightmode-on .match-community-market-item-head small,
+        body.tt-lightmode-on .match-community-subtext,
+        body.tt-lightmode-on .match-community-result-card span,
+        body.tt-lightmode-on .match-community-table th {
+            color: rgba(51,65,85,.82);
+        }
+
+        body.tt-lightmode-on .match-community-bar {
+            background: rgba(148,163,184,.18);
+        }
+
+        body.tt-lightmode-on .match-option input:checked + .match-option-label {
+            border-color: rgba(216,7,7,.38);
+            background: rgba(216,7,7,.1);
+        }
+
         @media (max-width: 1199.98px) {
             .match-detail-grid,
             .match-option-grid,

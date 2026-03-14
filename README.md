@@ -75,6 +75,7 @@ php artisan test
 
 ```bash
 php artisan migrate
+php artisan db:seed --class=Database\\Seeders\\LaunchMissionCatalogSeeder
 php artisan db:seed --class=CommunityPlatformSeeder
 php artisan db:seed --class=MissionsAndGiftsSeeder
 php artisan test
@@ -87,6 +88,7 @@ php artisan optimize:clear
 - L XP fait progresser le membre et alimente sa ligue.
 - Les ligues suivent la liste canonique: Bronze, Argent, Gold, Platine, Diamant, Champion, ERAH Prime.
 - Les missions distribuent des rewards simples et lisibles.
+- Le catalogue canonique des 50 missions de lancement est versionne dans `database/seeders/data/launch_missions.php`.
 - Les zones privees et admin restent non indexees.
 
 ## Production

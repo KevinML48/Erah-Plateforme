@@ -11,7 +11,12 @@ final class MissionEventTypeRegistry
     {
         return [
             'login.daily',
+            'login.returned',
             'profile.completed',
+            'mission.board.view',
+            'mission.focus.added',
+            'mission.claimed',
+            'activity.triple.day',
             'clip.view',
             'clip.like',
             'clip.comment',
@@ -25,7 +30,10 @@ final class MissionEventTypeRegistry
             'duel.win',
             'quiz.attempt',
             'quiz.pass',
-            'live_code.redeem',
+            'live.code.redeem',
+            'gift.redeemed',
+            'progress.level.reached',
+            'progress.rank.reached',
             'shop.purchase',
             'supporter.monthly',
         ];
@@ -46,4 +54,3 @@ final class MissionEventTypeRegistry
         return in_array(self::normalize($eventType), self::supported(), true);
     }
 }
-

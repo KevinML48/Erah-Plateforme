@@ -11,13 +11,16 @@ use RuntimeException;
 class MissionClaimService
 {
     public function __construct(
-        private readonly RewardGrantService $rewardGrantService
+        private readonly RewardGrantService $rewardGrantService,
+        private readonly MissionEngine $missionEngine
     ) {
     }
 
     public function claim(User $user, UserMission $mission): UserMission
     {
-        return DB::transaction(function () use ($user, $mission) {
+        $wasAlreadyClaimed = false;
+
+        $claimedMission = DB::transaction(function () use ($user, $mission, &$wasAlreadyClaimed) {
             $mission = UserMission::query()
                 ->whereKey($mission->id)
                 ->with('instance.template')
@@ -46,6 +49,8 @@ class MissionClaimService
             }
 
             if ($mission->claimed_at !== null) {
+                $wasAlreadyClaimed = true;
+
                 return $mission;
             }
 
@@ -70,5 +75,16 @@ class MissionClaimService
 
             return $mission->fresh(['instance.template', 'completion']);
         });
+
+        if (! $wasAlreadyClaimed) {
+            $this->missionEngine->recordEvent($user, 'mission.claimed', 1, [
+                'event_key' => 'mission.claimed.'.$claimedMission->id,
+                'subject_type' => UserMission::class,
+                'subject_id' => (string) $claimedMission->id,
+                'mission_template_key' => (string) ($claimedMission->instance?->template?->key ?? ''),
+            ]);
+        }
+
+        return $claimedMission;
     }
 }

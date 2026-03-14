@@ -2,18 +2,22 @@
 
 namespace Tests\Feature\Missions;
 
+use App\Application\Actions\Ranking\AddPointsAction;
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Models\MissionCompletion;
 use App\Models\MissionEventRecord;
 use App\Models\MissionInstance;
 use App\Models\MissionTemplate;
+use App\Models\PointsTransaction;
+use App\Models\UserLoginStreak;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserMission;
 use App\Services\MissionCatalogService;
 use App\Services\MissionEngine;
 use App\Services\MissionFocusService;
+use App\Services\StreakService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -114,7 +118,7 @@ class MissionFoundationFeatureTest extends TestCase
         $this->assertNotNull($mission->completed_at);
         $this->assertNotNull($mission->rewarded_at);
         $this->assertSame(1, MissionCompletion::query()->where('user_id', $user->id)->count());
-        $this->assertSame(1, MissionEventRecord::query()->where('user_id', $user->id)->count());
+        $this->assertSame(1, MissionEventRecord::query()->where('user_id', $user->id)->where('event_type', 'clip.like')->count());
         $this->assertSame(120, (int) $user->progress?->total_xp);
         $this->assertSame(60, (int) $user->rewardWallet?->balance);
     }
@@ -271,6 +275,146 @@ class MissionFoundationFeatureTest extends TestCase
         $this->travel(2)->hours();
 
         $this->assertCount(0, $service->forUser($user));
+    }
+
+    public function test_focus_added_event_can_complete_launch_focus_mission(): void
+    {
+        $user = User::factory()->create();
+        $template = MissionTemplate::query()->create([
+            'key' => 'mission.launch.focus',
+            'title' => 'Premier focus personnel',
+            'event_type' => 'mission.focus.added',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'rewards' => ['xp' => 70, 'points' => 50],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+        app(MissionFocusService::class)->add($user, $template);
+
+        $mission = UserMission::query()->where('user_id', $user->id)->whereHas('instance.template', fn ($query) => $query->where('key', 'mission.launch.focus'))->firstOrFail();
+
+        $this->assertNotNull($mission->completed_at);
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'mission.focus.added',
+        ]);
+    }
+
+    public function test_activity_triple_day_signal_is_derived_from_three_real_action_types(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.activity.triple',
+            'title' => 'Triple d actions',
+            'event_type' => 'activity.triple.day',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_DAILY,
+            'rewards' => ['xp' => 90, 'points' => 70],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        app(MissionEngine::class)->recordEvent($user, 'clip.like', 1, ['event_key' => 'triple.like']);
+        app(MissionEngine::class)->recordEvent($user, 'clip.comment', 1, ['event_key' => 'triple.comment']);
+        app(MissionEngine::class)->recordEvent($user, 'bet.placed', 1, ['event_key' => 'triple.bet', 'stake_points' => 20]);
+
+        $mission = UserMission::query()->where('user_id', $user->id)->firstOrFail();
+
+        $this->assertNotNull($mission->completed_at);
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'activity.triple.day',
+        ]);
+    }
+
+    public function test_login_returned_event_can_complete_return_mission(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.returned',
+            'title' => 'Revenir plus fort',
+            'event_type' => 'login.returned',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['min_absence_days' => 3],
+            'rewards' => ['xp' => 100, 'points' => 80],
+            'is_active' => true,
+        ]);
+
+        UserLoginStreak::query()->create([
+            'user_id' => $user->id,
+            'current_streak' => 4,
+            'longest_streak' => 7,
+            'last_login_on' => now()->subDays(5)->toDateString(),
+            'current_multiplier' => 1.10,
+            'last_reward_points' => 20,
+            'streak_started_at' => now()->subDays(10),
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+        app(StreakService::class)->handleLogin($user);
+
+        $mission = UserMission::query()->where('user_id', $user->id)->firstOrFail();
+
+        $this->assertNotNull($mission->completed_at);
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'login.returned',
+        ]);
+    }
+
+    public function test_level_and_rank_missions_progress_from_real_xp_awards(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.level.five',
+            'title' => 'Cap niveau 5',
+            'event_type' => 'progress.level.reached',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['min_level' => 5],
+            'rewards' => ['xp' => 220, 'points' => 160],
+            'is_active' => true,
+        ]);
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.rank.argent',
+            'title' => 'Cap Argent',
+            'event_type' => 'progress.rank.reached',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['required_rank' => 'argent'],
+            'rewards' => ['xp' => 380, 'points' => 280],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+        app(AddPointsAction::class)->execute($user, PointsTransaction::KIND_XP, 1500, 'test.level', 'xp-1500');
+
+        $completedKeys = UserMission::query()
+            ->where('user_id', $user->id)
+            ->whereNotNull('completed_at')
+            ->with('instance.template')
+            ->get()
+            ->pluck('instance.template.key')
+            ->all();
+
+        $this->assertContains('mission.level.five', $completedKeys);
+        $this->assertContains('mission.rank.argent', $completedKeys);
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'progress.level.reached',
+        ]);
+        $this->assertDatabaseHas('mission_event_records', [
+            'user_id' => $user->id,
+            'event_type' => 'progress.rank.reached',
+        ]);
     }
 
     public function test_catalog_can_filter_active_missions_by_status_and_type(): void

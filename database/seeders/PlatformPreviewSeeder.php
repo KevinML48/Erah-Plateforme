@@ -831,9 +831,9 @@ class PlatformPreviewSeeder extends Seeder
         }
 
         $focusByUser = [
-            'member_active' => ['daily_login', 'weekly_bets_placed', 'daily_clip_comments'],
-            'member_medium' => ['daily_login', 'daily_clip_likes', 'weekly_bets_placed'],
-            'member_new' => ['daily_login', 'once_first_duel'],
+            'member_active' => ['launch.daily-login', 'launch.bet-read-the-game', 'launch.community-pulse'],
+            'member_medium' => ['launch.daily-login', 'launch.active-support', 'launch.weekly-routine'],
+            'member_new' => ['launch.daily-login', 'launch.first-duel', 'launch.mission-of-the-moment'],
         ];
 
         foreach ($focusByUser as $alias => $templateKeys) {
@@ -866,7 +866,7 @@ class PlatformPreviewSeeder extends Seeder
         if ($newUser) {
             $inProgress = UserMission::query()
                 ->where('user_id', $newUser->id)
-                ->whereHas('instance.template', fn ($query) => $query->where('key', 'daily_clip_comments'))
+                ->whereHas('instance.template', fn ($query) => $query->where('key', 'launch.community-voice'))
                 ->latest('id')
                 ->first();
 
@@ -883,7 +883,7 @@ class PlatformPreviewSeeder extends Seeder
         if ($activeUser) {
             $completed = UserMission::query()
                 ->where('user_id', $activeUser->id)
-                ->whereHas('instance.template', fn ($query) => $query->where('key', 'once_first_duel'))
+                ->whereHas('instance.template', fn ($query) => $query->where('key', 'launch.first-duel'))
                 ->latest('id')
                 ->first();
 
@@ -2846,7 +2846,7 @@ class PlatformPreviewSeeder extends Seeder
             );
         }
 
-        $dailyTemplate = MissionTemplate::query()->where('key', 'daily_login')->first();
+        $dailyTemplate = MissionTemplate::query()->where('key', 'launch.daily-login')->first();
         if ($dailyTemplate) {
             $this->upsertAuditLog(
                 action: 'missions.template.updated',

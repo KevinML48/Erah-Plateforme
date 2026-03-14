@@ -151,6 +151,7 @@ class AddPointsAction
 
             if ($kind === PointsTransaction::KIND_XP) {
                 $this->rankService->sync($user);
+                $this->recordLevelReachedEvent($user, $result);
             }
 
             return $result;
@@ -185,6 +186,7 @@ class AddPointsAction
 
             if ($kind === PointsTransaction::KIND_XP) {
                 $this->rankService->sync($user);
+                $this->recordLevelReachedEvent($user, $result);
             }
 
             return $result;
@@ -281,5 +283,60 @@ class AddPointsAction
             ->where('min_rank_points', '<=', $rankPoints)
             ->orderByDesc('min_rank_points')
             ->first();
+    }
+
+    private function recordLevelReachedEvent(User $user, AddPointsResult $result): void
+    {
+        if ($result->idempotent) {
+            return;
+        }
+
+        $beforeLevel = $this->levelForXp((int) ($result->transaction->before_xp ?? 0));
+        $afterLevel = $this->levelForXp((int) ($result->transaction->after_xp ?? 0));
+
+        if ($afterLevel <= $beforeLevel) {
+            return;
+        }
+
+        app(\App\Services\MissionEngine::class)->recordEvent($user, 'progress.level.reached', 1, [
+            'event_key' => 'progress.level.reached.transaction.'.$result->transaction->id,
+            'level' => $afterLevel,
+            'previous_level' => $beforeLevel,
+            'total_xp' => (int) ($result->transaction->after_xp ?? 0),
+            'subject_type' => PointsTransaction::class,
+            'subject_id' => (string) $result->transaction->id,
+        ]);
+    }
+
+    private function levelForXp(int $xp): int
+    {
+        $level = 1;
+
+        while ($level < $this->maxLevel() && $xp >= $this->xpRequiredForLevel($level + 1)) {
+            $level++;
+        }
+
+        return $level;
+    }
+
+    private function xpRequiredForLevel(int $level): int
+    {
+        $level = max(1, min($level, $this->maxLevel() + 1));
+        $curve = (array) config('community.progression.level_curve', []);
+        $baseXp = max(50, (int) ($curve['base_xp'] ?? 250));
+        $growth = max(0, (int) ($curve['growth_per_level'] ?? 75));
+
+        if ($level <= 1) {
+            return 0;
+        }
+
+        $steps = $level - 1;
+
+        return (int) (($steps * $baseXp) + (($steps * ($steps - 1)) / 2) * $growth);
+    }
+
+    private function maxLevel(): int
+    {
+        return max(10, (int) config('community.progression.level_curve.max_level', 200));
     }
 }

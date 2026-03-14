@@ -10,6 +10,7 @@ use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
+use App\Services\MissionEngine;
 use App\Services\PlatformPointService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -19,7 +20,8 @@ class RedeemGiftAction
     public function __construct(
         private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
-        private readonly NotifyAction $notifyAction
+        private readonly NotifyAction $notifyAction,
+        private readonly MissionEngine $missionEngine
     ) {
     }
 
@@ -28,7 +30,7 @@ class RedeemGiftAction
      */
     public function execute(User $user, int $giftId, string $idempotencyKey): array
     {
-        return DB::transaction(function () use ($user, $giftId, $idempotencyKey) {
+        $result = DB::transaction(function () use ($user, $giftId, $idempotencyKey) {
             $transactionKey = 'gift.redeem.cost.'.$idempotencyKey;
 
             $existingTx = RewardWalletTransaction::query()
@@ -138,5 +140,20 @@ class RedeemGiftAction
                 'idempotent' => false,
             ];
         });
+
+        if (! $result['idempotent']) {
+            /** @var GiftRedemption $redemption */
+            $redemption = $result['redemption'];
+
+            $this->missionEngine->recordEvent($user, 'gift.redeemed', 1, [
+                'event_key' => 'gift.redeemed.'.$redemption->id,
+                'subject_type' => GiftRedemption::class,
+                'subject_id' => (string) $redemption->id,
+                'gift_id' => $redemption->gift_id,
+                'cost_points' => (int) $redemption->cost_points_snapshot,
+            ]);
+        }
+
+        return $result;
     }
 }

@@ -23,10 +23,26 @@
             left: 16px;
             bottom: 18px;
             width: min(400px, calc(100vw - 24px));
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 12px;
+            max-height: min(68vh, calc(100vh - 96px));
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 6px 6px 2px 0;
+            scroll-behavior: smooth;
             z-index: 2950;
             pointer-events: none;
+        }
+        .mission-live-stack::-webkit-scrollbar {
+            width: 6px;
+        }
+        .mission-live-stack::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .14);
+        }
+        .mission-live-stack::-webkit-scrollbar-track {
+            background: transparent;
         }
         .mission-live-toast {
             padding: 18px;
@@ -146,6 +162,8 @@
                 bottom: 12px;
                 width: auto;
                 gap: 8px;
+                max-height: min(58vh, calc(100vh - 88px));
+                padding-right: 2px;
             }
             .mission-live-toast {
                 padding: 14px;
@@ -195,7 +213,6 @@
                 return;
             }
 
-            var isCompactMobile = window.matchMedia('(max-width: 767.98px)').matches;
             var cursorKey = 'erah-mission-toast-last-id:' + bootstrap.user_id;
             var pendingKey = 'erah-mission-toast-pending:' + bootstrap.user_id;
             var stack = document.createElement('div');
@@ -274,19 +291,9 @@
                 }, 180);
             }
 
-            function clearCompactMobileStack(exceptNotificationId) {
-                if (!isCompactMobile) {
-                    return;
-                }
-
-                stack.querySelectorAll('.mission-live-toast').forEach(function (node) {
-                    var existingId = Number(node.dataset.notificationId || 0);
-                    if (exceptNotificationId > 0 && existingId === exceptNotificationId) {
-                        return;
-                    }
-
-                    forgetToast(existingId);
-                    node.remove();
+            function scrollStackToLatest() {
+                window.requestAnimationFrame(function () {
+                    stack.scrollTop = stack.scrollHeight;
                 });
             }
 
@@ -331,8 +338,6 @@
                 if (notificationId > 0 && stack.querySelector('[data-notification-id="' + notificationId + '"]')) {
                     return;
                 }
-
-                clearCompactMobileStack(notificationId);
 
                 var expiresAt = Number(options.expiresAt || (Date.now() + 7600));
                 var remainingDuration = expiresAt - Date.now();
@@ -384,6 +389,7 @@
 
                 rememberToast(notification, expiresAt);
                 stack.appendChild(toast);
+                scrollStackToLatest();
                 window.setTimeout(function () {
                     removeToast(toast);
                 }, remainingDuration);
@@ -410,7 +416,7 @@
                     var notifications = Array.isArray(payload.data) ? payload.data : [];
                     var latestId = Number((payload.meta || {}).latest_id || cursor || 0);
 
-                    var notificationsToShow = isCompactMobile ? notifications.slice(-1) : notifications;
+                    var notificationsToShow = notifications;
 
                     notificationsToShow.forEach(function (notification) {
                         showToast(notification);
@@ -428,10 +434,6 @@
                 .sort(function (left, right) {
                     return Number((left.notification || {}).id || 0) - Number((right.notification || {}).id || 0);
                 });
-
-            if (isCompactMobile && pendingToasts.length > 1) {
-                pendingToasts = pendingToasts.slice(-1);
-            }
 
             pendingToasts.forEach(function (item) {
                     showToast(item.notification || {}, {

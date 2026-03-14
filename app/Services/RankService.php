@@ -102,6 +102,15 @@ class RankService
                     'total_xp' => $history->total_xp,
                 ],
             );
+
+            app(MissionEngine::class)->recordEvent($user, 'progress.rank.reached', 1, [
+                'event_key' => 'progress.rank.reached.history.'.$history->id,
+                'rank_key' => $history->league_key,
+                'rank_name' => $history->league_name,
+                'total_xp' => (int) $history->total_xp,
+                'subject_type' => UserRankHistory::class,
+                'subject_id' => (string) $history->id,
+            ]);
         }
 
         return $history;

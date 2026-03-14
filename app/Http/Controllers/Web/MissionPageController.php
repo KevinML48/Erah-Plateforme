@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Services\MissionCatalogService;
+use App\Services\MissionEngine;
 use App\Services\MissionFocusService;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -13,8 +15,19 @@ class MissionPageController extends Controller
     public function index(
         Request $request,
         MissionCatalogService $missionCatalogService,
-        MissionFocusService $missionFocusService
+        MissionFocusService $missionFocusService,
+        MissionEngine $missionEngine
     ): View {
+        $user = auth()->user();
+        $today = now()->toDateString();
+
+        $missionEngine->recordEvent($user, 'mission.board.view', 1, [
+            'event_key' => 'mission.board.view.'.$user->id.'.'.$today,
+            'date' => $today,
+            'subject_type' => User::class,
+            'subject_id' => (string) $user->id,
+        ]);
+
         $payload = $missionCatalogService->dashboardPayload(auth()->user(), [
             'type' => $request->query('type'),
             'difficulty' => $request->query('difficulty'),

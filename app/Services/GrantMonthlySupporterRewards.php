@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Application\Actions\Notifications\NotifyAction;
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
-use App\Models\MissionTemplate;
 use App\Models\SupporterMonthlyReward;
 use App\Models\User;
 use App\Models\UserSupportSubscription;
@@ -27,7 +26,6 @@ class GrantMonthlySupporterRewards
 
         $this->supporterAccessResolver->ensureDefaultPlan();
         $this->supporterAccessResolver->ensureCommunityGoals();
-        $this->ensureMonthlyMissionTemplate();
 
         $supporters = User::query()
             ->whereHas('supportSubscriptions', fn ($query) => $query->active())
@@ -75,9 +73,7 @@ class GrantMonthlySupporterRewards
             );
         }
 
-        $eventType = MissionTemplate::normalizeEventType(
-            (string) config('supporter.monthly_reward.event_type', 'supporter.monthly')
-        );
+        $eventType = 'supporter.monthly';
         $eventDate = $rewardMonth->toDateString();
         $this->missionEngine->recordEvent($user, $eventType, 1, [
             'event_key' => 'supporter.monthly.'.$user->id.'.'.$eventDate,
@@ -86,31 +82,6 @@ class GrantMonthlySupporterRewards
             'subject_type' => User::class,
             'subject_id' => (string) $user->id,
         ]);
-    }
-
-    private function ensureMonthlyMissionTemplate(): MissionTemplate
-    {
-        $config = (array) config('supporter.monthly_reward', []);
-
-        return MissionTemplate::query()->updateOrCreate(
-            ['key' => (string) ($config['mission_key_prefix'] ?? 'supporter-monthly')],
-            [
-                'title' => (string) ($config['mission_title'] ?? 'Mission supporter mensuelle'),
-                'description' => (string) ($config['mission_description'] ?? 'Mission supporter mensuelle.'),
-                'event_type' => MissionTemplate::normalizeEventType((string) ($config['event_type'] ?? 'supporter.monthly')),
-                'target_count' => (int) ($config['target_count'] ?? 1),
-                'scope' => MissionTemplate::SCOPE_MONTHLY,
-                'constraints' => [
-                    'supporter_only' => true,
-                    'supporter_monthly' => true,
-                ],
-                'rewards' => [
-                    'xp' => (int) ($config['xp_bonus'] ?? 0),
-                    'points' => (int) ($config['reward_points_bonus'] ?? 0),
-                ],
-                'is_active' => true,
-            ]
-        );
     }
 
     private function firstOrCreateReward(User $user, Carbon $rewardMonth, string $rewardKey): SupporterMonthlyReward

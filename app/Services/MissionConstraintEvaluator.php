@@ -22,7 +22,23 @@ class MissionConstraintEvaluator
             return false;
         }
 
+        if (! $this->passesMaximum($constraints, $context, 'max_stake', 'stake_points')) {
+            return false;
+        }
+
         if (! $this->passesMinimum($constraints, $context, 'min_profile_completion', 'profile_completion')) {
+            return false;
+        }
+
+        if (! $this->passesMinimum($constraints, $context, 'min_absence_days', 'absence_days')) {
+            return false;
+        }
+
+        if (! $this->passesMinimum($constraints, $context, 'min_level', 'level')) {
+            return false;
+        }
+
+        if (! $this->passesRequiredRank($constraints, $context)) {
             return false;
         }
 
@@ -56,5 +72,50 @@ class MissionConstraintEvaluator
         }
 
         return (int) ($context[$contextKey] ?? 0) >= (int) $constraints[$constraintKey];
+    }
+
+    /**
+     * @param array<string, mixed> $constraints
+     * @param array<string, mixed> $context
+     */
+    private function passesMaximum(array $constraints, array $context, string $constraintKey, string $contextKey): bool
+    {
+        if (! isset($constraints[$constraintKey])) {
+            return true;
+        }
+
+        return (int) ($context[$contextKey] ?? 0) <= (int) $constraints[$constraintKey];
+    }
+
+    /**
+     * @param array<string, mixed> $constraints
+     * @param array<string, mixed> $context
+     */
+    private function passesRequiredRank(array $constraints, array $context): bool
+    {
+        if (! isset($constraints['required_rank'])) {
+            return true;
+        }
+
+        $requiredRank = MissionTemplate::normalizeEventType((string) $constraints['required_rank']);
+        $currentRank = MissionTemplate::normalizeEventType((string) ($context['rank_key'] ?? ''));
+
+        if ($requiredRank === '' || $currentRank === '') {
+            return false;
+        }
+
+        $order = collect((array) config('community.xp_leagues', []))
+            ->pluck('key')
+            ->map(fn (mixed $key): string => MissionTemplate::normalizeEventType((string) $key))
+            ->values();
+
+        $requiredIndex = $order->search($requiredRank, true);
+        $currentIndex = $order->search($currentRank, true);
+
+        if ($requiredIndex === false || $currentIndex === false) {
+            return false;
+        }
+
+        return $currentIndex >= $requiredIndex;
     }
 }

@@ -17,6 +17,7 @@ class MissionFocusService
 
     public function __construct(
         private readonly EnsureCurrentMissionInstancesAction $ensureCurrentMissionInstancesAction,
+        private readonly MissionEngine $missionEngine,
     ) {
     }
 
@@ -38,7 +39,9 @@ class MissionFocusService
 
     public function add(User $user, MissionTemplate $template): UserMissionFocus
     {
-        return DB::transaction(function () use ($user, $template) {
+        $createdFocus = null;
+
+        $focus = DB::transaction(function () use ($user, $template, &$createdFocus) {
             $this->ensureCurrentMissionInstancesAction->execute($user);
             $this->pruneUnavailable($user);
 
@@ -61,12 +64,25 @@ class MissionFocusService
                 throw new RuntimeException('Vous pouvez garder seulement 3 missions en focus.');
             }
 
-            return UserMissionFocus::query()->create([
+            $createdFocus = UserMissionFocus::query()->create([
                 'user_id' => $user->id,
                 'mission_template_id' => $template->id,
                 'sort_order' => $this->nextSortOrder($current),
             ]);
+
+            return $createdFocus;
         });
+
+        if ($createdFocus instanceof UserMissionFocus) {
+            $this->missionEngine->recordEvent($user, 'mission.focus.added', 1, [
+                'event_key' => 'mission.focus.added.'.$user->id.'.'.$template->id,
+                'subject_type' => MissionTemplate::class,
+                'subject_id' => (string) $template->id,
+                'mission_template_id' => $template->id,
+            ]);
+        }
+
+        return $focus;
     }
 
     public function remove(User $user, MissionTemplate $template): void

@@ -5,8 +5,7 @@ namespace Tests\Feature\Missions;
 use App\Models\MissionTemplate;
 use App\Services\GrantMonthlySupporterRewards;
 use App\Support\MissionEventTypeRegistry;
-use Database\Seeders\MissionsAndGiftsSeeder;
-use Database\Seeders\SupporterProgramSeeder;
+use Database\Seeders\LaunchMissionCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,14 +15,14 @@ class MissionEventTypeCatalogTest extends TestCase
 
     public function test_seeded_mission_templates_only_use_supported_event_types(): void
     {
-        $this->seed([
-            MissionsAndGiftsSeeder::class,
-            SupporterProgramSeeder::class,
-        ]);
+        $this->seed(LaunchMissionCatalogSeeder::class);
 
         app(GrantMonthlySupporterRewards::class)->execute(now());
 
+        $this->assertSame(50, MissionTemplate::query()->where('is_active', true)->count());
+
         $eventTypes = MissionTemplate::query()
+            ->where('is_active', true)
             ->pluck('event_type')
             ->map(fn (string $eventType): string => MissionTemplate::normalizeEventType($eventType))
             ->unique()
@@ -40,4 +39,3 @@ class MissionEventTypeCatalogTest extends TestCase
         );
     }
 }
-

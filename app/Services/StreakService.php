@@ -50,6 +50,7 @@ class StreakService
             return $streak;
         }
 
+        $previousLoginOn = $streak->last_login_on?->copy();
         $yesterday = now()->subDay()->toDateString();
         $streak->current_streak = $streak->last_login_on?->toDateString() === $yesterday
             ? (int) $streak->current_streak + 1
@@ -90,6 +91,24 @@ class StreakService
                 'current_streak' => (int) $streak->current_streak,
             ],
         );
+
+        $absenceDays = $previousLoginOn?->diffInDays(now()->startOfDay()) ?? 0;
+        $absenceDays = max(0, $absenceDays - 1);
+
+        if ($previousLoginOn !== null && $absenceDays >= 1) {
+            app(MissionEngine::class)->recordEvent(
+                user: $user,
+                eventType: 'login.returned',
+                amount: 1,
+                context: [
+                    'event_key' => 'login.returned.'.$user->id.'.'.$today,
+                    'date' => $today,
+                    'absence_days' => $absenceDays,
+                    'subject_type' => User::class,
+                    'subject_id' => (string) $user->id,
+                ],
+            );
+        }
 
         $this->notifyAction->execute(
             user: $user,

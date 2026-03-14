@@ -51,7 +51,7 @@ class MissionTrackingService
 
         $this->ensureCurrentMissionInstancesAction->execute($user);
 
-        return DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
+        $completed = DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
             $event = MissionEventRecord::query()
                 ->where('user_id', $user->id)
                 ->where('event_key', $eventKey)
@@ -143,6 +143,10 @@ class MissionTrackingService
 
             return $completed;
         });
+
+        $this->recordDerivedActivitySignals($user, $normalizedEventType);
+
+        return $completed;
     }
 
     /**
@@ -316,5 +320,68 @@ class MissionTrackingService
         }
 
         return $ready;
+    }
+
+    private function recordDerivedActivitySignals(User $user, string $eventType): void
+    {
+        if ($eventType === 'activity.triple.day' || ! in_array($eventType, $this->activityTripleEligibleEventTypes(), true)) {
+            return;
+        }
+
+        $today = now()->toDateString();
+        $distinctActionTypes = MissionEventRecord::query()
+            ->where('user_id', $user->id)
+            ->whereDate('occurred_at', $today)
+            ->whereIn('event_type', $this->activityTripleEligibleEventTypes())
+            ->pluck('event_type')
+            ->unique()
+            ->values();
+
+        if ($distinctActionTypes->count() < 3) {
+            return;
+        }
+
+        $this->record(
+            user: $user,
+            eventType: 'activity.triple.day',
+            amount: 1,
+            context: [
+                'date' => $today,
+                'distinct_event_types' => $distinctActionTypes->all(),
+                'subject_type' => User::class,
+                'subject_id' => (string) $user->id,
+            ],
+            eventKey: 'activity.triple.day.'.$user->id.'.'.$today,
+            subjectType: User::class,
+            subjectId: (string) $user->id,
+        );
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function activityTripleEligibleEventTypes(): array
+    {
+        return [
+            'mission.board.view',
+            'mission.focus.added',
+            'mission.claimed',
+            'clip.view',
+            'clip.like',
+            'clip.comment',
+            'clip.share',
+            'clip.favorite',
+            'bet.placed',
+            'bet.won',
+            'duel.sent',
+            'duel.accepted',
+            'duel.play',
+            'duel.win',
+            'quiz.attempt',
+            'quiz.pass',
+            'live_code.redeem',
+            'gift.redeemed',
+            'shop.purchase',
+        ];
     }
 }

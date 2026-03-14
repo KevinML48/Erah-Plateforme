@@ -9,6 +9,7 @@ use App\Models\MissionTemplate;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\UserRewardWallet;
+use Database\Seeders\LaunchGiftCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -211,6 +212,28 @@ class MissionsAndGiftsPagesTest extends TestCase
             ->assertSee('Sticker Pack ERAH')
             ->assertSee('Demander ce cadeau')
             ->assertSee('Mes demandes recentes');
+    }
+
+    public function test_user_can_filter_gift_catalog_by_category(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 20000,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('gifts.index', [
+            'category' => 'manual_reward',
+        ]));
+
+        $response->assertOk()
+            ->assertSee('Achat Amazon 10€')
+            ->assertSee('Gain libre 5€')
+            ->assertDontSee('Chaise gaming')
+            ->assertDontSee('Badge exclusif de profil');
     }
 
     public function test_user_can_view_gift_redemption_detail_with_timeline_and_history(): void

@@ -7,6 +7,10 @@
 @section('page_styles')
 <style>
     .gift-catalog-toolbar { margin-top: 18px; padding: 18px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; background: rgba(255, 255, 255, 0.03); }
+    .gift-category-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 18px; }
+    .gift-category-link { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 8px 18px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.04); color: rgba(255, 255, 255, 0.86); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; transition: .2s ease; }
+    .gift-category-link:hover, .gift-category-link:focus-visible { border-color: rgba(255, 255, 255, 0.28); color: #fff; background: rgba(255, 255, 255, 0.08); text-decoration: none; }
+    .gift-category-link.is-active { border-color: rgba(255, 255, 255, 0.36); background: #ffffff; color: #0f172a; box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18); }
     .gift-toolbar-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(180px, 0.55fr)) auto auto; gap: 12px; align-items: center; }
     .gift-toolbar-grid input, .gift-toolbar-grid select { width: 100%; min-height: 42px; padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; background: rgba(0, 0, 0, 0.2); color: #fff; }
     .gift-toolbar-grid select option { color: #111; }
@@ -29,6 +33,9 @@
     .gift-order-status { display: inline-flex; align-items: center; min-height: 30px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.03); color: #fff; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
     .gift-order-card p, .gift-favorite-card p { margin: 0; color: rgba(255, 255, 255, 0.74); line-height: 1.7; }
     body.tt-lightmode-on .gift-catalog-toolbar { border-color: rgba(148, 163, 184, 0.24); background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(248, 250, 252, 0.88)); box-shadow: 0 20px 44px rgba(148, 163, 184, 0.16); }
+    body.tt-lightmode-on .gift-category-link { border-color: rgba(148, 163, 184, 0.24); background: rgba(255, 255, 255, 0.92); color: #334155; box-shadow: 0 14px 30px rgba(148, 163, 184, 0.12); }
+    body.tt-lightmode-on .gift-category-link:hover, body.tt-lightmode-on .gift-category-link:focus-visible { border-color: rgba(225, 29, 72, 0.28); color: #be123c; background: rgba(255, 255, 255, 1); }
+    body.tt-lightmode-on .gift-category-link.is-active { border-color: rgba(225, 29, 72, 0.26); background: #111827; color: #fff; box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18); }
     body.tt-lightmode-on .gift-toolbar-grid input, body.tt-lightmode-on .gift-toolbar-grid select { border-color: rgba(148, 163, 184, 0.28); background: rgba(255, 255, 255, 0.96); color: #0f172a; box-shadow: 0 12px 28px rgba(148, 163, 184, 0.12); }
     body.tt-lightmode-on .gift-balance-chip { border-color: rgba(148, 163, 184, 0.26); background: rgba(255, 255, 255, 0.9); color: #0f172a; box-shadow: 0 16px 36px rgba(148, 163, 184, 0.16); }
     body.tt-lightmode-on .gift-card-copy, body.tt-lightmode-on .gift-order-card p, body.tt-lightmode-on .gift-favorite-card p { color: rgba(51, 65, 85, 0.86); }
@@ -80,17 +87,11 @@
                 <div id="portfolio-grid" class="pgi-hover">
                     <div class="tt-grid ttgr-layout-3 ttgr-gap-3">
                         <div class="tt-grid-top">
-                            <div class="tt-grid-categories-classic">
-                                <div class="ttgr-cat-classic-nav ttgr-cat-classic-center">
-                                    <ul class="ttgr-cat-classic-list">
-                                        <li class="ttgr-cat-classic-item"><a href="{{ route($giftIndexRouteName, array_merge($baseFilters, ['category' => 'all'])) }}" data-offset="80" class="{{ $selectedCategory === 'all' ? 'active' : '' }}">Tous</a></li>
-                                        @foreach($categories as $category)
-                                            <li class="ttgr-cat-classic-item">
-                                                <a href="{{ route($giftIndexRouteName, array_merge($baseFilters, ['category' => $category['key']])) }}" data-offset="80" class="{{ $selectedCategory === $category['key'] ? 'active' : '' }}">{{ $category['label'] }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
+                            <div class="gift-category-nav" aria-label="Categories cadeaux">
+                                <a href="{{ route($giftIndexRouteName, array_merge($baseFilters, ['category' => 'all'])) }}" class="gift-category-link {{ $selectedCategory === 'all' ? 'is-active' : '' }}">Tous</a>
+                                @foreach($categories as $category)
+                                    <a href="{{ route($giftIndexRouteName, array_merge($baseFilters, ['category' => $category['key']])) }}" class="gift-category-link {{ $selectedCategory === $category['key'] ? 'is-active' : '' }}">{{ $category['label'] }}</a>
+                                @endforeach
                             </div>
 
                             <form class="gift-catalog-toolbar" method="GET" action="{{ route($giftIndexRouteName) }}">

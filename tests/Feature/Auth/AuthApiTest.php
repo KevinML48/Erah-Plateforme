@@ -7,6 +7,7 @@ use Database\Seeders\AdminUserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
@@ -210,6 +211,42 @@ class AuthApiTest extends TestCase
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'seed.admin_user.upserted',
         ]);
+    }
+
+    public function test_admin_user_seeder_provisions_configured_platform_admin_account(): void
+    {
+        $previousEmail = env('PLATFORM_ADMIN_EMAIL');
+        $previousName = env('PLATFORM_ADMIN_NAME');
+        $previousPassword = env('PLATFORM_ADMIN_PASSWORD');
+
+        putenv('PLATFORM_ADMIN_EMAIL=erah.association@gmail.com');
+        putenv('PLATFORM_ADMIN_NAME=ERAH Association');
+        putenv('PLATFORM_ADMIN_PASSWORD=ErahAdmin!2026#Cloud');
+
+        try {
+            Artisan::call('db:seed', ['--class' => AdminUserSeeder::class]);
+
+            $admin = User::query()->where('email', 'erah.association@gmail.com')->firstOrFail();
+
+            $this->assertSame(User::ROLE_ADMIN, $admin->role);
+            $this->assertSame('ERAH Association', $admin->name);
+            $this->assertTrue(Hash::check('ErahAdmin!2026#Cloud', $admin->password));
+        } finally {
+            $this->restoreEnv('PLATFORM_ADMIN_EMAIL', $previousEmail);
+            $this->restoreEnv('PLATFORM_ADMIN_NAME', $previousName);
+            $this->restoreEnv('PLATFORM_ADMIN_PASSWORD', $previousPassword);
+        }
+    }
+
+    private function restoreEnv(string $key, mixed $value): void
+    {
+        if ($value === false || $value === null) {
+            putenv($key);
+
+            return;
+        }
+
+        putenv($key.'='.$value);
     }
 
     private function mockSocialiteProvider(string $provider, array $payload): void

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Application\Actions\Rewards\EnsureCurrentMissionInstancesAction;
 use App\Models\MissionTemplate;
 use App\Models\User;
+use App\Support\MySqlTimestampRange;
 use App\Services\ExperienceService;
 use App\Services\MissionEngine;
 use App\Services\RankService;
@@ -170,11 +171,11 @@ class LaunchMissionCatalogSeeder extends Seeder
     private function resolveBoundary(mixed $value, bool $isEnd): ?Carbon
     {
         if ($value instanceof Carbon) {
-            return $value;
+            return MySqlTimestampRange::clamp($value);
         }
 
         if (is_string($value) && trim($value) !== '') {
-            return Carbon::parse($value);
+            return MySqlTimestampRange::clamp(Carbon::parse($value));
         }
 
         if (! is_array($value)) {
@@ -188,6 +189,6 @@ class LaunchMissionCatalogSeeder extends Seeder
 
         $boundary = now()->copy()->startOfDay()->addDays((int) $value[$offsetKey]);
 
-        return $isEnd ? $boundary->endOfDay() : $boundary->startOfDay();
+        return MySqlTimestampRange::clamp($isEnd ? $boundary->endOfDay() : $boundary->startOfDay());
     }
 }

@@ -14,6 +14,7 @@ use App\Models\UserLoginStreak;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserMission;
+use App\Support\MySqlTimestampRange;
 use App\Services\MissionCatalogService;
 use App\Services\MissionEngine;
 use App\Services\MissionFocusService;
@@ -82,6 +83,31 @@ class MissionFoundationFeatureTest extends TestCase
         $this->assertSame(1, $result['event_window']);
         $this->assertSame(4, MissionInstance::query()->count());
         $this->assertSame(4, UserMission::query()->where('user_id', $user->id)->count());
+    }
+
+    public function test_once_scope_without_end_date_uses_mysql_safe_period_end(): void
+    {
+        $user = User::factory()->create();
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.once.open-ended',
+            'title' => 'Mission ouverte',
+            'event_type' => 'profile.completed',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'rewards' => ['xp' => 10, 'points' => 5],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $instance = MissionInstance::query()->firstOrFail();
+
+        $this->assertSame(
+            MySqlTimestampRange::max()->format('Y-m-d H:i:s'),
+            $instance->period_end?->format('Y-m-d H:i:s')
+        );
+        $this->assertTrue($instance->period_end->lessThanOrEqualTo(MySqlTimestampRange::max()));
     }
 
     public function test_mission_completion_grants_standardized_xp_and_points_once(): void

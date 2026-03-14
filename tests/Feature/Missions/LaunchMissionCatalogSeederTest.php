@@ -4,6 +4,7 @@ namespace Tests\Feature\Missions;
 
 use App\Models\MissionTemplate;
 use App\Models\User;
+use App\Support\MySqlTimestampRange;
 use App\Services\MissionCatalogService;
 use App\Support\MissionEventTypeRegistry;
 use Database\Seeders\LaunchMissionCatalogSeeder;
@@ -62,6 +63,33 @@ class LaunchMissionCatalogSeederTest extends TestCase
             5,
             MissionTemplate::query()->where('is_active', true)->where('scope', MissionTemplate::SCOPE_EVENT_WINDOW)->count()
         );
+    }
+
+    public function test_launch_catalog_boundaries_stay_within_mysql_timestamp_range(): void
+    {
+        $this->seed(LaunchMissionCatalogSeeder::class);
+
+        MissionTemplate::query()
+            ->where('is_active', true)
+            ->where(function ($query): void {
+                $query->whereNotNull('start_at')->orWhereNotNull('end_at');
+            })
+            ->get()
+            ->each(function (MissionTemplate $template): void {
+                if ($template->start_at) {
+                    $this->assertTrue(
+                        $template->start_at->betweenIncluded(MySqlTimestampRange::min(), MySqlTimestampRange::max()),
+                        'start_at hors plage MySQL pour '.$template->key
+                    );
+                }
+
+                if ($template->end_at) {
+                    $this->assertTrue(
+                        $template->end_at->betweenIncluded(MySqlTimestampRange::min(), MySqlTimestampRange::max()),
+                        'end_at hors plage MySQL pour '.$template->key
+                    );
+                }
+            });
     }
 
     public function test_launch_catalog_is_idempotent_and_discovery_missions_stay_first(): void

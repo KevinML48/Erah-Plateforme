@@ -6,6 +6,7 @@ use App\Models\MissionInstance;
 use App\Models\MissionTemplate;
 use App\Models\User;
 use App\Models\UserMission;
+use App\Support\MySqlTimestampRange;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -181,17 +182,26 @@ class EnsureCurrentMissionInstancesAction
         Carbon $monthStart,
         Carbon $monthEnd
     ): array {
-        return match ($template->scope) {
+        [$periodStart, $periodEnd] = match ($template->scope) {
             MissionTemplate::SCOPE_DAILY => [$todayStart, $todayEnd],
             MissionTemplate::SCOPE_WEEKLY => [$weekStart, $weekEnd],
             MissionTemplate::SCOPE_MONTHLY => [$monthStart, $monthEnd],
             MissionTemplate::SCOPE_ONCE => [
                 $template->start_at?->copy()->startOfDay() ?? Carbon::create(2020, 1, 1, 0, 0, 0),
-                $template->end_at?->copy()->endOfDay() ?? Carbon::create(2099, 12, 31, 23, 59, 59),
+                $template->end_at?->copy()->endOfDay() ?? MySqlTimestampRange::max(),
             ],
             MissionTemplate::SCOPE_EVENT_WINDOW => $this->eventWindowPeriod($template),
             default => [null, null],
         };
+
+        $periodStart = MySqlTimestampRange::clamp($periodStart);
+        $periodEnd = MySqlTimestampRange::clamp($periodEnd);
+
+        if (! $periodStart || ! $periodEnd || $periodStart->gt($periodEnd)) {
+            return [null, null];
+        }
+
+        return [$periodStart, $periodEnd];
     }
 
     /**

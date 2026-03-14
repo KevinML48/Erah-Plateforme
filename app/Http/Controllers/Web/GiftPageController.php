@@ -14,6 +14,7 @@ use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\User;
 use App\Models\UserRewardWallet;
+use App\Support\LaunchGiftCatalog;
 use App\Services\Gifts\GiftCartService;
 use App\Services\Gifts\GiftFavoriteService;
 use Illuminate\Http\RedirectResponse;
@@ -111,15 +112,14 @@ class GiftPageController extends Controller
                     'gift' => $gift,
                     'category_key' => $categoryKey,
                     'category_label' => $this->categoryLabel($categoryKey),
+                    'delivery_type' => $gift->launchCatalogDeliveryType(),
                     'availability_key' => $availabilityKey,
                     'availability_label' => $this->availabilityLabel($availabilityKey),
                     'availability_copy' => $this->availabilityCopy($availabilityKey),
                     'can_redeem' => $availabilityKey !== 'unavailable' && $availabilityKey !== 'out',
                     'points_missing' => $pointsMissing,
                     'is_favorited' => in_array((int) $gift->id, $favoriteGiftIds, true),
-                    'lead_time' => $availabilityKey === 'available' || $availabilityKey === 'low'
-                        ? 'Traitement admin en moyenne sous 48h'
-                        : 'Retour en stock des que possible',
+                    'lead_time' => $this->leadTimeCopy($gift, $availabilityKey),
                 ];
             })
             ->values();
@@ -457,39 +457,75 @@ class GiftPageController extends Controller
 
     private function resolveCategoryKey(Gift $gift): string
     {
+        $catalogDefinition = LaunchGiftCatalog::definitionForGift($gift);
+        if (is_array($catalogDefinition) && is_string($catalogDefinition['category'] ?? null)) {
+            return (string) $catalogDefinition['category'];
+        }
+
         $content = Str::lower(trim(($gift->title ?? '').' '.($gift->description ?? '')));
 
         if (
-            Str::contains($content, ['t-shirt', 'shirt', 'mug', 'hoodie', 'casquette', 'maillot', 'merch'])
+            Str::contains($content, ['badge', 'contour', 'avatar', 'banniere', 'titre', 'profil', 'pseudo', 'theme', 'pack profil'])
         ) {
-            return 'merch';
+            return 'profile_digital';
         }
 
         if (
-            Str::contains($content, ['ticket', 'event', 'pass', 'vip', 'billet', 'experience'])
+            Str::contains($content, ['gain libre', 'amazon', 'cash', 'virement', 'bon d achat'])
         ) {
-            return 'experience';
+            return 'manual_reward';
         }
 
-        if (Str::contains($content, ['code', 'skin', 'bundle', 'digital'])) {
-            return 'digital';
+        if (
+            Str::contains($content, ['nitro', 'steam', 'riot', 'valorant', 'playstation', 'xbox', 'nintendo', 'carte cadeau', 'amazon', 'gain libre'])
+        ) {
+            return 'digital_reward';
         }
 
-        if ((int) $gift->cost_points >= 1500) {
+        if (
+            Str::contains($content, ['souris gaming', 'casque gaming', 'clavier gaming', 'ecran gaming', 'chaise gaming'])
+        ) {
             return 'premium';
         }
 
-        return 'starter';
+        if (
+            Str::contains($content, ['support telephone', 'pochette', 'lampe', 'support casque', 'tapis de souris', 'maillot'])
+        ) {
+            return 'physical';
+        }
+
+        if ((int) $gift->cost_points >= 12000) {
+            return 'premium';
+        }
+
+        return 'digital_reward';
     }
 
     private function categoryLabel(string $key): string
     {
         return match ($key) {
-            'merch' => 'Merchandising',
-            'experience' => 'Experiences',
-            'digital' => 'Digital',
+            'profile_digital' => 'Profil numerique',
+            'digital_reward' => 'Digital',
+            'manual_reward' => 'Recompense manuelle',
+            'physical' => 'Physique',
             'premium' => 'Premium',
-            default => 'Starter',
+            default => 'Catalogue',
+        };
+    }
+
+    private function leadTimeCopy(Gift $gift, string $availabilityKey): string
+    {
+        if ($availabilityKey !== 'available' && $availabilityKey !== 'low') {
+            return 'Retour en stock des que possible';
+        }
+
+        return match ($gift->launchCatalogDeliveryType()) {
+            'profile' => 'Livraison immediate sur le profil',
+            'digital' => 'Traitement admin digital sous 48h',
+            'manual' => 'Validation et traitement manuel',
+            'physical' => 'Traitement expedition sous 48h',
+            'premium' => 'Validation premium manuelle',
+            default => 'Traitement admin en moyenne sous 48h',
         };
     }
 
@@ -542,6 +578,10 @@ class GiftPageController extends Controller
             return 'Ce cadeau est en rupture pour le moment. Revenez plus tard.';
         }
 
+        if (Str::contains($normalizedMessage, ['possede deja', 'profil'])) {
+            return 'Cet objet de profil est deja dans votre collection.';
+        }
+
         if (Str::contains($normalizedMessage, ['disponible', 'inactive', 'desactive'])) {
             return 'Ce cadeau est temporairement indisponible.';
         }
@@ -559,6 +599,10 @@ class GiftPageController extends Controller
 
         if (Str::contains($normalizedMessage, ['stock', 'rupture'])) {
             return 'Stock insuffisant sur un des cadeaux du panier. Ajustez les quantites puis reessayez.';
+        }
+
+        if (Str::contains($normalizedMessage, ['possede deja', 'profil'])) {
+            return 'Un objet de profil du panier est deja dans votre collection.';
         }
 
         if (Str::contains($normalizedMessage, ['desactive', 'indisponible'])) {

@@ -36,6 +36,13 @@ class User extends Authenticatable
         'instagram_url',
         'tiktok_url',
         'discord_url',
+        'equipped_profile_badge',
+        'equipped_avatar_frame',
+        'equipped_profile_banner',
+        'equipped_profile_title',
+        'equipped_username_color',
+        'equipped_profile_theme',
+        'profile_featured_until',
     ];
 
     /**
@@ -58,6 +65,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'profile_featured_until' => 'datetime',
         ];
     }
 
@@ -262,6 +270,11 @@ class User extends Authenticatable
     public function giftRedemptionEvents(): HasMany
     {
         return $this->hasMany(GiftRedemptionEvent::class, 'actor_user_id');
+    }
+
+    public function profileCosmetics(): HasMany
+    {
+        return $this->hasMany(UserProfileCosmetic::class);
     }
 
     public function supportSubscriptions(): HasMany

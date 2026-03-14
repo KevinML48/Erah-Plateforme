@@ -10,6 +10,7 @@ use App\Models\Duel;
 use App\Models\PointsTransaction;
 use App\Models\User;
 use App\Models\UserProgress;
+use App\Services\ProfileCosmeticService;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -19,7 +20,8 @@ class PublicProfileController extends Controller
     public function __invoke(
         User $user,
         EnsureUserProgressAction $ensureUserProgressAction,
-        SupporterAccessResolver $supporterAccessResolver
+        SupporterAccessResolver $supporterAccessResolver,
+        ProfileCosmeticService $profileCosmeticService
     ): View {
         $viewer = auth()->user();
         $canModerateProfile = $viewer?->role === User::ROLE_ADMIN;
@@ -81,6 +83,7 @@ class PublicProfileController extends Controller
             'canModerateProfile' => $canModerateProfile,
             'supporterSummary' => $supporterAccessResolver->summary($user),
             'viewer' => $viewer,
+            'profileCosmetics' => $profileCosmeticService->snapshotFor($user),
         ]);
     }
 }

@@ -10,6 +10,7 @@ use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
+use App\Services\Gifts\GiftRedemptionAutomationService;
 use App\Services\MissionEngine;
 use App\Services\PlatformPointService;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,8 @@ class RedeemGiftAction
         private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly NotifyAction $notifyAction,
-        private readonly MissionEngine $missionEngine
+        private readonly MissionEngine $missionEngine,
+        private readonly GiftRedemptionAutomationService $giftRedemptionAutomationService
     ) {
     }
 
@@ -61,6 +63,8 @@ class RedeemGiftAction
             if ((int) $gift->stock <= 0) {
                 throw new RuntimeException('Stock indisponible pour ce cadeau.');
             }
+
+            $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
 
             $redemption = GiftRedemption::query()->create([
                 'user_id' => $user->id,
@@ -111,27 +115,38 @@ class RedeemGiftAction
                 'created_at' => now(),
             ]);
 
+            $automation = $this->giftRedemptionAutomationService->autoDeliverIfEligible(
+                user: $user,
+                gift: $gift,
+                redemption: $redemption
+            );
+
             $this->storeAuditLogAction->execute(
                 action: 'gift.redeem',
                 actor: $user,
-                target: $redemption,
+                target: $redemption->fresh(),
                 context: [
                     'gift_id' => $gift->id,
                     'gift_title' => $gift->title,
                     'cost_points' => (int) $gift->cost_points,
                     'idempotency_key' => $idempotencyKey,
                     'balance_after' => (int) $walletResult['wallet']->balance,
+                    'auto_delivered' => $automation['auto_delivered'],
+                    'grant_summary' => $automation['grant_summary'],
                 ],
             );
 
             $this->notifyAction->execute(
                 user: $user,
                 category: NotificationCategory::SYSTEM->value,
-                title: 'Cadeau en attente',
-                message: 'Ta demande pour "'.$gift->title.'" est en attente de validation.',
+                title: $automation['auto_delivered'] ? 'Objet de profil livre' : 'Cadeau en attente',
+                message: $automation['auto_delivered']
+                    ? 'Ton achat "'.$gift->title.'" est disponible sur ton profil.'
+                    : 'Ta demande pour "'.$gift->title.'" est en attente de validation.',
                 data: [
                     'gift_id' => $gift->id,
                     'redemption_id' => $redemption->id,
+                    'auto_delivered' => $automation['auto_delivered'],
                 ],
             );
 

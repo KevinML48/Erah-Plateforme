@@ -154,7 +154,21 @@
                                         <div class="adm-gift-media"><img src="{{ $gift->image_url ?: $giftFallbackImage }}" loading="lazy" alt="{{ $gift->title }}"></div>
                                         <div class="adm-gift-copy"><h3 class="adm-gift-title">{{ $gift->title }}</h3><p class="adm-meta">{{ \Illuminate\Support\Str::limit((string) ($gift->description ?? 'Aucune description'), 120) }}</p></div>
                                         <div class="adm-gift-meta">
-                                            <span class="adm-pill">ID #{{ $gift->id }}</span><span class="adm-pill">{{ (int) $gift->cost_points }} pts</span><span class="adm-pill">Stock {{ (int) $gift->stock }}</span><span class="adm-pill">{{ $gift->is_active ? 'Actif' : 'Inactif' }}</span><span class="adm-pill">{{ $gift->is_featured ? 'Mis en avant' : 'Standard' }}</span><span class="adm-pill">Ordre {{ (int) ($gift->sort_order ?? 0) }}</span>
+                                            <span class="adm-pill">ID #{{ $gift->id }}</span>
+                                            <span class="adm-pill">{{ (int) $gift->cost_points }} pts</span>
+                                            <span class="adm-pill">Stock {{ (int) $gift->stock }}</span>
+                                            <span class="adm-pill">{{ $gift->is_active ? 'Actif' : 'Inactif' }}</span>
+                                            <span class="adm-pill">{{ $gift->is_featured ? 'Mis en avant' : 'Standard' }}</span>
+                                            <span class="adm-pill">Ordre {{ (int) ($gift->sort_order ?? 0) }}</span>
+                                            @if($gift->launchCatalogCategoryLabel())
+                                                <span class="adm-pill">{{ $gift->launchCatalogCategoryLabel() }}</span>
+                                            @endif
+                                            @if($gift->launchCatalogDeliveryTypeLabel())
+                                                <span class="adm-pill">{{ $gift->launchCatalogDeliveryTypeLabel() }}</span>
+                                            @endif
+                                            @if($gift->launchCatalogRequiresAdminValidation())
+                                                <span class="adm-pill">Validation admin</span>
+                                            @endif
                                         </div>
                                         <details class="adm-advanced">
                                             <summary>Modifier ce cadeau</summary>

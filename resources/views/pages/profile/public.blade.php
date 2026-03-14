@@ -40,6 +40,27 @@
             height: 84px;
         }
 
+        .public-profile-cosmetic-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .public-profile-cosmetic-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .04);
+            color: rgba(255, 255, 255, .84);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
         .public-profile-eyebrow {
             display: inline-block;
             margin-bottom: 8px;
@@ -522,6 +543,12 @@
             color: rgba(255, 255, 255, .74);
         }
 
+        body.tt-lightmode-on .public-profile-cosmetic-pill {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .86);
+            color: #0f172a;
+        }
+
         @media (max-width: 1199.98px) {
             .public-profile-top-grid,
             .public-profile-review-grid,
@@ -622,6 +649,33 @@
             ['label' => 'Duels', 'value' => (int) ($stats['duels'] ?? 0)],
             ['label' => 'Pronostics', 'value' => (int) ($stats['bets'] ?? 0)],
         ]);
+        $profileCosmetics = $profileCosmetics ?? ['active' => []];
+        $activeProfileCosmetics = $profileCosmetics['active'] ?? [];
+        $activeBadge = $activeProfileCosmetics['badge'] ?? null;
+        $activeAvatarFrame = $activeProfileCosmetics['avatar_frame'] ?? null;
+        $activeBanner = $activeProfileCosmetics['banner'] ?? null;
+        $activeTitle = $activeProfileCosmetics['profile_title'] ?? null;
+        $activeUsernameColor = $activeProfileCosmetics['username_color'] ?? null;
+        $activeTheme = $activeProfileCosmetics['profile_theme'] ?? null;
+        $profileFeaturedUntil = $activeProfileCosmetics['profile_featured_until'] ?? null;
+        $isProfileFeatured = (bool) ($activeProfileCosmetics['is_featured'] ?? false);
+        $profileNameStyle = collect([
+            data_get($activeUsernameColor, 'preview.text_color') ? 'color: '.data_get($activeUsernameColor, 'preview.text_color') : null,
+            data_get($activeUsernameColor, 'preview.shadow') ? 'text-shadow: '.data_get($activeUsernameColor, 'preview.shadow') : null,
+        ])->filter()->implode('; ');
+        $profileAvatarStyle = collect([
+            data_get($activeAvatarFrame, 'preview.border_color') ? 'border-color: '.data_get($activeAvatarFrame, 'preview.border_color') : null,
+            data_get($activeAvatarFrame, 'preview.glow') ? 'box-shadow: 0 0 0 6px '.data_get($activeAvatarFrame, 'preview.glow') : null,
+        ])->filter()->implode('; ');
+        $profileHeroStyle = collect([
+            (data_get($activeBanner, 'preview.card_background') ?: data_get($activeTheme, 'preview.card_background'))
+                ? 'background: '.(data_get($activeBanner, 'preview.card_background') ?: data_get($activeTheme, 'preview.card_background'))
+                : null,
+            (data_get($activeBanner, 'preview.card_border') ?: data_get($activeTheme, 'preview.card_border'))
+                ? 'border-color: '.(data_get($activeBanner, 'preview.card_border') ?: data_get($activeTheme, 'preview.card_border'))
+                : null,
+            data_get($activeTheme, 'preview.card_background') ? 'box-shadow: inset 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 24px 60px rgba(0, 0, 0, .22)' : null,
+        ])->filter()->implode('; ');
 
         $presenceCards = collect([
             [
@@ -704,14 +758,28 @@
             <div class="tt-section-inner tt-wrap max-width-1800">
                 <div class="public-profile-shell">
                     <section class="public-profile-top-grid">
-                        <div class="public-profile-surface public-profile-identity-card">
+                        <div class="public-profile-surface public-profile-identity-card" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
                             <div class="public-profile-panel-head">
-                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar">
+                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
 
                                 <div class="public-profile-identity-copy">
                                     <div>
                                         <span class="public-profile-eyebrow">Profil public membre</span>
-                                        <h1 class="public-profile-name">{{ $userProfile->name }}</h1>
+                                        <h1 class="public-profile-name" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $userProfile->name }}</h1>
+                                        @if($activeTitle)
+                                            <div class="public-profile-cosmetic-row" style="margin-top:10px;">
+                                                <span class="public-profile-cosmetic-pill"
+                                                    @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
+                                                        style="
+                                                            {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
+                                                            {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
+                                                        "
+                                                    @endif
+                                                >
+                                                    {{ $activeTitle['label'] }}
+                                                </span>
+                                            </div>
+                                        @endif
                                         <p class="public-profile-subtitle">
                                             {{ $progress?->league?->name ? 'Ligue '.$progress->league->name.' - ' : '' }}
                                             {{ $supporterStatusLabel }}
@@ -729,9 +797,30 @@
                                 @if($rankPosition)
                                     <span class="public-profile-pill">Classement global #{{ $rankPosition }}</span>
                                 @endif
+                                @if($activeBadge)
+                                    <span class="public-profile-cosmetic-pill"
+                                        @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
+                                            style="
+                                                {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
+                                                {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
+                                            "
+                                        @endif
+                                    >
+                                        {{ $activeBadge['label'] }}
+                                    </span>
+                                @endif
+                                @if($activeBanner)
+                                    <span class="public-profile-cosmetic-pill">Banniere premium active</span>
+                                @endif
                                 <span class="public-profile-pill {{ ($supporterSummary['is_active'] ?? false) ? 'is-supporter' : '' }}">
                                     {{ $supporterStatusLabel }}
                                 </span>
+                                @if($activeTheme)
+                                    <span class="public-profile-cosmetic-pill">Theme premium actif</span>
+                                @endif
+                                @if($isProfileFeatured)
+                                    <span class="public-profile-cosmetic-pill">Profil en avant jusqu au {{ optional($profileFeaturedUntil)->format('d/m/Y') }}</span>
+                                @endif
                                 @if($canModerateProfile ?? false)
                                     <span class="public-profile-pill is-supporter">Mode moderation admin</span>
                                 @endif

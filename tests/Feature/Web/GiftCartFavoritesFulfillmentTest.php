@@ -8,7 +8,9 @@ use App\Models\GiftFavorite;
 use App\Models\GiftRedemption;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
+use App\Models\UserProfileCosmetic;
 use App\Models\UserRewardWallet;
+use Database\Seeders\LaunchGiftCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -310,6 +312,170 @@ class GiftCartFavoritesFulfillmentTest extends TestCase
             ->assertOk()
             ->assertSee('Gift A')
             ->assertDontSee('Gift B');
+    }
+
+    public function test_profile_digital_gift_is_auto_delivered_and_equipped_on_redeem(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 2000,
+        ]);
+
+        $gift = Gift::query()->where('key', 'launch-profile-badge-exclusive')->firstOrFail();
+
+        $this->actingAs($user)
+            ->post(route('gifts.redeem', $gift->id), [
+                'idempotency_key' => 'gift-profile-badge-0001',
+            ])
+            ->assertRedirect();
+
+        $redemption = GiftRedemption::query()
+            ->where('user_id', $user->id)
+            ->where('gift_id', $gift->id)
+            ->firstOrFail();
+
+        $this->assertSame(GiftRedemption::STATUS_DELIVERED, $redemption->status);
+        $this->assertDatabaseHas('user_profile_cosmetics', [
+            'user_id' => $user->id,
+            'gift_id' => $gift->id,
+            'slot' => 'badge',
+            'cosmetic_key' => 'launch_badge_exclusive',
+        ]);
+        $this->assertDatabaseHas('reward_wallet_transactions', [
+            'user_id' => $user->id,
+            'unique_key' => 'gift.redeem.cost.gift-profile-badge-0001',
+            'type' => RewardWalletTransaction::TYPE_GIFT_PURCHASE,
+        ]);
+
+        $user->refresh();
+        $this->assertSame('launch_badge_exclusive', $user->equipped_profile_badge);
+    }
+
+    public function test_profile_prestige_pack_grants_multiple_unlocks_and_temporary_effects(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 10000,
+        ]);
+
+        $gift = Gift::query()->where('key', 'launch-prestige-profile-pack')->firstOrFail();
+
+        $this->actingAs($user)
+            ->post(route('gifts.redeem', $gift->id), [
+                'idempotency_key' => 'gift-profile-pack-0001',
+            ])
+            ->assertRedirect();
+
+        $user->refresh();
+
+        $this->assertSame(7, UserProfileCosmetic::query()->where('user_id', $user->id)->count());
+        $this->assertSame('launch_badge_exclusive', $user->equipped_profile_badge);
+        $this->assertSame('launch_avatar_frame_erah', $user->equipped_avatar_frame);
+        $this->assertSame('launch_banner_premium', $user->equipped_profile_banner);
+        $this->assertSame('launch_title_exclusive', $user->equipped_profile_title);
+        $this->assertSame('launch_username_color_premium', $user->equipped_username_color);
+        $this->assertSame('launch_profile_theme_premium', $user->equipped_profile_theme);
+        $this->assertNotNull($user->profile_featured_until);
+
+        $temporaryCosmetics = UserProfileCosmetic::query()
+            ->where('user_id', $user->id)
+            ->whereIn('slot', ['username_color', 'profile_theme', 'profile_featured'])
+            ->get();
+
+        $this->assertCount(3, $temporaryCosmetics);
+        $this->assertTrue($temporaryCosmetics->every(fn (UserProfileCosmetic $cosmetic): bool => $cosmetic->expires_at !== null));
+    }
+
+    public function test_profile_permanent_gift_cannot_be_bought_twice_after_unlock(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 3000,
+        ]);
+
+        $gift = Gift::query()->where('key', 'launch-profile-badge-exclusive')->firstOrFail();
+
+        $this->actingAs($user)->post(route('gifts.redeem', $gift->id), [
+            'idempotency_key' => 'gift-profile-badge-0002',
+        ])->assertRedirect();
+
+        $response = $this->actingAs($user)->post(route('gifts.redeem', $gift->id), [
+            'idempotency_key' => 'gift-profile-badge-0003',
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error', 'Cet objet de profil est deja dans votre collection.');
+
+        $this->assertSame(1, GiftRedemption::query()->where('user_id', $user->id)->where('gift_id', $gift->id)->count());
+    }
+
+    public function test_manual_reward_gift_creates_pending_request_without_profile_unlock(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 5000,
+        ]);
+
+        $gift = Gift::query()->where('key', 'launch-amazon-purchase-10-eur')->firstOrFail();
+
+        $this->actingAs($user)
+            ->post(route('gifts.redeem', $gift->id), [
+                'idempotency_key' => 'gift-manual-amazon-001',
+            ])
+            ->assertRedirect();
+
+        $redemption = GiftRedemption::query()
+            ->where('user_id', $user->id)
+            ->where('gift_id', $gift->id)
+            ->firstOrFail();
+
+        $this->assertSame(GiftRedemption::STATUS_PENDING, $redemption->status);
+        $this->assertDatabaseCount('user_profile_cosmetics', 0);
+    }
+
+    public function test_repeatable_profile_featured_purchase_extends_existing_duration(): void
+    {
+        $this->seed(LaunchGiftCatalogSeeder::class);
+
+        $user = User::factory()->create();
+        UserRewardWallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 10000,
+        ]);
+
+        $sevenDayGift = Gift::query()->where('key', 'launch-profile-spotlight-7-days')->firstOrFail();
+        $thirtyDayGift = Gift::query()->where('key', 'launch-profile-spotlight-30-days')->firstOrFail();
+
+        $this->actingAs($user)->post(route('gifts.redeem', $sevenDayGift->id), [
+            'idempotency_key' => 'gift-featured-7d-001',
+        ])->assertRedirect();
+
+        $firstExpiry = $user->fresh()->profile_featured_until;
+        $this->assertNotNull($firstExpiry);
+
+        $this->actingAs($user)->post(route('gifts.redeem', $thirtyDayGift->id), [
+            'idempotency_key' => 'gift-featured-30d-001',
+        ])->assertRedirect();
+
+        $user->refresh();
+        $this->assertNotNull($user->profile_featured_until);
+        $this->assertTrue($user->profile_featured_until->gt($firstExpiry->copy()->addDays(29)));
+        $this->assertSame(1, UserProfileCosmetic::query()
+            ->where('user_id', $user->id)
+            ->where('slot', 'profile_featured')
+            ->count());
     }
 
     public function test_admin_can_process_pending_to_approved_to_shipped_to_delivered(): void

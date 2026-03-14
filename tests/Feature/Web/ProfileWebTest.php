@@ -4,6 +4,7 @@ namespace Tests\Feature\Web;
 
 use App\Models\SocialAccount;
 use App\Models\User;
+use App\Models\UserProfileCosmetic;
 use Database\Seeders\LeagueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -119,5 +120,140 @@ class ProfileWebTest extends TestCase
         $response->assertSee('Compte lie');
         $response->assertSee('Reconnecter Discord');
         $response->assertSee('linked-discord@example.com');
+    }
+
+    public function test_profile_page_lists_owned_cosmetics_and_allows_equipping_them(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'equipped_profile_badge' => 'launch_badge_exclusive',
+        ]);
+
+        UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'badge',
+            'cosmetic_key' => 'launch_badge_exclusive',
+            'metadata' => [
+                'label' => 'Badge exclusif ERAH',
+                'description' => 'Badge exclusif de lancement.',
+                'preview' => [
+                    'pill_background' => 'linear-gradient(135deg, #7f1d1d, #ef4444)',
+                    'pill_color' => '#fff1f2',
+                ],
+            ],
+        ]);
+
+        $alternativeBadge = UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'badge',
+            'cosmetic_key' => 'launch_badge_champion',
+            'metadata' => [
+                'label' => 'Badge champion',
+                'description' => 'Badge alternatif equipeable.',
+            ],
+        ]);
+
+        $response = $this->actingAs($user)->get(route('profile.show'));
+
+        $response->assertOk();
+        $response->assertSee('Objets de profil');
+        $response->assertSee('Badge exclusif ERAH');
+        $response->assertSee('Badge champion');
+        $response->assertSee('Equiper');
+
+        $this->actingAs($user)
+            ->post(route('profile.cosmetics.equip', $alternativeBadge))
+            ->assertRedirect();
+
+        $user->refresh();
+        $this->assertSame('launch_badge_champion', $user->equipped_profile_badge);
+    }
+
+    public function test_public_profile_displays_active_profile_cosmetics(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'name' => 'Cosmetic Player',
+            'equipped_profile_badge' => 'launch_badge_exclusive',
+            'equipped_profile_title' => 'launch_title_exclusive',
+            'equipped_profile_theme' => 'launch_profile_theme_premium',
+            'profile_featured_until' => now()->addDays(4),
+        ]);
+
+        UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'badge',
+            'cosmetic_key' => 'launch_badge_exclusive',
+            'metadata' => [
+                'label' => 'Badge exclusif ERAH',
+                'description' => 'Badge exclusif de lancement.',
+                'preview' => [
+                    'pill_background' => 'linear-gradient(135deg, #7f1d1d, #ef4444)',
+                    'pill_color' => '#fff1f2',
+                ],
+            ],
+        ]);
+
+        UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'profile_title',
+            'cosmetic_key' => 'launch_title_exclusive',
+            'metadata' => [
+                'label' => 'Membre prestige',
+                'description' => 'Titre exclusif de lancement.',
+            ],
+        ]);
+
+        UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'profile_theme',
+            'cosmetic_key' => 'launch_profile_theme_premium',
+            'expires_at' => now()->addDays(30),
+            'metadata' => [
+                'label' => 'Theme premium ERAH',
+                'description' => 'Theme premium actif 30 jours.',
+            ],
+        ]);
+
+        $response = $this->get(route('users.public', $user));
+
+        $response->assertOk();
+        $response->assertSee('Cosmetic Player');
+        $response->assertSee('Badge exclusif ERAH');
+        $response->assertSee('Membre prestige');
+        $response->assertSee('Theme premium actif');
+        $response->assertSee('Profil en avant jusqu au');
+    }
+
+    public function test_expired_profile_cosmetic_is_not_rendered_as_active(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'name' => 'Expired Cosmetic Player',
+            'equipped_profile_theme' => 'launch_profile_theme_premium',
+        ]);
+
+        UserProfileCosmetic::query()->create([
+            'user_id' => $user->id,
+            'slot' => 'profile_theme',
+            'cosmetic_key' => 'launch_profile_theme_premium',
+            'expires_at' => now()->subDay(),
+            'metadata' => [
+                'label' => 'Theme premium ERAH',
+                'description' => 'Theme premium actif 30 jours.',
+            ],
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertDontSee('Theme profil actif');
+
+        $this->get(route('users.public', $user))
+            ->assertOk()
+            ->assertDontSee('Theme premium actif');
     }
 }

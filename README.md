@@ -76,6 +76,7 @@ php artisan test
 ```bash
 php artisan migrate
 php artisan db:seed --class=Database\\Seeders\\LaunchMissionCatalogSeeder
+php artisan db:seed --class=Database\\Seeders\\LaunchGiftCatalogSeeder
 php artisan db:seed --class=CommunityPlatformSeeder
 php artisan db:seed --class=MissionsAndGiftsSeeder
 php artisan test
@@ -89,6 +90,8 @@ php artisan optimize:clear
 - Les ligues suivent la liste canonique: Bronze, Argent, Gold, Platine, Diamant, Champion, ERAH Prime.
 - Les missions distribuent des rewards simples et lisibles.
 - Le catalogue canonique des 50 missions de lancement est versionne dans `database/seeders/data/launch_missions.php`.
+- Le catalogue canonique des 30 cadeaux de lancement est versionne dans `database/seeders/data/launch_gifts.php`.
+- Les objets numeriques de profil achetes en boutique sont debloques dans `user_profile_cosmetics` et peuvent etre equipes depuis `/console/profile`.
 - Les zones privees et admin restent non indexees.
 
 ## Production
@@ -108,6 +111,21 @@ Variables contact a renseigner :
 
 - `MAIL_CONTACT_ADDRESS` : adresse de reception des demandes contact
 - `MAIL_CONTACT_NAME` : nom associe a la boite de reception contact
+
+## Laravel Cloud
+
+Pour injecter le catalogue final cadeaux sur une instance Laravel Cloud :
+
+```bash
+php artisan migrate --force
+php artisan db:seed --class="Database\\Seeders\\LaunchGiftCatalogSeeder" --force
+```
+
+Verification rapide apres injection :
+
+- `/console/gifts` : 30 cadeaux actifs, categories `Profil numerique`, `Digital`, `Recompense manuelle`, `Physique`, `Premium`
+- `/console/admin/gifts` : stock, type de livraison et validation admin coherents
+- achat d un objet `profile_digital` : livraison immediate sur le profil, objet visible et equipable dans `/console/profile`
 
 ## Documentation
 

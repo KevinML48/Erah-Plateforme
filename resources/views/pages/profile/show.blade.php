@@ -146,6 +146,111 @@
             line-height: 1.45;
         }
 
+        .profile-cosmetic-badges,
+        .profile-cosmetic-grid,
+        .profile-cosmetic-slot-stack {
+            display: grid;
+            gap: 12px;
+        }
+
+        .profile-cosmetic-badges {
+            margin-top: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, max-content));
+        }
+
+        .profile-cosmetic-pill,
+        .profile-cosmetic-preview,
+        .profile-cosmetic-state {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .04);
+            color: rgba(255, 255, 255, .88);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-cosmetic-slot {
+            display: grid;
+            gap: 12px;
+        }
+
+        .profile-cosmetic-slot-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-cosmetic-slot-head strong {
+            font-size: 15px;
+        }
+
+        .profile-cosmetic-slot-head span,
+        .profile-cosmetic-meta,
+        .profile-cosmetic-helper {
+            color: rgba(255, 255, 255, .68);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .profile-cosmetic-card {
+            display: grid;
+            gap: 14px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .profile-cosmetic-card.is-equipped {
+            border-color: rgba(91, 214, 143, .3);
+            background: rgba(91, 214, 143, .08);
+        }
+
+        .profile-cosmetic-card.is-expired {
+            border-style: dashed;
+            opacity: .76;
+        }
+
+        .profile-cosmetic-copy strong {
+            display: block;
+            margin: 10px 0 6px;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .profile-cosmetic-copy p {
+            margin: 0;
+            color: rgba(255, 255, 255, .78);
+            line-height: 1.6;
+        }
+
+        .profile-cosmetic-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .profile-cosmetic-state.is-expired {
+            border-color: rgba(255, 255, 255, .16);
+            color: rgba(255, 255, 255, .62);
+        }
+
+        .profile-cosmetic-state.is-active {
+            border-color: rgba(245, 158, 11, .28);
+            color: #fde68a;
+            background: rgba(245, 158, 11, .1);
+        }
+
         body.tt-lightmode-on .profile-form-card,
         body.tt-lightmode-on .profile-side-card,
         body.tt-lightmode-on .profile-kpi-card,
@@ -180,6 +285,13 @@
             color: rgba(71, 85, 105, .72);
         }
 
+        body.tt-lightmode-on .profile-cosmetic-slot-head span,
+        body.tt-lightmode-on .profile-cosmetic-meta,
+        body.tt-lightmode-on .profile-cosmetic-helper,
+        body.tt-lightmode-on .profile-cosmetic-copy p {
+            color: rgba(51, 65, 85, .76);
+        }
+
         body.tt-lightmode-on .profile-shortcut-badge,
         body.tt-lightmode-on .profile-shortcut-count,
         body.tt-lightmode-on .profile-history-kind,
@@ -188,7 +300,10 @@
         body.tt-lightmode-on .profile-mission-kicker,
         body.tt-lightmode-on .profile-mission-pill,
         body.tt-lightmode-on .profile-mission-status,
-        body.tt-lightmode-on .profile-connected-status {
+        body.tt-lightmode-on .profile-connected-status,
+        body.tt-lightmode-on .profile-cosmetic-pill,
+        body.tt-lightmode-on .profile-cosmetic-preview,
+        body.tt-lightmode-on .profile-cosmetic-state {
             border-color: rgba(148, 163, 184, .24);
             background: rgba(255,255,255,.84);
             color: #0f172a;
@@ -197,10 +312,16 @@
         body.tt-lightmode-on .profile-connected-status.is-linked,
         body.tt-lightmode-on .profile-history-kind.is-xp,
         body.tt-lightmode-on .profile-review-status.is-published,
-        body.tt-lightmode-on .profile-mission-status.is-completed {
+        body.tt-lightmode-on .profile-mission-status.is-completed,
+        body.tt-lightmode-on .profile-cosmetic-card.is-equipped {
             border-color: rgba(34, 197, 94, .24);
             background: rgba(220, 252, 231, .88);
             color: #166534;
+        }
+
+        body.tt-lightmode-on .profile-cosmetic-card {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .86);
         }
 
         .profile-shortcut-card {
@@ -694,6 +815,34 @@
         $missionFocusCards = $missionFocusCards ?? collect();
         $missionSummary = $missionSummary ?? [];
         $assistantFavorites = $assistantFavorites ?? collect();
+        $profileCosmetics = $profileCosmetics ?? ['active' => [], 'owned_by_slot' => [], 'slot_labels' => []];
+        $activeProfileCosmetics = $profileCosmetics['active'] ?? [];
+        $activeBadge = $activeProfileCosmetics['badge'] ?? null;
+        $activeAvatarFrame = $activeProfileCosmetics['avatar_frame'] ?? null;
+        $activeBanner = $activeProfileCosmetics['banner'] ?? null;
+        $activeTitle = $activeProfileCosmetics['profile_title'] ?? null;
+        $activeUsernameColor = $activeProfileCosmetics['username_color'] ?? null;
+        $activeTheme = $activeProfileCosmetics['profile_theme'] ?? null;
+        $profileFeaturedUntil = $activeProfileCosmetics['profile_featured_until'] ?? null;
+        $isProfileFeatured = (bool) ($activeProfileCosmetics['is_featured'] ?? false);
+        $equipRouteName = request()->routeIs('app.*') ? 'app.profile.cosmetics.equip' : 'profile.cosmetics.equip';
+        $profileNameStyle = collect([
+            data_get($activeUsernameColor, 'preview.text_color') ? 'color: '.data_get($activeUsernameColor, 'preview.text_color') : null,
+            data_get($activeUsernameColor, 'preview.shadow') ? 'text-shadow: '.data_get($activeUsernameColor, 'preview.shadow') : null,
+        ])->filter()->implode('; ');
+        $profileAvatarStyle = collect([
+            data_get($activeAvatarFrame, 'preview.border_color') ? 'border-color: '.data_get($activeAvatarFrame, 'preview.border_color') : null,
+            data_get($activeAvatarFrame, 'preview.glow') ? 'box-shadow: 0 0 0 6px '.data_get($activeAvatarFrame, 'preview.glow') : null,
+        ])->filter()->implode('; ');
+        $profileHeroStyle = collect([
+            (data_get($activeBanner, 'preview.card_background') ?: data_get($activeTheme, 'preview.card_background'))
+                ? 'background: '.(data_get($activeBanner, 'preview.card_background') ?: data_get($activeTheme, 'preview.card_background'))
+                : null,
+            (data_get($activeBanner, 'preview.card_border') ?: data_get($activeTheme, 'preview.card_border'))
+                ? 'border-color: '.(data_get($activeBanner, 'preview.card_border') ?: data_get($activeTheme, 'preview.card_border'))
+                : null,
+            data_get($activeTheme, 'preview.card_background') ? 'box-shadow: inset 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 18px 42px rgba(0, 0, 0, 0.2)' : null,
+        ])->filter()->implode('; ');
     @endphp
 
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -857,9 +1006,23 @@
                     </div>
 
                     <div class="tt-col-xl-5">
-                        <div class="profile-side-card margin-bottom-30" data-tour="profile-overview">
-                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview>
-                            <h4 class="no-margin">{{ $user->name }}</h4>
+                        <div class="profile-side-card margin-bottom-30" data-tour="profile-overview" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
+                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
+                            <h4 class="no-margin" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $user->name }}</h4>
+                            @if($activeTitle)
+                                <p class="tt-form-text margin-top-10">
+                                    <span class="profile-cosmetic-pill"
+                                        @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
+                                            style="
+                                                {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
+                                                {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
+                                            "
+                                        @endif
+                                    >
+                                        {{ $activeTitle['label'] }}
+                                    </span>
+                                </p>
+                            @endif
                             <p class="tt-form-text no-margin">{{ $user->email }}</p>
                             <p class="tt-form-text margin-top-10">Role: {{ strtoupper((string) $user->role) }}</p>
                             <p class="tt-form-text margin-top-10">
@@ -874,6 +1037,32 @@
                                 <li><strong>Niveau:</strong> {{ (int) data_get($experience ?? [], 'level', 1) }}</li>
                                 <li><strong>XP total:</strong> {{ (int) data_get($experience ?? [], 'total_xp', 0) }}</li>
                             </ul>
+
+                            @if($activeBadge || $activeBanner || $activeTheme || $isProfileFeatured)
+                                <div class="profile-cosmetic-badges">
+                                    @if($activeBadge)
+                                        <span class="profile-cosmetic-pill"
+                                            @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
+                                                style="
+                                                    {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
+                                                    {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
+                                                "
+                                            @endif
+                                        >
+                                            {{ $activeBadge['label'] }}
+                                        </span>
+                                    @endif
+                                    @if($activeBanner)
+                                        <span class="profile-cosmetic-pill">Banniere premium active</span>
+                                    @endif
+                                    @if($activeTheme)
+                                        <span class="profile-cosmetic-pill">Theme profil actif</span>
+                                    @endif
+                                    @if($isProfileFeatured)
+                                        <span class="profile-cosmetic-pill">Profil en avant jusqu au {{ optional($profileFeaturedUntil)->format('d/m/Y') }}</span>
+                                    @endif
+                                </div>
+                            @endif
 
                             @if($user->twitter_url || $user->instagram_url || $user->tiktok_url || $user->discord_url)
                                 <div class="tt-social-buttons margin-top-20">
@@ -903,6 +1092,11 @@
                                 </a>
                             </div>
                         </div>
+
+                        @include('pages.profile.partials.cosmetics-manager', [
+                            'profileCosmetics' => $profileCosmetics,
+                            'equipRouteName' => $equipRouteName,
+                        ])
 
                         <div class="profile-kpi-grid">
                             <div class="profile-kpi-card">

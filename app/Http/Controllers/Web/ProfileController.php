@@ -15,6 +15,7 @@ use App\Services\MissionEngine;
 use App\Services\ShortcutService;
 use App\Services\MissionCatalogService;
 use App\Services\MissionFocusService;
+use App\Services\ProfileCosmeticService;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -33,6 +34,7 @@ class ProfileController extends Controller
         SupporterAccessResolver $supporterAccessResolver,
         MissionCatalogService $missionCatalogService,
         ExperienceService $experienceService,
+        ProfileCosmeticService $profileCosmeticService,
     ): View
     {
         $user = auth()->user();
@@ -62,6 +64,7 @@ class ProfileController extends Controller
                 ->limit(12)
                 ->get()
             : collect();
+        $profileCosmetics = $profileCosmeticService->snapshotFor($user);
 
         return view('pages.profile.show', [
             'user' => $user,
@@ -80,6 +83,7 @@ class ProfileController extends Controller
             'missionSummary' => $missionPayload['summary'],
             'socialConnections' => $socialConnections,
             'assistantFavorites' => $assistantFavorites,
+            'profileCosmetics' => $profileCosmetics,
         ]);
     }
 

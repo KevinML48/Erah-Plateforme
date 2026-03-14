@@ -49,6 +49,7 @@ use App\Http\Controllers\Web\NotificationsPageController;
 use App\Http\Controllers\Web\OnboardingController;
 use App\Http\Controllers\Web\QuizPageController;
 use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\ProfileCosmeticController;
 use App\Http\Controllers\Web\ProfileClubReviewController;
 use App\Http\Controllers\Web\PublicProfileController;
 use App\Http\Controllers\Web\SettingsController;
@@ -157,6 +158,7 @@ Route::prefix('app')->middleware('auth')->group(function () {
     Route::post('/notifications/preferences', [NotificationsPageController::class, 'updatePreferences'])->name('app.notifications.preferences.update');
     Route::get('/profil', ProfileController::class)->name('app.profile');
     Route::get('/profil/transactions', [ProfileController::class, 'transactions'])->name('app.profile.transactions');
+    Route::post('/profil/cosmetics/{cosmetic}/equip', [ProfileCosmeticController::class, 'equip'])->name('app.profile.cosmetics.equip');
     Route::delete('/profil', [ProfileController::class, 'destroy'])->name('app.profile.destroy');
     Route::get('/raccourcis', [ShortcutController::class, 'index'])->name('app.shortcuts.index');
     Route::post('/raccourcis', [ShortcutController::class, 'update'])->name('app.shortcuts.update');
@@ -336,6 +338,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/profile', ProfileController::class)->name('profile.show');
         Route::get('/profile/transactions', [ProfileController::class, 'transactions'])->name('profile.transactions');
+        Route::post('/profile/cosmetics/{cosmetic}/equip', [ProfileCosmeticController::class, 'equip'])->name('profile.cosmetics.equip');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::post('/profile/review', [ProfileClubReviewController::class, 'store'])->name('profile.reviews.store');

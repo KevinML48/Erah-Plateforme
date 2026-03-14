@@ -13,6 +13,7 @@ use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
 use App\Models\UserRewardWallet;
+use App\Services\Gifts\GiftRedemptionAutomationService;
 use App\Services\PlatformPointService;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
@@ -25,7 +26,8 @@ class GiftCartService
     public function __construct(
         private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
-        private readonly NotifyAction $notifyAction
+        private readonly NotifyAction $notifyAction,
+        private readonly GiftRedemptionAutomationService $giftRedemptionAutomationService
     ) {
     }
 
@@ -119,6 +121,8 @@ class GiftCartService
             if ((int) $gift->stock <= 0) {
                 throw new RuntimeException('Ce cadeau est en rupture de stock.');
             }
+
+            $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
 
             $cartItem = GiftCartItem::query()
                 ->where('user_id', $user->id)
@@ -330,6 +334,8 @@ class GiftCartService
                     throw new RuntimeException('Stock insuffisant pour "'.$gift->title.'".');
                 }
 
+                $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
+
                 $lineTotal = (int) $gift->cost_points * (int) $cartItem->quantity;
                 $totalPoints += $lineTotal;
 
@@ -370,6 +376,7 @@ class GiftCartService
             }
 
             $redemptions = new EloquentCollection();
+            $autoDeliveredCount = 0;
 
             foreach ($cartItems as $cartItem) {
                 $gift = $gifts->get((int) $cartItem->gift_id);
@@ -404,7 +411,17 @@ class GiftCartService
                         'created_at' => now(),
                     ]);
 
-                    $redemptions->push($redemption);
+                    $automation = $this->giftRedemptionAutomationService->autoDeliverIfEligible(
+                        user: $user,
+                        gift: $gift,
+                        redemption: $redemption
+                    );
+
+                    if ($automation['auto_delivered']) {
+                        $autoDeliveredCount++;
+                    }
+
+                    $redemptions->push($redemption->fresh());
                 }
 
                 $gift->stock = max(0, (int) $gift->stock - (int) $cartItem->quantity);
@@ -441,18 +458,24 @@ class GiftCartService
                     'total_points' => $totalPoints,
                     'line_count' => count($lines),
                     'redemptions_count' => $redemptions->count(),
+                    'auto_delivered_count' => $autoDeliveredCount,
                     'idempotency_key' => $idempotencyKey,
                 ],
             );
 
+            $pendingCount = $redemptions->where('status', GiftRedemption::STATUS_PENDING)->count();
             $this->notifyAction->execute(
                 user: $user,
                 category: NotificationCategory::SYSTEM->value,
-                title: 'Commande cadeaux en attente',
-                message: 'Ta commande de '.$redemptions->count().' cadeau(x) est en attente de validation.',
+                title: $pendingCount > 0 ? 'Commande cadeaux en attente' : 'Objets de profil livres',
+                message: $pendingCount > 0
+                    ? 'Ta commande contient '.$pendingCount.' demande(s) en attente'
+                        .($autoDeliveredCount > 0 ? ' et '.$autoDeliveredCount.' objet(s) de profil livres automatiquement.' : '.')
+                    : 'Tes objets de profil achetes sont disponibles sur ton profil.',
                 data: [
                     'total_points' => $totalPoints,
                     'redemptions_count' => $redemptions->count(),
+                    'auto_delivered_count' => $autoDeliveredCount,
                 ],
             );
 
@@ -486,4 +509,3 @@ class GiftCartService
         ]);
     }
 }
-

@@ -318,7 +318,7 @@ class DemoDataSeeder extends Seeder
             );
 
             foreach (NotificationCategory::values() as $category) {
-                $categoryPréférence = $overrides[$alias][$category] ?? ['email' => true, 'push' => true];
+                $categoryPreference = $overrides[$alias][$category] ?? ['email' => true, 'push' => true];
 
                 NotificationPreference::query()->updateOrCreate(
                     [
@@ -326,8 +326,8 @@ class DemoDataSeeder extends Seeder
                         'category' => $category,
                     ],
                     [
-                        'email_enabled' => $categoryPréférence['email'],
-                        'push_enabled' => $categoryPréférence['push'],
+                        'email_enabled' => $categoryPreference['email'],
+                        'push_enabled' => $categoryPreference['push'],
                     ]
                 );
             }
@@ -573,7 +573,7 @@ class DemoDataSeeder extends Seeder
                 ['user' => 'maya', 'body' => 'La prise d info avant le push est nickel.'],
             ],
             'sniper-flick-masterclass' => [
-                ['user' => 'one', 'body' => 'Double flick, C'est sale.'],
+                ['user' => 'one', 'body' => 'Double flick, C\'est sale.'],
             ],
         ];
 

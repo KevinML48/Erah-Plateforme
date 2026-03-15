@@ -352,7 +352,7 @@ class GiftCartService
                 throw new RuntimeException('Solde insuffisant pour valider tout le panier.');
             }
 
-            $walletResult = $this->platformPointService->débit(
+            $walletResult = $this->platformPointService->debit(
                 user: $user,
                 amount: $totalPoints,
                 type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,

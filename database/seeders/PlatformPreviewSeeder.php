@@ -454,7 +454,7 @@ class PlatformPreviewSeeder extends Seeder
                 'alias' => 'member_active',
                 'question' => 'Quelle routine me conseilles-tu pour convertir mes points en cadeaux ?',
                 'answer' => 'Combine missions rapides + un pari raisonnable + verification du stock cadeaux avant checkout pour eviter les ruptures.',
-                'détails' => ['module' => 'gifts', 'priority' => 'high'],
+                'details' => ['module' => 'gifts', 'priority' => 'high'],
                 'sources' => ['missions', 'gifts', 'wallet'],
                 'next_steps' => ['Ouvrir Missions', 'Verifier mon solde points', 'Consulter Mes commandes cadeaux'],
             ],
@@ -462,7 +462,7 @@ class PlatformPreviewSeeder extends Seeder
                 'alias' => 'member_medium',
                 'question' => 'Comment suivre simplement toutes mes commandes cadeaux ?',
                 'answer' => 'Passe par Mes commandes cadeaux: tu as le statut, la timeline et les infos transport sur chaque détail de demande.',
-                'détails' => ['module' => 'gift_redemptions', 'priority' => 'medium'],
+                'details' => ['module' => 'gift_redemptions', 'priority' => 'medium'],
                 'sources' => ['gift_redemptions', 'gift_redemption_events'],
                 'next_steps' => ['Filtrer sur shipped', 'Ouvrir la commande la plus recente'],
             ],
@@ -470,7 +470,7 @@ class PlatformPreviewSeeder extends Seeder
                 'alias' => 'supporter_alpha',
                 'question' => 'Comment profiter au mieux de mes avantages supporter ?',
                 'answer' => 'Utilise les missions reservees supporters puis active les reactions supporter sur clips pour maximiser progression et visibilite.',
-                'détails' => ['module' => 'supporter', 'priority' => 'high'],
+                'details' => ['module' => 'supporter', 'priority' => 'high'],
                 'sources' => ['supporter_plans', 'missions', 'clips'],
                 'next_steps' => ['Verifier statut supporter', 'Completer mission supporter active'],
             ],
@@ -495,7 +495,7 @@ class PlatformPreviewSeeder extends Seeder
                 [
                     'question' => $question,
                     'answer' => (string) ($favorite['answer'] ?? ''),
-                    'détails' => (array) ($favorite['détails'] ?? []),
+                    'details' => (array) ($favorite['details'] ?? []),
                     'sources' => (array) ($favorite['sources'] ?? []),
                     'next_steps' => (array) ($favorite['next_steps'] ?? []),
                 ],
@@ -1345,7 +1345,7 @@ class PlatformPreviewSeeder extends Seeder
                 ],
             );
 
-            $platformPoints->débit(
+            $platformPoints->debit(
                 user: $user,
                 amount: (int) $gift->cost_points,
                 type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,

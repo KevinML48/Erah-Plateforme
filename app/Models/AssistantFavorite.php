@@ -12,7 +12,7 @@ class AssistantFavorite extends Model
         'fingerprint',
         'question',
         'answer',
-        'détails',
+        'details',
         'sources',
         'next_steps',
     ];
@@ -21,7 +21,7 @@ class AssistantFavorite extends Model
     {
         return [
             'user_id' => 'integer',
-            'détails' => 'array',
+            'details' => 'array',
             'sources' => 'array',
             'next_steps' => 'array',
         ];

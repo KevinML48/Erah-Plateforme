@@ -50,8 +50,8 @@ class ShopService
                     throw new RuntimeException('Article epuise.');
                 }
 
-                // Stable idempotency key: one logical checkout request = one wallet débit key.
-                $walletResult = $this->platformPointService->débit(
+                // Stable idempotency key: one logical checkout request = one wallet debit key.
+                $walletResult = $this->platformPointService->debit(
                     user: $user,
                     amount: (int) $item->cost_points,
                     type: \App\Models\RewardWalletTransaction::TYPE_SHOP_PURCHASE,

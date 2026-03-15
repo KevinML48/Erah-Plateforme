@@ -113,7 +113,7 @@ class PlaceBetAction
                     'meta' => $payload['meta'] ?? null,
                 ]);
 
-                $this->platformPointService->débit(
+                $this->platformPointService->debit(
                     user: $user,
                     amount: $stakePoints,
                     type: RewardWalletTransaction::TYPE_BET_STAKE,

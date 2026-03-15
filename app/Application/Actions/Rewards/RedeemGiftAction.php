@@ -80,7 +80,7 @@ class RedeemGiftAction
                 'delivered_at' => null,
             ]);
 
-            $walletResult = $this->platformPointService->débit(
+            $walletResult = $this->platformPointService->debit(
                 user: $user,
                 amount: (int) $gift->cost_points,
                 type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,

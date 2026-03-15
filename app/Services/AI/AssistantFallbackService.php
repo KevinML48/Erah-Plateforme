@@ -113,9 +113,9 @@ class AssistantFallbackService
         $points = (int) Arr::get($userContext, 'wallets.points', 0);
 
         $content = trim(implode("\n\n", array_filter([
-            'Si tu veux comprendre ERAH dans les grandes lignes, l'idée est simple : tout est rassemble dans le meme espace pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
+            'Si tu veux comprendre ERAH dans les grandes lignes, l\'idée est simple : tout est rassemble dans le meme espace pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
             "Dans ton contexte actuel, tu es en ligue {$league} avec {$xp} XP et {$points} points disponibles sur la plateforme.",
-            'Le plus utile maintenant, C'est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
+            'Le plus utile maintenant, C\'est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
         ])));
 
         return new AssistantResponse(

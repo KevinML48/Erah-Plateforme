@@ -109,7 +109,7 @@ class HelpCenterSeeder extends Seeder
                 'title' => 'Questions techniques',
                 'slug' => 'questions-techniques',
                 'description' => 'Connexion, compatibilite navigateur, PWA, video, problemes courants.',
-                'intro' => 'Les r\u00e9ponses techniques prioritaires pour les visiteurs et les membres.'
+                'intro' => 'Les r\u00e9ponses techniques prioritaires pour les visiteurs et les membres.',
                 'icon' => 'shield',
                 'landing_bucket' => 'technical',
                 'status' => HelpCategory::STATUS_PUBLISHED,
@@ -193,7 +193,7 @@ class HelpCenterSeeder extends Seeder
                 'is_featured' => true,
                 'is_faq' => true,
                 'sort_order' => 10,
-                'cta_label' => 'Cr\u00e9er un compte'
+                'cta_label' => 'Cr\u00e9er un compte',
                 'cta_url' => route('register'),
             ],
             [

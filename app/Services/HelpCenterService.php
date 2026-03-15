@@ -511,7 +511,7 @@ class HelpCenterService
                 $this->featureItem(
                     'missions',
                     'Missions, points et progression',
-                    'Le moteur qui oriente l'activité et transforme les usages utiles en progression lisible.',
+                    'Le moteur qui oriente l\'activité et transforme les usages utiles en progression lisible.',
                     ['Daily et activite guidee', 'Points pour les modules', 'XP pour les ligues'],
                     $mode === 'console' ? route('missions.index') : route('login'),
                     $mode === 'console' ? 'Voir les missions' : 'Se connecter',
@@ -1162,7 +1162,7 @@ class HelpCenterService
                     'Validez votre acces puis revenez sur votre dashboard.',
                     'Completez votre profil pour activer votre presence publique.',
                 ],
-                'tips' => ['Vous pouvez d'abord explorer les modules publics avant de créer votre compte.'],
+                'tips' => ['Vous pouvez d\'abord explorer les modules publics avant de créer votre compte.'],
             ],
             'placer-un-pari-avant-le-verrouillage' => [
                 ...$meta,
@@ -1171,7 +1171,7 @@ class HelpCenterService
                     'Choisissez la selection disponible avant le lock.',
                     'Confirmez votre pari tant que le marche est encore ouvert.',
                 ],
-                'tips' => ['Passe le lock, le pari n'est plus modifiable.'],
+                'tips' => ['Passe le lock, le pari n\'est plus modifiable.'],
             ],
             'gagner-des-points-avec-les-missions-quotidiennes' => [
                 ...$meta,

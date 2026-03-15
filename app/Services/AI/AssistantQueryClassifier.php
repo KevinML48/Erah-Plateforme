@@ -358,7 +358,7 @@ class AssistantQueryClassifier
                 normalized: $normalized,
                 tokens: $tokens,
                 matchedTopics: $matchedTopics,
-                message: 'Bonjour. Je peux t'aider sur ERAH. Dis-moi simplement ce que tu veux comprendre : les points, les missions, les matchs, les paris, le profil ou les recompenses.',
+                message: 'Bonjour. Je peux t\'aider sur ERAH. Dis-moi simplement ce que tu veux comprendre : les points, les missions, les matchs, les paris, le profil ou les recompenses.',
                 reason: 'greeting'
             );
         }
@@ -388,7 +388,7 @@ class AssistantQueryClassifier
                 normalized: $normalized,
                 tokens: $tokens,
                 matchedTopics: $matchedTopics,
-                message: 'Je peux t'aider, mais ta question est assez large. Tu veux comprendre le fonctionnement global de la plateforme, les points, les matchs, les missions ou une autre partie précise ?',
+                message: 'Je peux t\'aider, mais ta question est assez large. Tu veux comprendre le fonctionnement global de la plateforme, les points, les matchs, les missions ou une autre partie précise ?',
                 reason: 'broad_related'
             );
         }

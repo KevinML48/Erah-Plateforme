@@ -69,7 +69,7 @@ class ShopService
                     'shop_item_id' => $item->id,
                     'user_id' => $user->id,
                     'cost_points' => (int) $item->cost_points,
-                    'status' => 'complèted',
+                    'status' => 'completed',
                     'idempotency_key' => $idempotencyKey,
                     'payload' => $item->payload,
                     'purchased_at' => now(),
@@ -89,7 +89,7 @@ class ShopService
                 $this->achievementService->sync($user);
 
                 $this->storeAuditLogAction->execute(
-                    action: 'shop.purchase.complèted',
+                    action: 'shop.purchase.completed',
                     actor: $user,
                     target: $purchase,
                     context: [

@@ -182,8 +182,8 @@ class SocialAuthController extends Controller
             return;
         }
 
-        $missionEngine->recordEvent($user, 'profile.complèted', 1, [
-            'event_key' => 'profile.complèted.'.$user->id,
+        $missionEngine->recordEvent($user, 'profile.completed', 1, [
+            'event_key' => 'profile.completed.'.$user->id,
             'profile_completion' => $completion,
             'subject_type' => User::class,
             'subject_id' => (string) $user->id,

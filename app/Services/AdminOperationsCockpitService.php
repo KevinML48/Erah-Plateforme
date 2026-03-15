@@ -786,10 +786,10 @@ class AdminOperationsCockpitService
     private function auditActionMeta(string $action, array $context): ?array
     {
         return match (true) {
-            $action === 'shop.purchase.complèted' => [
+            $action === 'shop.purchase.completed' => [
                 'module_key' => 'shop',
                 'module_label' => 'Shop',
-                'type_key' => 'shop.purchase.complèted',
+                'type_key' => 'shop.purchase.completed',
                 'label' => 'Achat shop',
             ],
             $action === 'gift.redeem' => [
@@ -903,10 +903,10 @@ class AdminOperationsCockpitService
                 'type_key' => 'missions.repair.run',
                 'label' => 'Maintenance missions',
             ],
-            $action === 'missions.progress.recorded' && ! empty($context['missions_complèted']) => [
+            $action === 'missions.progress.recorded' && ! empty($context['missions_completed']) => [
                 'module_key' => 'missions',
                 'module_label' => 'Missions',
-                'type_key' => 'missions.progress.complèted',
+                'type_key' => 'missions.progress.completed',
                 'label' => 'Mission validee',
             ],
             $action === 'live-codes.redeemed' => [
@@ -1177,7 +1177,7 @@ class AdminOperationsCockpitService
             'gift.redeem.reject' => 'Cadeau rejete',
             'gift.redeem.ship' => 'Cadeau expedie',
             'gift.redeem.deliver' => 'Cadeau livre',
-            'shop.purchase.complèted' => 'Achat shop',
+            'shop.purchase.completed' => 'Achat shop',
             'bets.placed' => 'Pari place',
             'matches.settled' => 'Settlement match',
             'duels.created' => 'Duel cree',

@@ -29,7 +29,7 @@ class MissionMaintenanceService
         $expiredMarked = UserMission::query()
             ->where('user_id', $user->id)
             ->whereNull('expired_at')
-            ->whereNull('complèted_at')
+            ->whereNull('completed_at')
             ->whereHas('instance', fn ($query) => $query->where('period_end', '<', now()))
             ->update([
                 'expired_at' => now(),

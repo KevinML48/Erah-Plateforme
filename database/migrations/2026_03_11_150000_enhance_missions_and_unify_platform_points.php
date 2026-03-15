@@ -28,7 +28,7 @@ return new class extends Migration
         });
 
         Schema::table('user_missions', function (Blueprint $table) {
-            $table->timestamp('rewarded_at')->nullable()->after('complèted_at')->index();
+            $table->timestamp('rewarded_at')->nullable()->after('completed_at')->index();
             $table->timestamp('claimed_at')->nullable()->after('rewarded_at')->index();
             $table->timestamp('expired_at')->nullable()->after('claimed_at')->index();
             $table->timestamp('last_tracked_at')->nullable()->after('expired_at');
@@ -149,11 +149,11 @@ return new class extends Migration
     private function backfillUserMissions(): void
     {
         DB::table('user_missions')
-            ->whereNotNull('complèted_at')
+            ->whereNotNull('completed_at')
             ->whereNull('rewarded_at')
             ->update([
-                'rewarded_at' => DB::raw('complèted_at'),
-                'claimed_at' => DB::raw('complèted_at'),
+                'rewarded_at' => DB::raw('completed_at'),
+                'claimed_at' => DB::raw('completed_at'),
             ]);
 
         $now = now();
@@ -168,7 +168,7 @@ return new class extends Migration
 
         DB::table('user_missions')
             ->whereIn('mission_instance_id', $activeMissionIds->all())
-            ->whereNull('complèted_at')
+            ->whereNull('completed_at')
             ->whereNull('expired_at')
             ->update([
                 'expired_at' => $now,

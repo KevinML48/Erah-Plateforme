@@ -509,7 +509,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => true,
                 'started_at' => $this->now->subDays(20),
                 'last_seen_at' => $this->now->subDays(2),
-                'complèted_at' => $this->now->subDays(2),
+                'completed_at' => $this->now->subDays(2),
             ],
             'member_medium' => [
                 'status' => UserGuidedTour::STATUS_IN_PROGRESS,
@@ -517,7 +517,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => true,
                 'started_at' => $this->now->subDays(6),
                 'last_seen_at' => $this->now->subDays(1),
-                'complèted_at' => null,
+                'completed_at' => null,
             ],
             'member_new' => [
                 'status' => UserGuidedTour::STATUS_IN_PROGRESS,
@@ -525,7 +525,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => false,
                 'started_at' => $this->now->subDays(1),
                 'last_seen_at' => $this->now->subHours(4),
-                'complèted_at' => null,
+                'completed_at' => null,
             ],
         ];
 
@@ -872,7 +872,7 @@ class PlatformPreviewSeeder extends Seeder
 
             if ($inProgress) {
                 $inProgress->progress_count = min(1, (int) ($inProgress->instance?->template?->target_count ?? 1));
-                $inProgress->complèted_at = null;
+                $inProgress->completed_at = null;
                 $inProgress->rewarded_at = null;
                 $inProgress->claimed_at = null;
                 $inProgress->save();
@@ -881,22 +881,22 @@ class PlatformPreviewSeeder extends Seeder
 
         $activeUser = $this->users['member_active'] ?? null;
         if ($activeUser) {
-            $complèted = UserMission::query()
+            $completed = UserMission::query()
                 ->where('user_id', $activeUser->id)
                 ->whereHas('instance.template', fn ($query) => $query->where('key', 'launch.first-duel'))
                 ->latest('id')
                 ->first();
 
-            if ($complèted) {
-                $complèted->progress_count = max(1, (int) ($complèted->instance?->template?->target_count ?? 1));
-                $complèted->complèted_at = $complèted->complèted_at ?: $this->now->subHours(6);
-                $complèted->rewarded_at = $complèted->rewarded_at ?: $complèted->complèted_at;
-                $complèted->claimed_at = $complèted->claimed_at ?: $complèted->complèted_at;
-                $complèted->save();
+            if ($completed) {
+                $completed->progress_count = max(1, (int) ($completed->instance?->template?->target_count ?? 1));
+                $completed->completed_at = $completed->completed_at ?: $this->now->subHours(6);
+                $completed->rewarded_at = $completed->rewarded_at ?: $completed->completed_at;
+                $completed->claimed_at = $completed->claimed_at ?: $completed->completed_at;
+                $completed->save();
 
                 MissionCompletion::query()->updateOrCreate(
-                    ['user_id' => $activeUser->id, 'user_mission_id' => $complèted->id],
-                    ['complèted_at' => $complèted->complèted_at, 'created_at' => $complèted->complèted_at],
+                    ['user_id' => $activeUser->id, 'user_mission_id' => $completed->id],
+                    ['completed_at' => $completed->completed_at, 'created_at' => $completed->completed_at],
                 );
             }
         }

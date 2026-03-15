@@ -323,7 +323,7 @@ class GiftCartService
             foreach ($cartItems as $cartItem) {
                 $gift = $gifts->get((int) $cartItem->gift_id);
                 if (! $gift) {
-                    throw new RuntimeException('Un cadeau du panier n'est plus disponible.');
+                    throw new RuntimeException("Un cadeau du panier n'est plus disponible.");
                 }
 
                 if (! $gift->is_active) {

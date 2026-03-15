@@ -75,7 +75,7 @@ class CommunityPlatformSeeder extends Seeder
                 ],
             ],
             [
-                'prompt' => 'Quel module permet de récupérer des bonus instantanes en direct ?',
+                'prompt' => "Quel module permet de récupérer des bonus instantanés en direct ?",
                 'answers' => [
                     ['label' => 'Les codes live', 'is_correct' => true],
                     ['label' => 'Les favoris', 'is_correct' => false],
@@ -134,7 +134,7 @@ class CommunityPlatformSeeder extends Seeder
             ['key' => 'bonus-clips-launch'],
             [
                 'title' => 'Semaine bonus clips',
-                'description' => 'Les interactions clips profitent d'un bonus temporaire.',
+                'description' => "Les interactions clips profitent d'un bonus temporaire.",
                 'type' => 'bonus_clips',
                 'status' => 'published',
                 'is_active' => true,

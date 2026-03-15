@@ -606,7 +606,7 @@ class GiftPageController extends Controller
         }
 
         if (Str::contains($normalizedMessage, ['désactivée', 'indisponible'])) {
-            return 'Un des cadeaux du panier n'est plus disponible.';
+            return "Un des cadeaux du panier n'est plus disponible.";
         }
 
         return $message;

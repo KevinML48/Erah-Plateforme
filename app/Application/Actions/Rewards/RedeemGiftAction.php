@@ -57,7 +57,7 @@ class RedeemGiftAction
                 ->firstOrFail();
 
             if (! $gift->is_active) {
-                throw new RuntimeException('Ce cadeau n'est pas disponible.');
+                throw new RuntimeException("Ce cadeau n'est pas disponible.");
             }
 
             if ((int) $gift->stock <= 0) {

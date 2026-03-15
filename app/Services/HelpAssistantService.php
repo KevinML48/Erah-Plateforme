@@ -32,7 +32,7 @@ class HelpAssistantService
                 confidence: 'out_of_scope',
                 userContext: $userContext,
                 nextSteps: [
-                    'Reformule ta question autour des points, missions, matchs, paris, recompenses ou profil.',
+                    "Reformule ta question autour des points, missions, matchs, paris, recompenses ou profil.",
                 ],
             );
         }
@@ -43,7 +43,7 @@ class HelpAssistantService
                 confidence: 'clarification',
                 userContext: $userContext,
                 nextSteps: [
-                    'Tu peux me demander par exemple comment gagner des points, suivre les matchs ou ameliorer ton profil.',
+                    "Tu peux me demander par exemple comment gagner des points, suivre les matchs ou ameliorer ton profil.",
                 ],
             );
         }
@@ -75,12 +75,12 @@ class HelpAssistantService
             }
 
             return $this->guardPayload(
-                answer: 'Je vois le sujet, mais je n ai pas trouve de réponse assez fiable pour te repondre au hasard.',
+                answer: "Je vois le sujet, mais je n'ai pas trouve de réponse assez fiable pour te repondre au hasard.",
                 confidence: 'fallback',
                 userContext: $userContext,
                 nextSteps: [
-                    'Essaie une question plus précise avec un mot-cle comme points, missions, matchs, paris, recompenses ou profil.',
-                    'Tu peux aussi parcourir la FAQ centrale pour retrouver la bonne categorie.',
+                    "Essaie une question plus précise avec un mot-cle comme points, missions, matchs, paris, recompenses ou profil.",
+                    "Tu peux aussi parcourir la FAQ centrale pour retrouver la bonne categorie.",
                 ],
             );
         }
@@ -89,7 +89,7 @@ class HelpAssistantService
             /** @var HelpGlossaryTerm $term */
             $term = $bestGlossary['term'];
             $answer = trim(implode(' ', array_filter([
-                'Sur ERAH, l'idée est simple :',
+                "Sur ERAH, l'idée est simple :",
                 $term->short_answer ?: $term->definition,
             ])));
 
@@ -111,7 +111,7 @@ class HelpAssistantService
         $article = $bestArticle['article'];
         $paragraphs = $this->paragraphs($article->body);
         $answer = trim(implode(' ', array_filter([
-            'Oui, je peux t expliquer ca simplement.',
+            "Oui, je peux t'expliquer ca simplement.",
             $article->short_answer ?: ($article->summary ?: ($paragraphs[0] ?? '')),
         ])));
 
@@ -312,7 +312,7 @@ class HelpAssistantService
      */
     private function overviewPayload(?array $userContext): array
     {
-        $answer = 'Sur ERAH, l'idée est de centraliser la progression, les missions, les matchs, les paris, le profil, les notifications et les recompenses dans un meme espace.';
+        $answer = "Sur ERAH, l'idée est de centraliser la progression, les missions, les matchs, les paris, le profil, les notifications et les recompenses dans un meme espace.";
 
         if ($userContext) {
             $answer .= sprintf(
@@ -328,8 +328,8 @@ class HelpAssistantService
             confidence: 'medium',
             userContext: $userContext,
             nextSteps: [
-                'Commence par la FAQ centrale si tu veux la vue d ensemble.',
-                'Ensuite, pose une question plus précise sur les points, les missions, les matchs, les paris ou le profil.',
+                "Commence par la FAQ centrale si tu veux la vue d'ensemble.",
+                "Ensuite, pose une question plus précise sur les points, les missions, les matchs, les paris ou le profil.",
             ],
         );
     }
@@ -340,7 +340,7 @@ class HelpAssistantService
      */
     private function nextStepPayload(?array $userContext): array
     {
-        $answer = 'En général, le plus utile est de complèter ton profil, verifier les missions actives, puis regarder les matchs et les recompenses selon ton objectif.';
+        $answer = "En général, le plus utile est de complèter ton profil, verifier les missions actives, puis regarder les matchs et les recompenses selon ton objectif.";
 
         if ($userContext) {
             $answer .= sprintf(
@@ -356,7 +356,7 @@ class HelpAssistantService
             confidence: 'medium',
             userContext: $userContext,
             nextSteps: [
-                'Si tu veux, demande-moi ensuite quoi faire pour gagner des points ou progresser plus vite.',
+                "Si tu veux, demande-moi ensuite quoi faire pour gagner des points ou progresser plus vite.",
             ],
         );
     }
@@ -369,8 +369,8 @@ class HelpAssistantService
     {
         $isActive = (bool) ($userContext['supporter_active'] ?? false);
         $answer = $isActive
-            ? 'Tu es deja supporter sur ERAH. Le plus utile est maintenant d ouvrir la page Supporter pour gérer ton abonnement, verifier tes avantages et suivre les missions reservees.'
-            : 'Pour devenir supporter sur ERAH, il faut ouvrir la page Supporter, comparer les formules puis lancer le checkout. C est la porte d'entrée pour activer le badge supporter, les missions exclusives et les avantages associes.';
+            ? "Tu es deja supporter sur ERAH. Le plus utile est maintenant d'ouvrir la page Supporter pour gérer ton abonnement, verifier tes avantages et suivre les missions reservees."
+            : "Pour devenir supporter sur ERAH, il faut ouvrir la page Supporter, comparer les formules puis lancer le checkout. C'est la porte d'entrée pour activer le badge supporter, les missions exclusives et les avantages associes.";
 
         return [
             'mode' => config('help-center.assistant.mode', 'knowledge_base'),
@@ -383,8 +383,8 @@ class HelpAssistantService
             ]],
             'next_steps' => [
                 $isActive
-                    ? 'Ouvre la page Supporter pour suivre tes avantages actifs.'
-                    : 'Ouvre la page Supporter pour choisir la formule qui te convient.',
+                    ? "Ouvre la page Supporter pour suivre tes avantages actifs."
+                    : "Ouvre la page Supporter pour choisir la formule qui te convient.",
             ],
             'user_context' => $userContext,
         ];

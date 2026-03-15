@@ -25,7 +25,7 @@ class ProfileClubReviewController extends Controller
     public function destroy(Request $request, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
         if (! $this->isReady()) {
-            return back()->with('error', 'Le module avis n'est pas encore migre. Lancez php artisan migrate.');
+            return back()->with('error', "Le module avis n'est pas encore migre. Lancez php artisan migrate.");
         }
 
         $review = $request->user()->clubReview;
@@ -49,7 +49,7 @@ class ProfileClubReviewController extends Controller
             ],
         );
 
-        return back()->with('success', 'Votre avis a ete retire de l'espace public.');
+        return back()->with('success', "Votre avis a ete retire de l'espace public.");
     }
 
     private function persist(
@@ -58,7 +58,7 @@ class ProfileClubReviewController extends Controller
         StoreAuditLogAction $storeAuditLogAction
     ): RedirectResponse {
         if (! $this->isReady()) {
-            return back()->with('error', 'Le module avis n'est pas encore migre. Lancez php artisan migrate.');
+            return back()->with('error', "Le module avis n'est pas encore migre. Lancez php artisan migrate.");
         }
 
         $user = $request->user();

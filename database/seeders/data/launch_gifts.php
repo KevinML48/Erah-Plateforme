@@ -508,9 +508,9 @@ return [
     ],
     [
         'key' => 'launch-cash-bank-transfer-voucher-5-eur',
-        'title' => 'Bon d’achat 5€ en cash / virement',
-        'short_description' => 'Bon d’achat 5€ traite manuellement en cash ou virement.',
-        'long_description' => 'Recompense manuelle simple a traiter par l admin quand une carte cadeau n'est pas la bonne option.',
+        'title' => "Bon d'achat 5€ en cash / virement",
+        'short_description' => "Bon d'achat 5€ traite manuellement en cash ou virement.",
+        'long_description' => "Recompense manuelle simple a traiter par l'admin quand une carte cadeau n'est pas la bonne option.",
         'category' => 'manual_reward',
         'type' => 'cash_reward',
         'delivery_type' => 'manual',

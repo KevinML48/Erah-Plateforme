@@ -61,7 +61,7 @@ class ClipCampaignAdminController extends Controller
         if ($clipIds->isNotEmpty()) {
             $publishedCount = Clip::query()->published()->whereIn('id', $clipIds)->count();
             if ($publishedCount !== $clipIds->count()) {
-                return back()->with('error', 'Tous les clips d'une campagne doivent etre publies.');
+                return back()->with('error', "Tous les clips d'une campagne doivent etre publies.");
             }
         }
 

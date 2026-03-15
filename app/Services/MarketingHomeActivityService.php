@@ -68,7 +68,7 @@ class MarketingHomeActivityService
 
         $missionQuery = UserMission::query()
             ->where('user_id', $user->id)
-            ->whereNull('completed_at')
+            ->whereNull('complèted_at')
             ->whereHas('instance', fn ($q) => $q->where('period_start', '<=', now())->where('period_end', '>=', now()))
             ->with('instance.template');
         $activeMission = (clone $missionQuery)->latest('updated_at')->first();

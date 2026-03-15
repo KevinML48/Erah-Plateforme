@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
-use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\UpdateNotificationPréférencesRequest;
-use App\Models\NotificationPréférence;
+use App\Http\Requests\Api\UpdateNotificationPreferencesRequest;
+use App\Models\NotificationPreference;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class NotificationPréférenceController extends Controller
+class NotificationPreferenceController extends Controller
 {
     public function show(Request $request, EnsureNotificationSettingsAction $ensureNotificationSettingsAction): JsonResponse
     {
@@ -24,10 +24,10 @@ class NotificationPréférenceController extends Controller
     }
 
     public function update(
-        UpdateNotificationPréférencesRequest $request,
-        UpdateNotificationPréférencesAction $updateNotificationPréférencesAction
+        UpdateNotificationPreferencesRequest $request,
+        UpdateNotificationPreferencesAction $updateNotificationPreferencesAction
     ): JsonResponse {
-        $updateNotificationPréférencesAction->execute($request->user(), $request->validated());
+        $updateNotificationPreferencesAction->execute($request->user(), $request->validated());
 
         return response()->json($this->buildResponse($request->user()));
     }

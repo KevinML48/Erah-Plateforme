@@ -275,11 +275,11 @@
     @php
         $isPublicApp = request()->routeIs('app.*');
         $indexRouteName = $isPublicApp ? 'app.notifications.index' : 'notifications.index';
-        $préférencesRouteName = $isPublicApp ? 'app.notifications.préférences' : 'notifications.préférences';
-        $préférencesUpdateRouteName = $isPublicApp ? 'app.notifications.préférences.update' : 'notifications.préférences.update';
+        $preferencesRouteName = $isPublicApp ? 'app.notifications.preferences' : 'notifications.preferences';
+        $preferencesUpdateRouteName = $isPublicApp ? 'app.notifications.preferences.update' : 'notifications.preferences.update';
 
         $channelsData = $channels ?? null;
-        $prefs = $préférences ?? collect();
+        $prefs = $preferences ?? collect();
         $hasActiveDevice = (bool) ($hasActiveDevice ?? false);
 
         $categories = [
@@ -430,7 +430,7 @@
                     </article>
                 </section>
 
-                <form method="POST" action="{{ route($préférencesUpdateRouteName) }}" class="tt-anim-fadeinup">
+                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup">
                     @csrf
 
                     <section class="pref-card">
@@ -539,7 +539,7 @@
                         <div class="pref-footer">
                             <small class="pref-note" style="margin:0;">In-app: actif en permanence sur toutes les categories.</small>
                             <div class="pref-footer-actions">
-                                <a href="{{ route($préférencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                                <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
                                     <span data-hover="Reset visuel">Reset visuel</span>
                                 </a>
                                 <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">

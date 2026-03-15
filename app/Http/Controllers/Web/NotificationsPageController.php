@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
 use App\Application\Actions\Notifications\MarkNotificationReadAction;
-use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
@@ -155,14 +155,14 @@ class NotificationsPageController extends Controller
     {
         $user = auth()->user();
         $ensureNotificationSettingsAction->execute($user);
-        $user->load(['notificationChannels', 'notificationPréférences']);
+        $user->load(['notificationChannels', 'notificationPreferences']);
 
-        $préférences = $user->notificationPréférences
+        $preferences = $user->notificationPreferences
             ->keyBy('category');
 
-        return view('pages.notifications.préférences', [
+        return view('pages.notifications.preferences', [
             'channels' => $user->notificationChannels,
-            'préférences' => $préférences,
+            'preferences' => $preferences,
             'hasActiveDevice' => $user->devices()->where('is_active', true)->exists()
                 || $user->pushSubscriptions()->where('is_active', true)->exists(),
         ]);
@@ -194,11 +194,11 @@ class NotificationsPageController extends Controller
             ];
         }
 
-        $updateNotificationPréférencesAction->execute(auth()->user(), $payload);
+        $updateNotificationPreferencesAction->execute(auth()->user(), $payload);
 
         $routeName = request()->routeIs('app.*')
-            ? 'app.notifications.préférences'
-            : 'notifications.préférences';
+            ? 'app.notifications.preferences'
+            : 'notifications.preferences';
 
         return redirect()->route($routeName)
             ->with('success', 'Préférences enregistrees.');

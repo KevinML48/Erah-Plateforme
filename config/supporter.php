@@ -70,9 +70,9 @@ return [
     ],
 
     'community_goals' => [
-        ['goal_count' => 50, 'title' => 'Evenement communaute', 'description' => 'Activation d'un evenement communaute ERAH.'],
-        ['goal_count' => 100, 'title' => 'Animation plateforme', 'description' => 'Ajout d'une animation plateforme reservee aux supporters.'],
-        ['goal_count' => 200, 'title' => 'Projet special ERAH', 'description' => 'Lancement d'un projet special finance par la communaute.'],
+        ['goal_count' => 50, 'title' => 'Evenement communaute', 'description' => 'Activation d\'un evenement communaute ERAH.'],
+        ['goal_count' => 100, 'title' => 'Animation plateforme', 'description' => 'Ajout d\'une animation plateforme reservee aux supporters.'],
+        ['goal_count' => 200, 'title' => 'Projet special ERAH', 'description' => 'Lancement d\'un projet special finance par la communaute.'],
     ],
 
     'loyalty_badges' => [

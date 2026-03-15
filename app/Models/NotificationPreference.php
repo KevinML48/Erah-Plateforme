@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationPréférence extends Model
+class NotificationPreference extends Model
 {
     protected $fillable = [
         'user_id',

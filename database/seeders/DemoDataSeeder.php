@@ -21,7 +21,7 @@ use App\Models\Duel;
 use App\Models\EsportMatch;
 use App\Models\MatchSettlement;
 use App\Models\Notification;
-use App\Models\NotificationPréférence;
+use App\Models\NotificationPreference;
 use App\Models\PointsTransaction;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
@@ -320,7 +320,7 @@ class DemoDataSeeder extends Seeder
             foreach (NotificationCategory::values() as $category) {
                 $categoryPréférence = $overrides[$alias][$category] ?? ['email' => true, 'push' => true];
 
-                NotificationPréférence::query()->updateOrCreate(
+                NotificationPreference::query()->updateOrCreate(
                     [
                         'user_id' => $user->id,
                         'category' => $category,

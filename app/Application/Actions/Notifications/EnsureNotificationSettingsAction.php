@@ -4,7 +4,7 @@ namespace App\Application\Actions\Notifications;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
-use App\Models\NotificationPréférence;
+use App\Models\NotificationPreference;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +40,7 @@ class EnsureNotificationSettingsAction
             }
 
             foreach (NotificationCategory::values() as $category) {
-                NotificationPréférence::query()->firstOrCreate(
+                NotificationPreference::query()->firstOrCreate(
                     [
                         'user_id' => $user->id,
                         'category' => $category,

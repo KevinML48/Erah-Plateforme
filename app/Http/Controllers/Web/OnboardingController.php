@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
-use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class OnboardingController extends Controller
         $user = auth()->user();
         $ensureNotificationSettingsAction->execute($user);
 
-        $user->load(['notificationChannels', 'notificationPréférences']);
+        $user->load(['notificationChannels', 'notificationPreferences']);
 
         return view('pages.onboarding', [
             'channels' => [

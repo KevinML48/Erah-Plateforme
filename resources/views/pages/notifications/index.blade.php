@@ -303,7 +303,7 @@
         $indexRouteName = $isPublicApp ? 'app.notifications.index' : 'notifications.index';
         $readRouteName = $isPublicApp ? 'app.notifications.read' : 'notifications.read';
         $readAllRouteName = $isPublicApp ? 'app.notifications.read-all' : 'notifications.read-all';
-        $préférencesRouteName = $isPublicApp ? 'app.notifications.préférences' : 'notifications.préférences';
+        $preferencesRouteName = $isPublicApp ? 'app.notifications.preferences' : 'notifications.preferences';
 
         $filters = array_merge([
             'state' => 'all',
@@ -472,7 +472,7 @@
                         </div>
 
                         <div class="notif-toolbar-actions">
-                            <a href="{{ route($préférencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                            <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
                                 <span data-hover="Préférences">Préférences</span>
                             </a>
 

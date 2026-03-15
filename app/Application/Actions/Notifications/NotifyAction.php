@@ -6,7 +6,7 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Jobs\SendNotificationChannelJob;
 use App\Models\Notification;
-use App\Models\NotificationPréférence;
+use App\Models\NotificationPreference;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
 use Illuminate\Support\Facades\DB;
@@ -51,14 +51,14 @@ class NotifyAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $préférence = NotificationPréférence::query()
+            $preference = NotificationPreference::query()
                 ->where('user_id', $user->id)
                 ->where('category', $category)
                 ->lockForUpdate()
                 ->first();
 
-            $emailAllowed = $channels->email_opt_in && ($préférence?->email_enabled ?? true);
-            $pushAllowed = $channels->push_opt_in && ($préférence?->push_enabled ?? true);
+            $emailAllowed = $channels->email_opt_in && ($preference?->email_enabled ?? true);
+            $pushAllowed = $channels->push_opt_in && ($preference?->push_enabled ?? true);
 
             if ($emailAllowed) {
                 SendNotificationChannelJob::dispatch($notification->id, 'email');

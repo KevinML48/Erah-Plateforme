@@ -21,7 +21,7 @@ class GalleryVideoLegacySeeder extends Seeder
 
         $result = $importService->import();
 
-        if (($result['processed'] ?? 0) === 0 && GalleryVideo::query()->count() === 0) {
+        if (($result['processed'] ?? 0) === 0) {
             $result = $this->seedFallbackVideos();
         }
 

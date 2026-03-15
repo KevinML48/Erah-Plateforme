@@ -74,8 +74,8 @@
                         @method('DELETE')
                     @endif
                     <button type="submit" class="tt-btn {{ $isFocused ? 'tt-btn-outline' : 'tt-btn-primary' }} tt-magnetic-item" {{ (!$isFocused && $focusFull) ? 'disabled' : '' }}>
-                        <span data-hover="{{ $isFocused ? 'Retirer du focus' : 'Ajouter au focus' }}">
-                            {{ $isFocused ? 'Retirer du focus' : 'Ajouter au focus' }}
+                        <span data-hover="{{ $isFocused ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                            {{ $isFocused ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
                         </span>
                     </button>
                 </form>

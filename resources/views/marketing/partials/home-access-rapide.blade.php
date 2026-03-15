@@ -126,8 +126,8 @@
                 <span>Duels en cours</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
-                <strong>{{ (int) ($quickStats['active_missions'] ?? 0) }}</strong>
-                <span>Missions en cours</span>
+                <strong>{{ (int) ($quickStats['available_missions'] ?? 0) }}</strong>
+                <span>Missions disponibles</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
                 <strong>{{ (int) ($quickStats['available_missions'] ?? 0) }}</strong>

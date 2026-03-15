@@ -143,6 +143,55 @@
             white-space: nowrap;
         }
     }
+
+    @media (max-width: 767.98px) {
+        .gift-order-table {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .gift-order-table thead {
+            display: none;
+        }
+
+        .gift-order-table tbody {
+            display: contents;
+        }
+
+        .gift-order-table tr {
+            display: block;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .gift-order-table td {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 8px 0;
+            margin: 0;
+        }
+
+        .gift-order-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            display: block;
+            color: rgba(255, 255, 255, 0.64);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .gift-order-status {
+            display: inline-flex;
+        }
+    }
 </style>
 @endsection
 

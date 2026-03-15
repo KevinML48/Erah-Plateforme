@@ -153,7 +153,7 @@
                                                             <span data-hover="Detail">Detail</span>
                                                         </a>
 
-                                                        @if($contactMessage->status !== \App\Models\ContactMessage::STATUS_PROCESSED)
+                                                        @if($contactMessage->status !== \App\Models\ContactMessage::STATUS_ARCHIVED && $contactMessage->status !== \App\Models\ContactMessage::STATUS_PROCESSED)
                                                             <form method="POST" action="{{ route('admin.contact-messages.status', $contactMessage) }}">
                                                                 @csrf
                                                                 @method('PUT')

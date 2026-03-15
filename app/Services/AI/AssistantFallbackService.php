@@ -85,8 +85,8 @@ class AssistantFallbackService
     public function guardedReply(AssistantQueryClassification $classification): AssistantResponse
     {
         $followUp = $classification->needsClarification()
-            ? 'Tu peux me demander par exemple comment gagner des points, suivre les matchs, comprendre les bets ou ameliorer ton profil.'
-            : 'Si tu veux, reformule ta demande en lien avec les points, missions, matchs, paris, recompenses ou le profil.';
+            ? 'Tu peux me poser des questions sur la plateforme : points, missions, matchs, paris, cadeaux, clips, duels, classements, profil, supporter, événements, bugs ou communauté. Dis-moi ce qui t\'intéresse et je te guide.'
+            : 'Si tu veux, reformule ta demande en lien avec ERAH : points, missions, matchs, paris, cadeaux, clips, duels, classements, profil ou supporter.';
 
         return new AssistantResponse(
             content: trim((string) $classification->fallbackMessage."\n\n".$followUp),

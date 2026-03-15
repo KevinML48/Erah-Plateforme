@@ -48,13 +48,7 @@
     <link rel="stylesheet" href="/template/assets/vendor/swiper/css/swiper-bundle.min.css">
   </noscript>
 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H9C6F8VG4D"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-H9C6F8VG4D', { 'anonymize_ip': true });
-  </script>
+  <x-google-analytics />
 
   <style>
     .tt-alert { margin-bottom: 10px; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); }

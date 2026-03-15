@@ -193,6 +193,81 @@
             white-space: nowrap;
         }
     }
+
+    @media (max-width: 767.98px) {
+        .gift-cart-table {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            overflow: visible;
+            white-space: normal;
+        }
+
+        .gift-cart-table thead {
+            display: none;
+        }
+
+        .gift-cart-table tbody {
+            display: contents;
+        }
+
+        .gift-cart-table tr {
+            display: block;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .gift-cart-table td {
+            display: block;
+            width: 100%;
+            border: none;
+            padding: 8px 0;
+            margin: 0;
+        }
+
+        .gift-cart-table td:first-child {
+            margin-bottom: 8px;
+        }
+
+        .gift-cart-gift {
+            margin-bottom: 8px;
+        }
+
+        .gift-cart-input {
+            width: 100%;
+            min-height: 40px;
+        }
+
+        .gift-cart-inline {
+            display: flex;
+            gap: 8px;
+        }
+
+        .gift-cart-inline .tt-btn {
+            flex-shrink: 0;
+            padding: 8px 14px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .gift-cart-card {
+            padding: 16px;
+        }
+
+        .gift-cart-input {
+            width: 100%;
+        }
+
+        .gift-cart-summary-row {
+            font-size: 14px;
+        }
+
+        .gift-cart-summary-row strong {
+            font-size: 16px;
+        }
+    }
 </style>
 @endsection
 

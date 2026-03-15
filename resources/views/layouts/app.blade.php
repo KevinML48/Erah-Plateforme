@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Big+Shoulders+Display:wght@100..900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-google-analytics />
     <style>
         .app-toast-stack { position: fixed; top: 16px; right: 16px; width: min(420px, calc(100vw - 24px)); display: grid; gap: 10px; z-index: 2000; pointer-events: none; }
         .app-toast { margin: 0; padding: 14px 18px; border-radius: 10px; border: 1px solid rgba(0, 0, 0, .15); box-shadow: 0 10px 28px rgba(0, 0, 0, .2); backdrop-filter: blur(4px); pointer-events: auto; transition: opacity .2s ease, transform .2s ease; }

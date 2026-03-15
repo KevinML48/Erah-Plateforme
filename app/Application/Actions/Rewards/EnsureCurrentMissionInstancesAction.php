@@ -105,7 +105,7 @@ class EnsureCurrentMissionInstancesAction
                     'mission_instance_id' => $instance->id,
                 ], [
                     'progress_count' => 0,
-                    'completed_at' => null,
+                    'complèted_at' => null,
                 ]);
 
                 if (array_key_exists($template->scope, $counters)) {

@@ -1,8 +1,8 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Galerie Photo | ERAH Esport')
-@section('meta_description', 'Parcourez la galerie photo ERAH Esport : competitions, evenements gaming et moments forts du club.')
-@section('meta_keywords', 'galerie photo erah esport, photos esport, evenements gaming, competitions erah')
+@section('meta_description', 'Parcourez la galerie photo ERAH Esport : compétitions, evenements gaming et moments forts du club.')
+@section('meta_keywords', 'galerie photo erah esport, photos esport, evenements gaming, compétitions erah')
 @section('meta_author', 'ERAH Esport')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 

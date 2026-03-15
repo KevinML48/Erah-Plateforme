@@ -185,8 +185,8 @@ class SettleMatchBetsAction
                     'lost_count' => $lostCount,
                     'void_count' => $voidCount,
                     'payout_total' => $payoutTotal,
-                    'processed_by' => $actor->id,
-                    'processed_at' => $now,
+                    'processused_by' => $actor->id,
+                    'processused_at' => $now,
                     'meta' => [
                         'resolved_markets' => $resolved['resolved_markets'],
                         'team_a_score' => $resolved['team_a_score'],

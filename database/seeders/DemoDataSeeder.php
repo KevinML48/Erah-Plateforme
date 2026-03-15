@@ -21,7 +21,7 @@ use App\Models\Duel;
 use App\Models\EsportMatch;
 use App\Models\MatchSettlement;
 use App\Models\Notification;
-use App\Models\NotificationPreference;
+use App\Models\NotificationPréférence;
 use App\Models\PointsTransaction;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
@@ -149,7 +149,7 @@ class DemoDataSeeder extends Seeder
             'tom' => [
                 'name' => 'Tom Viper',
                 'email' => 'tom.viper@erah.local',
-                'bio' => 'Entry agresif, toujours en premiere ligne.',
+                'bio' => 'Entry agresif, toujours en première ligne.',
                 'avatar_path' => 'https://picsum.photos/seed/erah-user-tom/240/240',
             ],
             'clara' => [
@@ -318,16 +318,16 @@ class DemoDataSeeder extends Seeder
             );
 
             foreach (NotificationCategory::values() as $category) {
-                $categoryPreference = $overrides[$alias][$category] ?? ['email' => true, 'push' => true];
+                $categoryPréférence = $overrides[$alias][$category] ?? ['email' => true, 'push' => true];
 
-                NotificationPreference::query()->updateOrCreate(
+                NotificationPréférence::query()->updateOrCreate(
                     [
                         'user_id' => $user->id,
                         'category' => $category,
                     ],
                     [
-                        'email_enabled' => $categoryPreference['email'],
-                        'push_enabled' => $categoryPreference['push'],
+                        'email_enabled' => $categoryPréférence['email'],
+                        'push_enabled' => $categoryPréférence['push'],
                     ]
                 );
             }
@@ -573,7 +573,7 @@ class DemoDataSeeder extends Seeder
                 ['user' => 'maya', 'body' => 'La prise d info avant le push est nickel.'],
             ],
             'sniper-flick-masterclass' => [
-                ['user' => 'one', 'body' => 'Double flick, c est sale.'],
+                ['user' => 'one', 'body' => 'Double flick, C'est sale.'],
             ],
         ];
 
@@ -639,7 +639,7 @@ class DemoDataSeeder extends Seeder
         $notifications = [
             'one' => [
                 ['category' => 'system', 'title' => 'Bienvenue sur ERAH', 'message' => 'Ton profil est pret.', 'read' => true],
-                ['category' => 'duel', 'title' => 'Duel en attente', 'message' => 'Noah Blitz attend ta reponse.', 'read' => false],
+                ['category' => 'duel', 'title' => 'Duel en attente', 'message' => 'Noah Blitz attend ta réponse.', 'read' => false],
                 ['category' => 'clips', 'title' => 'Nouveau clip tendance', 'message' => 'Ace clutch en finale gagne en popularite.', 'read' => false],
             ],
             'noah' => [
@@ -941,8 +941,8 @@ class DemoDataSeeder extends Seeder
                     'lost_count' => $bets->where('status', Bet::STATUS_LOST)->count(),
                     'void_count' => $bets->where('status', Bet::STATUS_VOID)->count(),
                     'payout_total' => (int) $bets->sum('settlement_points'),
-                    'processed_by' => $admin->id,
-                    'processed_at' => $match->settled_at,
+                    'processused_by' => $admin->id,
+                    'processused_at' => $match->settled_at,
                     'meta' => ['seed' => 'demo'],
                 ]
             );

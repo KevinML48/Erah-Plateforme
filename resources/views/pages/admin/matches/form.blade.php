@@ -102,7 +102,7 @@
         'heroSubtitle' => 'ERAH Control Center',
         'heroTitle' => $match ? 'Modifier evenement esport' : 'Creer un evenement esport',
         'heroDescription' => $match
-            ? 'Edition d un match classique, d un tournoi Rocket League ou d un match enfant TOP 16.'
+            ? 'Edition d'un match classique, d'un tournoi Rocket League ou d'un match enfant TOP 16.'
             : 'Formulaire intelligent: match direct, tournoi Rocket League, puis matchs enfants lies au tournoi parent.',
         'heroMaskDescription' => 'Preset de marches, parcours tournoi RL, BO et relation parent/enfant.',
     ])
@@ -175,24 +175,24 @@
 
                                     <div class="adm-form-grid-3">
                                         <div class="tt-form-group">
-                                            <label for="competition_name">Nom de la competition</label>
-                                            <input class="tt-form-control" id="competition_name" name="competition_name" value="{{ old('competition_name', $formContext['competition_name'] ?? '') }}" placeholder="RLCS Open, VCT France...">
+                                            <label for="compétition_name">Nom de la compétition</label>
+                                            <input class="tt-form-control" id="compétition_name" name="compétition_name" value="{{ old('compétition_name', $formContext['compétition_name'] ?? '') }}" placeholder="RLCS Open, VCT France...">
                                         </div>
 
                                         <div class="tt-form-group">
-                                            <label for="competition_stage">Phase du tournoi</label>
-                                            <input class="tt-form-control" id="competition_stage" name="competition_stage" value="{{ old('competition_stage', $formContext['competition_stage'] ?? '') }}" placeholder="Open qualifier, Swiss, Playoffs...">
+                                            <label for="compétition_stage">Phase du tournoi</label>
+                                            <input class="tt-form-control" id="compétition_stage" name="compétition_stage" value="{{ old('compétition_stage', $formContext['compétition_stage'] ?? '') }}" placeholder="Open qualifier, Swiss, Playoffs...">
                                         </div>
 
                                         <div class="tt-form-group">
-                                            <label for="competition_split">Split / label</label>
-                                            <input class="tt-form-control" id="competition_split" name="competition_split" value="{{ old('competition_split', $formContext['competition_split'] ?? '') }}" placeholder="Spring 2026, Regional #1...">
+                                            <label for="compétition_split">Split / label</label>
+                                            <input class="tt-form-control" id="compétition_split" name="compétition_split" value="{{ old('compétition_split', $formContext['compétition_split'] ?? '') }}" placeholder="Spring 2026, Regional #1...">
                                         </div>
                                     </div>
 
                                     <div class="adm-form-grid-3">
                                         <div class="tt-form-group" data-tournament-only>
-                                            <label for="event_name">Nom du tournoi a predire</label>
+                                            <label for="event_name">Nom du tournoi a prédire</label>
                                             <input class="tt-form-control" id="event_name" name="event_name" value="{{ old('event_name', $formContext['event_name'] ?? '') }}" placeholder="RLCS Europe Open #1">
                                         </div>
 
@@ -224,7 +224,7 @@
                                                 <option value="">Aucun parent</option>
                                                 @foreach($tournamentParentOptions as $parentOption)
                                                     <option value="{{ $parentOption->id }}" {{ (string) old('parent_match_id', $formContext['parent_match_id'] ?? '') === (string) $parentOption->id ? 'selected' : '' }}>
-                                                        #{{ $parentOption->id }} - {{ $parentOption->event_name ?: $parentOption->competition_name ?: 'Tournoi RL' }}{{ $parentOption->child_matches_unlocked_at ? '' : ' (phase matchs fermee)' }}
+                                                        #{{ $parentOption->id }} - {{ $parentOption->event_name ?: $parentOption->compétition_name ?: 'Tournoi RL' }}{{ $parentOption->child_matches_unlocked_at ? '' : ' (phase matchs fermee)' }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -246,7 +246,7 @@
                             <section class="adm-surface">
                                 <div class="tt-heading tt-heading-lg margin-bottom-30">
                                     <h2 class="tt-heading-title tt-text-reveal">Marches et choix</h2>
-                                    <p class="max-width-700 tt-anim-fadeinup text-gray">Le preset genere une base editable. Les cles techniques restent importantes pour le reglement; adaptez ensuite les libelles et les cotes au contexte du match ou du tournoi.</p>
+                                    <p class="max-width-700 tt-anim-fadeinup text-gray">Le preset genere une base editable. Les cles techniques restent importantes pour le règlement; adaptez ensuite les libelles et les cotes au contexte du match ou du tournoi.</p>
                                 </div>
 
                                 <div id="adm-market-editor" class="adm-market-stack">
@@ -311,7 +311,7 @@
                         <aside class="adm-side-note">
                             <section class="adm-side-card">
                                 <h3>Pattern</h3>
-                                <p class="adm-meta">Match direct : on connait deja l adversaire et les predictions portent sur le resultat du match. Parcours en tournoi : on predit d abord jusqu ou ERAH ira dans le tournoi.</p>
+                                <p class="adm-meta">Match direct : on connait deja l adversaire et les predictions portent sur le résultat du match. Parcours en tournoi : on predit d'abord jusqu ou ERAH ira dans le tournoi.</p>
                             </section>
 
                             <section class="adm-side-card">
@@ -321,14 +321,14 @@
 
                             <section class="adm-side-card">
                                 <h3>Compatibilite</h3>
-                                <p class="adm-meta">Le moteur reste unique : matchs, pronostics, marches, selections, wallet et reglement continuent de fonctionner ensemble sans doublon.</p>
+                                <p class="adm-meta">Le moteur reste unique : matchs, pronostics, marches, selections, wallet et règlement continuent de fonctionner ensemble sans doublon.</p>
                             </section>
 
                             @if($parentMatch)
                                 <section class="adm-side-card">
                                     <h3>Parent preselectionne</h3>
-                                    <p class="adm-meta">#{{ $parentMatch->id }} - {{ $parentMatch->event_name ?: $parentMatch->competition_name ?: 'Tournoi RL' }}</p>
-                                    <p class="adm-meta">{{ $parentMatch->child_matches_unlocked_at ? 'La phase matchs est deja ouverte sur ce tournoi.' : 'La phase matchs n est pas encore ouverte sur ce tournoi parent.' }}</p>
+                                    <p class="adm-meta">#{{ $parentMatch->id }} - {{ $parentMatch->event_name ?: $parentMatch->compétition_name ?: 'Tournoi RL' }}</p>
+                                    <p class="adm-meta">{{ $parentMatch->child_matches_unlocked_at ? 'La phase matchs est deja ouverte sur ce tournoi.' : 'La phase matchs n'est pas encore ouverte sur ce tournoi parent.' }}</p>
                                 </section>
                             @endif
                         </aside>

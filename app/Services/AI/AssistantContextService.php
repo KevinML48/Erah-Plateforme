@@ -164,7 +164,7 @@ class AssistantContextService
                 ->where('period_start', '<=', now())
                 ->where('period_end', '>=', now()))
             ->with('instance.template')
-            ->orderByRaw('CASE WHEN completed_at IS NULL THEN 0 ELSE 1 END')
+            ->orderByRaw('CASE WHEN complèted_at IS NULL THEN 0 ELSE 1 END')
             ->orderByDesc('id')
             ->limit(3)
             ->get()
@@ -176,7 +176,7 @@ class AssistantContextService
                     'scope' => $template?->scope,
                     'progress' => (int) $mission->progress_count,
                     'target' => (int) ($template?->target_count ?? 0),
-                    'completed' => $mission->completed_at !== null,
+                    'complèted' => $mission->complèted_at !== null,
                     'url' => $this->relativeRoute('missions.index'),
                 ];
             })
@@ -263,7 +263,7 @@ class AssistantContextService
     {
         $actions = collect();
 
-        if (collect($missions)->contains(fn (array $mission): bool => ! $mission['completed'])) {
+        if (collect($missions)->contains(fn (array $mission): bool => ! $mission['complèted'])) {
             $actions->push([
                 'label' => 'Continuer les missions',
                 'description' => 'Vos missions actives sont le meilleur levier pour progresser tout de suite.',
@@ -298,7 +298,7 @@ class AssistantContextService
         if (blank($user->bio) || blank($user->avatar_url)) {
             $actions->push([
                 'label' => 'Ameliorer le profil',
-                'description' => 'Quelques details en plus rendent votre profil plus solide et lisible.',
+                'description' => 'Quelques détails en plus rendent votre profil plus solide et lisible.',
                 'url' => $this->relativeRoute('profile.show'),
             ]);
         }

@@ -63,7 +63,7 @@
         .mission-live-toast.is-progress {
             border-color: rgba(255, 214, 102, .28);
         }
-        .mission-live-toast.is-completed {
+        .mission-live-toast.is-complèted {
             border-color: rgba(104, 220, 150, .3);
         }
         .mission-live-toast.is-claim {

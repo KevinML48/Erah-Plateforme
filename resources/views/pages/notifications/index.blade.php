@@ -303,7 +303,7 @@
         $indexRouteName = $isPublicApp ? 'app.notifications.index' : 'notifications.index';
         $readRouteName = $isPublicApp ? 'app.notifications.read' : 'notifications.read';
         $readAllRouteName = $isPublicApp ? 'app.notifications.read-all' : 'notifications.read-all';
-        $preferencesRouteName = $isPublicApp ? 'app.notifications.preferences' : 'notifications.preferences';
+        $préférencesRouteName = $isPublicApp ? 'app.notifications.préférences' : 'notifications.préférences';
 
         $filters = array_merge([
             'state' => 'all',
@@ -472,8 +472,8 @@
                         </div>
 
                         <div class="notif-toolbar-actions">
-                            <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                                <span data-hover="Preferences">Preferences</span>
+                            <a href="{{ route($préférencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                                <span data-hover="Préférences">Préférences</span>
                             </a>
 
                             @if((int) ($summary['unread'] ?? 0) > 0)
@@ -574,7 +574,7 @@
                                 </header>
 
                                 <h2 class="notif-title">{{ (string) $notification->title }}</h2>
-                                <p class="notif-message">{{ (string) ($notification->message ?: 'Notification sans message detaille.') }}</p>
+                                <p class="notif-message">{{ (string) ($notification->message ?: 'Notification sans message détaillé.') }}</p>
 
                                 <div class="notif-item-actions">
                                     @if($actionUrl !== '')
@@ -626,8 +626,8 @@
                 @else
                     <div class="notif-empty tt-anim-fadeinup">
                         <p>Aucune notification pour ce filtre.</p>
-                        <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                            <span data-hover="Verifier preferences">Verifier preferences</span>
+                        <a href="{{ route($préférencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                            <span data-hover="Verifier préférences">Verifier préférences</span>
                         </a>
                     </div>
                 @endif

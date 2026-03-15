@@ -179,7 +179,7 @@
                                 <article class="gift-favorites-card">
                                     <img src="{{ $gift?->image_url ?: '/template/assets/img/logo.png' }}" alt="{{ $gift?->title ?: 'Cadeau indisponible' }}">
                                     <h3>{{ $gift?->title ?: 'Cadeau indisponible' }}</h3>
-                                    <p>{{ \Illuminate\Support\Str::limit((string) ($gift?->description ?: 'Ce cadeau n est plus actif dans le catalogue.'), 120) }}</p>
+                                    <p>{{ \Illuminate\Support\Str::limit((string) ($gift?->description ?: 'Ce cadeau n'est plus actif dans le catalogue.'), 120) }}</p>
 
                                     <div class="gift-favorites-meta">
                                         <span class="gift-favorites-pill">{{ (int) ($gift?->cost_points ?? 0) }} pts</span>

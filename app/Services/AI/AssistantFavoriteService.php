@@ -19,7 +19,7 @@ class AssistantFavoriteService
         $attributes = [
             'question' => trim((string) ($payload['question'] ?? '')),
             'answer' => trim((string) ($payload['answer'] ?? '')),
-            'details' => array_values($payload['details'] ?? []),
+            'détails' => array_values($payload['détails'] ?? []),
             'sources' => array_values($payload['sources'] ?? []),
             'next_steps' => array_values($payload['next_steps'] ?? []),
         ];
@@ -51,7 +51,7 @@ class AssistantFavoriteService
         return hash('sha256', json_encode([
             'question' => $payload['question'] ?? '',
             'answer' => $payload['answer'] ?? '',
-            'details' => $payload['details'] ?? [],
+            'détails' => $payload['détails'] ?? [],
             'sources' => $payload['sources'] ?? [],
             'next_steps' => $payload['next_steps'] ?? [],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));

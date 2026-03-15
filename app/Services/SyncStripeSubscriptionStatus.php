@@ -121,7 +121,7 @@ class SyncStripeSubscriptionStatus
             return UserSupportSubscription::STATUS_PAST_DUE;
         }
 
-        if ($subscription->incomplete()) {
+        if ($subscription->incomplète()) {
             return UserSupportSubscription::STATUS_PENDING_CHECKOUT;
         }
 

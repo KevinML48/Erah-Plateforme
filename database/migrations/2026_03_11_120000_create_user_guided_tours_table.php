@@ -17,7 +17,7 @@ return new class extends Migration
             $table->boolean('is_paused')->default(true);
             $table->timestamp('started_at')->nullable();
             $table->timestamp('last_seen_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->timestamp('complèted_at')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'tour_key']);

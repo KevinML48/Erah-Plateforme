@@ -4,7 +4,7 @@
     <title>@yield('title', 'ERAH Plateforme')</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="ERAH Plateforme, espace membre, progression, missions et modules competitifs.">
+    <meta name="description" content="ERAH Plateforme, espace membre, progression, missions et modules compétitifs.">
     <meta name="theme-color" content="#d80707">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
@@ -232,7 +232,7 @@
 
 <footer>
     <div class="container">
-        ERAH Plateforme - espace membre, progression et modules competitifs.
+        ERAH Plateforme - espace membre, progression et modules compétitifs.
     </div>
 </footer>
 <script>

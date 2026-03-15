@@ -75,7 +75,7 @@
                                 </select>
                             </div>
                             <div class="tt-form-group adm-form-cta adm-col-span-3">
-                                <p class="adm-form-cta-copy">Conservez uniquement les statuts utiles avant d ouvrir le detail d un supporter.</p>
+                                <p class="adm-form-cta-copy">Conservez uniquement les statuts utiles avant d ouvrir le détail d'un supporter.</p>
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Filtrer">Filtrer</span></button>
                             </div>
                         </form>

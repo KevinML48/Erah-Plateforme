@@ -8,7 +8,7 @@
             <span class="section-kicker">Soldes et historique</span>
             <h1 class="page-title">Centre des points</h1>
             <p class="page-description">
-                Cette vue rassemble les soldes encore utiles a l exploitation et les mouvements visibles sur votre compte. Le solde plateforme reste le repere principal pour l utilisateur.
+                Cette vue rassemble les soldes encore utiles a l exploitation et les mouvements visibles sur votre compte. Le solde plateforme reste le repère principal pour l utilisateur.
             </p>
 
             <div class="metric-grid">

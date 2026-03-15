@@ -230,7 +230,7 @@
                                     <input id="global-q" name="q" class="tt-form-control" value="{{ $search['query'] ?? '' }}" placeholder="Ex: 42, erah@..., Rocket, clip, cadeau...">
                                 </div>
                                 <div class="tt-form-group adm-form-cta">
-                                    <p class="adm-form-cta-copy">Acces detail direct sans quitter le cockpit.</p>
+                                    <p class="adm-form-cta-copy">Acces détail direct sans quitter le cockpit.</p>
                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
                                         <span data-hover="Rechercher">Rechercher</span>
                                     </button>

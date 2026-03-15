@@ -38,7 +38,7 @@
             color: #ffe6a8;
         }
 
-        .adm-status-pill.adm-status-processed {
+        .adm-status-pill.adm-status-processused {
             border-color: rgba(91, 218, 167, .55);
             color: #c4f6e4;
         }
@@ -73,7 +73,7 @@
                         <div class="adm-kpi-grid">
                             <article class="adm-kpi-card"><strong>{{ (int) $stats['total'] }}</strong><span>Total</span></article>
                             <article class="adm-kpi-card"><strong>{{ (int) $stats['new'] }}</strong><span>Nouveaux</span></article>
-                            <article class="adm-kpi-card"><strong>{{ (int) $stats['processed'] }}</strong><span>Traites</span></article>
+                            <article class="adm-kpi-card"><strong>{{ (int) $stats['processused'] }}</strong><span>Traites</span></article>
                             <article class="adm-kpi-card"><strong>{{ (int) $stats['archived'] }}</strong><span>Archives</span></article>
                         </div>
                     </section>

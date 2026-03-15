@@ -102,7 +102,7 @@ class ClubReviewAdminController extends Controller
         StoreAuditLogAction $storeAuditLogAction
     ): RedirectResponse {
         if (! $this->isReady()) {
-            return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
+            return back()->with('error', 'Le module avis n'est pas encore migre. Lancez php artisan migrate.');
         }
 
         $review = ClubReview::query()->findOrFail($reviewId);
@@ -136,7 +136,7 @@ class ClubReviewAdminController extends Controller
     public function destroy(int $reviewId, StoreAuditLogAction $storeAuditLogAction): RedirectResponse
     {
         if (! $this->isReady()) {
-            return back()->with('error', 'Le module avis n est pas encore migre. Lancez php artisan migrate.');
+            return back()->with('error', 'Le module avis n'est pas encore migre. Lancez php artisan migrate.');
         }
 
         $review = ClubReview::query()->findOrFail($reviewId);

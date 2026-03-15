@@ -244,7 +244,7 @@
                     <div class="match-market-head">
                         <div>
                             <h4>Resultats des paris</h4>
-                            <p class="match-community-subtext">Lecture immediate des gagnants, des perdants et des plus gros gains apres reglement.</p>
+                            <p class="match-community-subtext">Lecture immediate des gagnants, des perdants et des plus gros gains apres règlement.</p>
                         </div>
                         <span class="match-pill">{{ $resultLabel }}</span>
                     </div>

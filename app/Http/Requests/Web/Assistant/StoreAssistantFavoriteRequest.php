@@ -19,8 +19,8 @@ class StoreAssistantFavoriteRequest extends FormRequest
         return [
             'question' => ['required', 'string', 'min:4', 'max:500'],
             'answer' => ['required', 'string', 'min:2', 'max:12000'],
-            'details' => ['nullable', 'array', 'max:6'],
-            'details.*' => ['required', 'string', 'max:4000'],
+            'détails' => ['nullable', 'array', 'max:6'],
+            'détails.*' => ['required', 'string', 'max:4000'],
             'sources' => ['nullable', 'array', 'max:6'],
             'sources.*.type' => ['nullable', 'string', 'max:40'],
             'sources.*.title' => ['required', 'string', 'max:255'],
@@ -36,7 +36,7 @@ class StoreAssistantFavoriteRequest extends FormRequest
         $this->merge([
             'question' => trim((string) $this->input('question')),
             'answer' => trim((string) $this->input('answer')),
-            'details' => collect($this->input('details', []))
+            'détails' => collect($this->input('détails', []))
                 ->map(fn (mixed $item): string => trim((string) $item))
                 ->filter()
                 ->values()

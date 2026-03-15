@@ -48,7 +48,7 @@ class ClipCampaignAdminController extends Controller
             return back()->with('error', $exception->getMessage());
         }
 
-        return back()->with('success', 'Campagne clips creee.');
+        return back()->with('success', 'Campagne clips créée.');
     }
 
     public function update(Request $request, int $campaignId): RedirectResponse
@@ -61,7 +61,7 @@ class ClipCampaignAdminController extends Controller
         if ($clipIds->isNotEmpty()) {
             $publishedCount = Clip::query()->published()->whereIn('id', $clipIds)->count();
             if ($publishedCount !== $clipIds->count()) {
-                return back()->with('error', 'Tous les clips d une campagne doivent etre publies.');
+                return back()->with('error', 'Tous les clips d'une campagne doivent etre publies.');
             }
         }
 

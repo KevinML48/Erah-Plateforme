@@ -5,16 +5,16 @@
 @section('content')
     <div class="page-shell">
         <section class="section page-hero">
-            <span class="section-kicker">Compte et preferences</span>
+            <span class="section-kicker">Compte et préférences</span>
             <h1 class="page-title">Parametres</h1>
             <p class="page-description">
-                Retrouvez vos reglages utiles au meme endroit: notifications, profil, portefeuille, aide et acces rapides a votre espace membre.
+                Retrouvez vos réglages utiles au meme endroit: notifications, profil, portefeuille, aide et acces rapides a votre espace membre.
             </p>
         </section>
 
         <section class="section">
             <span class="section-kicker">Acces directs</span>
-            <h2>Les reglages qui servent vraiment</h2>
+            <h2>Les réglages qui servent vraiment</h2>
             <p class="page-description">Chaque bloc renvoie vers une page deja existante de la plateforme, sans ajouter de parcours parasite.</p>
 
             <div class="link-grid">
@@ -24,16 +24,16 @@
                     <p>Mettre a jour vos informations, vos reseaux et votre presentation membre.</p>
                 </a>
 
-                <a href="{{ route('notifications.preferences') }}" class="link-card">
+                <a href="{{ route('notifications.préférences') }}" class="link-card">
                     <span class="link-card-title">Notifications</span>
-                    <strong>Preferences d alertes</strong>
+                    <strong>Préférences d alertes</strong>
                     <p>Choisir les canaux et les notifications a recevoir selon vos usages.</p>
                 </a>
 
                 <a href="{{ route('wallet.index') }}" class="link-card">
                     <span class="link-card-title">Points</span>
                     <strong>Portefeuille plateforme</strong>
-                    <p>Consulter votre solde unique, vos entrees et vos debits recents.</p>
+                    <p>Consulter votre solde unique, vos entrées et vos débits recents.</p>
                 </a>
 
                 <a href="{{ route('missions.index') }}" class="link-card">
@@ -45,7 +45,7 @@
                 <a href="{{ route('assistant.index') }}" class="link-card">
                     <span class="link-card-title">Assistant</span>
                     <strong>Poser une question</strong>
-                    <p>Ouvrir l assistant ERAH pour comprendre un module ou reprendre vos reperes.</p>
+                    <p>Ouvrir l assistant ERAH pour comprendre un module ou reprendre vos repères.</p>
                 </a>
 
                 <a href="{{ route('console.help') }}" class="link-card">
@@ -67,7 +67,7 @@
         <section class="section">
             <span class="section-kicker">Session</span>
             <h2>Sortir de la session</h2>
-            <p class="page-description">Vous pouvez vous deconnecter ici sans impacter vos donnees ni vos reglages enregistres.</p>
+            <p class="page-description">Vous pouvez vous deconnecter ici sans impacter vos donnees ni vos réglages enregistres.</p>
 
             <form method="POST" action="{{ route('auth.logout') }}" class="actions actions-stack-mobile">
                 @csrf

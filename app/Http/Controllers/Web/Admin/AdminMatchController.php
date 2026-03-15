@@ -35,8 +35,8 @@ class AdminMatchController extends Controller
 
         $matches = EsportMatch::query()
             ->with([
-                'parentMatch:id,event_name,competition_name',
-                'settlement:id,match_id,result,processed_at,won_count,lost_count,void_count',
+                'parentMatch:id,event_name,compétition_name',
+                'settlement:id,match_id,result,processused_at,won_count,lost_count,void_count',
             ])
             ->when($status !== 'all', fn ($query) => $query->where('status', $status))
             ->when($game !== 'all', fn ($query) => $query->where('game_key', $game))
@@ -44,9 +44,9 @@ class AdminMatchController extends Controller
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($nested) use ($search) {
                     $nested->where('event_name', 'like', '%'.$search.'%')
-                        ->orWhere('competition_name', 'like', '%'.$search.'%')
-                        ->orWhere('competition_stage', 'like', '%'.$search.'%')
-                        ->orWhere('competition_split', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_name', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_stage', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_split', 'like', '%'.$search.'%')
                         ->orWhere('team_a_name', 'like', '%'.$search.'%')
                         ->orWhere('team_b_name', 'like', '%'.$search.'%')
                         ->orWhere('home_team', 'like', '%'.$search.'%')
@@ -66,7 +66,7 @@ class AdminMatchController extends Controller
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($nested) use ($search) {
                     $nested->where('event_name', 'like', '%'.$search.'%')
-                        ->orWhere('competition_name', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_name', 'like', '%'.$search.'%')
                         ->orWhere('team_a_name', 'like', '%'.$search.'%')
                         ->orWhere('team_b_name', 'like', '%'.$search.'%')
                         ->orWhere('home_team', 'like', '%'.$search.'%')
@@ -193,7 +193,7 @@ class AdminMatchController extends Controller
                 'parentMatch',
                 'childMatches' => fn ($query) => $query->withCount('bets')->orderBy('starts_at'),
                 'markets' => fn ($query) => $query->with('selections'),
-                'settlement:id,match_id,idempotency_key,result,bets_total,won_count,lost_count,void_count,payout_total,processed_at,meta',
+                'settlement:id,match_id,idempotency_key,result,bets_total,won_count,lost_count,void_count,payout_total,processused_at,meta',
                 'bets' => fn ($query) => $query->with('user:id,name')->latest('id')->limit(50),
             ])
             ->findOrFail($matchId);
@@ -320,9 +320,9 @@ class AdminMatchController extends Controller
             'event_type' => old('event_type', $match?->event_type ?? ($parentMatch ? EsportMatch::EVENT_TYPE_HEAD_TO_HEAD : (string) $request->query('event_type', EsportMatch::EVENT_TYPE_HEAD_TO_HEAD))),
             'game_key' => old('game_key', $match?->game_key ?? $parentMatch?->game_key ?? (string) $request->query('game_key', EsportMatch::GAME_VALORANT)),
             'event_name' => old('event_name', $match?->event_name),
-            'competition_name' => old('competition_name', $match?->competition_name ?? $parentMatch?->competition_name),
-            'competition_stage' => old('competition_stage', $match?->competition_stage ?? $parentMatch?->competition_stage),
-            'competition_split' => old('competition_split', $match?->competition_split ?? $parentMatch?->competition_split),
+            'compétition_name' => old('compétition_name', $match?->compétition_name ?? $parentMatch?->compétition_name),
+            'compétition_stage' => old('compétition_stage', $match?->compétition_stage ?? $parentMatch?->compétition_stage),
+            'compétition_split' => old('compétition_split', $match?->compétition_split ?? $parentMatch?->compétition_split),
             'best_of' => old('best_of', $match?->best_of ?? ($parentMatch ? 5 : null)),
             'team_a_name' => old('team_a_name', $match?->team_a_name),
             'team_b_name' => old('team_b_name', $match?->team_b_name),
@@ -362,7 +362,7 @@ class AdminMatchController extends Controller
                 ->where('game_key', EsportMatch::GAME_ROCKET_LEAGUE)
                 ->orderByDesc('starts_at')
                 ->limit(30)
-                ->get(['id', 'event_name', 'competition_name', 'child_matches_unlocked_at']),
+                ->get(['id', 'event_name', 'compétition_name', 'child_matches_unlocked_at']),
         ];
     }
 

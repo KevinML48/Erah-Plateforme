@@ -399,7 +399,7 @@
 				[
 					'title' => 'Matchs',
 					'category' => 'Competition',
-					'description' => 'Suivez les rencontres a venir, les resultats et les details des matchs.',
+					'description' => 'Suivez les rencontres a venir, les résultats et les détails des matchs.',
 					'route' => route('matches.index'),
 					'image' => '/app-ui/assets/img/image-menu-plateforme/matchs.png',
 				],
@@ -548,7 +548,7 @@
 								<h2 class="ph-caption-subtitle">Plateforme ERAH</h2>
 								<h1 class="ph-caption-title">Modules</h1>
 								<div class="ph-caption-description max-width-700">
-									Accedez rapidement aux espaces cles de la plateforme et passez d un module a l autre depuis un point d entree unique.
+									Accedez rapidement aux espaces cles de la plateforme et passez d'un module a l autre depuis un point d'entrée unique.
 								</div>
 							</div> <!-- /.ph-caption-inner -->
 						</div> <!-- /.ph-caption -->
@@ -567,7 +567,7 @@
 									<h2 class="ph-caption-subtitle">Plateforme</h2>
 									<h1 class="ph-caption-title">ERAH</h1>
 									<div class="ph-caption-description max-width-700">
-										Naviguez entre competition, contenu, progression, recompenses et services sans quitter le dashboard.
+										Naviguez entre compétition, contenu, progression, recompenses et services sans quitter le dashboard.
 									</div>
 								</div> <!-- /.ph-caption-inner -->
 							</div> <!-- /.ph-caption -->
@@ -1146,8 +1146,8 @@
 								<div class="tt-col-xl-4 tt-align-self-end tt-xl-column-reverse margin-top-40">
 
 									<div class="max-width-600 margin-bottom-10 tt-text-uppercase tt-text-reveal">
-										Si vous avez besoin d'informations sur ERAH, consultez la FAQ complete.<br>
-										Vous y trouverez un tutoriel clair pour bien demarrer.
+										Si vous avez besoin d'informations sur ERAH, consultez la FAQ complète.<br>
+										Vous y trouverez un tutoriel clair pour bien démarrer.
 									</div>
 
 									<!-- Begin big round button 

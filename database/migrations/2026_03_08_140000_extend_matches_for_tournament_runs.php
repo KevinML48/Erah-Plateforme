@@ -11,10 +11,10 @@ return new class extends Migration
         Schema::table('matches', function (Blueprint $table) {
             $table->string('event_type', 32)->default('head_to_head')->after('game_key');
             $table->string('event_name', 160)->nullable()->after('event_type');
-            $table->string('competition_name', 160)->nullable()->after('event_name');
-            $table->string('competition_stage', 120)->nullable()->after('competition_name');
-            $table->string('competition_split', 120)->nullable()->after('competition_stage');
-            $table->unsignedTinyInteger('best_of')->nullable()->after('competition_split');
+            $table->string('compétition_name', 160)->nullable()->after('event_name');
+            $table->string('compétition_stage', 120)->nullable()->after('compétition_name');
+            $table->string('compétition_split', 120)->nullable()->after('compétition_stage');
+            $table->unsignedTinyInteger('best_of')->nullable()->after('compétition_split');
             $table->foreignId('parent_match_id')->nullable()->after('best_of')->constrained('matches')->nullOnDelete();
             $table->timestamp('ends_at')->nullable()->after('locked_at');
             $table->timestamp('child_matches_unlocked_at')->nullable()->after('parent_match_id');
@@ -51,9 +51,9 @@ return new class extends Migration
             $table->dropColumn([
                 'event_type',
                 'event_name',
-                'competition_name',
-                'competition_stage',
-                'competition_split',
+                'compétition_name',
+                'compétition_stage',
+                'compétition_split',
                 'best_of',
                 'ends_at',
                 'child_matches_unlocked_at',

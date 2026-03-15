@@ -68,7 +68,7 @@ class MarketingHomeActivityService
 
         $missionQuery = UserMission::query()
             ->where('user_id', $user->id)
-            ->whereNull('completed_at')
+            ->whereNull('complèted_at')
             ->whereHas('instance', fn ($q) => $q->where('period_start', '<=', now())->where('period_end', '>=', now()))
             ->with('instance.template');
         $activeMission = (clone $missionQuery)->latest('updated_at')->first();
@@ -113,7 +113,7 @@ class MarketingHomeActivityService
             $items[] = $this->item('duel', 'Duel', $activeDuels.' duel(s) actif(s)', 'Vous avez des duels en cours actuellement.', 'En cours', route('app.duels.index', ['status' => 'active']), now(), 1);
         }
         if ($pendingDuels > 0) {
-            $items[] = $this->item('duel', 'Duel', $pendingDuels.' duel(s) en attente', 'Des reponses sont attendues sur vos defis.', 'En attente', route('app.duels.index', ['status' => 'pending']), now(), 2);
+            $items[] = $this->item('duel', 'Duel', $pendingDuels.' duel(s) en attente', 'Des réponses sont attendues sur vos defis.', 'En attente', route('app.duels.index', ['status' => 'pending']), now(), 2);
         }
         if ($activeMission !== null && $activeCount > 0) {
             $template = $activeMission->instance?->template;

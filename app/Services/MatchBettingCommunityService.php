@@ -416,9 +416,9 @@ class MatchBettingCommunityService
     private function stateMessage(string $state): string
     {
         return match ($state) {
-            'open' => 'Les mises evoluent en direct. Vous pouvez encore participer tant que la cloture n est pas atteinte.',
-            'closed' => 'Les paris sont fermes. Les donnees restent figees jusqu au resultat officiel et au reglement.',
-            'settled' => 'Le reglement est termine. Consultez les gagnants, les perdants et les plus gros gains.',
+            'open' => 'Les mises evoluent en direct. Vous pouvez encore participer tant que la cloture n'est pas atteinte.',
+            'closed' => 'Les paris sont fermes. Les donnees restent figees jusqu au résultat officiel et au règlement.',
+            'settled' => 'Le règlement est termine. Consultez les gagnants, les perdants et les plus gros gains.',
             default => 'Suivi communautaire des mises sur ce match.',
         };
     }

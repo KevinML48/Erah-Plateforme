@@ -74,7 +74,7 @@ class MissionsAndGiftsSeeder extends Seeder
         $this->seedMissionProgressForUser($firstUser, 'launch.live-community-challenge', 2, false);
     }
 
-    private function seedMissionProgressForUser(User $user, string $templateKey, int $progressCount, bool $completed): void
+    private function seedMissionProgressForUser(User $user, string $templateKey, int $progressCount, bool $complèted): void
     {
         $template = MissionTemplate::query()->where('key', $templateKey)->first();
         if (! $template) {
@@ -103,19 +103,19 @@ class MissionsAndGiftsSeeder extends Seeder
         }
 
         $userMission->progress_count = min($progressCount, (int) $template->target_count);
-        $userMission->completed_at = $completed ? now() : null;
-        $userMission->rewarded_at = $completed && ! $template->requires_claim ? now() : null;
-        $userMission->claimed_at = $completed && ! $template->requires_claim ? now() : null;
+        $userMission->complèted_at = $complèted ? now() : null;
+        $userMission->rewarded_at = $complèted && ! $template->requires_claim ? now() : null;
+        $userMission->claimed_at = $complèted && ! $template->requires_claim ? now() : null;
         $userMission->save();
 
-        if ($completed) {
+        if ($complèted) {
             MissionCompletion::query()->firstOrCreate(
                 [
                     'user_id' => $user->id,
                     'user_mission_id' => $userMission->id,
                 ],
                 [
-                    'completed_at' => now(),
+                    'complèted_at' => now(),
                     'created_at' => now(),
                 ]
             );

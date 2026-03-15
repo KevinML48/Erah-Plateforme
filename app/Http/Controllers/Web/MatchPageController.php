@@ -98,12 +98,12 @@ class MatchPageController extends Controller
         $match = EsportMatch::query()
             ->withCount(['bets', 'childMatches'])
             ->with([
-                'parentMatch:id,event_name,competition_name,competition_stage,competition_split,child_matches_unlocked_at,starts_at,status',
+                'parentMatch:id,event_name,compétition_name,compétition_stage,compétition_split,child_matches_unlocked_at,starts_at,status',
                 'childMatches' => fn ($query) => $query
                     ->withCount('bets')
                     ->orderBy('starts_at'),
                 'markets' => fn ($query) => $query->where('is_active', true)->with('selections'),
-                'settlement:id,match_id,payout_total,won_count,lost_count,void_count,processed_at',
+                'settlement:id,match_id,payout_total,won_count,lost_count,void_count,processused_at',
             ])
             ->findOrFail($matchId);
 
@@ -221,14 +221,14 @@ class MatchPageController extends Controller
     {
         return EsportMatch::query()
             ->withCount(['bets', 'childMatches'])
-            ->with('parentMatch:id,event_name,competition_name')
+            ->with('parentMatch:id,event_name,compétition_name')
             ->when($game !== 'all', fn (Builder $query) => $query->where('game_key', $game))
             ->when($eventType !== 'all', fn (Builder $query) => $query->where('event_type', $eventType))
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $nested) use ($search) {
                     $nested->where('event_name', 'like', '%'.$search.'%')
-                        ->orWhere('competition_name', 'like', '%'.$search.'%')
-                        ->orWhere('competition_stage', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_name', 'like', '%'.$search.'%')
+                        ->orWhere('compétition_stage', 'like', '%'.$search.'%')
                         ->orWhere('team_a_name', 'like', '%'.$search.'%')
                         ->orWhere('team_b_name', 'like', '%'.$search.'%')
                         ->orWhere('home_team', 'like', '%'.$search.'%')

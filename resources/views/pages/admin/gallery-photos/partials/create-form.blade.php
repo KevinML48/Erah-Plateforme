@@ -49,7 +49,7 @@
 
                 <div class="adm-gallery-field-card">
                     <label class="adm-gallery-form-label" for="alt_text">Alt text</label>
-                    <input class="tt-form-control" id="alt_text" name="alt_text" type="text" value="{{ old('alt_text') }}" placeholder="Equipe ERAH en competition">
+                    <input class="tt-form-control" id="alt_text" name="alt_text" type="text" value="{{ old('alt_text') }}" placeholder="Equipe ERAH en compétition">
                     @error('alt_text')
                         <p class="adm-gallery-error">{{ $message }}</p>
                     @enderror
@@ -57,7 +57,7 @@
 
                 <div class="adm-gallery-field-card adm-span-2">
                     <label class="adm-gallery-form-label" for="description">Description</label>
-                    <textarea class="tt-form-control" id="description" name="description" placeholder="Contexte, lieu, ambiance ou detail utile pour l'admin et la page publique.">{{ old('description') }}</textarea>
+                    <textarea class="tt-form-control" id="description" name="description" placeholder="Contexte, lieu, ambiance ou détail utile pour l'admin et la page publique.">{{ old('description') }}</textarea>
                     @error('description')
                         <p class="adm-gallery-error">{{ $message }}</p>
                     @enderror
@@ -193,7 +193,7 @@
                     <span>Enregistrer la photo</span>
                 </button>
 
-                <button class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" type="button" data-gallery-close-details>
+                <button class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" type="button" data-gallery-close-détails>
                     <span>Fermer</span>
                 </button>
             </div>

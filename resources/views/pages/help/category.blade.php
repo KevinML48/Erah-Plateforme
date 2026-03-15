@@ -72,7 +72,7 @@
                         @if ($page['articles']['links']['prev'])
                             <div class="tt-btn-wrap margin-bottom-15">
                                 <a href="{{ $page['articles']['links']['prev'] }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                    <span data-hover="Retour">Page precedente</span>
+                                    <span data-hover="Retour">Page précédente</span>
                                 </a>
                             </div>
                         @endif

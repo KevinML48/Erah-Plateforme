@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Duels | ERAH Plateforme')
-@section('meta_description', 'Suivi dynamique de vos duels, reponses rapides et historique par statut.')
+@section('meta_description', 'Suivi dynamique de vos duels, réponses rapides et historique par statut.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -252,7 +252,7 @@
                     <h2 class="ph-caption-subtitle">ERAH Matchups</h2>
                     <h1 class="ph-caption-title">Duels</h1>
                     <div class="ph-caption-description max-width-800">
-                        {{ (int) ($summary['all'] ?? 0) }} duel(s) au total - {{ (int) ($summary['needs_response'] ?? 0) }} en attente de votre reponse.
+                        {{ (int) ($summary['all'] ?? 0) }} duel(s) au total - {{ (int) ($summary['needs_response'] ?? 0) }} en attente de votre réponse.
                     </div>
                 </div>
             </div>
@@ -314,7 +314,7 @@
                 <div class="duel-quick-access">
                     <div class="duel-quick-access-copy">
                         <span class="duel-quick-access-title">Voir le classement duel</span>
-                        <p class="duel-quick-access-text">Le classement duel est maintenant sur une page dediee. Cette page reste concentree sur vos duels actuels, vos demandes en attente et votre historique personnel.</p>
+                        <p class="duel-quick-access-text">Le classement duel est maintenant sur une page dediee. Cette page reste concentrée sur vos duels actuels, vos demandes en attente et votre historique personnel.</p>
                     </div>
                     <div class="duel-quick-access-actions">
                         <a href="{{ route($duelLeaderboardRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item no-transition">
@@ -439,7 +439,7 @@
                             <h2 class="tt-heading-title">Comment<br>fonctionnent les duels ?</h2>
                         </div>
                         <p class="text-muted">
-                            Les duels pending attendent une reponse. Les duels actifs sont acceptes. Les duels finished regroupent refuses et expires.
+                            Les duels pending attendent une réponse. Les duels actifs sont acceptes. Les duels finished regroupent refuses et expires.
                         </p>
                     </div>
 

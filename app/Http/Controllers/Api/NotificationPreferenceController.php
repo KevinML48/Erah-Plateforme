@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
-use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\UpdateNotificationPreferencesRequest;
-use App\Models\NotificationPreference;
+use App\Http\Requests\Api\UpdateNotificationPréférencesRequest;
+use App\Models\NotificationPréférence;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class NotificationPreferenceController extends Controller
+class NotificationPréférenceController extends Controller
 {
     public function show(Request $request, EnsureNotificationSettingsAction $ensureNotificationSettingsAction): JsonResponse
     {
@@ -24,10 +24,10 @@ class NotificationPreferenceController extends Controller
     }
 
     public function update(
-        UpdateNotificationPreferencesRequest $request,
-        UpdateNotificationPreferencesAction $updateNotificationPreferencesAction
+        UpdateNotificationPréférencesRequest $request,
+        UpdateNotificationPréférencesAction $updateNotificationPréférencesAction
     ): JsonResponse {
-        $updateNotificationPreferencesAction->execute($request->user(), $request->validated());
+        $updateNotificationPréférencesAction->execute($request->user(), $request->validated());
 
         return response()->json($this->buildResponse($request->user()));
     }
@@ -38,14 +38,14 @@ class NotificationPreferenceController extends Controller
     private function buildResponse(User $user): array
     {
         $channels = UserNotificationChannel::query()->where('user_id', $user->id)->firstOrFail();
-        $preferences = NotificationPreference::query()
+        $préférences = NotificationPréférence::query()
             ->where('user_id', $user->id)
             ->get()
             ->keyBy('category');
 
         $categories = [];
         foreach (NotificationCategory::values() as $category) {
-            $pref = $preferences->get($category);
+            $pref = $préférences->get($category);
             $categories[$category] = [
                 'email_enabled' => $pref?->email_enabled ?? true,
                 'push_enabled' => $pref?->push_enabled ?? true,

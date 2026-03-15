@@ -15,7 +15,7 @@ class MissionCompletion extends Model
     protected $fillable = [
         'user_id',
         'user_mission_id',
-        'completed_at',
+        'complèted_at',
         'created_at',
     ];
 
@@ -24,7 +24,7 @@ class MissionCompletion extends Model
         return [
             'user_id' => 'integer',
             'user_mission_id' => 'integer',
-            'completed_at' => 'datetime',
+            'complèted_at' => 'datetime',
             'created_at' => 'datetime',
         ];
     }

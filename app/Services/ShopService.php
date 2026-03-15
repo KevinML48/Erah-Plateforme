@@ -50,8 +50,8 @@ class ShopService
                     throw new RuntimeException('Article epuise.');
                 }
 
-                // Stable idempotency key: one logical checkout request = one wallet debit key.
-                $walletResult = $this->platformPointService->debit(
+                // Stable idempotency key: one logical checkout request = one wallet débit key.
+                $walletResult = $this->platformPointService->débit(
                     user: $user,
                     amount: (int) $item->cost_points,
                     type: \App\Models\RewardWalletTransaction::TYPE_SHOP_PURCHASE,
@@ -69,7 +69,7 @@ class ShopService
                     'shop_item_id' => $item->id,
                     'user_id' => $user->id,
                     'cost_points' => (int) $item->cost_points,
-                    'status' => 'completed',
+                    'status' => 'complèted',
                     'idempotency_key' => $idempotencyKey,
                     'payload' => $item->payload,
                     'purchased_at' => now(),
@@ -89,7 +89,7 @@ class ShopService
                 $this->achievementService->sync($user);
 
                 $this->storeAuditLogAction->execute(
-                    action: 'shop.purchase.completed',
+                    action: 'shop.purchase.complèted',
                     actor: $user,
                     target: $purchase,
                     context: [

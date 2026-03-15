@@ -37,7 +37,7 @@
                 <div class="community-head">
                     <div>
                         <h1>{{ $quiz->title }}</h1>
-                        <p>{{ $quiz->intro ?: 'Repondez question par question. Une seule bonne reponse par item.' }}</p>
+                        <p>{{ $quiz->intro ?: 'Repondez question par question. Une seule bonne réponse par item.' }}</p>
                     </div>
                     <div class="community-actions">
                         <a href="{{ route($indexRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Retour">Retour aux quiz</span></a>
@@ -74,8 +74,8 @@
                                                     name="answers[{{ $question->id }}]"
                                                     value="{{ old('answers.'.$question->id) }}"
                                                     class="tt-form-control margin-top-10"
-                                                    placeholder="Saisissez votre reponse"
-                                                    autocomplete="off"
+                                                    placeholder="Saisissez votre réponse"
+                                                    autocomplète="off"
                                                 >
                                             </label>
                                         </div>

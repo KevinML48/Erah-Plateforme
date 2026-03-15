@@ -21,13 +21,13 @@ return new class extends Migration
             $table->unsignedInteger('lost_count')->default(0);
             $table->unsignedInteger('void_count')->default(0);
             $table->unsignedInteger('payout_total')->default(0);
-            $table->foreignId('processed_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('processed_at')->index();
+            $table->foreignId('processused_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('processused_at')->index();
             $table->json('meta')->nullable();
             $table->timestamps();
 
             $table->unique('match_id', 'match_settlements_match_unique');
-            $table->index(['processed_by', 'processed_at'], 'match_settlements_processed_by_idx');
+            $table->index(['processused_by', 'processused_at'], 'match_settlements_processused_by_idx');
         });
     }
 

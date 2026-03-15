@@ -70,7 +70,7 @@ class GiftCartService
             $statusCopy = $gift === null
                 ? 'Cadeau introuvable'
                 : (! $gift->is_active
-                    ? 'Cadeau desactive'
+                    ? 'Cadeau désactivée'
                     : ((int) $gift->stock < (int) $item->quantity
                         ? 'Stock insuffisant'
                         : 'Pret a commander'));
@@ -191,7 +191,7 @@ class GiftCartService
 
             $gift = Gift::query()->whereKey($cartItem->gift_id)->lockForUpdate()->firstOrFail();
             if (! $gift->is_active) {
-                throw new RuntimeException('Ce cadeau est desactive et ne peut plus etre commande.');
+                throw new RuntimeException('Ce cadeau est désactivée et ne peut plus etre commande.');
             }
 
             if ((int) $gift->stock < $quantity) {
@@ -323,11 +323,11 @@ class GiftCartService
             foreach ($cartItems as $cartItem) {
                 $gift = $gifts->get((int) $cartItem->gift_id);
                 if (! $gift) {
-                    throw new RuntimeException('Un cadeau du panier n est plus disponible.');
+                    throw new RuntimeException('Un cadeau du panier n'est plus disponible.');
                 }
 
                 if (! $gift->is_active) {
-                    throw new RuntimeException('Le cadeau "'.$gift->title.'" est desactive.');
+                    throw new RuntimeException('Le cadeau "'.$gift->title.'" est désactivée.');
                 }
 
                 if ((int) $gift->stock < (int) $cartItem->quantity) {
@@ -352,7 +352,7 @@ class GiftCartService
                 throw new RuntimeException('Solde insuffisant pour valider tout le panier.');
             }
 
-            $walletResult = $this->platformPointService->debit(
+            $walletResult = $this->platformPointService->débit(
                 user: $user,
                 amount: $totalPoints,
                 type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,

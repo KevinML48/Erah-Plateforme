@@ -51,7 +51,7 @@ class MissionTrackingService
 
         $this->ensureCurrentMissionInstancesAction->execute($user);
 
-        $completed = DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
+        $complèted = DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
             $linkedMissionTemplateId = max(0, (int) ($context['linked_mission_template_id'] ?? 0));
             $event = MissionEventRecord::query()
                 ->where('user_id', $user->id)
@@ -72,12 +72,12 @@ class MissionTrackingService
                 'amount' => max(1, $amount),
                 'context' => $context,
                 'occurred_at' => now(),
-                'processed_at' => now(),
+                'processused_at' => now(),
             ]);
 
             $missions = UserMission::query()
                 ->where('user_id', $user->id)
-                ->whereNull('completed_at')
+                ->whereNull('complèted_at')
                 ->where(function (Builder $query): void {
                     $query->whereNull('expired_at')->orWhere('expired_at', '>', now());
                 })
@@ -95,7 +95,7 @@ class MissionTrackingService
             })) {
                 $linkedMission = UserMission::query()
                     ->where('user_id', $user->id)
-                    ->whereNull('completed_at')
+                    ->whereNull('complèted_at')
                     ->where(function (Builder $query): void {
                         $query->whereNull('expired_at')->orWhere('expired_at', '>', now());
                     })
@@ -114,7 +114,7 @@ class MissionTrackingService
                 }
             }
 
-            $completed = collect();
+            $complèted = collect();
 
             foreach ($missions as $mission) {
                 $template = $mission->instance?->template;
@@ -126,13 +126,13 @@ class MissionTrackingService
                 $mission->progress_count = min($target, (int) $mission->progress_count + max(1, $amount));
                 $mission->last_tracked_at = now();
 
-                if ($mission->progress_count >= $target && $mission->completed_at === null) {
-                    $mission->completed_at = now();
+                if ($mission->progress_count >= $target && $mission->complèted_at === null) {
+                    $mission->complèted_at = now();
                 }
 
                 $mission->save();
 
-                if ($mission->completed_at === null) {
+                if ($mission->complèted_at === null) {
                     $this->notifyMissionProgress($user, $mission, $template);
                     continue;
                 }
@@ -143,13 +143,13 @@ class MissionTrackingService
                         'user_mission_id' => $mission->id,
                     ],
                     [
-                        'completed_at' => $mission->completed_at,
+                        'complèted_at' => $mission->complèted_at,
                         'created_at' => now(),
                     ],
                 );
 
                 $this->grantMissionRewards($user, $mission, $normalizedEventType, $context);
-                $completed->push($mission->fresh(['instance.template', 'completion']));
+                $complèted->push($mission->fresh(['instance.template', 'completion']));
             }
 
             $this->grantDailyCompletionBonus($user);
@@ -162,16 +162,16 @@ class MissionTrackingService
                     'event_type' => $normalizedEventType,
                     'event_key' => $eventKey,
                     'amount' => $amount,
-                    'missions_completed' => $completed->pluck('id')->all(),
+                    'missions_complèted' => $complèted->pluck('id')->all(),
                 ],
             );
 
-            return $completed;
+            return $complèted;
         });
 
         $this->recordDerivedActivitySignals($user, $normalizedEventType);
 
-        return $completed;
+        return $complèted;
     }
 
     /**
@@ -246,7 +246,7 @@ class MissionTrackingService
             data: [
                 'mission_id' => $mission->id,
                 'mission_template_key' => $template->key,
-                'toast_kind' => 'completed',
+                'toast_kind' => 'complèted',
                 'progress_count' => (int) $mission->progress_count,
                 'target_count' => max(1, (int) $template->target_count),
                 'rewards_xp' => (int) ($rewards['xp'] ?? 0),
@@ -291,7 +291,7 @@ class MissionTrackingService
             ->whereHas('instance', fn (Builder $query) => $query->whereDate('period_start', $today->toDateString()))
             ->get();
 
-        if ($dailyMissions->isEmpty() || $dailyMissions->contains(fn (UserMission $mission): bool => $mission->completed_at === null)) {
+        if ($dailyMissions->isEmpty() || $dailyMissions->contains(fn (UserMission $mission): bool => $mission->complèted_at === null)) {
             return;
         }
 

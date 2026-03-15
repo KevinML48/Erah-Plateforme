@@ -236,7 +236,7 @@
 															<li class="ttgr-cat-item"><a href="#"
 																	data-filter=".evenements">Événements</a></li>
 															<li class="ttgr-cat-item"><a href="#"
-																	data-filter=".competitions">Compétitions</a></li>
+																	data-filter=".compétitions">Compétitions</a></li>
 														</ul>
 													</div>
 												</div>
@@ -1215,7 +1215,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1248,7 +1248,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1290,7 +1290,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1323,7 +1323,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1356,7 +1356,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1398,7 +1398,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1431,7 +1431,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1464,7 +1464,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -1977,7 +1977,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -2010,7 +2010,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 											<div class="portfolio-grid-item">
@@ -2043,7 +2043,7 @@
 										</div>
 									</div>
 
-									<div class="tt-grid-item isotope-item competitions">
+									<div class="tt-grid-item isotope-item compétitions">
 										<div class="ttgr-item-inner">
 
 

@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Gerer evenement | Admin ERAH')
-@section('meta_description', 'Pilotage detaille d un match classique ou d un tournoi Rocket League.')
+@section('meta_description', 'Pilotage détaillé d'un match classique ou d'un tournoi Rocket League.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -112,7 +112,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">{{ $match->displayTitle() }}</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">{{ $match->displaySubtitle() ?: 'Tableau de pilotage complet avec etat de l evenement, resultat, reglement des pronostics et lien parent/enfant.' }}</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">{{ $match->displaySubtitle() ?: 'Tableau de pilotage complet avec etat de l evenement, résultat, règlement des pronostics et lien parent/enfant.' }}</p>
                         </div>
 
                         <div class="adm-row-actions margin-bottom-20">
@@ -149,7 +149,7 @@
 
                                 <div class="adm-manage-list">
                                     <article class="adm-manage-card">
-                                        <h4 class="adm-surface-title" style="font-size:24px">Changer l etat</h4>
+                                        <h4 class="adm-surface-title" style="font-size:24px">Changer l'état</h4>
                                         <form method="POST" action="{{ route('admin.matches.status', $match->id) }}" class="adm-form tt-form tt-form-creative">
                                             @csrf
                                             <div class="tt-form-group">
@@ -170,7 +170,7 @@
                                     </article>
 
                                     <article class="adm-manage-card">
-                                        <h4 class="adm-surface-title" style="font-size:24px">{{ $isTournament ? 'Definir parcours final' : 'Definir resultat' }}</h4>
+                                        <h4 class="adm-surface-title" style="font-size:24px">{{ $isTournament ? 'Definir parcours final' : 'Definir résultat' }}</h4>
                                         <form method="POST" action="{{ route('admin.matches.result', $match->id) }}" class="adm-form tt-form tt-form-creative">
                                             @csrf
                                             <div class="adm-form-grid {{ $isTournament ? '' : 'adm-form-grid-3' }}">
@@ -197,7 +197,7 @@
                                             </div>
 
                                             <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                                <span data-hover="Appliquer resultat">Appliquer resultat</span>
+                                                <span data-hover="Appliquer résultat">Appliquer résultat</span>
                                             </button>
                                         </form>
                                     </article>
@@ -219,7 +219,7 @@
 
                                     <article class="adm-manage-card">
                                         <h4 class="adm-surface-title" style="font-size:24px">Reglement des pronostics</h4>
-                                        <p class="adm-meta">Cette action applique le resultat a tous les marches actifs de l evenement. Pour Rocket League en BO, ajoutez aussi le score final si le marche score exact est actif.</p>
+                                        <p class="adm-meta">Cette action applique le résultat a tous les marches actifs de l evenement. Pour Rocket League en BO, ajoutez aussi le score final si le marche score exact est actif.</p>
                                         <form method="POST" action="{{ route('admin.matches.settle', $match->id) }}" class="adm-form tt-form tt-form-creative">
                                             @csrf
 
@@ -264,14 +264,14 @@
                             <section class="adm-surface">
                                 <h3 class="adm-surface-title">Meta evenement</h3>
                                 <div class="adm-manage-meta-grid">
-                                    <article class="adm-match-meta"><span>Competition</span><strong>{{ $match->competition_name ?: '-' }}</strong></article>
-                                    <article class="adm-match-meta"><span>Phase</span><strong>{{ $match->competition_stage ?: '-' }}</strong></article>
-                                    <article class="adm-match-meta"><span>Split</span><strong>{{ $match->competition_split ?: '-' }}</strong></article>
+                                    <article class="adm-match-meta"><span>Competition</span><strong>{{ $match->compétition_name ?: '-' }}</strong></article>
+                                    <article class="adm-match-meta"><span>Phase</span><strong>{{ $match->compétition_stage ?: '-' }}</strong></article>
+                                    <article class="adm-match-meta"><span>Split</span><strong>{{ $match->compétition_split ?: '-' }}</strong></article>
                                     <article class="adm-match-meta"><span>Debut</span><strong>{{ $match->starts_at?->format('d/m/Y H:i') ?? '-' }}</strong></article>
                                     <article class="adm-match-meta"><span>Cloture des predictions</span><strong>{{ $match->locked_at?->format('d/m/Y H:i') ?? '-' }}</strong></article>
                                     <article class="adm-match-meta"><span>Fin</span><strong>{{ $match->ends_at?->format('d/m/Y H:i') ?? '-' }}</strong></article>
-                                    <article class="adm-match-meta"><span>Tournoi parent</span><strong>{{ $match->parentMatch?->event_name ?: $match->parentMatch?->competition_name ?: '-' }}</strong></article>
-                                    <article class="adm-match-meta"><span>Pronostics regles le</span><strong>{{ optional($match->settlement?->processed_at)->format('d/m/Y H:i') ?: '-' }}</strong></article>
+                                    <article class="adm-match-meta"><span>Tournoi parent</span><strong>{{ $match->parentMatch?->event_name ?: $match->parentMatch?->compétition_name ?: '-' }}</strong></article>
+                                    <article class="adm-match-meta"><span>Pronostics regles le</span><strong>{{ optional($match->settlement?->processused_at)->format('d/m/Y H:i') ?: '-' }}</strong></article>
                                     <article class="adm-match-meta"><span>Score final</span><strong>{{ $match->team_a_score !== null && $match->team_b_score !== null ? $match->team_a_score.' - '.$match->team_b_score : '-' }}</strong></article>
                                 </div>
                             </section>
@@ -314,7 +314,7 @@
                                                     <div class="adm-child-head">
                                                         <div>
                                                             <strong>{{ $market->title }}</strong>
-                                                            <p class="adm-meta">{{ $matchLabelResolver->labelForMarketKey($market->key) }} - {{ $market->is_active ? 'actif' : 'desactive' }}</p>
+                                                            <p class="adm-meta">{{ $matchLabelResolver->labelForMarketKey($market->key) }} - {{ $market->is_active ? 'actif' : 'désactivée' }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="adm-match-pills">

@@ -79,22 +79,22 @@
 
                             <div class="tt-form-group">
                                 <label for="name">Nom</label>
-                                <input class="tt-form-control" id="name" name="name" type="text" value="{{ old('name') }}" placeholder="Votre pseudo ou nom" required autocomplete="name">
+                                <input class="tt-form-control" id="name" name="name" type="text" value="{{ old('name') }}" placeholder="Votre pseudo ou nom" required autocomplète="name">
                             </div>
 
                             <div class="tt-form-group">
                                 <label for="email">Adresse email</label>
-                                <input class="tt-form-control" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="email@domaine.com" required autocomplete="email">
+                                <input class="tt-form-control" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="email@domaine.com" required autocomplète="email">
                             </div>
 
                             <div class="tt-form-group">
                                 <label for="password">Mot de passe</label>
-                                <input class="tt-form-control" id="password" name="password" type="password" placeholder="Minimum 8 caracteres" required autocomplete="new-password">
+                                <input class="tt-form-control" id="password" name="password" type="password" placeholder="Minimum 8 caracteres" required autocomplète="new-password">
                             </div>
 
                             <div class="tt-form-group">
                                 <label for="password_confirmation">Confirmation mot de passe</label>
-                                <input class="tt-form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Retapez le mot de passe" required autocomplete="new-password">
+                                <input class="tt-form-control" id="password_confirmation" name="password_confirmation" type="password" placeholder="Retapez le mot de passe" required autocomplète="new-password">
                             </div>
 
                             <div class="tt-form-group">

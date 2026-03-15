@@ -61,7 +61,7 @@
             </div>
             <div class="tt-form-group adm-col-span-3">
                 <label>Description</label>
-                <textarea class="tt-form-control" name="description" rows="2" placeholder="Visible sur la page codes live et utile pour preciser le contexte du direct."></textarea>
+                <textarea class="tt-form-control" name="description" rows="2" placeholder="Visible sur la page codes live et utile pour préciser le contexte du direct."></textarea>
             </div>
         </div>
 
@@ -87,7 +87,7 @@
                         <span class="adm-pill">+{{ (int) $code->reward_points }} pts</span>
                         <span class="adm-pill">{{ (int) $code->redemptions_count }} utilisation(s)</span>
                     </div>
-                    <details class="margin-top-20">
+                    <détails class="margin-top-20">
                         <summary class="tt-btn tt-btn-secondary tt-magnetic-item" style="display:inline-flex;">
                             <span data-hover="Modifier">Modifier le code</span>
                         </summary>
@@ -157,7 +157,7 @@
                                 </button>
                             </div>
                         </form>
-                    </details>
+                    </détails>
                     <form method="POST" action="{{ route('admin.live-codes.destroy', $code->id) }}" onsubmit="return confirm('Supprimer ce code ?');">
                         @csrf
                         @method('DELETE')

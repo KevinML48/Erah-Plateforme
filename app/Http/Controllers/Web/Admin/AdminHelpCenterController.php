@@ -36,7 +36,7 @@ class AdminHelpCenterController extends Controller
         HelpCategory::query()->create($request->validated());
         $this->helpCenterService->invalidate();
 
-        return back()->with('success', "Categorie d'aide creee.");
+        return back()->with('success', "Categorie d'aide créée.");
     }
 
     public function updateCategory(UpsertHelpCategoryRequest $request, HelpCategory $category): RedirectResponse
@@ -108,7 +108,7 @@ class AdminHelpCenterController extends Controller
         HelpTourStep::query()->create($request->validated());
         $this->helpCenterService->invalidate();
 
-        return back()->with('success', 'Etape de visite creee.');
+        return back()->with('success', 'Etape de visite créée.');
     }
 
     public function updateTourStep(UpsertHelpTourStepRequest $request, HelpTourStep $tourStep): RedirectResponse

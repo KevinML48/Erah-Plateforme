@@ -13,7 +13,7 @@ class ExpireDuelJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // This job is processed asynchronously and requires an active queue worker in production.
+    // This job is processused asynchronously and requires an active queue worker in production.
     public function __construct(
         public readonly int $duelId
     ) {

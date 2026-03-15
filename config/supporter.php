@@ -70,9 +70,9 @@ return [
     ],
 
     'community_goals' => [
-        ['goal_count' => 50, 'title' => 'Evenement communaute', 'description' => 'Activation d un evenement communaute ERAH.'],
-        ['goal_count' => 100, 'title' => 'Animation plateforme', 'description' => 'Ajout d une animation plateforme reservee aux supporters.'],
-        ['goal_count' => 200, 'title' => 'Projet special ERAH', 'description' => 'Lancement d un projet special finance par la communaute.'],
+        ['goal_count' => 50, 'title' => 'Evenement communaute', 'description' => 'Activation d'un evenement communaute ERAH.'],
+        ['goal_count' => 100, 'title' => 'Animation plateforme', 'description' => 'Ajout d'une animation plateforme reservee aux supporters.'],
+        ['goal_count' => 200, 'title' => 'Projet special ERAH', 'description' => 'Lancement d'un projet special finance par la communaute.'],
     ],
 
     'loyalty_badges' => [
@@ -88,7 +88,7 @@ return [
         'mission_title' => env('SUPPORTER_MONTHLY_MISSION_TITLE', 'Mission supporter mensuelle'),
         'mission_description' => env(
             'SUPPORTER_MONTHLY_MISSION_DESCRIPTION',
-            'Merci de soutenir ERAH. Reviens chaque mois pour recuperer ton bonus supporter.'
+            'Merci de soutenir ERAH. Reviens chaque mois pour récupérer ton bonus supporter.'
         ),
         'event_type' => env('SUPPORTER_MONTHLY_EVENT_TYPE', 'supporter.monthly'),
         'target_count' => (int) env('SUPPORTER_MONTHLY_TARGET_COUNT', 1),

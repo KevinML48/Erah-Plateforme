@@ -263,7 +263,7 @@
             align-items: center;
         }
 
-        .adm-gallery-compose summary::-webkit-details-marker {
+        .adm-gallery-compose summary::-webkit-détails-marker {
             display: none;
         }
 
@@ -924,7 +924,7 @@
             color: var(--adm-text);
         }
 
-        .adm-gallery-edit summary::-webkit-details-marker {
+        .adm-gallery-edit summary::-webkit-détails-marker {
             display: none;
         }
 
@@ -1357,7 +1357,7 @@
                     </section>
 
                     <section class="adm-surface" id="gallery-compose-section">
-                        <details class="adm-gallery-compose" id="gallery-compose" @if($composeOpen) open @endif>
+                        <détails class="adm-gallery-compose" id="gallery-compose" @if($composeOpen) open @endif>
                             <summary>
                                 <div>
                                     <span class="adm-gallery-section-eyebrow">Creation</span>
@@ -1371,7 +1371,7 @@
                             <div class="adm-gallery-compose-body">
                                 @include('pages.admin.gallery-photos.partials.create-form')
                             </div>
-                        </details>
+                        </détails>
                     </section>
 
                     <section class="adm-surface" id="gallery-library">
@@ -1427,7 +1427,7 @@
 
                         <div class="adm-gallery-results">
                             <div class="adm-gallery-results-copy">
-                                <strong>{{ $photos->total() }} resultat(s)</strong>
+                                <strong>{{ $photos->total() }} résultat(s)</strong>
                                 <span>Sur {{ (int) $stats['total'] }} media(s) au total. Tri courant : {{ $sortOptions[$filters['sort']] ?? 'Ordre manuel' }}.</span>
                             </div>
 
@@ -1454,11 +1454,11 @@
                             <div class="adm-pagin">{{ $photos->onEachSide(1)->links('vendor.pagination.admin') }}</div>
                         @else
                             <div class="adm-gallery-empty-state">
-                                <h3>{{ $hasFilters ? 'Aucun resultat pour ce filtre' : 'La galerie est encore vide' }}</h3>
+                                <h3>{{ $hasFilters ? 'Aucun résultat pour ce filtre' : 'La galerie est encore vide' }}</h3>
                                 <p>
                                     {{ $hasFilters
                                         ? 'Ajustez les filtres ou reinitialisez la barre d outils pour retrouver vos medias.'
-                                        : 'Ajoutez le premier media depuis le formulaire de creation pour lancer une vraie bibliotheque admin exploitable.' }}
+                                        : 'Ajoutez le premier media depuis le formulaire de création pour lancer une vraie bibliotheque admin exploitable.' }}
                                 </p>
 
                                 <div class="adm-gallery-hero-actions">
@@ -1515,11 +1515,11 @@
                 openComposePanel();
             }
 
-            document.querySelectorAll('[data-gallery-close-details]').forEach(function (button) {
+            document.querySelectorAll('[data-gallery-close-détails]').forEach(function (button) {
                 button.addEventListener('click', function () {
-                    var details = button.closest('details');
-                    if (details) {
-                        details.open = false;
+                    var détails = button.closest('détails');
+                    if (détails) {
+                        détails.open = false;
                     }
                 });
             });

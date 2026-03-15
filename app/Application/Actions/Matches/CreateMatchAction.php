@@ -43,9 +43,9 @@ class CreateMatchAction
                 'game_key' => $payload['game_key'] ?? $parentMatch?->game_key,
                 'event_type' => $eventType,
                 'event_name' => $this->resolveEventName($eventType, $payload, $parentMatch),
-                'competition_name' => $payload['competition_name'] ?? $parentMatch?->competition_name,
-                'competition_stage' => $payload['competition_stage'] ?? $parentMatch?->competition_stage,
-                'competition_split' => $payload['competition_split'] ?? $parentMatch?->competition_split,
+                'compétition_name' => $payload['compétition_name'] ?? $parentMatch?->compétition_name,
+                'compétition_stage' => $payload['compétition_stage'] ?? $parentMatch?->compétition_stage,
+                'compétition_split' => $payload['compétition_split'] ?? $parentMatch?->compétition_split,
                 'best_of' => isset($payload['best_of']) && $payload['best_of'] !== '' ? (int) $payload['best_of'] : null,
                 'parent_match_id' => $parentMatch?->id,
                 'team_a_name' => $teamAName,
@@ -152,7 +152,7 @@ class CreateMatchAction
     private function resolveEventName(string $eventType, array $payload, ?EsportMatch $parentMatch): ?string
     {
         if ($eventType === EsportMatch::EVENT_TYPE_TOURNAMENT_RUN) {
-            $eventName = trim((string) ($payload['event_name'] ?? $payload['competition_name'] ?? ''));
+            $eventName = trim((string) ($payload['event_name'] ?? $payload['compétition_name'] ?? ''));
 
             return $eventName !== '' ? $eventName : 'Tournoi Rocket League';
         }

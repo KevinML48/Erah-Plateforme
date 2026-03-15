@@ -63,14 +63,14 @@
         .supporter-plan-meta { display: grid; gap: 12px; color: rgba(255,255,255,.78); align-content: start; }
         .supporter-plan-meta p { margin: 0; }
         .supporter-plan-lead { min-height: 104px; }
-        .supporter-plan-details {
+        .supporter-plan-détails {
             list-style: none;
             margin: 0;
             padding: 0;
             display: grid;
             gap: 8px;
         }
-        .supporter-plan-details li {
+        .supporter-plan-détails li {
             border: 1px solid rgba(255,255,255,.10);
             border-radius: 12px;
             padding: 10px 12px;
@@ -80,14 +80,14 @@
             align-content: center;
             gap: 4px;
         }
-        .supporter-plan-details span {
+        .supporter-plan-détails span {
             display: block;
             font-size: 11px;
             letter-spacing: .08em;
             text-transform: uppercase;
             color: rgba(255,255,255,.62);
         }
-        .supporter-plan-details strong {
+        .supporter-plan-détails strong {
             display: block;
             font-size: 16px;
             line-height: 1.25;
@@ -348,7 +348,7 @@
         body.tt-lightmode-on .supporter-campaign-card,
         body.tt-lightmode-on .supporter-wall-item,
         body.tt-lightmode-on .supporter-kpi,
-        body.tt-lightmode-on .supporter-plan-details li {
+        body.tt-lightmode-on .supporter-plan-détails li {
             border-color: rgba(148, 163, 184, .26);
             background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
             box-shadow: 0 18px 38px rgba(148, 163, 184, .16);
@@ -374,7 +374,7 @@
         body.tt-lightmode-on .supporter-benefit-card p {
             color: rgba(51, 65, 85, .80);
         }
-        body.tt-lightmode-on .supporter-plan-details strong,
+        body.tt-lightmode-on .supporter-plan-détails strong,
         body.tt-lightmode-on .supporter-pricing-fill-item strong,
         body.tt-lightmode-on .supporter-side-fill-item strong,
         body.tt-lightmode-on .supporter-side-tile strong,
@@ -412,7 +412,7 @@
             .supporter-benefit-card { min-height: 0; }
             .supporter-plan-head h4,
             .supporter-plan-lead,
-            .supporter-plan-details li,
+            .supporter-plan-détails li,
             .supporter-note-tile,
             .supporter-side-tile,
             .supporter-pricing-fill,
@@ -546,7 +546,7 @@
                                                     Paiement sur 6 mois avec reduction immediate et tous les avantages supporter.
                                                 @endif
                                             </p>
-                                            <ul class="supporter-plan-details">
+                                            <ul class="supporter-plan-détails">
                                                 <li>
                                                     <span>Acces</span>
                                                     <strong>Tous les avantages supporter</strong>
@@ -678,7 +678,7 @@
                             <div class="supporter-side-stack">
                                 <div class="supporter-side-panel">
                                     <h4>Avant de vous lancer</h4>
-                                    <p>La FAQ reste accessible en permanence depuis le menu Plateforme pour comprendre les clips, missions, classement, wallet et l interet de la formule Supporter.</p>
+                                    <p>La FAQ reste accessible en permanence depuis le menu Plateforme pour comprendre les clips, missions, classement, wallet et l'intérêt de la formule Supporter.</p>
                                     <div class="supporter-side-links">
                                         <a href="{{ route('marketing.faq') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                                             <span data-hover="Ouvrir la FAQ">Ouvrir la FAQ</span>
@@ -759,7 +759,7 @@
                             @if(($supporterSummary['is_active'] ?? false) === true)
                                 <div class="supporter-actions margin-top-30">
                                     <a href="{{ route('supporter.console') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Ouvrir l espace supporter">Ouvrir l espace supporter</span>
+                                        <span data-hover="Ouvrir l'espace supporter">Ouvrir l'espace supporter</span>
                                     </a>
                                 </div>
                             @endif

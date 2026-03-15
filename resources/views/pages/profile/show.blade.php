@@ -312,7 +312,7 @@
         body.tt-lightmode-on .profile-connected-status.is-linked,
         body.tt-lightmode-on .profile-history-kind.is-xp,
         body.tt-lightmode-on .profile-review-status.is-published,
-        body.tt-lightmode-on .profile-mission-status.is-completed,
+        body.tt-lightmode-on .profile-mission-status.is-complèted,
         body.tt-lightmode-on .profile-cosmetic-card.is-equipped {
             border-color: rgba(34, 197, 94, .24);
             background: rgba(220, 252, 231, .88);
@@ -589,7 +589,7 @@
             text-transform: uppercase;
         }
 
-        .profile-mission-status.is-completed {
+        .profile-mission-status.is-complèted {
             border-color: rgba(92, 213, 144, .44);
             color: #d4ffe4;
         }
@@ -695,13 +695,13 @@
             line-height: 1.75;
         }
 
-        .profile-assistant-details {
+        .profile-assistant-détails {
             margin-top: 14px;
             display: grid;
             gap: 10px;
         }
 
-        .profile-assistant-detail {
+        .profile-assistant-détail {
             margin: 0;
             padding: 14px 16px;
             border-radius: 14px;
@@ -1203,7 +1203,7 @@
                                                 id="delete_password"
                                                 name="password"
                                                 type="password"
-                                                autocomplete="current-password"
+                                                autocomplète="current-password"
                                                 required
                                                 data-delete-password
                                                 @disabled(! $deleteFormOpen)
@@ -1358,7 +1358,7 @@
                                         {{ optional($mission['period_end'] ?? null)->format('d/m/Y H:i') ? 'Disponible jusqu au '.optional($mission['period_end'])->format('d/m/Y H:i') : 'Sans date de fin proche' }}
                                     </span>
                                     <a href="{{ route(request()->routeIs('app.*') ? 'app.missions.index' : 'missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                        <span data-hover="Voir les details">Voir les details</span>
+                                        <span data-hover="Voir les détails">Voir les détails</span>
                                     </a>
                                 </div>
                             </article>
@@ -1376,10 +1376,10 @@
             <div class="tt-section-inner tt-wrap max-width-1000">
                 <div class="tt-heading tt-heading-lg margin-bottom-20">
                     <h3 class="tt-heading-subtitle">Memo assistant</h3>
-                    <h2 class="tt-heading-title">Mes reponses favorites</h2>
+                    <h2 class="tt-heading-title">Mes réponses favorites</h2>
                 </div>
                 <div class="profile-inline-actions margin-bottom-30">
-                    <span class="tt-form-text">Retrouvez ici les reponses du bot que vous avez decide de garder sous la main.</span>
+                    <span class="tt-form-text">Retrouvez ici les réponses du bot que vous avez decide de garder sous la main.</span>
                     <a href="{{ route('help.assistant.page') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                         <span data-hover="Retour a l assistant">Retour a l assistant</span>
                     </a>
@@ -1389,7 +1389,7 @@
                     <div class="profile-assistant-grid">
                         @foreach($assistantFavorites as $favorite)
                             @php
-                                $details = collect($favorite->details ?? [])->take(3);
+                                $détails = collect($favorite->détails ?? [])->take(3);
                                 $sources = collect($favorite->sources ?? [])->take(3);
                                 $nextSteps = collect($favorite->next_steps ?? [])->take(4);
                             @endphp
@@ -1399,7 +1399,7 @@
                                         <span class="profile-assistant-badge">Favori assistant</span>
                                         <h3 class="profile-assistant-question margin-top-15">{{ $favorite->question }}</h3>
                                     </div>
-                                    <form method="POST" action="{{ route('assistant.favorites.destroy', $favorite) }}" onsubmit="return confirm('Supprimer cette reponse favorite de votre profil ?');">
+                                    <form method="POST" action="{{ route('assistant.favorites.destroy', $favorite) }}" onsubmit="return confirm('Supprimer cette réponse favorite de votre profil ?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
@@ -1410,10 +1410,10 @@
 
                                 <p class="profile-assistant-answer">{{ $favorite->answer }}</p>
 
-                                @if($details->isNotEmpty())
-                                    <div class="profile-assistant-details">
-                                        @foreach($details as $detail)
-                                            <p class="profile-assistant-detail">{{ $detail }}</p>
+                                @if($détails->isNotEmpty())
+                                    <div class="profile-assistant-détails">
+                                        @foreach($détails as $détail)
+                                            <p class="profile-assistant-détail">{{ $détail }}</p>
                                         @endforeach
                                     </div>
                                 @endif
@@ -1459,7 +1459,7 @@
                     </div>
                 @else
                     <div class="profile-assistant-empty">
-                        Aucune reponse favorite pour le moment. Depuis l assistant, vous pourrez enregistrer les reponses utiles avec l icone etoile pour les retrouver ici plus tard.
+                        Aucune réponse favorite pour le moment. Depuis l assistant, vous pourrez enregistrer les réponses utiles avec l icone etoile pour les retrouver ici plus tard.
                     </div>
                 @endif
             </div>

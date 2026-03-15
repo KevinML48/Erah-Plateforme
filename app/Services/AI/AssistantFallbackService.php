@@ -113,9 +113,9 @@ class AssistantFallbackService
         $points = (int) Arr::get($userContext, 'wallets.points', 0);
 
         $content = trim(implode("\n\n", array_filter([
-            'Si tu veux comprendre ERAH dans les grandes lignes, l idee est simple : tout est rassemble dans le meme espace pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
+            'Si tu veux comprendre ERAH dans les grandes lignes, l'idée est simple : tout est rassemble dans le meme espace pour suivre ta progression, tes missions, les matchs, les bets, ton profil, tes notifications et tes recompenses.',
             "Dans ton contexte actuel, tu es en ligue {$league} avec {$xp} XP et {$points} points disponibles sur la plateforme.",
-            'Le plus utile maintenant, c est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
+            'Le plus utile maintenant, C'est de regarder '.($this->contextLink($context, 'Missions') ?: 'la page Missions').' puis '.($this->contextLink($context, 'Matchs') ?: 'la page Matchs').' pour voir ce qui peut te faire avancer rapidement.',
         ])));
 
         return new AssistantResponse(
@@ -135,7 +135,7 @@ class AssistantFallbackService
         $lines = $missions->map(function (array $mission): string {
             $target = max(0, (int) ($mission['target'] ?? 0));
             $progress = max(0, (int) ($mission['progress'] ?? 0));
-            $suffix = ($mission['completed'] ?? false)
+            $suffix = ($mission['complèted'] ?? false)
                 ? ' - terminee'
                 : ($target > 0 ? " - {$progress}/{$target}" : '');
 
@@ -145,7 +145,7 @@ class AssistantFallbackService
         $content = trim(implode("\n\n", array_filter([
             'Sur ERAH, les missions sont souvent le levier le plus direct pour progresser sans te disperser.',
             $lines !== [] ? "Celles qui ressortent dans ton contexte :\n".implode("\n", $lines) : 'Je n ai pas de mission active fiable a citer ici, donc le plus propre est d ouvrir directement ton espace Missions.',
-            'Le prochain pas le plus utile : '.($this->contextLink($context, 'Missions') ?: 'ouvrir Missions').' pour voir le detail, les conditions et ce qui peut etre termine rapidement.',
+            'Le prochain pas le plus utile : '.($this->contextLink($context, 'Missions') ?: 'ouvrir Missions').' pour voir le détail, les conditions et ce qui peut etre termine rapidement.',
         ])));
 
         return new AssistantResponse(
@@ -171,7 +171,7 @@ class AssistantFallbackService
         $content = trim(implode("\n\n", array_filter([
             'Voici les matchs qui remontent le plus clairement dans la plateforme pour le moment.',
             implode("\n", $lines),
-            'Le meilleur prochain pas : '.($this->contextLink($context, 'Matchs') ?: 'ouvrir Matchs').' pour verifier le statut, les details et les bets disponibles.',
+            'Le meilleur prochain pas : '.($this->contextLink($context, 'Matchs') ?: 'ouvrir Matchs').' pour verifier le statut, les détails et les bets disponibles.',
         ])));
 
         return new AssistantResponse(
@@ -265,10 +265,10 @@ class AssistantFallbackService
             $sections[] = $planName !== ''
                 ? 'Ton statut supporter est deja actif via la formule '.$planName.'.'
                 : 'Ton statut supporter est deja actif sur ERAH.';
-            $sections[] = 'Le plus utile maintenant est d ouvrir '.($this->contextLink($context, 'Supporter') ?: 'la page Supporter').' pour gerer ton abonnement, verifier tes avantages et suivre tes missions reservees.';
+            $sections[] = 'Le plus utile maintenant est d ouvrir '.($this->contextLink($context, 'Supporter') ?: 'la page Supporter').' pour gérer ton abonnement, verifier tes avantages et suivre tes missions reservees.';
         } else {
             $sections[] = 'Oui. Pour devenir supporter sur ERAH, il faut passer par la page Supporter, comparer les formules puis lancer le checkout securise.';
-            $sections[] = "En general, cela debloque notamment :\n- ".implode("\n- ", $benefits);
+            $sections[] = "En général, cela debloque notamment :\n- ".implode("\n- ", $benefits);
             $sections[] = 'Le bon prochain pas : '.($this->contextLink($context, 'Supporter') ?: 'ouvrir la page Supporter').' pour choisir la formule qui te convient.';
         }
 
@@ -318,7 +318,7 @@ class AssistantFallbackService
 
         $sections = [
             "A ce stade, tu as {$points} points et {$xp} XP.",
-            'Pour gagner ou relancer ta progression, les missions actives et le suivi des matchs restent en general les premiers leviers a regarder.',
+            'Pour gagner ou relancer ta progression, les missions actives et le suivi des matchs restent en général les premiers leviers a regarder.',
         ];
 
         if ($actions->isNotEmpty()) {
@@ -394,14 +394,14 @@ class AssistantFallbackService
         $answer = trim((string) ($knowledge['answer'] ?? ''));
 
         if ($confidence === 'fallback') {
-            $sections[] = 'Je vois le sujet, mais je prefere rester prudent plutot que t inventer une reponse approximative.';
+            $sections[] = 'Je vois le sujet, mais je prefere rester prudent plutot que t inventer une réponse approximative.';
         }
 
-        $sections[] = $answer !== '' ? $answer : 'Je n ai pas trouve de reponse fiable pour le moment.';
+        $sections[] = $answer !== '' ? $answer : 'Je n ai pas trouve de réponse fiable pour le moment.';
 
-        $details = collect($knowledge['details'] ?? [])->filter()->values()->all();
-        if ($details !== []) {
-            $sections[] = implode("\n\n", $details);
+        $détails = collect($knowledge['détails'] ?? [])->filter()->values()->all();
+        if ($détails !== []) {
+            $sections[] = implode("\n\n", $détails);
         }
 
         $nextSteps = collect($knowledge['next_steps'] ?? [])

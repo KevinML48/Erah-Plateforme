@@ -107,9 +107,9 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
-    public function notificationPreferences(): HasMany
+    public function notificationPréférences(): HasMany
     {
-        return $this->hasMany(NotificationPreference::class);
+        return $this->hasMany(NotificationPréférence::class);
     }
 
     public function notificationChannels(): HasOne
@@ -197,9 +197,9 @@ class User extends Authenticatable
         return $this->hasMany(Bet::class);
     }
 
-    public function processedMatchSettlements(): HasMany
+    public function processusedMatchSettlements(): HasMany
     {
-        return $this->hasMany(MatchSettlement::class, 'processed_by');
+        return $this->hasMany(MatchSettlement::class, 'processused_by');
     }
 
     public function wallet(): HasOne

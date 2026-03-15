@@ -7,11 +7,11 @@
     <section class="adm-surface">
         <div class="tt-heading tt-heading-lg margin-bottom-20">
             <h2 class="tt-heading-title tt-text-reveal">Resultats recherche globale</h2>
-            <p class="max-width-700 tt-anim-fadeinup text-gray">Requete "{{ $search['query'] }}" · {{ (int) ($search['total_hits'] ?? 0) }} resultat(s).</p>
+            <p class="max-width-700 tt-anim-fadeinup text-gray">Requete "{{ $search['query'] }}" · {{ (int) ($search['total_hits'] ?? 0) }} résultat(s).</p>
         </div>
 
         @if($groups->isEmpty())
-            <div class="adm-empty">Aucun resultat global pour cette recherche.</div>
+            <div class="adm-empty">Aucun résultat global pour cette recherche.</div>
         @else
             <div class="adm-search-grid">
                 @foreach($groups as $group)

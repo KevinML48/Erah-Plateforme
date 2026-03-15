@@ -32,7 +32,7 @@
             <td>{{ $item['summary'] ?? '-' }}</td>
             <td>
                 <div class="adm-row-actions">
-                    <a href="{{ $item['detail_url'] ?? route('admin.dashboard') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                    <a href="{{ $item['détail_url'] ?? route('admin.dashboard') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                         <span data-hover="Detail">Detail</span>
                     </a>
                     @if(!empty($item['primary_action']) && ($item['primary_action']['method'] ?? '') === 'POST')

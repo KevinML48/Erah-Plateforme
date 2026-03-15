@@ -34,14 +34,14 @@ class MissionCatalogService
             ->with(['instance.template', 'completion']);
 
         $allActive = (clone $activeQuery)
-            ->orderByRaw('CASE WHEN completed_at IS NULL THEN 0 ELSE 1 END')
+            ->orderByRaw('CASE WHEN complèted_at IS NULL THEN 0 ELSE 1 END')
             ->orderBy('id')
             ->get();
 
         $discovery = $allActive
             ->filter(fn (UserMission $mission): bool => (bool) ($mission->instance?->template?->is_discovery ?? false))
             ->sortBy([
-                fn (UserMission $mission) => $mission->completed_at !== null ? 1 : 0,
+                fn (UserMission $mission) => $mission->complèted_at !== null ? 1 : 0,
                 fn (UserMission $mission) => (int) ($mission->instance?->template?->sort_order ?? 0),
             ])
             ->values();
@@ -81,14 +81,14 @@ class MissionCatalogService
      */
     private function summaryPayload(User $user, Collection $missions): array
     {
-        $completed = $missions->whereNotNull('completed_at')->count();
+        $complèted = $missions->whereNotNull('complèted_at')->count();
         $total = $missions->count();
         $experience = $this->experienceService->summaryFor($user);
 
         return [
             'total_active' => $total,
-            'completed' => $completed,
-            'pending' => max(0, $total - $completed),
+            'complèted' => $complèted,
+            'pending' => max(0, $total - $complèted),
             'discovery' => $missions->filter(fn (UserMission $mission) => (bool) ($mission->instance?->template?->is_discovery ?? false))->count(),
             'focus' => min(MissionFocusService::MAX_FOCUS_MISSIONS, $this->missionFocusService->forUser($user)->count()),
             'xp_total' => $experience['total_xp'],
@@ -109,7 +109,7 @@ class MissionCatalogService
         $rewards = $template?->normalizedRewards() ?? ['xp' => 0, 'points' => 0];
         $targetCount = max(1, (int) ($template?->target_count ?? 1));
         $progressCount = min(max(0, (int) $mission->progress_count), $targetCount);
-        $isCompleted = $mission->completed_at !== null;
+        $isCompleted = $mission->complèted_at !== null;
         $isExpired = $mission->isExpired();
         $isLocked = ! $this->prerequisitesSatisfied($mission);
 
@@ -120,7 +120,7 @@ class MissionCatalogService
             'title' => (string) ($template?->title ?? 'Mission'),
             'short_description' => $template?->shortDescription() ?? 'Mission ERAH',
             'long_description' => $template?->longDescription(),
-            'category' => (string) ($template?->category ?? 'general'),
+            'category' => (string) ($template?->category ?? 'général'),
             'type' => (string) ($template?->type ?? 'core'),
             'scope' => (string) ($template?->scope ?? ''),
             'scope_label' => $this->scopeLabel((string) ($template?->scope ?? '')),
@@ -136,7 +136,7 @@ class MissionCatalogService
             'progress_count' => $progressCount,
             'target_count' => $targetCount,
             'progress_percent' => (int) min(100, round(($progressCount / $targetCount) * 100)),
-            'is_completed' => $isCompleted,
+            'is_complèted' => $isCompleted,
             'is_expired' => $isExpired,
             'is_locked' => $isLocked,
             'status_label' => $this->statusLabel(
@@ -155,7 +155,7 @@ class MissionCatalogService
             'period_start' => $mission->instance?->period_start,
             'period_end' => $mission->instance?->period_end,
             'updated_at' => $mission->updated_at,
-            'completed_at' => $mission->completed_at,
+            'complèted_at' => $mission->complèted_at,
             'claimed_at' => $mission->claimed_at,
             'icon' => $template?->icon,
             'badge_label' => $template?->badge_label,
@@ -176,7 +176,7 @@ class MissionCatalogService
 
         return UserMission::query()
             ->where('user_id', $mission->user_id)
-            ->whereNotNull('completed_at')
+            ->whereNotNull('complèted_at')
             ->whereHas('instance.template', fn (Builder $query) => $query->whereIn('key', $keys->all()))
             ->count() >= $keys->count();
     }
@@ -239,7 +239,7 @@ class MissionCatalogService
             return 'is-claimable';
         }
 
-        return $isCompleted ? 'is-completed' : 'is-pending';
+        return $isCompleted ? 'is-complèted' : 'is-pending';
     }
 
     /**
@@ -290,7 +290,7 @@ class MissionCatalogService
         $status = (string) ($filters['status'] ?? 'all');
         $duration = (string) ($filters['duration'] ?? 'all');
 
-        $allowedStatuses = ['all', 'in_progress', 'completed', 'claimable', 'claimed', 'expired', 'locked'];
+        $allowedStatuses = ['all', 'in_progress', 'complèted', 'claimable', 'claimed', 'expired', 'locked'];
         $allowedDurations = ['all', 'short', 'medium', 'long', 'unknown'];
 
         if (! in_array($status, $allowedStatuses, true)) {
@@ -345,7 +345,7 @@ class MissionCatalogService
             'statuses' => [
                 ['value' => 'all', 'label' => 'Tous les statuts'],
                 ['value' => 'in_progress', 'label' => 'En cours'],
-                ['value' => 'completed', 'label' => 'Terminees'],
+                ['value' => 'complèted', 'label' => 'Terminees'],
                 ['value' => 'claimable', 'label' => 'A reclamer'],
                 ['value' => 'claimed', 'label' => 'Recompense recue'],
                 ['value' => 'expired', 'label' => 'Expirees'],
@@ -364,10 +364,10 @@ class MissionCatalogService
     private function matchesStatus(UserMission $mission, string $status): bool
     {
         return match ($status) {
-            'in_progress' => $mission->completed_at === null && ! $mission->isExpired() && $this->prerequisitesSatisfied($mission),
-            'completed' => $mission->completed_at !== null,
+            'in_progress' => $mission->complèted_at === null && ! $mission->isExpired() && $this->prerequisitesSatisfied($mission),
+            'complèted' => $mission->complèted_at !== null,
             'claimable' => (bool) ($mission->instance?->template?->requires_claim ?? false)
-                && $mission->completed_at !== null
+                && $mission->complèted_at !== null
                 && $mission->claimed_at === null
                 && ! $mission->isExpired(),
             'claimed' => $mission->claimed_at !== null,

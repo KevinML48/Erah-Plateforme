@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Contact | ERAH Esport')
-@section('meta_description', 'Contactez ERAH Esport pour toute question, partenariat, inscription ou informations sur nos competitions et evenements gaming.')
+@section('meta_description', 'Contactez ERAH Esport pour toute question, partenariat, inscription ou informations sur nos compétitions et evenements gaming.')
 @section('meta_keywords', 'Contact ERAH Esport, email ERAH, telephone ERAH, partenariat esport, informations club gaming, inscription tournois, evenements gaming')
 @section('meta_author', 'ERAH Esport')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
@@ -165,10 +165,10 @@
                         <div class="tt-contact-info-inner">
                             <div class="margin-bottom-50 tt-anim-fadeinup">
                                 <h6>Postulez</h6>
-                                <p>Vous voulez postuler ou nous contacter ? Remplissez le formulaire avec un maximum d'informations pour une reponse rapide.</p>
+                                <p>Vous voulez postuler ou nous contacter ? Remplissez le formulaire avec un maximum d'informations pour une réponse rapide.</p>
                             </div>
 
-                            <div class="tt-contact-details margin-bottom-50 tt-anim-fadeinup">
+                            <div class="tt-contact-détails margin-bottom-50 tt-anim-fadeinup">
                                 <h6>Details</h6>
                                 <ul>
                                     <li>
@@ -215,7 +215,7 @@
 
                         <div class="tt-hidden-honeypot" aria-hidden="true">
                             <label for="website">Leave this field empty</label>
-                            <input id="website" type="text" name="website" tabindex="-1" autocomplete="off" value="{{ old('website') }}">
+                            <input id="website" type="text" name="website" tabindex="-1" autocomplète="off" value="{{ old('website') }}">
                         </div>
                         <input type="hidden" name="submission_token" value="{{ $contactSubmissionToken }}">
 

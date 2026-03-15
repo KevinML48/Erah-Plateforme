@@ -10,7 +10,7 @@
 <article class="mission-surface mission-card">
     <div class="mission-card-head">
         <div>
-            <span class="mission-card-kicker">{{ $mission['category'] ?? 'general' }}</span>
+            <span class="mission-card-kicker">{{ $mission['category'] ?? 'général' }}</span>
             <h3 class="mission-card-title">{{ $mission['title'] ?? 'Mission' }}</h3>
         </div>
         <span class="mission-status {{ $mission['status_class'] ?? '' }}">{{ $mission['status_label'] ?? 'En cours' }}</span>

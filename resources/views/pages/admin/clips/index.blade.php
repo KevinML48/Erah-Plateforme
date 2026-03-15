@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Admin Clips | ERAH Plateforme')
-@section('meta_description', 'Gestion des clips: creation, publication et moderation.')
+@section('meta_description', 'Gestion des clips: création, publication et moderation.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')

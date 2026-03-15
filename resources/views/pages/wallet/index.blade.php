@@ -441,7 +441,7 @@
                         <form method="GET" action="{{ route($indexRouteName) }}" class="wallet-search-form">
                             <input type="hidden" name="type" value="{{ $currentType }}">
                             <input type="hidden" name="direction" value="{{ $currentDirection }}">
-                            <input class="tt-form-control" type="text" name="q" value="{{ $search }}" placeholder="Rechercher (type, source, reference interne)">
+                            <input class="tt-form-control" type="text" name="q" value="{{ $search }}" placeholder="Rechercher (type, source, référence interne)">
                             <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">
                                 <span data-hover="Filtrer">Filtrer</span>
                             </button>
@@ -476,7 +476,7 @@
                     </article>
                     <article class="wallet-kpi-card kpi-in tt-anim-fadeinup">
                         <strong>+{{ (int) ($summary['in_total'] ?? 0) }}</strong>
-                        <span>Total entrees</span>
+                        <span>Total entrées</span>
                     </article>
                     <article class="wallet-kpi-card kpi-out tt-anim-fadeinup">
                         <strong>-{{ (int) ($summary['out_total'] ?? 0) }}</strong>
@@ -519,7 +519,7 @@
                                 $typeMessageMap = [
                                     \App\Models\RewardWalletTransaction::TYPE_MISSION_REWARD => 'Recompense de mission creditee.',
                                     \App\Models\RewardWalletTransaction::TYPE_GIFT_PURCHASE => 'Points utilises pour demander un cadeau.',
-                                    \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Debit lors d une redemption cadeau.',
+                                    \App\Models\RewardWalletTransaction::TYPE_REDEEM_COST => 'Debit lors d'une redemption cadeau.',
                                     \App\Models\RewardWalletTransaction::TYPE_REDEEM_REFUND => 'Remboursement apres annulation ou rejet cadeau.',
                                     \App\Models\RewardWalletTransaction::TYPE_BET_STAKE => 'Mise placee sur un match.',
                                     \App\Models\RewardWalletTransaction::TYPE_BET_PAYOUT => 'Gain de pari verse.',

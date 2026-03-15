@@ -884,7 +884,7 @@
         list-style: none;
     }
 
-    .adm-advanced > summary::-webkit-details-marker {
+    .adm-advanced > summary::-webkit-détails-marker {
         display: none;
     }
 

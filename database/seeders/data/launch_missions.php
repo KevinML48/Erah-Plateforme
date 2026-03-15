@@ -59,7 +59,7 @@ $eventWindowMission = static fn (array $extra = []): array => array_merge([
 ], $extra);
 
 return [
-    $mission('launch.first-step', 'Premier pas sur ERAH', 'Validez votre premiere connexion utile sur la plateforme.', 'onboarding', 'core', 'once', 'login.daily', 1, 120, 80, 10, [
+    $mission('launch.first-step', 'Premier pas sur ERAH', 'Validez votre première connexion utile sur la plateforme.', 'onboarding', 'core', 'once', 'login.daily', 1, 120, 80, 10, [
         'constraints' => ['login_daily' => true],
         'difficulty' => 'simple',
         'estimated_minutes' => 2,
@@ -68,7 +68,7 @@ return [
         'icon' => 'spark',
         'badge_label' => 'Decouverte',
     ]),
-    $mission('launch.profile-operational', 'Profil operationnel', 'Completez les elements essentiels de votre profil.', 'onboarding', 'core', 'once', 'profile.completed', 1, 150, 100, 20, [
+    $mission('launch.profile-operational', 'Profil operationnel', 'Completez les elements essentiels de votre profil.', 'onboarding', 'core', 'once', 'profile.complèted', 1, 150, 100, 20, [
         'constraints' => ['min_profile_completion' => 75],
         'difficulty' => 'simple',
         'estimated_minutes' => 10,
@@ -114,7 +114,7 @@ return [
         'icon' => 'duel',
         'badge_label' => 'Decouverte',
     ]),
-    $mission('launch.first-reward', 'Premiere recompense recuperee', 'Effectuez votre premiere demande cadeau.', 'gifts', 'core', 'once', 'gift.redeemed', 1, 100, 80, 80, [
+    $mission('launch.first-reward', 'Premiere recompense recuperee', 'Effectuez votre première demande cadeau.', 'gifts', 'core', 'once', 'gift.redeemed', 1, 100, 80, 80, [
         'difficulty' => 'medium',
         'estimated_minutes' => 8,
         'is_discovery' => true,
@@ -136,7 +136,7 @@ return [
         'icon' => 'streak',
         'badge_label' => 'Routine',
     ]),
-    $mission('launch.streak-7-days', 'Serie de 7 jours', 'Gardez le tempo pendant une semaine complete.', 'activity', 'core', 'once', 'login.daily', 7, 260, 180, 110, [
+    $mission('launch.streak-7-days', 'Serie de 7 jours', 'Gardez le tempo pendant une semaine complète.', 'activity', 'core', 'once', 'login.daily', 7, 260, 180, 110, [
         'constraints' => ['login_daily' => true],
         'difficulty' => 'special',
         'estimated_minutes' => 45,
@@ -171,7 +171,7 @@ return [
         'icon' => 'combo',
         'badge_label' => 'Routine',
     ]),
-    $mission('launch.weekly-objective', 'Objectif hebdo valide', 'Reclamez deux missions completees dans la semaine.', 'activity', 'repeatable', 'weekly', 'mission.claimed', 2, 180, 130, 160, [
+    $mission('launch.weekly-objective', 'Objectif hebdo valide', 'Reclamez deux missions complètees dans la semaine.', 'activity', 'repeatable', 'weekly', 'mission.claimed', 2, 180, 130, 160, [
         'difficulty' => 'medium',
         'estimated_minutes' => 20,
         'icon' => 'claim',
@@ -259,7 +259,7 @@ return [
         'icon' => 'duel-accept',
         'badge_label' => 'Duels',
     ]),
-    $mission('launch.duel-first-victory', 'Premiere victoire duel', 'Remportez votre premiere confrontation.', 'duels', 'core', 'once', 'duel.win', 1, 180, 140, 290, [
+    $mission('launch.duel-first-victory', 'Premiere victoire duel', 'Remportez votre première confrontation.', 'duels', 'core', 'once', 'duel.win', 1, 180, 140, 290, [
         'difficulty' => 'medium',
         'estimated_minutes' => 15,
         'icon' => 'duel-win',

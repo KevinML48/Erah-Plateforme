@@ -59,11 +59,11 @@
                 @if($reviewIsPublished)
                     Visible publiquement depuis le {{ optional($clubReview->published_at)->format('d/m/Y H:i') ?: 'maintenant' }}.
                 @else
-                    Cet avis n est pas visible publiquement pour le moment.
+                    Cet avis n'est pas visible publiquement pour le moment.
                 @endif
             </span>
 
-            <form method="POST" action="{{ route('profile.reviews.destroy') }}" onsubmit="return confirm('Retirer cet avis de l espace public ?');">
+            <form method="POST" action="{{ route('profile.reviews.destroy') }}" onsubmit="return confirm('Retirer cet avis de l'espace public ?');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">

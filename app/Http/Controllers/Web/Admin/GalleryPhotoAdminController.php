@@ -145,7 +145,7 @@ class GalleryPhotoAdminController extends Controller
             'updated_by' => $request->user()->id,
         ]);
 
-        return back()->with('success', 'Photo galerie creee.');
+        return back()->with('success', 'Photo galerie créée.');
     }
 
     public function update(GalleryPhotoUpsertRequest $request, int $photoId): RedirectResponse
@@ -201,7 +201,7 @@ class GalleryPhotoAdminController extends Controller
         $photo->updated_by = auth()->id();
         $photo->save();
 
-        return back()->with('success', $photo->is_active ? 'Photo activee.' : 'Photo desactivee.');
+        return back()->with('success', $photo->is_active ? 'Photo activee.' : 'Photo désactivéee.');
     }
 
     public function reorder(Request $request, int $photoId): RedirectResponse

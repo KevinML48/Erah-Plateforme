@@ -165,8 +165,8 @@ class ProfileController extends Controller
         }
 
         if ($profileCompletion >= 75) {
-            $missionEngine->recordEvent($user->fresh(), 'profile.completed', 1, [
-                'event_key' => 'profile.completed.'.$user->id,
+            $missionEngine->recordEvent($user->fresh(), 'profile.complèted', 1, [
+                'event_key' => 'profile.complèted.'.$user->id,
                 'profile_completion' => $profileCompletion,
                 'subject_type' => User::class,
                 'subject_id' => (string) $user->id,
@@ -371,8 +371,8 @@ class ProfileController extends Controller
                 || $user->socialAccounts()->where('provider', 'discord')->exists(),
         ];
 
-        $completed = count(array_filter($checkpoints));
+        $complèted = count(array_filter($checkpoints));
 
-        return (int) round(($completed / max(1, count($checkpoints))) * 100);
+        return (int) round(($complèted / max(1, count($checkpoints))) * 100);
     }
 }

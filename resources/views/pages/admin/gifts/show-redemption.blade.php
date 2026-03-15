@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', $orderNumber.' | Admin commande cadeau')
-@section('meta_description', 'Detail admin d une commande cadeau ERAH.')
+@section('meta_description', 'Detail admin d'une commande cadeau ERAH.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -25,7 +25,7 @@
         };
 
         $eventTypeLabels = [
-            'redeem_requested' => 'Demande creee',
+            'redeem_requested' => 'Demande créée',
             'admin_approved' => 'Commande approuvee',
             'admin_rejected' => 'Commande rejetee',
             'admin_shipped' => 'Commande expediee',
@@ -64,7 +64,7 @@
             $internalNote = $normalizeText($data['internal_note'] ?? null);
 
             return match ($eventType) {
-                'redeem_requested' => 'Demande creee pour le cadeau #'.((int) ($data['gift_id'] ?? $redemption->gift_id)).' ('.((int) ($data['cost_points'] ?? $redemption->cost_points_snapshot ?? 0)).' pts).',
+                'redeem_requested' => 'Demande créée pour le cadeau #'.((int) ($data['gift_id'] ?? $redemption->gift_id)).' ('.((int) ($data['cost_points'] ?? $redemption->cost_points_snapshot ?? 0)).' pts).',
                 'admin_approved' => 'Commande validee pour preparation.',
                 'admin_rejected' => $reason !== '-' ? 'Commande rejetee. Motif: '.$reason : 'Commande rejetee.',
                 'admin_shipped' => collect([
@@ -320,10 +320,10 @@
                                                 <td>
                                                     <small>{{ $formatWalletDetails($tx) }}</small>
                                                     @if(! blank($tx->unique_key))
-                                                        <details class="margin-top-5">
+                                                        <détails class="margin-top-5">
                                                             <summary>Trace technique</summary>
                                                             <small>{{ $tx->unique_key }}</small>
-                                                        </details>
+                                                        </détails>
                                                     @endif
                                                 </td>
                                             </tr>

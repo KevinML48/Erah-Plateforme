@@ -4,12 +4,12 @@ namespace App\Application\Actions\Notifications;
 
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
-use App\Models\NotificationPreference;
+use App\Models\NotificationPréférence;
 use App\Models\User;
 use App\Models\UserNotificationChannel;
 use Illuminate\Support\Facades\DB;
 
-class UpdateNotificationPreferencesAction
+class UpdateNotificationPréférencesAction
 {
     public function __construct(
         private readonly EnsureNotificationSettingsAction $ensureNotificationSettingsAction,
@@ -49,12 +49,12 @@ class UpdateNotificationPreferencesAction
                 }
 
                 $entry = $categoriesPayload[$category];
-                $current = NotificationPreference::query()
+                $current = NotificationPréférence::query()
                     ->where('user_id', $user->id)
                     ->where('category', $category)
                     ->first();
 
-                NotificationPreference::query()->updateOrCreate(
+                NotificationPréférence::query()->updateOrCreate(
                     [
                         'user_id' => $user->id,
                         'category' => $category,
@@ -71,7 +71,7 @@ class UpdateNotificationPreferencesAction
             }
 
             $this->storeAuditLogAction->execute(
-                action: 'notifications.preferences.updated',
+                action: 'notifications.préférences.updated',
                 actor: $user,
                 target: $user,
                 context: [

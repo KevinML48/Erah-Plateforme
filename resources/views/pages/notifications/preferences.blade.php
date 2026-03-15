@@ -1,6 +1,6 @@
 @extends('marketing.layouts.template')
 
-@section('title', 'Preferences notifications | ERAH Plateforme')
+@section('title', 'Préférences notifications | ERAH Plateforme')
 @section('meta_description', 'Configuration des canaux et categories de notifications ERAH.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
@@ -275,17 +275,17 @@
     @php
         $isPublicApp = request()->routeIs('app.*');
         $indexRouteName = $isPublicApp ? 'app.notifications.index' : 'notifications.index';
-        $preferencesRouteName = $isPublicApp ? 'app.notifications.preferences' : 'notifications.preferences';
-        $preferencesUpdateRouteName = $isPublicApp ? 'app.notifications.preferences.update' : 'notifications.preferences.update';
+        $préférencesRouteName = $isPublicApp ? 'app.notifications.préférences' : 'notifications.préférences';
+        $préférencesUpdateRouteName = $isPublicApp ? 'app.notifications.préférences.update' : 'notifications.préférences.update';
 
         $channelsData = $channels ?? null;
-        $prefs = $preferences ?? collect();
+        $prefs = $préférences ?? collect();
         $hasActiveDevice = (bool) ($hasActiveDevice ?? false);
 
         $categories = [
             'duel' => [
                 'label' => 'Duels',
-                'description' => 'Invitations, reponses et rappels de duel.',
+                'description' => 'Invitations, réponses et rappels de duel.',
                 'icon' => 'fa-solid fa-crosshairs',
                 'tone' => 'tone-duel',
             ],
@@ -339,13 +339,13 @@
             ],
             'match' => [
                 'label' => 'Matchs',
-                'description' => 'Etat des matchs, timing et resultats.',
+                'description' => 'Etat des matchs, timing et résultats.',
                 'icon' => 'fa-solid fa-trophy',
                 'tone' => 'tone-match',
             ],
             'bet' => [
                 'label' => 'Paris',
-                'description' => 'Placements, annulations et reglements de paris.',
+                'description' => 'Placements, annulations et règlements de paris.',
                 'icon' => 'fa-solid fa-coins',
                 'tone' => 'tone-bet',
             ],
@@ -369,7 +369,7 @@
             <div class="ph-caption">
                 <div class="ph-caption-inner">
                     <h2 class="ph-caption-subtitle">ERAH Inbox</h2>
-                    <h1 class="ph-caption-title">Preferences notifications</h1>
+                    <h1 class="ph-caption-title">Préférences notifications</h1>
                     <div class="ph-caption-description max-width-800">
                         Configurez les canaux globaux et les categories de notifications.
                     </div>
@@ -382,7 +382,7 @@
                 <div class="ph-caption">
                     <div class="ph-caption-inner">
                         <h2 class="ph-caption-subtitle">ERAH Inbox</h2>
-                        <h1 class="ph-caption-title">Preferences notifications</h1>
+                        <h1 class="ph-caption-title">Préférences notifications</h1>
                         <div class="ph-caption-description max-width-800">
                             In-app reste actif en permanence.
                         </div>
@@ -430,7 +430,7 @@
                     </article>
                 </section>
 
-                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup">
+                <form method="POST" action="{{ route($préférencesUpdateRouteName) }}" class="tt-anim-fadeinup">
                     @csrf
 
                     <section class="pref-card">
@@ -539,7 +539,7 @@
                         <div class="pref-footer">
                             <small class="pref-note" style="margin:0;">In-app: actif en permanence sur toutes les categories.</small>
                             <div class="pref-footer-actions">
-                                <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                                <a href="{{ route($préférencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
                                     <span data-hover="Reset visuel">Reset visuel</span>
                                 </a>
                                 <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">

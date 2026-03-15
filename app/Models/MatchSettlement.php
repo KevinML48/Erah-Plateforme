@@ -19,8 +19,8 @@ class MatchSettlement extends Model
         'lost_count',
         'void_count',
         'payout_total',
-        'processed_by',
-        'processed_at',
+        'processused_by',
+        'processused_at',
         'meta',
     ];
 
@@ -33,8 +33,8 @@ class MatchSettlement extends Model
             'lost_count' => 'integer',
             'void_count' => 'integer',
             'payout_total' => 'integer',
-            'processed_by' => 'integer',
-            'processed_at' => 'datetime',
+            'processused_by' => 'integer',
+            'processused_at' => 'datetime',
             'meta' => 'array',
         ];
     }
@@ -44,8 +44,8 @@ class MatchSettlement extends Model
         return $this->belongsTo(EsportMatch::class, 'match_id');
     }
 
-    public function processor(): BelongsTo
+    public function processusor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'processed_by');
+        return $this->belongsTo(User::class, 'processused_by');
     }
 }

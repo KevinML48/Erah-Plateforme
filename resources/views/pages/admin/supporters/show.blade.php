@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Detail Supporter | ERAH Plateforme')
-@section('meta_description', 'Vue detaillee d un supporter ERAH avec historique d abonnement, rewards et interactions premium.')
+@section('meta_description', 'Vue détaillée d'un supporter ERAH avec historique d abonnement, rewards et interactions premium.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -13,7 +13,7 @@
         'heroSubtitle' => 'Supporter Detail',
         'heroTitle' => $user->name,
         'heroDescription' => 'Historique d abonnement, badges, rewards mensuelles et signaux premium clips.',
-        'heroMaskDescription' => 'Fiche supporter complete pour moderation et suivi Stripe.',
+        'heroMaskDescription' => 'Fiche supporter complète pour moderation et suivi Stripe.',
     ])
 
     <div id="tt-page-content">

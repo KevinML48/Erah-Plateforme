@@ -5,7 +5,7 @@ namespace App\Http\Requests\Api;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateNotificationPreferencesRequest extends FormRequest
+class UpdateNotificationPréférencesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

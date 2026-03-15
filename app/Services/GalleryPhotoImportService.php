@@ -16,7 +16,7 @@ class GalleryPhotoImportService
     private const FILTER_LABELS = [
         'valorant' => 'Valorant',
         'evenements' => 'Evenements',
-        'competitions' => 'Competitions',
+        'compétitions' => 'Competitions',
     ];
 
     public function legacySourceExists(): bool
@@ -34,13 +34,13 @@ class GalleryPhotoImportService
             return 0;
         }
 
-        return $this->import()['processed'];
+        return $this->import()['processused'];
     }
 
     public function import(): array
     {
         if (! Schema::hasTable('gallery_photos') || ! $this->legacySourceExists()) {
-            return ['processed' => 0, 'created' => 0, 'updated' => 0, 'skipped' => 0, 'found' => 0];
+            return ['processused' => 0, 'created' => 0, 'updated' => 0, 'skipped' => 0, 'found' => 0];
         }
 
         $items = $this->extractLegacyItems();
@@ -67,7 +67,7 @@ class GalleryPhotoImportService
         }
 
         return [
-            'processed' => $created + $updated,
+            'processused' => $created + $updated,
             'created' => $created,
             'updated' => $updated,
             'skipped' => $skipped,

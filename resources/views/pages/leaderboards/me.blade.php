@@ -460,7 +460,7 @@
                         @endforeach
                     </section>
                 @else
-                    <div class="lb-me-empty">Aucun joueur n est encore classe dans votre ligue.</div>
+                    <div class="lb-me-empty">Aucun joueur n'est encore classe dans votre ligue.</div>
                 @endif
             </div>
         </div>

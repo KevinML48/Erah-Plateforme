@@ -112,7 +112,7 @@
                             <span class="posted-by">- <a href="{{ $itemUrl }}">{{ $item['label'] }}</a></span>
                         </div>
                         <div class="bli-desc">
-                            {{ $itemExcerpt !== '' ? $itemExcerpt : 'Consultez cette activite pour voir les details.' }}
+                            {{ $itemExcerpt !== '' ? $itemExcerpt : 'Consultez cette activite pour voir les détails.' }}
                         </div>
                     </div>
                 </article>

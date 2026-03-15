@@ -10,7 +10,7 @@ class AssistantPromptBuilder
     public function build(array $context): string
     {
         $basePrompt = (string) config('assistant.system_prompt');
-        $dateLine = 'Date de reference: '.now()->toDateString().'.';
+        $dateLine = 'Date de référence: '.now()->toDateString().'.';
 
         return trim($basePrompt)."\n\n".$dateLine."\n\nContexte fiable ERAH:\n".$this->encodeContext($context);
     }

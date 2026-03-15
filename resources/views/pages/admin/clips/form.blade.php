@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', ($clip ? 'Edit Clip | Admin ERAH' : 'Create Clip | Admin ERAH'))
-@section('meta_description', 'Edition et creation de clips dans la console admin.')
+@section('meta_description', 'Edition et création de clips dans la console admin.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -18,7 +18,7 @@
     @include('pages.admin.partials.hero', [
         'heroSubtitle' => 'ERAH Control Center',
         'heroTitle' => $clip ? 'Modifier Clip' : 'Nouveau Clip',
-        'heroDescription' => $clip ? 'Edition des metadonnees et des URLs media du clip.' : 'Creation d un nouveau clip pour la plateforme.',
+        'heroDescription' => $clip ? 'Edition des metadonnees et des URLs media du clip.' : 'Creation d'un nouveau clip pour la plateforme.',
         'heroMaskDescription' => 'Formulaire dynamique inspire du template forms.',
     ])
 

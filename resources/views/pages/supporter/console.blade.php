@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Espace supporter | ERAH Plateforme')
-@section('meta_description', 'Gestion de votre abonnement supporter ERAH, avantages mensuels et preferences de mur public.')
+@section('meta_description', 'Gestion de votre abonnement supporter ERAH, avantages mensuels et préférences de mur public.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -434,7 +434,7 @@
                     <section class="supporter-console-card tt-anim-fadeinup">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h3 class="tt-heading-subtitle">Clips favoris</h3>
-                            <h2 class="tt-heading-title">Vos reperes clips</h2>
+                            <h2 class="tt-heading-title">Vos repères clips</h2>
                         </div>
 
                         <div id="blog-list" class="bli-image-cropped">

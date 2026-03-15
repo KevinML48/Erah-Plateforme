@@ -142,7 +142,7 @@
                                             @endforeach
                                         </div>
 
-                                        <details class="adm-advanced">
+                                        <détails class="adm-advanced">
                                             <summary>Modifier cette campagne</summary>
                                             <div class="adm-advanced-body">
                                                 <form method="POST" action="{{ route('admin.clips.campaigns.update', $campaign->id) }}" class="adm-form tt-form tt-form-creative tt-form-lg">
@@ -194,7 +194,7 @@
                                                     </div>
                                                 </form>
                                             </div>
-                                        </details>
+                                        </détails>
                                     </article>
                                 @endforeach
                             </div>

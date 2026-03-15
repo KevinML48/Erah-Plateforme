@@ -206,7 +206,7 @@ class SupporterPageController extends Controller
             [
                 'label' => 'Club',
                 'title' => 'Reductions merchandising et acces anticipe aux drops',
-                'excerpt' => 'Des avantages concrets hors plateforme pour soutenir le club et profiter des sorties en avant-premiere.',
+                'excerpt' => 'Des avantages concrets hors plateforme pour soutenir le club et profiter des sorties en avant-première.',
             ],
             [
                 'label' => 'En cours',

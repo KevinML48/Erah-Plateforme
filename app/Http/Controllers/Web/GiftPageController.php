@@ -345,7 +345,7 @@ class GiftPageController extends Controller
 
         return redirect()
             ->route('gifts.redemptions')
-            ->with('success', 'Panier valide: '.$result['redemptions']->count().' commande(s) creee(s), '.$result['total_points'].' points debites.');
+            ->with('success', 'Panier valide: '.$result['redemptions']->count().' commande(s) créée(s), '.$result['total_points'].' points débites.');
     }
 
     public function favorites(
@@ -582,7 +582,7 @@ class GiftPageController extends Controller
             return 'Cet objet de profil est deja dans votre collection.';
         }
 
-        if (Str::contains($normalizedMessage, ['disponible', 'inactive', 'desactive'])) {
+        if (Str::contains($normalizedMessage, ['disponible', 'inactive', 'désactivée'])) {
             return 'Ce cadeau est temporairement indisponible.';
         }
 
@@ -605,8 +605,8 @@ class GiftPageController extends Controller
             return 'Un objet de profil du panier est deja dans votre collection.';
         }
 
-        if (Str::contains($normalizedMessage, ['desactive', 'indisponible'])) {
-            return 'Un des cadeaux du panier n est plus disponible.';
+        if (Str::contains($normalizedMessage, ['désactivée', 'indisponible'])) {
+            return 'Un des cadeaux du panier n'est plus disponible.';
         }
 
         return $message;
@@ -677,7 +677,7 @@ class GiftPageController extends Controller
 
         if ($currentStatus === GiftRedemption::STATUS_REJECTED) {
             return match ($stepKey) {
-                GiftRedemption::STATUS_PENDING => 'completed',
+                GiftRedemption::STATUS_PENDING => 'complèted',
                 GiftRedemption::STATUS_REJECTED => 'current',
                 default => 'skipped',
             };
@@ -689,22 +689,22 @@ class GiftPageController extends Controller
             }
 
             if ($stepKey === GiftRedemption::STATUS_PENDING) {
-                return 'completed';
+                return 'complèted';
             }
 
             if ($stepKey === GiftRedemption::STATUS_APPROVED) {
-                return $redemption->approved_at ? 'completed' : 'skipped';
+                return $redemption->approved_at ? 'complèted' : 'skipped';
             }
 
             if ($stepKey === GiftRedemption::STATUS_SHIPPED) {
-                return $redemption->shipped_at ? 'completed' : 'skipped';
+                return $redemption->shipped_at ? 'complèted' : 'skipped';
             }
 
             return 'skipped';
         }
 
         if ($currentStatus === GiftRedemption::STATUS_REFUNDED) {
-            return $stepKey === GiftRedemption::STATUS_REFUNDED ? 'current' : 'completed';
+            return $stepKey === GiftRedemption::STATUS_REFUNDED ? 'current' : 'complèted';
         }
 
         $normalOrder = [
@@ -722,7 +722,7 @@ class GiftPageController extends Controller
         $stepRank = $normalOrder[$stepKey];
 
         if ($stepRank < $currentRank) {
-            return 'completed';
+            return 'complèted';
         }
 
         if ($stepRank === $currentRank) {

@@ -1,12 +1,12 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Evenement esport | ERAH Plateforme')
-@section('meta_description', 'Detail d un match classique ou d un tournoi Rocket League avec ses markets de prediction.')
+@section('meta_description', 'Detail d'un match classique ou d'un tournoi Rocket League avec ses markets de prediction.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
     <style>
-        .match-detail-toolbar {
+        .match-détail-toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -15,7 +15,7 @@
             margin-bottom: 24px;
         }
 
-        .match-detail-status {
+        .match-détail-status {
             display: inline-flex;
             align-items: center;
             border: 1px solid rgba(255,255,255,.22);
@@ -26,7 +26,7 @@
             letter-spacing: .08em;
         }
 
-        .match-detail-grid {
+        .match-détail-grid {
             display: grid;
             grid-template-columns: minmax(320px, .85fr) minmax(0, 1.15fr);
             gap: 24px;
@@ -422,7 +422,7 @@
             pointer-events: none;
         }
 
-        body.tt-lightmode-on .match-detail-status,
+        body.tt-lightmode-on .match-détail-status,
         body.tt-lightmode-on .match-pill,
         body.tt-lightmode-on .match-community-status {
             border-color: rgba(148,163,184,.28);
@@ -477,7 +477,7 @@
         }
 
         @media (max-width: 1199.98px) {
-            .match-detail-grid,
+            .match-détail-grid,
             .match-option-grid,
             .match-summary-grid,
             .match-community-kpi-grid,
@@ -492,7 +492,7 @@
         }
 
         @media (max-width: 767.98px) {
-            .match-detail-toolbar .tt-btn,
+            .match-détail-toolbar .tt-btn,
             .match-market-card .tt-btn,
             .match-market-card form,
             .match-market-form button {
@@ -577,9 +577,9 @@
     <div id="tt-page-content">
         <div class="tt-section padding-top-60 border-top">
             <div class="tt-section-inner tt-wrap max-width-1800">
-                <div class="match-detail-toolbar tt-anim-fadeinup">
+                <div class="match-détail-toolbar tt-anim-fadeinup">
                     <div class="match-pill-row">
-                        <span class="match-detail-status">{{ $matchLabelResolver->labelForStatus($match->status) }}</span>
+                        <span class="match-détail-status">{{ $matchLabelResolver->labelForStatus($match->status) }}</span>
                         <span class="match-pill">{{ $gameLabel }}</span>
                         <span class="match-pill">{{ $eventTypeLabel }}</span>
                         @if($match->best_of)
@@ -591,7 +591,7 @@
                     </a>
                 </div>
 
-                <div class="match-detail-grid">
+                <div class="match-détail-grid">
                     <div class="tt-sticker">
                         <div class="tt-sticker-sticky tt-sticky-element">
                             <section class="match-panel tt-anim-fadeinup">
@@ -603,9 +603,9 @@
                                         <li><div class="pi-list-heading">Etat</div><div class="pi-list-cont">{{ $matchLabelResolver->labelForStatus($match->status) }}</div></li>
                                         <li><div class="pi-list-heading">Debut</div><div class="pi-list-cont">{{ $match->starts_at?->format('d/m/Y H:i') ?? '-' }}</div></li>
                                         <li><div class="pi-list-heading">Cloture des predictions</div><div class="pi-list-cont">{{ $match->locked_at?->format('d/m/Y H:i') ?? '-' }}</div></li>
-                                        <li><div class="pi-list-heading">Competition</div><div class="pi-list-cont">{{ $match->competition_name ?: '-' }}</div></li>
-                                        <li><div class="pi-list-heading">Phase</div><div class="pi-list-cont">{{ $match->competition_stage ?: '-' }}</div></li>
-                                        <li><div class="pi-list-heading">Split</div><div class="pi-list-cont">{{ $match->competition_split ?: '-' }}</div></li>
+                                        <li><div class="pi-list-heading">Competition</div><div class="pi-list-cont">{{ $match->compétition_name ?: '-' }}</div></li>
+                                        <li><div class="pi-list-heading">Phase</div><div class="pi-list-cont">{{ $match->compétition_stage ?: '-' }}</div></li>
+                                        <li><div class="pi-list-heading">Split</div><div class="pi-list-cont">{{ $match->compétition_split ?: '-' }}</div></li>
                                         <li><div class="pi-list-heading">Pronostics</div><div class="pi-list-cont">{{ (int) $match->bets_count }}</div></li>
                                         @if($match->result)
                                             <li><div class="pi-list-heading">Resultat</div><div class="pi-list-cont">{{ $matchLabelResolver->labelForResult($match, $match->result) }}</div></li>
@@ -618,7 +618,7 @@
 
                                 @if($match->parentMatch)
                                     <div class="match-pill-row">
-                                        <span class="match-pill">Tournoi parent: {{ $match->parentMatch->event_name ?: $match->parentMatch->competition_name ?: 'Tournoi RL' }}</span>
+                                        <span class="match-pill">Tournoi parent: {{ $match->parentMatch->event_name ?: $match->parentMatch->compétition_name ?: 'Tournoi RL' }}</span>
                                     </div>
                                 @endif
                             </section>
@@ -791,10 +791,10 @@
                                 <div class="match-market-head">
                                     <div>
                                         <h3 class="match-market-title" style="font-size:30px">{{ $related->displayTitle() }}</h3>
-                                        <p class="match-market-note">{{ $related->competition_name ?: ($related->displaySubtitle() ?: 'Acces detail a cet evenement esport.') }}</p>
+                                        <p class="match-market-note">{{ $related->compétition_name ?: ($related->displaySubtitle() ?: 'Acces détail a cet evenement esport.') }}</p>
                                     </div>
                                     <a href="{{ route($isPublicApp ? 'app.matches.show' : 'matches.show', $related->id) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                                        <span data-hover="Voir le detail">Voir le detail</span>
+                                        <span data-hover="Voir le détail">Voir le détail</span>
                                     </a>
                                 </div>
                                 <div class="match-pill-row">

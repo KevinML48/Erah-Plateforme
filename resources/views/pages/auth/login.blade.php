@@ -87,12 +87,12 @@
 
                             <div class="tt-form-group">
                                 <label for="email">Adresse email</label>
-                                <input class="tt-form-control" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="email@domaine.com" required autocomplete="email">
+                                <input class="tt-form-control" id="email" name="email" type="email" value="{{ old('email') }}" placeholder="email@domaine.com" required autocomplète="email">
                             </div>
 
                             <div class="tt-form-group">
                                 <label for="password">Mot de passe</label>
-                                <input class="tt-form-control" id="password" name="password" type="password" placeholder="Votre mot de passe" required autocomplete="current-password">
+                                <input class="tt-form-control" id="password" name="password" type="password" placeholder="Votre mot de passe" required autocomplète="current-password">
                             </div>
 
                             <div class="tt-form-group">

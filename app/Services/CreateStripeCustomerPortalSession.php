@@ -17,7 +17,7 @@ class CreateStripeCustomerPortalSession
         $this->syncStripeSubscriptionStatus->execute($user);
 
         if (! $user->stripe_id) {
-            throw new RuntimeException('Aucun client Stripe n est associe a ce compte.');
+            throw new RuntimeException('Aucun client Stripe n'est associe a ce compte.');
         }
 
         return $user->billingPortalUrl($returnUrl ?: route('supporter.console'));

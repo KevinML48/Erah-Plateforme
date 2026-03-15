@@ -12,7 +12,7 @@ class SendNotificationChannelJob implements ShouldQueue
 {
     use Queueable;
 
-    // This job is processed asynchronously and requires an active queue worker in production.
+    // This job is processused asynchronously and requires an active queue worker in production.
     public function __construct(
         public readonly int $notificationId,
         public readonly string $channel

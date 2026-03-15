@@ -40,7 +40,7 @@ class MissionClaimService
                 throw new RuntimeException('Cette mission ne demande pas de reclamation manuelle.');
             }
 
-            if ($mission->completed_at === null) {
+            if ($mission->complèted_at === null) {
                 throw new RuntimeException('La mission doit etre terminee avant de reclamer la recompense.');
             }
 

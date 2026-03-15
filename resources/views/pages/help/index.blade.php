@@ -784,7 +784,7 @@
                 <div class="erah-help-overlap">
                     <div class="erah-help-search-grid">
                         <div class="erah-help-surface">
-                            <div class="erah-help-overline">{{ $mode === 'console' ? 'Trouver la bonne reponse vite' : 'Une seule page canonique pour tout comprendre' }}</div>
+                            <div class="erah-help-overline">{{ $mode === 'console' ? 'Trouver la bonne réponse vite' : 'Une seule page canonique pour tout comprendre' }}</div>
                             <div class="tt-heading tt-heading-xxlg margin-bottom-20">
                                 <h2 class="tt-heading-title">{{ $page['hero']['title'] }}</h2>
                             </div>
@@ -793,7 +793,7 @@
                                 <div class="erah-help-search-field">
                                     <div class="erah-help-search-copy">
                                         <label for="hero-help-search" class="erah-help-search-label">Recherche globale</label>
-                                        <p class="erah-help-search-help">Cherche directement une question, un module ou une action. Plus ta recherche est concrete, plus tu retombes vite sur la bonne reponse.</p>
+                                        <p class="erah-help-search-help">Cherche directement une question, un module ou une action. Plus ta recherche est concrete, plus tu retombes vite sur la bonne réponse.</p>
                                     </div>
                                     <div class="erah-help-search-shell erah-help-search-shell--hero">
                                         <span class="erah-help-search-kicker">Recherche guidee</span>
@@ -821,16 +821,16 @@
                                 <a href="#discover">Decouvrir ERAH</a>
                                 <a href="#starter-journey">Bien commencer</a>
                                 <a href="#understand-platform">Comprendre la plateforme</a>
-                                <a href="#faq-center">FAQ detaillee</a>
+                                <a href="#faq-center">FAQ détaillée</a>
                                 <a href="{{ $page['assistant']['page_url'] }}">Assistant</a>
                             </div>
                         </div>
                         <div class="erah-help-surface erah-help-hero-recap">
                             <div class="erah-help-overline">{{ $mode === 'console' ? 'Lecture immediate' : 'Repere rapide' }}</div>
                             <div class="tt-heading tt-heading-lg margin-bottom-10">
-                                <h2 class="tt-heading-title">{{ $mode === 'console' ? 'Les bons points d entree depuis votre espace.' : 'Une vue claire des briques qui composent vraiment la plateforme.' }}</h2>
+                                <h2 class="tt-heading-title">{{ $mode === 'console' ? 'Les bons points d'entrée depuis votre espace.' : 'Une vue claire des briques qui composent vraiment la plateforme.' }}</h2>
                             </div>
-                            <p class="text-muted margin-bottom-0">{{ $mode === 'console' ? 'Ce hub vous aide a revenir vite vers le bon module: matchs, missions, clips, cadeaux, duels ou notifications.' : 'Le help center sert a la fois de page de decouverte, de FAQ unique et de source de verite pour le futur assistant ERAH.' }}</p>
+                            <p class="text-muted margin-bottom-0">{{ $mode === 'console' ? 'Ce hub vous aide a revenir vite vers le bon module: matchs, missions, clips, cadeaux, duels ou notifications.' : 'Le help center sert a la fois de page de découverte, de FAQ unique et de source de verite pour le futur assistant ERAH.' }}</p>
                             <div class="erah-help-stat-grid">
                                 <div class="erah-help-stat"><span class="erah-help-stat-label">Categories</span><span class="erah-help-stat-value">{{ $page['overview']['categories'] ?? 0 }}</span></div>
                                 <div class="erah-help-stat"><span class="erah-help-stat-label">Questions clefs</span><span class="erah-help-stat-value">{{ $page['overview']['faqs'] ?? 0 }}</span></div>
@@ -863,7 +863,7 @@
                                         </div>
                                         <p class="text-muted margin-bottom-0">La recherche parcourt la FAQ, les categories, les etapes guidees, le glossaire et les modules du help center.</p>
                                     </div>
-                                    <span class="erah-help-chip">{{ count($page['searchResults'] ?? []) }} resultat(s)</span>
+                                    <span class="erah-help-chip">{{ count($page['searchResults'] ?? []) }} résultat(s)</span>
                                 </div>
                             </div>
 
@@ -879,7 +879,7 @@
                                             </div>
                                             <p class="erah-help-search-result-copy">{{ $result['excerpt'] }}</p>
                                             <div class="tt-btn-wrap margin-top-20">
-                                                <a href="{{ $result['url'] }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Voir">Voir le resultat</span></a>
+                                                <a href="{{ $result['url'] }}" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Voir">Voir le résultat</span></a>
                                             </div>
                                         </article>
                                     @endforeach
@@ -887,7 +887,7 @@
                             @else
                                 <div class="erah-help-card">
                                     <div class="tt-heading tt-heading-sm margin-bottom-12">
-                                        <h3 class="tt-heading-title">Aucun resultat assez pertinent</h3>
+                                        <h3 class="tt-heading-title">Aucun résultat assez pertinent</h3>
                                     </div>
                                     <p class="text-muted margin-bottom-20">Essaie avec des mots comme missions, points, etapes, matchs, paris, profil, cadeaux ou notifications.</p>
                                     <div class="erah-help-search-actions">
@@ -1039,9 +1039,9 @@
                                 <h3 class="tt-heading-subtitle tt-text-uppercase">Questions rapides</h3>
                                 <h2 class="tt-heading-title">Les questions qu un membre ou un visiteur pose le plus souvent en premier.</h2>
                             </div>
-                            <p class="text-muted">Ce bloc sert d entree directe. La FAQ detaillee juste en dessous garde le contenu complet, les etapes et les reponses enrichies.</p>
+                            <p class="text-muted">Ce bloc sert d'entrée directe. La FAQ détaillée juste en dessous garde le contenu complet, les etapes et les réponses enrichies.</p>
                             <div class="tt-btn-wrap margin-top-25">
-                                <a href="#faq-center" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="FAQ">Aller a la FAQ detaillee</span></a>
+                                <a href="#faq-center" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="FAQ">Aller a la FAQ détaillée</span></a>
                             </div>
                         </div>
                         <div class="tt-col-lg-8">
@@ -1052,7 +1052,7 @@
                                         <div class="tt-heading tt-heading-sm margin-bottom-15"><h3 class="tt-heading-title">{{ $question['title'] }}</h3></div>
                                         <p class="text-muted">{{ $question['answer'] }}</p>
                                         <div class="tt-btn-wrap margin-top-20">
-                                            <a href="{{ $question['href'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Lire">Voir la reponse</span></a>
+                                            <a href="{{ $question['href'] }}" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Lire">Voir la réponse</span></a>
                                         </div>
                                     </article>
                                 @endforeach
@@ -1100,7 +1100,7 @@
         <div class="tt-section padding-top-lg-30 padding-bottom-lg-60 padding-bottom-40 border-top" id="faq-center">
             <div class="tt-section-inner tt-wrap">
                 <div class="tt-heading tt-heading-xxlg margin-bottom-35">
-                    <h3 class="tt-heading-subtitle tt-text-uppercase">FAQ detaillee</h3>
+                    <h3 class="tt-heading-subtitle tt-text-uppercase">FAQ détaillée</h3>
                     <h2 class="tt-heading-title">Une FAQ centrale riche qui explique les regles, les parcours, les modules et les incomprehensions frequentes.</h2>
                 </div>
                 <div class="erah-help-faq-toolbar">
@@ -1197,7 +1197,7 @@
                     </div>
                 @else
                     <div class="erah-help-card margin-top-30">
-                        <div class="tt-heading tt-heading-sm margin-bottom-15"><h3 class="tt-heading-title">Aucune reponse sur ce filtre</h3></div>
+                        <div class="tt-heading tt-heading-sm margin-bottom-15"><h3 class="tt-heading-title">Aucune réponse sur ce filtre</h3></div>
                         <p class="text-muted margin-bottom-20">Essayez une recherche plus large, revenez a toutes les categories ou basculez vers l assistant dedie pour formuler la question librement.</p>
                         <div class="erah-help-search-actions">
                             <a href="{{ $baseRoute }}#faq-center" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="FAQ">Voir toute la FAQ</span></a>
@@ -1277,7 +1277,7 @@
                                         <div class="tt-heading tt-heading-xxlg margin-bottom-0">
                                             <h2 class="tt-heading-title erah-help-member-name">{{ $userPreview['name'] }}</h2>
                                         </div>
-                                        <p class="text-muted margin-bottom-0">Vous etes deja connecte. Le plus utile maintenant est de verifier votre progression, completer votre profil puis repartir vers les bons modules sans perdre de temps.</p>
+                                        <p class="text-muted margin-bottom-0">Vous etes deja connecte. Le plus utile maintenant est de verifier votre progression, complèter votre profil puis repartir vers les bons modules sans perdre de temps.</p>
                                     </div>
                                 </div>
 
@@ -1326,7 +1326,7 @@
                     <div class="erah-help-footer-panel">
                         <div class="erah-help-overline">Base de connaissance</div>
                         <div class="tt-heading tt-heading-lg margin-bottom-15"><h2 class="tt-heading-title">Une seule source de verite pour la FAQ et l assistant</h2></div>
-                        <p class="text-muted">Articles, questions, reponses courtes, glossaire et suggestions d actions sont deja structures pour alimenter l assistant ERAH et le centre d aide.</p>
+                        <p class="text-muted">Articles, questions, réponses courtes, glossaire et suggestions d actions sont deja structures pour alimenter l assistant ERAH et le centre d aide.</p>
                         <div class="erah-help-pill-row margin-top-25">
                             <span class="erah-help-chip">Categories administrables</span>
                             <span class="erah-help-chip">Questions mises en avant</span>

@@ -64,8 +64,8 @@ class MatchAdminController extends Controller
                 'lost_count' => $result['settlement']->lost_count,
                 'void_count' => $result['settlement']->void_count,
                 'payout_total' => $result['settlement']->payout_total,
-                'processed_by' => $result['settlement']->processed_by,
-                'processed_at' => $result['settlement']->processed_at,
+                'processused_by' => $result['settlement']->processused_by,
+                'processused_at' => $result['settlement']->processused_at,
             ],
         ]);
     }
@@ -78,9 +78,9 @@ class MatchAdminController extends Controller
             'game_key' => $match->game_key,
             'event_type' => $match->event_type,
             'event_name' => $match->event_name,
-            'competition_name' => $match->competition_name,
-            'competition_stage' => $match->competition_stage,
-            'competition_split' => $match->competition_split,
+            'compétition_name' => $match->compétition_name,
+            'compétition_stage' => $match->compétition_stage,
+            'compétition_split' => $match->compétition_split,
             'best_of' => $match->best_of,
             'parent_match_id' => $match->parent_match_id,
             'home_team' => $match->home_team,

@@ -117,7 +117,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-30">
                             <h2 class="tt-heading-title tt-text-reveal">Vue d ensemble</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Les avis publies alimentent la home, la page publique complete et la mise en avant des profils membres.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Les avis publies alimentent la home, la page publique complète et la mise en avant des profils membres.</p>
                         </div>
 
                         <div class="adm-kpi-grid">

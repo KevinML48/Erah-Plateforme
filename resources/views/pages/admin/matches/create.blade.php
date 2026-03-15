@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Admin Matchs Legacy | ERAH Plateforme')
-@section('meta_description', 'Point d entree legacy vers le formulaire principal des matchs admin.')
+@section('meta_description', 'Point d'entrée legacy vers le formulaire principal des matchs admin.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -25,7 +25,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
                             <h2 class="tt-heading-title tt-text-reveal">Vue legacy</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Cette page est maintenue pour compatibilite. Utilisez le flux principal pour creer et gerer les matchs.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Cette page est maintenue pour compatibilite. Utilisez le flux principal pour créer et gérer les matchs.</p>
                         </div>
 
                         <div class="adm-legacy-actions">

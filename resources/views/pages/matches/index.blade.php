@@ -303,7 +303,7 @@
                     <h2 class="ph-caption-subtitle">ERAH Match Center</h2>
                     <h1 class="ph-caption-title">Matchs & tournois</h1>
                     <div class="ph-caption-description max-width-900">
-                        Parcourez les matchs directs et les tournois Rocket League avec un moteur de prediction adapte a chaque phase de competition.
+                        Parcourez les matchs directs et les tournois Rocket League avec un moteur de prediction adapte a chaque phase de compétition.
                     </div>
                 </div>
             </div>
@@ -423,10 +423,10 @@
                                                         @endif
                                                     </div>
                                                     <h3 class="match-event-title">{{ $match->displayTitle() }}</h3>
-                                                    <p class="match-event-subtitle">{{ $match->displaySubtitle() ?: ($match->parentMatch?->event_name ? 'Lie au tournoi '.$match->parentMatch->event_name : 'Les predictions restent ouvertes tant que la cloture n est pas atteinte.') }}</p>
+                                                    <p class="match-event-subtitle">{{ $match->displaySubtitle() ?: ($match->parentMatch?->event_name ? 'Lie au tournoi '.$match->parentMatch->event_name : 'Les predictions restent ouvertes tant que la cloture n'est pas atteinte.') }}</p>
                                                 </div>
                                                 <a href="{{ route($showRouteName, $match->id) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                                    <span data-hover="Voir le detail">Voir le detail</span>
+                                                    <span data-hover="Voir le détail">Voir le détail</span>
                                                 </a>
                                             </div>
 
@@ -445,11 +445,11 @@
                                                 </article>
                                                 <article class="match-meta-card">
                                                     <span>Competition</span>
-                                                    <strong>{{ $match->competition_name ?: '-' }}</strong>
+                                                    <strong>{{ $match->compétition_name ?: '-' }}</strong>
                                                 </article>
                                                 <article class="match-meta-card">
                                                     <span>Phase</span>
-                                                    <strong>{{ $match->competition_stage ?: '-' }}</strong>
+                                                    <strong>{{ $match->compétition_stage ?: '-' }}</strong>
                                                 </article>
                                                 <article class="match-meta-card">
                                                     <span>Resultat</span>

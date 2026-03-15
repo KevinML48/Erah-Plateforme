@@ -121,7 +121,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-30">
                             <h2 class="tt-heading-title tt-text-reveal">Vue d ensemble</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Le listing separe les matchs directs, les tournois Rocket League et les rencontres creees apres ouverture de la phase TOP 16.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Le listing separe les matchs directs, les tournois Rocket League et les rencontres créées apres ouverture de la phase TOP 16.</p>
                         </div>
 
                         <div class="adm-compact-kpis">
@@ -147,7 +147,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-30">
                             <h2 class="tt-heading-title tt-text-reveal">Filtres admin</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Recherche, jeu, type d evenement et etat de diffusion. Le bouton de creation ouvre ensuite le bon formulaire selon le contexte.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Recherche, jeu, type d evenement et etat de diffusion. Le bouton de création ouvre ensuite le bon formulaire selon le contexte.</p>
                         </div>
 
                         <form method="GET" action="{{ route('admin.matches.index') }}" class="adm-form">
@@ -205,7 +205,7 @@
                     <section class="adm-surface">
                         <div class="tt-heading tt-heading-lg margin-bottom-30">
                             <h2 class="tt-heading-title tt-text-reveal">Bibliotheque evenements</h2>
-                            <p class="max-width-700 tt-anim-fadeinup text-gray">Chaque carte resume le contexte du match, l etat des predictions, le tournoi parent eventuel et les actions rapides disponibles.</p>
+                            <p class="max-width-700 tt-anim-fadeinup text-gray">Chaque carte resume le contexte du match, l'état des predictions, le tournoi parent eventuel et les actions rapides disponibles.</p>
                         </div>
 
                         @if($matches->count())
@@ -227,7 +227,7 @@
                                                         <span class="adm-pill">BO{{ $match->best_of }}</span>
                                                     @endif
                                                     @if($match->parentMatch)
-                                                        <span class="adm-pill">Tournoi parent : {{ $match->parentMatch->event_name ?: $match->parentMatch->competition_name ?: '#'.$match->parentMatch->id }}</span>
+                                                        <span class="adm-pill">Tournoi parent : {{ $match->parentMatch->event_name ?: $match->parentMatch->compétition_name ?: '#'.$match->parentMatch->id }}</span>
                                                     @endif
                                                 </div>
                                                 <h3 class="adm-match-title">{{ $title }}</h3>
@@ -265,15 +265,15 @@
                                             </article>
                                             <article class="adm-match-meta">
                                                 <span>Competition</span>
-                                                <strong>{{ $match->competition_name ?: '-' }}</strong>
+                                                <strong>{{ $match->compétition_name ?: '-' }}</strong>
                                             </article>
                                             <article class="adm-match-meta">
                                                 <span>Phase</span>
-                                                <strong>{{ $match->competition_stage ?: '-' }}</strong>
+                                                <strong>{{ $match->compétition_stage ?: '-' }}</strong>
                                             </article>
                                             <article class="adm-match-meta">
                                                 <span>Split</span>
-                                                <strong>{{ $match->competition_split ?: '-' }}</strong>
+                                                <strong>{{ $match->compétition_split ?: '-' }}</strong>
                                             </article>
                                             <article class="adm-match-meta">
                                                 <span>{{ $isTournament ? 'Phase matchs' : 'Pronostics regles le' }}</span>
@@ -281,7 +281,7 @@
                                                     @if($isTournament)
                                                         {{ (int) $match->child_matches_count }} match(s) {{ $match->child_matches_unlocked_at ? '- phase ouverte' : '- phase fermee' }}
                                                     @else
-                                                        {{ $match->settlement?->processed_at?->format('d/m/Y H:i') ?? '-' }}
+                                                        {{ $match->settlement?->processused_at?->format('d/m/Y H:i') ?? '-' }}
                                                     @endif
                                                 </strong>
                                             </article>

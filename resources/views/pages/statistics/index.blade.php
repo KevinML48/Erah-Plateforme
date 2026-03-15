@@ -78,7 +78,7 @@
 
                 <section class="community-surface">
                     <h3 class="no-margin">Performance duel</h3>
-                    <p class="margin-top-20">Le classement duel dispose maintenant de sa propre page pour separer clairement la competition globale et vos duels personnels.</p>
+                    <p class="margin-top-20">Le classement duel dispose maintenant de sa propre page pour separer clairement la compétition globale et vos duels personnels.</p>
                     <div class="community-actions margin-top-20">
                         <a href="{{ route($duelLeaderboardRouteName) }}" class="tt-btn tt-btn-primary tt-magnetic-item no-transition"><span data-hover="Ouvrir le classement duel">Ouvrir le classement duel</span></a>
                     </div>

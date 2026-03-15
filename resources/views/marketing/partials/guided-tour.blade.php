@@ -201,7 +201,7 @@
 
             function progressPercent() {
                 if (!steps.length) return 0;
-                var value = state.is_completed ? steps.length : (currentIndex() + 1);
+                var value = state.is_complèted ? steps.length : (currentIndex() + 1);
                 return Math.max(0, Math.min(100, Math.round((value / steps.length) * 100)));
             }
 
@@ -372,7 +372,7 @@
             async function move(action) {
                 var result = await send(action);
                 if (!result) return;
-                if (state.is_completed) { renderCompletion(); return; }
+                if (state.is_complèted) { renderCompletion(); return; }
                 var step = getCurrentStep();
                 if (step && pathnameFromUrl(step.route) !== window.location.pathname) { rememberAutoOpen(step); window.location.assign(step.route); return; }
                 renderStep();
@@ -390,7 +390,7 @@
                 card.style.transform = 'translate(-50%, -50%)';
                 kickerElement.textContent = 'Visite terminee';
                 titleElement.textContent = 'Vous avez fait le tour';
-                copyElement.textContent = 'Le parcours est complete. Vous pouvez revenir au help center pour le relancer depuis le debut quand vous voulez.';
+                copyElement.textContent = 'Le parcours est complète. Vous pouvez revenir au help center pour le relancer depuis le debut quand vous voulez.';
                 noteElement.hidden = true;
                 progressLabelElement.textContent = steps.length + ' etapes validees';
                 progressPercentElement.textContent = '100%';
@@ -401,10 +401,10 @@
             }
 
             previousButton.addEventListener('click', function () { move('previous'); });
-            nextButton.addEventListener('click', function () { if (state.is_completed) { startTour('restart'); return; } move('next'); });
-            pauseButton.addEventListener('click', function () { if (state.is_completed) { hideOverlay(); showResumePrompt(); return; } pauseTour(); });
+            nextButton.addEventListener('click', function () { if (state.is_complèted) { startTour('restart'); return; } move('next'); });
+            pauseButton.addEventListener('click', function () { if (state.is_complèted) { hideOverlay(); showResumePrompt(); return; } pauseTour(); });
             closeButton.addEventListener('click', function () {
-                if (state.is_completed) { hideOverlay(); hideResumePrompt(); return; }
+                if (state.is_complèted) { hideOverlay(); hideResumePrompt(); return; }
                 pauseTour();
             });
             resumeButton.addEventListener('click', continueTour);

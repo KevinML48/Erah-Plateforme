@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
 use App\Application\Actions\Notifications\MarkNotificationReadAction;
-use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
@@ -151,26 +151,26 @@ class NotificationsPageController extends Controller
         return back()->with('success', 'Toutes les notifications sont lues.');
     }
 
-    public function preferences(EnsureNotificationSettingsAction $ensureNotificationSettingsAction): View
+    public function préférences(EnsureNotificationSettingsAction $ensureNotificationSettingsAction): View
     {
         $user = auth()->user();
         $ensureNotificationSettingsAction->execute($user);
-        $user->load(['notificationChannels', 'notificationPreferences']);
+        $user->load(['notificationChannels', 'notificationPréférences']);
 
-        $preferences = $user->notificationPreferences
+        $préférences = $user->notificationPréférences
             ->keyBy('category');
 
-        return view('pages.notifications.preferences', [
+        return view('pages.notifications.préférences', [
             'channels' => $user->notificationChannels,
-            'preferences' => $preferences,
+            'préférences' => $préférences,
             'hasActiveDevice' => $user->devices()->where('is_active', true)->exists()
                 || $user->pushSubscriptions()->where('is_active', true)->exists(),
         ]);
     }
 
-    public function updatePreferences(
+    public function updatePréférences(
         Request $request,
-        UpdateNotificationPreferencesAction $updateNotificationPreferencesAction
+        UpdateNotificationPréférencesAction $updateNotificationPréférencesAction
     ): RedirectResponse {
         $categories = NotificationCategory::values();
 
@@ -194,13 +194,13 @@ class NotificationsPageController extends Controller
             ];
         }
 
-        $updateNotificationPreferencesAction->execute(auth()->user(), $payload);
+        $updateNotificationPréférencesAction->execute(auth()->user(), $payload);
 
         $routeName = request()->routeIs('app.*')
-            ? 'app.notifications.preferences'
-            : 'notifications.preferences';
+            ? 'app.notifications.préférences'
+            : 'notifications.préférences';
 
         return redirect()->route($routeName)
-            ->with('success', 'Preferences enregistrees.');
+            ->with('success', 'Préférences enregistrees.');
     }
 }

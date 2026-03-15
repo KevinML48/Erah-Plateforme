@@ -48,11 +48,11 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('mission_instance_id')->constrained('mission_instances')->cascadeOnDelete();
             $table->unsignedInteger('progress_count')->default(0);
-            $table->timestamp('completed_at')->nullable()->index();
+            $table->timestamp('complèted_at')->nullable()->index();
             $table->timestamps();
 
             $table->unique(['user_id', 'mission_instance_id'], 'user_missions_user_instance_unique');
-            $table->index(['user_id', 'completed_at'], 'user_missions_user_completed_idx');
+            $table->index(['user_id', 'complèted_at'], 'user_missions_user_complèted_idx');
             $table->index('mission_instance_id', 'user_missions_instance_idx');
         });
 
@@ -60,11 +60,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('user_mission_id')->constrained('user_missions')->cascadeOnDelete();
-            $table->timestamp('completed_at')->index();
+            $table->timestamp('complèted_at')->index();
             $table->timestamp('created_at')->useCurrent()->index();
 
             $table->unique(['user_id', 'user_mission_id'], 'mission_completions_user_user_mission_unique');
-            $table->index(['user_id', 'completed_at'], 'mission_completions_user_completed_idx');
+            $table->index(['user_id', 'complèted_at'], 'mission_completions_user_complèted_idx');
         });
     }
 

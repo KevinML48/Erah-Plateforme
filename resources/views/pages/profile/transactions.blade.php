@@ -341,7 +341,7 @@
             <div class="tt-section-inner tt-wrap max-width-1000">
                 <div class="tx-history-card">
                     <p class="tt-form-text margin-bottom-20">
-                        {{ (int) $transactions->total() }} resultat(s) pour vos filtres actuels.
+                        {{ (int) $transactions->total() }} résultat(s) pour vos filtres actuels.
                     </p>
                     @if(($transactions ?? null) && $transactions->count())
                         <ul class="tx-list">

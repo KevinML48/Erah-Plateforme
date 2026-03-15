@@ -176,7 +176,7 @@
                                 <span class="adm-pill">Points plateforme {{ (int) ($selectedUser->rewardWallet?->balance ?? 0) }}</span>
                                 @if(auth()->user()?->role === 'admin')
                                     <a class="tt-btn tt-btn-secondary tt-magnetic-item" href="{{ route('admin.users.show', $selectedUser->id) }}">
-                                        <span data-hover="Ouvrir le detail admin">Ouvrir le detail admin</span>
+                                        <span data-hover="Ouvrir le détail admin">Ouvrir le détail admin</span>
                                     </a>
                                 @endif
                             </div>

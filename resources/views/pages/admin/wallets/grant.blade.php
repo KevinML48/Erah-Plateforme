@@ -97,9 +97,9 @@
                                         value="{{ $selectedUserLabel }}"
                                         placeholder="Tapez un nom ou un email pour filtrer"
                                         data-wallet-user-filter
-                                        autocomplete="off"
+                                        autocomplète="off"
                                     >
-                                    <p class="adm-field-help">La liste ci-dessous se filtre pendant la saisie et la premiere correspondance est selectionnee.</p>
+                                    <p class="adm-field-help">La liste ci-dessous se filtre pendant la saisie et la première correspondance est selectionnee.</p>
                                 </div>
 
                                 <div class="tt-form-group">

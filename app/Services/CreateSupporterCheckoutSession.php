@@ -27,7 +27,7 @@ class CreateSupporterCheckoutSession
         $priceId = trim((string) ($plan->stripe_price_id ?? ''));
 
         if ($priceId === '') {
-            throw new RuntimeException('Le prix Stripe de cette formule supporter n est pas configure.');
+            throw new RuntimeException('Le prix Stripe de cette formule supporter n'est pas configure.');
         }
 
         $this->supporterAccessResolver->ensurePublicProfile($user);

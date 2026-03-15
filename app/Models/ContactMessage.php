@@ -11,7 +11,7 @@ class ContactMessage extends Model
     use HasFactory;
 
     public const STATUS_NEW = 'new';
-    public const STATUS_PROCESSED = 'processed';
+    public const STATUS_PROCESSED = 'processused';
     public const STATUS_ARCHIVED = 'archived';
 
     public const CATEGORY_JOIN_CLUB = 'join_club';
@@ -107,7 +107,7 @@ class ContactMessage extends Model
     public function categoryLabel(): string
     {
         if (! filled($this->category)) {
-            return 'Non precise';
+            return 'Non précise';
         }
 
         $labels = self::categoryLabels();

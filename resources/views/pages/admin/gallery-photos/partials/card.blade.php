@@ -177,7 +177,7 @@
             </form>
         </div>
 
-        <details class="adm-gallery-edit">
+        <détails class="adm-gallery-edit">
             <summary>
                 <span>Modifier rapidement</span>
                 <small>Titre, publication, ordre, remplacement du media.</small>
@@ -247,7 +247,7 @@
                     </label>
 
                     <div class="adm-gallery-edit-action-buttons">
-                        <button type="button" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" data-gallery-close-details>
+                        <button type="button" class="tt-btn tt-btn-outline tt-magnetic-item adm-gallery-btn" data-gallery-close-détails>
                             <span>Fermer</span>
                         </button>
 
@@ -257,6 +257,6 @@
                     </div>
                 </div>
             </form>
-        </details>
+        </détails>
     </div>
 </article>

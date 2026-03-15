@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Application\Actions\Notifications\EnsureNotificationSettingsAction;
-use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
+use App\Application\Actions\Notifications\UpdateNotificationPréférencesAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class OnboardingController extends Controller
         $user = auth()->user();
         $ensureNotificationSettingsAction->execute($user);
 
-        $user->load(['notificationChannels', 'notificationPreferences']);
+        $user->load(['notificationChannels', 'notificationPréférences']);
 
         return view('pages.onboarding', [
             'channels' => [
@@ -28,14 +28,14 @@ class OnboardingController extends Controller
 
     public function store(
         Request $request,
-        UpdateNotificationPreferencesAction $updateNotificationPreferencesAction
+        UpdateNotificationPréférencesAction $updateNotificationPréférencesAction
     ): RedirectResponse {
         $request->validate([
             'email_opt_in' => ['nullable', 'boolean'],
             'push_opt_in' => ['nullable', 'boolean'],
         ]);
 
-        $updateNotificationPreferencesAction->execute(auth()->user(), [
+        $updateNotificationPréférencesAction->execute(auth()->user(), [
             'channels' => [
                 'email_opt_in' => $request->boolean('email_opt_in'),
                 'push_opt_in' => $request->boolean('push_opt_in'),
@@ -46,6 +46,6 @@ class OnboardingController extends Controller
         $request->session()->put('onboarding_done', true);
 
         return redirect()->route('dashboard')
-            ->with('success', 'Preferences enregistrees. Votre espace est pret.');
+            ->with('success', 'Préférences enregistrees. Votre espace est pret.');
     }
 }

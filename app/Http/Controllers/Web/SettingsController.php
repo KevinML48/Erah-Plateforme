@@ -12,7 +12,7 @@ class SettingsController extends Controller
     {
         $user = auth()->user();
         $ensureNotificationSettingsAction->execute($user);
-        $user->load(['notificationChannels', 'notificationPreferences']);
+        $user->load(['notificationChannels', 'notificationPréférences']);
 
         return view('pages.settings.index', [
             'user' => $user,

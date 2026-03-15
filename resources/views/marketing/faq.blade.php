@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'FAQ Plateforme | ERAH Esport')
-@section('meta_description', 'FAQ complete ERAH: compte, points, classement, paris, missions, cadeaux, duels et notifications.')
+@section('meta_description', 'FAQ complète ERAH: compte, points, classement, paris, missions, cadeaux, duels et notifications.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('content')
@@ -65,7 +65,7 @@
                             <h3 class="tt-heading-subtitle tt-text-uppercase">Nouveau centre d aide</h3>
                             <h2 class="tt-heading-title tt-text-reveal">Aller plus loin que la FAQ</h2>
                             <div class="tt-heading-desc max-width-700">
-                                Retrouvez le centre d aide complet, la visite guidee, les categories detaillees et les articles relies aux vrais modules de la plateforme.
+                                Retrouvez le centre d aide complet, la visite guidee, les categories détaillées et les articles relies aux vrais modules de la plateforme.
                             </div>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                         </p>
                         <p>
                             L interet est double: offrir une vraie boucle d engagement autour du club et donner aux membres
-                            une progression claire, traçable et coherente entre le contenu, le competitif et les rewards.
+                            une progression claire, traçable et coherente entre le contenu, le compétitif et les rewards.
                         </p>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                             Une fois connecte, vous retrouvez vos donnees et vos raccourcis menu.
                         </p>
                         <p>
-                            Pensez a verifier votre profil, vos preferences de notification et vos canaux actifs.
+                            Pensez a verifier votre profil, vos préférences de notification et vos canaux actifs.
                             Si une action est protegee, une redirection vers la connexion est appliquee automatiquement.
                         </p>
                     </div>
@@ -267,7 +267,7 @@
                             <h2 class="tt-heading-title tt-text-reveal">Supporter<br>ERAH</h2>
                         </div>
                         <div class="text-muted tt-anim-fadeinup">
-                            <p>Trois formules, meme programme, reduction sur l engagement long.</p>
+                            <p>Trois formules, meme programme, reduction sur l'engagement long.</p>
                         </div>
                     </div>
                     <div class="tt-col-lg-1 padding-top-30"></div>
@@ -333,7 +333,7 @@
                             Le systeme regle ensuite les bets de maniere idempotente.
                         </p>
                         <p>
-                            Votre wallet bet points est debite/credite automatiquement selon le resultat.
+                            Votre wallet bet points est débite/credite automatiquement selon le résultat.
                             Les transactions restent visibles pour verifier chaque mouvement.
                         </p>
                     </div>
@@ -359,7 +359,7 @@
                             Ces points servent exclusivement au store cadeaux.
                         </p>
                         <p>
-                            Quand vous lancez une redemption, le stock est reserve et les points sont debites.
+                            Quand vous lancez une redemption, le stock est reserve et les points sont débites.
                             En cas de rejet admin, le remboursement est applique automatiquement.
                         </p>
                     </div>
@@ -381,12 +381,12 @@
                     <div class="tt-col-lg-1 padding-top-30"></div>
                     <div class="tt-col-lg-6 tt-align-self-center tt-anim-fadeinup">
                         <p class="text-lg">
-                            Vous pouvez creer, accepter ou refuser des duels selon votre statut et les delais de reponse.
+                            Vous pouvez créer, accepter ou refuser des duels selon votre statut et les delais de réponse.
                             Les notifications in-app sont toujours persistees.
                         </p>
                         <p>
-                            Selon vos preferences, des canaux supplementaires peuvent etre actives.
-                            Gardez vos reglages a jour pour ne manquer aucune action importante.
+                            Selon vos préférences, des canaux supplementaires peuvent etre actives.
+                            Gardez vos réglages a jour pour ne manquer aucune action importante.
                         </p>
                     </div>
                 </div>
@@ -454,7 +454,7 @@
                                     <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Comment sont calcules les gains des bets ?</h4></div></div>
                                     <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
                                 </div>
-                                <div class="tt-accordion-content max-width-900"><p>Le payout est base sur la mise et le snapshot d'odds du pari. Le settlement applique ensuite credit/debit wallet de facon transactionnelle et sans double execution.</p></div>
+                                <div class="tt-accordion-content max-width-900"><p>Le payout est base sur la mise et le snapshot d'odds du pari. Le settlement applique ensuite credit/débit wallet de facon transactionnelle et sans double execution.</p></div>
                             </div>
 
                             <div class="tt-accordion-item tt-anim-fadeinup">
@@ -499,7 +499,7 @@
 
                             <div class="tt-accordion-item tt-anim-fadeinup">
                                 <div class="tt-accordion-heading">
-                                    <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Pourquoi un duel expire parfois sans reponse ?</h4></div></div>
+                                    <div class="tt-ac-head cursor-alter"><div class="tt-ac-head-inner"><h4 class="tt-ac-head-title">Pourquoi un duel expire parfois sans réponse ?</h4></div></div>
                                     <div class="tt-accordion-caret"><div class="tt-accordion-caret-inner tt-magnetic-item"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"></path></svg></div></div>
                                 </div>
                                 <div class="tt-accordion-content max-width-900"><p>Chaque duel pending a une fenetre de validite. Sans acceptation dans le delai, il passe automatiquement en expire pour garder un flux propre.</p></div>

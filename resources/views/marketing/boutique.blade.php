@@ -358,12 +358,12 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  .shop-tshirt-details {
+  .shop-tshirt-détails {
     margin-top: 20px;
     text-align: center;
   }
 
-  .shop-tshirt-details h4 {
+  .shop-tshirt-détails h4 {
     margin: 0 0 8px;
     font-family: 'Big Shoulders Display', sans-serif;
     font-size: 28px;
@@ -373,7 +373,7 @@
     color: var(--shop-text-primary);
   }
 
-  .shop-tshirt-details p {
+  .shop-tshirt-détails p {
     font-size: 14px;
     color: var(--shop-text-muted);
     line-height: 1.6;
@@ -1056,11 +1056,11 @@
       border-radius: 20px;
     }
     
-    .shop-tshirt-details h4 {
+    .shop-tshirt-détails h4 {
       font-size: 22px;
     }
     
-    .shop-tshirt-details p {
+    .shop-tshirt-détails p {
       font-size: 13px;
     }
     
@@ -1194,16 +1194,16 @@
       border-radius: 16px;
     }
     
-    .shop-tshirt-details {
+    .shop-tshirt-détails {
       margin-top: 16px;
     }
     
-    .shop-tshirt-details h4 {
+    .shop-tshirt-détails h4 {
       font-size: 20px;
       margin-bottom: 6px;
     }
     
-    .shop-tshirt-details p {
+    .shop-tshirt-détails p {
       font-size: 12px;
     }
     
@@ -1357,7 +1357,7 @@
       font-size: 12px;
     }
     
-    .shop-tshirt-details h4 {
+    .shop-tshirt-détails h4 {
       font-size: 18px;
     }
     
@@ -2033,7 +2033,7 @@
               <a href="#acheter" class="tt-btn tt-btn-primary tt-magnetic-item">
                 <span data-hover="Acheter maintenant">Acheter maintenant</span>
               </a>
-              <a href="#details" class="tt-btn tt-btn-outline tt-magnetic-item">
+              <a href="#détails" class="tt-btn tt-btn-outline tt-magnetic-item">
                 <span data-hover="Voir les détails">Voir les détails</span>
               </a>
               <div class="shop-stamp">
@@ -2196,7 +2196,7 @@
       </div>
 
 
-      <div class="tt-section" id="details">
+      <div class="tt-section" id="détails">
         <div class="tt-section-inner tt-wrap">
           <div class="tt-heading tt-heading-xxxlg tt-heading-center">
             <h2 class="tt-heading-title tt-text-reveal">T-shirt floqué ERAH</h2>
@@ -2691,7 +2691,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="shop-tshirt-details">
+                <div class="shop-tshirt-détails">
                   <h4>Face avant</h4>
                   <p class="text-sm">Design noir structuré, parcouru de lignes abstraites rouges, intégrant les partenaires et l’identité ERAH avec sobriété.</p>
                 </div>
@@ -2707,7 +2707,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="shop-tshirt-details">
+                <div class="shop-tshirt-détails">
                   <h4>Dos avec flocage</h4>
                   <p class="text-sm">Personnalisation du pseudo et du numéro, pour une lisibilité forte et une identité assumée.</p>
                 </div>

@@ -652,7 +652,7 @@
 								</div>
 								<div class="tt-accordion-content max-width-1000">
 									<p>Oui, <strong><a
-												href="https://www.journal-officiel.gouv.fr/pages/associations-detail-annonce/?q.id=id:202300481173"
+												href="https://www.journal-officiel.gouv.fr/pages/associations-détail-annonce/?q.id=id:202300481173"
 												class="tt-link" target="_blank" rel="noopener noreferrer">ERAH Esport
 												est une association loi 1901</a></strong>, à but non lucratif,
 										structurée autour de valeurs humaines et d’un projet de développement
@@ -1168,7 +1168,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="https://coeurdelozere.fr/" class="tt-logo-wall-item cursor-alter"
+						<a href="https://cœurdelozere.fr/" class="tt-logo-wall-item cursor-alter"
 							target="_blank" rel="noopener">
 							<div class="tt-lv-item-inner">
 								<img src="/template/assets/img/clients/client-6-light.png" class="tt-lv-img-light" loading="lazy"

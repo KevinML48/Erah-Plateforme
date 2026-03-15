@@ -16,7 +16,7 @@ class MissionEventRecord extends Model
         'amount',
         'context',
         'occurred_at',
-        'processed_at',
+        'processused_at',
     ];
 
     protected function casts(): array
@@ -26,7 +26,7 @@ class MissionEventRecord extends Model
             'amount' => 'integer',
             'context' => 'array',
             'occurred_at' => 'datetime',
-            'processed_at' => 'datetime',
+            'processused_at' => 'datetime',
         ];
     }
 

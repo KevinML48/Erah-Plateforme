@@ -12,7 +12,7 @@ final class MissionEventTypeRegistry
         return [
             'login.daily',
             'login.returned',
-            'profile.completed',
+            'profile.complèted',
             'mission.board.view',
             'mission.focus.added',
             'mission.claimed',

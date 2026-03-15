@@ -75,11 +75,11 @@ class HelpAssistantService
             }
 
             return $this->guardPayload(
-                answer: 'Je vois le sujet, mais je n ai pas trouve de reponse assez fiable pour te repondre au hasard.',
+                answer: 'Je vois le sujet, mais je n ai pas trouve de réponse assez fiable pour te repondre au hasard.',
                 confidence: 'fallback',
                 userContext: $userContext,
                 nextSteps: [
-                    'Essaie une question plus precise avec un mot-cle comme points, missions, matchs, paris, recompenses ou profil.',
+                    'Essaie une question plus précise avec un mot-cle comme points, missions, matchs, paris, recompenses ou profil.',
                     'Tu peux aussi parcourir la FAQ centrale pour retrouver la bonne categorie.',
                 ],
             );
@@ -89,7 +89,7 @@ class HelpAssistantService
             /** @var HelpGlossaryTerm $term */
             $term = $bestGlossary['term'];
             $answer = trim(implode(' ', array_filter([
-                'Sur ERAH, l idee est simple :',
+                'Sur ERAH, l'idée est simple :',
                 $term->short_answer ?: $term->definition,
             ])));
 
@@ -119,7 +119,7 @@ class HelpAssistantService
             'mode' => config('help-center.assistant.mode', 'knowledge_base'),
             'answer' => $answer,
             'confidence' => ($bestArticle['score'] ?? 0) >= $strongKnowledgeScore ? 'high' : 'medium',
-            'details' => array_slice($paragraphs, 0, 2),
+            'détails' => array_slice($paragraphs, 0, 2),
             'sources' => [[
                 'type' => 'article',
                 'title' => $article->title,
@@ -312,7 +312,7 @@ class HelpAssistantService
      */
     private function overviewPayload(?array $userContext): array
     {
-        $answer = 'Sur ERAH, l idee est de centraliser la progression, les missions, les matchs, les paris, le profil, les notifications et les recompenses dans un meme espace.';
+        $answer = 'Sur ERAH, l'idée est de centraliser la progression, les missions, les matchs, les paris, le profil, les notifications et les recompenses dans un meme espace.';
 
         if ($userContext) {
             $answer .= sprintf(
@@ -329,7 +329,7 @@ class HelpAssistantService
             userContext: $userContext,
             nextSteps: [
                 'Commence par la FAQ centrale si tu veux la vue d ensemble.',
-                'Ensuite, pose une question plus precise sur les points, les missions, les matchs, les paris ou le profil.',
+                'Ensuite, pose une question plus précise sur les points, les missions, les matchs, les paris ou le profil.',
             ],
         );
     }
@@ -340,7 +340,7 @@ class HelpAssistantService
      */
     private function nextStepPayload(?array $userContext): array
     {
-        $answer = 'En general, le plus utile est de completer ton profil, verifier les missions actives, puis regarder les matchs et les recompenses selon ton objectif.';
+        $answer = 'En général, le plus utile est de complèter ton profil, verifier les missions actives, puis regarder les matchs et les recompenses selon ton objectif.';
 
         if ($userContext) {
             $answer .= sprintf(
@@ -369,8 +369,8 @@ class HelpAssistantService
     {
         $isActive = (bool) ($userContext['supporter_active'] ?? false);
         $answer = $isActive
-            ? 'Tu es deja supporter sur ERAH. Le plus utile est maintenant d ouvrir la page Supporter pour gerer ton abonnement, verifier tes avantages et suivre les missions reservees.'
-            : 'Pour devenir supporter sur ERAH, il faut ouvrir la page Supporter, comparer les formules puis lancer le checkout. C est la porte d entree pour activer le badge supporter, les missions exclusives et les avantages associes.';
+            ? 'Tu es deja supporter sur ERAH. Le plus utile est maintenant d ouvrir la page Supporter pour gérer ton abonnement, verifier tes avantages et suivre les missions reservees.'
+            : 'Pour devenir supporter sur ERAH, il faut ouvrir la page Supporter, comparer les formules puis lancer le checkout. C est la porte d'entrée pour activer le badge supporter, les missions exclusives et les avantages associes.';
 
         return [
             'mode' => config('help-center.assistant.mode', 'knowledge_base'),

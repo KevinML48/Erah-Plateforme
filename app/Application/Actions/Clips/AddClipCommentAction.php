@@ -69,7 +69,7 @@ class AddClipCommentAction
                 $this->notifyAction->execute(
                     user: $parentComment->user()->firstOrFail(),
                     category: NotificationCategory::COMMENT->value,
-                    title: 'Nouvelle reponse',
+                    title: 'Nouvelle réponse',
                     message: $user->name.' a repondu a votre commentaire.',
                     data: [
                         'clip_id' => $lockedClip->id,

@@ -11,7 +11,7 @@ class UserGuidedTour extends Model
     use HasFactory;
 
     public const STATUS_IN_PROGRESS = 'in_progress';
-    public const STATUS_COMPLETED = 'completed';
+    public const STATUS_COMPLETED = 'complèted';
 
     protected $fillable = [
         'user_id',
@@ -21,7 +21,7 @@ class UserGuidedTour extends Model
         'is_paused',
         'started_at',
         'last_seen_at',
-        'completed_at',
+        'complèted_at',
     ];
 
     protected $casts = [
@@ -29,7 +29,7 @@ class UserGuidedTour extends Model
         'is_paused' => 'boolean',
         'started_at' => 'datetime',
         'last_seen_at' => 'datetime',
-        'completed_at' => 'datetime',
+        'complèted_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

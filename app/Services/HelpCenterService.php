@@ -28,7 +28,7 @@ class HelpCenterService
     public function landingBuckets(): array
     {
         return [
-            ['value' => 'getting_started', 'label' => 'Bien demarrer'],
+            ['value' => 'getting_started', 'label' => 'Bien démarrer'],
             ['value' => 'understanding_platform', 'label' => 'Comprendre la plateforme'],
             ['value' => 'technical', 'label' => 'Questions techniques'],
         ];
@@ -332,8 +332,8 @@ class HelpCenterService
                 ->all(),
             'quickQuestions' => $this->buildQuickQuestions($articlesBySlug),
             'video' => [
-                'title' => 'Tutoriel video et reperes rapides',
-                'description' => "La video doit aider a prendre ses marques sans remplacer le contenu ecrit. Si aucun tutoriel n'est encore branche, le bloc reste utile avec les reperes a retenir.",
+                'title' => 'Tutoriel video et repères rapides',
+                'description' => "La video doit aider a prendre ses marques sans remplacer le contenu ecrit. Si aucun tutoriel n'est encore branche, le bloc reste utile avec les repères a retenir.",
                 'url' => $videoUrl,
                 'embed_url' => $this->toEmbedVideoUrl($videoUrl),
                 'fallback' => "Ajoutez un lien YouTube ou Vimeo depuis l'administration pour brancher un vrai tutoriel a cette zone.",
@@ -345,8 +345,8 @@ class HelpCenterService
             ],
             'faq' => [
                 'eyebrow' => 'FAQ centrale',
-                'title' => 'Une seule base de reponses pour expliquer les mecanismes, les usages et les bonnes pratiques.',
-                'description' => "Chaque reponse peut rester courte si le sujet est simple ou devenir plus detaillee avec etapes, conseils et liens utiles quand c'est necessaire.",
+                'title' => 'Une seule base de réponses pour expliquer les mecanismes, les usages et les bonnes pratiques.',
+                'description' => "Chaque réponse peut rester courte si le sujet est simple ou devenir plus détaillée avec etapes, conseils et liens utiles quand c'est necessaire.",
                 'categories' => $categories
                     ->map(fn (HelpCategory $category) => [
                         'slug' => $category->slug,
@@ -384,10 +384,10 @@ class HelpCenterService
                     'Comment gagner des points ?',
                     'Comment voir les matchs a venir ?',
                     'Comment marchent les missions ?',
-                    'Comment recuperer des cadeaux ?',
+                    'Comment récupérer des cadeaux ?',
                     'Comment ameliorer mon profil ?',
                 ],
-                'disclaimer' => "L'assistant ne doit pas halluciner. S'il n'a pas de reponse fiable, il vous le dit et vous renvoie vers la meilleure section.",
+                'disclaimer' => "L'assistant ne doit pas halluciner. S'il n'a pas de réponse fiable, il vous le dit et vous renvoie vers la meilleure section.",
             ],
             'footerCta' => $this->buildFooterCta($mode),
             'consoleLinks' => $mode === 'console' ? $this->buildConsoleLinks() : [],
@@ -402,11 +402,11 @@ class HelpCenterService
         return [
             'eyebrow' => $mode === 'console' ? 'Centre d aide membre' : 'Centre d aide / FAQ',
             'title' => $mode === 'console'
-                ? 'Trouver la bonne reponse depuis votre espace.'
+                ? 'Trouver la bonne réponse depuis votre espace.'
                 : 'Comprendre ERAH sans se perdre.',
             'subtitle' => $mode === 'console'
-                ? "Le point de repere pour retrouver vite une reponse, relancer un parcours et revenir vers le bon module sans perdre le fil."
-                : "Une seule page pour decouvrir la logique de la plateforme, parcourir la FAQ centrale, comprendre les vrais modules et utiliser un assistant cadre par la base de connaissance.",
+                ? "Le point de repère pour retrouver vite une réponse, relancer un parcours et revenir vers le bon module sans perdre le fil."
+                : "Une seule page pour découvrir la logique de la plateforme, parcourir la FAQ centrale, comprendre les vrais modules et utiliser un assistant cadre par la base de connaissance.",
             'microcopy' => "La lecture reste publique. Les actions qui modifient votre progression, votre profil ou vos ressources demandent un compte connecte.",
             'search_placeholder' => 'Rechercher une question, un module, une action ou un mot-cle',
             'primary_cta' => [
@@ -426,7 +426,7 @@ class HelpCenterService
                 'title' => 'Ce que vous pouvez faire ici',
                 'items' => [
                     'Comprendre la plateforme avant de participer.',
-                    'Retrouver une reponse claire sur les matchs, missions, clips, duels, cadeaux, profil et notifications.',
+                    'Retrouver une réponse claire sur les matchs, missions, clips, duels, cadeaux, profil et notifications.',
                     "Poser une question a l'assistant en bas de page sans quitter le centre d'aide.",
                 ],
             ],
@@ -472,7 +472,7 @@ class HelpCenterService
             'panels' => [
                 [
                     'title' => "Ce qu'est ERAH",
-                    'description' => "Un hub qui permet de suivre les contenus du club, les matchs, les profils publics et la vie communautaire avant meme de creer un compte.",
+                    'description' => "Un hub qui permet de suivre les contenus du club, les matchs, les profils publics et la vie communautaire avant meme de créer un compte.",
                     'items' => ['Lecture publique sans friction', 'Contenus et profils visibles', 'Base de connaissance claire'],
                 ],
                 [
@@ -482,7 +482,7 @@ class HelpCenterService
                 ],
                 [
                     'title' => 'Pourquoi la plateforme existe',
-                    'description' => "Donner un cadre lisible a l'engagement autour du club: regarder, interagir, progresser, comparer, puis recuperer des avantages utiles.",
+                    'description' => "Donner un cadre lisible a l'engagement autour du club: regarder, interagir, progresser, comparer, puis récupérer des avantages utiles.",
                     'items' => ['Points et XP', 'Modules communautaires', 'Recompenses concretes'],
                 ],
             ],
@@ -502,8 +502,8 @@ class HelpCenterService
                 $this->featureItem(
                     'matchs',
                     'Matchs et paris',
-                    'Suivre les rencontres, comprendre le lock et lire le reglement des paris.',
-                    ['Calendrier et statuts', 'Paris avant verrouillage', 'Historique et reglement'],
+                    'Suivre les rencontres, comprendre le lock et lire le règlement des paris.',
+                    ['Calendrier et statuts', 'Paris avant verrouillage', 'Historique et règlement'],
                     route('matches.index'),
                     'Voir les matchs',
                     'Public puis membre'
@@ -511,7 +511,7 @@ class HelpCenterService
                 $this->featureItem(
                     'missions',
                     'Missions, points et progression',
-                    'Le moteur qui oriente l activite et transforme les usages utiles en progression lisible.',
+                    'Le moteur qui oriente l'activité et transforme les usages utiles en progression lisible.',
                     ['Daily et activite guidee', 'Points pour les modules', 'XP pour les ligues'],
                     $mode === 'console' ? route('missions.index') : route('login'),
                     $mode === 'console' ? 'Voir les missions' : 'Se connecter',
@@ -529,7 +529,7 @@ class HelpCenterService
                 $this->featureItem(
                     'leaderboards',
                     'Classements, duels et profil',
-                    'Lire votre place, suivre la competition communautaire et valoriser votre profil public.',
+                    'Lire votre place, suivre la compétition communautaire et valoriser votre profil public.',
                     ['Ligues et XP', 'Duels personnels', 'Profil public visible'],
                     route('leaderboards.index'),
                     'Voir les classements',
@@ -546,9 +546,9 @@ class HelpCenterService
                 ),
                 $this->featureItem(
                     'profile',
-                    'Profil, notifications et reglages',
+                    'Profil, notifications et réglages',
                     'Rester visible, proprement informe et maitriser votre presence sur la plateforme.',
-                    ['Profil public', 'Avis membre', 'Preferences de notifications'],
+                    ['Profil public', 'Avis membre', 'Préférences de notifications'],
                     $mode === 'console' ? route('profile.show') : route('login'),
                     $mode === 'console' ? 'Ouvrir mon profil' : 'Se connecter',
                     'Compte requis'
@@ -618,7 +618,7 @@ class HelpCenterService
             return [
                 'eyebrow' => 'Toujours au meme endroit',
                 'title' => "Gardez ce centre d aide comme point de retour quand un module vous bloque.",
-                'description' => "Vous pouvez passer d une question a une action sans quitter votre espace ERAH.",
+                'description' => "Vous pouvez passer d'une question a une action sans quitter votre espace ERAH.",
                 'primary_label' => 'Retour a mon espace',
                 'primary_url' => route('dashboard'),
                 'secondary_label' => 'Voir mes notifications',
@@ -648,7 +648,7 @@ class HelpCenterService
             ['title' => 'Missions', 'description' => 'Verifier vos missions quotidiennes, hebdos et activites utiles.', 'url' => route('missions.index')],
             ['title' => 'Clips', 'description' => 'Continuer vos interactions communautaires et vos favoris.', 'url' => route('clips.index')],
             ['title' => 'Classements', 'description' => 'Voir votre ligue, votre position et les autres membres.', 'url' => route('leaderboards.index')],
-            ['title' => 'Duels', 'description' => 'Suivre vos defis en cours et votre competition separee.', 'url' => route('duels.index')],
+            ['title' => 'Duels', 'description' => 'Suivre vos defis en cours et votre compétition separee.', 'url' => route('duels.index')],
             ['title' => 'Cadeaux', 'description' => 'Consulter votre reward wallet et le catalogue disponible.', 'url' => route('gifts.index')],
             ['title' => 'Profil', 'description' => 'Completer votre profil, vos liens publics et vos infos utiles.', 'url' => route('profile.show')],
         ];
@@ -750,7 +750,7 @@ class HelpCenterService
                     $article['body'] ?? null,
                     $article['category']['title'] ?? null,
                     implode(' ', $article['keywords'] ?? []),
-                    'faq article question reponse aide',
+                    'faq article question réponse aide',
                 ])),
                 query: $query,
                 tokens: $tokens,
@@ -936,8 +936,8 @@ class HelpCenterService
             [
                 'eyebrow' => 'Comprendre',
                 'title' => 'Lire la plateforme avant meme de participer.',
-                'description' => "Le visiteur peut explorer les contenus publics, les profils, les clips, les matchs et les classements sans forcer la creation d'un compte.",
-                'items' => ['Lecture publique', 'Profils visibles', 'Rythme de decouverte simple'],
+                'description' => "Le visiteur peut explorer les contenus publics, les profils, les clips, les matchs et les classements sans forcer la création d'un compte.",
+                'items' => ['Lecture publique', 'Profils visibles', 'Rythme de découverte simple'],
                 'cta_label' => 'Voir les clips',
                 'cta_url' => route('clips.index'),
             ],
@@ -951,7 +951,7 @@ class HelpCenterService
             ],
             [
                 'eyebrow' => 'Rester',
-                'title' => 'Une boucle complete entre contenu, competition et recompenses.',
+                'title' => 'Une boucle complète entre contenu, compétition et recompenses.',
                 'description' => "ERAH relie les matchs, les paris, les clips, les missions, les duels, les notifications et les cadeaux dans un meme espace coherent.",
                 'items' => ['Modules relies', 'XP et points visibles', 'Rewards concrets'],
                 'cta_label' => 'Voir l assistant',
@@ -976,9 +976,9 @@ class HelpCenterService
                 return [
                     'title' => $bucket['label'],
                     'description' => match ($bucket['value']) {
-                        'getting_started' => "Tout ce qu'il faut pour creer son compte, comprendre le dashboard et prendre ses premiers repères.",
+                        'getting_started' => "Tout ce qu'il faut pour créer son compte, comprendre le dashboard et prendre ses premiers repères.",
                         'understanding_platform' => "Les vraies mecaniques produit: matchs, paris, points, progression, clips, duels, classements et cadeaux.",
-                        default => "Les zones qui servent quand un utilisateur bloque sur un detail, une notification, un wallet ou un comportement technique.",
+                        default => "Les zones qui servent quand un utilisateur bloque sur un détail, une notification, un wallet ou un comportement technique.",
                     },
                     'items' => $items,
                 ];
@@ -1013,14 +1013,14 @@ class HelpCenterService
         return [
             [
                 'title' => 'Tu decouvres ERAH',
-                'description' => "Commence par les zones publiques pour comprendre la logique generale avant de te connecter.",
+                'description' => "Commence par les zones publiques pour comprendre la logique générale avant de te connecter.",
                 'items' => ['Lire les clips', 'Voir les matchs a venir', 'Parcourir les profils publics'],
                 'cta_label' => 'Explorer les matchs',
                 'cta_url' => route('matches.index'),
             ],
             [
-                'title' => 'Tu viens de creer ton compte',
-                'description' => "Passe d abord par les modules qui structurent ta progression: dashboard, missions, profil et favoris.",
+                'title' => 'Tu viens de créer ton compte',
+                'description' => "Passe d'abord par les modules qui structurent ta progression: dashboard, missions, profil et favoris.",
                 'items' => ['Ouvrir le dashboard', 'Lire les missions', 'Completer le profil'],
                 'cta_label' => $mode === 'console' ? 'Voir le dashboard' : 'Connexion',
                 'cta_url' => $mode === 'console' ? route('dashboard') : route('login'),
@@ -1155,14 +1155,14 @@ class HelpCenterService
         ];
 
         return match ($article->slug) {
-            'creer-son-compte-et-acceder-a-son-espace' => [
+            'créer-son-compte-et-acceder-a-son-espace' => [
                 ...$meta,
                 'steps' => [
                     'Ouvrez la page d inscription ou de connexion.',
                     'Validez votre acces puis revenez sur votre dashboard.',
                     'Completez votre profil pour activer votre presence publique.',
                 ],
-                'tips' => ['Vous pouvez d abord explorer les modules publics avant de creer votre compte.'],
+                'tips' => ['Vous pouvez d'abord explorer les modules publics avant de créer votre compte.'],
             ],
             'placer-un-pari-avant-le-verrouillage' => [
                 ...$meta,
@@ -1171,7 +1171,7 @@ class HelpCenterService
                     'Choisissez la selection disponible avant le lock.',
                     'Confirmez votre pari tant que le marche est encore ouvert.',
                 ],
-                'tips' => ['Passe le lock, le pari n est plus modifiable.'],
+                'tips' => ['Passe le lock, le pari n'est plus modifiable.'],
             ],
             'gagner-des-points-avec-les-missions-quotidiennes' => [
                 ...$meta,
@@ -1189,13 +1189,13 @@ class HelpCenterService
                     'Connectez-vous si vous voulez liker, commenter ou ajouter en favoris.',
                     'Retrouvez vos clips sauvegardes depuis la page favoris.',
                 ],
-                'tips' => ['Le mode visiteur sert a decouvrir sans friction, pas a participer.'],
+                'tips' => ['Le mode visiteur sert a découvrir sans friction, pas a participer.'],
             ],
             'utiliser-le-reward-wallet-et-demander-un-cadeau' => [
                 ...$meta,
                 'steps' => [
                     'Consultez votre portefeuille points pour verifier votre reserve.',
-                    'Ouvrez la fiche detail du cadeau qui vous interesse.',
+                    'Ouvrez la fiche détail du cadeau qui vous interesse.',
                     'Lancez la demande si votre solde et le stock le permettent.',
                 ],
                 'tips' => ['Le suivi continue ensuite dans votre historique de demandes.'],

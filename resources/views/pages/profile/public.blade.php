@@ -686,7 +686,7 @@
             [
                 'label' => 'Bio',
                 'value' => filled($userProfile->bio) ? 'Presentation publique' : 'Bio non renseignee',
-                'body' => $userProfile->bio ?: 'Le membre n a pas encore ajoute de description detaillee.',
+                'body' => $userProfile->bio ?: 'Le membre n a pas encore ajoute de description détaillée.',
             ],
             [
                 'label' => 'Progression',
@@ -733,7 +733,7 @@
                 $afterValue = (int) ($tx->kind === \App\Models\PointsTransaction::KIND_RANK ? $tx->after_rank_points : $tx->after_xp);
 
                 $sourceLabel = match (true) {
-                    str_starts_with((string) $tx->source_type, 'mission.') => 'Mission completee',
+                    str_starts_with((string) $tx->source_type, 'mission.') => 'Mission complètee',
                     str_starts_with((string) $tx->source_type, 'duel.') => 'Interaction duel',
                     str_starts_with((string) $tx->source_type, 'bet.') => 'Prediction esport',
                     str_starts_with((string) $tx->source_type, 'clip.') => 'Activite clips',
@@ -787,7 +787,7 @@
                                     </div>
 
                                     <p class="public-profile-intro-copy">
-                                        {{ $userProfile->bio ?: 'Profil public d un membre ERAH avec progression, activite recente et signaux communautaires visibles en un coup d oeil.' }}
+                                        {{ $userProfile->bio ?: 'Profil public d'un membre ERAH avec progression, activite recente et signaux communautaires visibles en un coup d oeil.' }}
                                     </p>
                                 </div>
                             </div>
@@ -874,7 +874,7 @@
                                 <h3 class="tt-heading-subtitle">Reperes rapides</h3>
                                 <h2 class="tt-heading-title">Lecture immediate</h2>
                                 <p class="max-width-700 text-muted">
-                                    Une synthese plus dense pour eviter le vide et rendre les informations utiles visibles des l entree sur la page.
+                                    Une synthese plus dense pour eviter le vide et rendre les informations utiles visibles des l entrée sur la page.
                                 </p>
                             </div>
 
@@ -976,7 +976,7 @@
                                                 <label class="tt-form-check">
                                                     <input type="hidden" name="delete_review" value="0">
                                                     <input type="checkbox" name="delete_review" value="1" @checked(old('delete_review'))>
-                                                    <span>Supprimer completement l avis membre actuel.</span>
+                                                    <span>Supprimer complètement l avis membre actuel.</span>
                                                 </label>
                                             @endif
                                         </div>
@@ -1045,7 +1045,7 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <div class="public-profile-empty">La suppression de votre propre compte admin n est pas autorisee depuis cette page.</div>
+                                                <div class="public-profile-empty">La suppression de votre propre compte admin n'est pas autorisee depuis cette page.</div>
                                             @endif
                                         </div>
                                     </aside>

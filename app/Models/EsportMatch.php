@@ -40,9 +40,9 @@ class EsportMatch extends Model
         'game_key',
         'event_type',
         'event_name',
-        'competition_name',
-        'competition_stage',
-        'competition_split',
+        'compétition_name',
+        'compétition_stage',
+        'compétition_split',
         'best_of',
         'parent_match_id',
         'team_a_name',
@@ -187,7 +187,7 @@ class EsportMatch extends Model
     public function displayTitle(): string
     {
         if ($this->isTournamentRun()) {
-            return (string) ($this->event_name ?: $this->competition_name ?: 'Tournoi Rocket League');
+            return (string) ($this->event_name ?: $this->compétition_name ?: 'Tournoi Rocket League');
         }
 
         $teamA = (string) ($this->team_a_name ?: $this->home_team ?: 'Equipe A');
@@ -200,9 +200,9 @@ class EsportMatch extends Model
     {
         if ($this->isTournamentRun()) {
             return collect([
-                $this->competition_name,
-                $this->competition_split,
-                $this->competition_stage,
+                $this->compétition_name,
+                $this->compétition_split,
+                $this->compétition_stage,
             ])->filter()->implode(' • ') ?: null;
         }
 

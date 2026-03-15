@@ -82,7 +82,7 @@ class ExpireDuelAction
                 $this->notifyAction->execute(
                     user: $challenger,
                     category: 'duel',
-                    message: 'Votre duel a expire sans reponse.',
+                    message: 'Votre duel a expire sans réponse.',
                     title: 'Duel expire',
                     data: [
                         'duel_id' => $duel->id,

@@ -50,7 +50,7 @@ class AdminMissionController extends Controller
         $activeQuizCount = Quiz::query()->where('is_active', true)->count();
         $activeLiveCodeCount = LiveCode::query()->where('status', 'published')->count();
         $activeEventCount = PlatformEvent::query()->activeWindow()->count();
-        $missionsCompletedToday = MissionCompletion::query()->whereDate('completed_at', now()->toDateString())->count();
+        $missionsCompletedToday = MissionCompletion::query()->whereDate('complèted_at', now()->toDateString())->count();
         $quizAttemptsToday = QuizAttempt::query()->whereDate('finished_at', now()->toDateString())->count();
         $liveCodeRedemptionsToday = LiveCodeRedemption::query()->whereDate('redeemed_at', now()->toDateString())->count();
         $pendingValidationCount = 0;
@@ -90,7 +90,7 @@ class AdminMissionController extends Controller
                 'active_quizzes' => $activeQuizCount,
                 'active_live_codes' => $activeLiveCodeCount,
                 'active_events' => $activeEventCount,
-                'missions_completed_today' => $missionsCompletedToday,
+                'missions_complèted_today' => $missionsCompletedToday,
                 'quiz_attempts_today' => $quizAttemptsToday,
                 'live_code_redemptions_today' => $liveCodeRedemptionsToday,
                 'pending_validation' => $pendingValidationCount,

@@ -200,7 +200,7 @@
                                             <span class="gift-order-status is-{{ $status }}">{{ $statusLabels[$status] ?? \Illuminate\Support\Str::headline($status) }}</span>
                                         </div>
                                         <p>{{ $redemption->gift->title ?? 'Cadeau' }} - {{ (int) $redemption->cost_points_snapshot }} pts.</p>
-                                        <a class="tt-btn tt-btn-outline margin-top-15" href="{{ route('gifts.redemptions.show', $redemption->id) }}"><span data-hover="Voir le detail">Voir le detail</span></a>
+                                        <a class="tt-btn tt-btn-outline margin-top-15" href="{{ route('gifts.redemptions.show', $redemption->id) }}"><span data-hover="Voir le détail">Voir le détail</span></a>
                                     </article>
                                 @empty
                                     <div class="gift-order-card"><p>Pas encore de commande cadeau.</p></div>

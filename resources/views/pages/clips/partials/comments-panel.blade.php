@@ -133,7 +133,7 @@
                                     </div>
                                     <div class="clip-reply-panel-actions">
                                         <button type="submit" class="tt-btn tt-btn-outline">
-                                            <span data-hover="Publier la reponse">Publier la reponse</span>
+                                            <span data-hover="Publier la réponse">Publier la réponse</span>
                                         </button>
                                     </div>
                                 </form>

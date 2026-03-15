@@ -492,7 +492,7 @@
                 <div class="ph-caption-inner">
                     <h2 class="ph-caption-subtitle">{{ $mode === 'console' ? 'Assistant membre' : 'Assistant ERAH' }}</h2>
                     <h1 class="ph-caption-title">Posez une question a la plateforme.</h1>
-                    <div class="ph-caption-description max-width-700">Un espace dedie pour interroger la base de connaissance ERAH, comprendre les mecanismes du produit et obtenir une reponse fiable avant d agir.</div>
+                    <div class="ph-caption-description max-width-700">Un espace dedie pour interroger la base de connaissance ERAH, comprendre les mecanismes du produit et obtenir une réponse fiable avant d agir.</div>
                 </div>
             </div>
         </div>
@@ -561,7 +561,7 @@
                             @endif
 
                             <div class="erah-assistant-panel">
-                                <div class="erah-assistant-overline">Questions suggerees</div>
+                                <div class="erah-assistant-overline">Questions suggérées</div>
                                 <div class="erah-assistant-suggestion">
                                     @foreach ($page['assistant']['suggested_prompts'] ?? [] as $prompt)
                                         <button type="button" data-help-prompt="{{ $prompt }}">{{ $prompt }}</button>
@@ -581,7 +581,7 @@
                                             <h3 class="tt-heading-title">Expliquez clairement ce que vous voulez comprendre.</h3>
                                         </div>
                                         <p class="erah-assistant-form-lead">
-                                            Demandez une explication sur les points, les missions, les matchs, les paris, le profil, les cadeaux ou la navigation. Plus votre question est concrete, plus la reponse sera utile.
+                                            Demandez une explication sur les points, les missions, les matchs, les paris, le profil, les cadeaux ou la navigation. Plus votre question est concrete, plus la réponse sera utile.
                                         </p>
                                     </div>
 
@@ -622,13 +622,13 @@
                                 <span class="erah-assistant-dot"></span>
                                 <span class="erah-assistant-dot"></span>
                                 <span class="erah-assistant-dot"></span>
-                                <span>Recherche d une reponse fiable...</span>
+                                <span>Recherche d'une réponse fiable...</span>
                             </div>
                             <div class="erah-assistant-messages margin-top-25" id="erah-assistant-messages">
                                 <div class="erah-assistant-message">
                                     <div class="erah-assistant-message-head"><span>Assistant ERAH</span><span>Base de connaissance</span></div>
                                     <p>Bonjour. Je peux vous aider sur les matchs, paris, points, missions, clips, profil, cadeaux, notifications, duels et navigation sur la plateforme.</p>
-                                    <p class="margin-top-15">Posez une question simple ou utilisez une suggestion. Si vous etes connecte, je peux aussi contextualiser ma reponse avec vos donnees visibles.</p>
+                                    <p class="margin-top-15">Posez une question simple ou utilisez une suggestion. Si vous etes connecte, je peux aussi contextualiser ma réponse avec vos donnees visibles.</p>
                                 </div>
                             </div>
                         </div>
@@ -715,7 +715,7 @@
                     return '<div class="erah-assistant-response-actions"><button type="button" class="erah-assistant-favorite-btn" data-favorite-answer><span class="erah-assistant-favorite-icon" data-favorite-icon aria-hidden="true">☆</span><span data-favorite-label>Ajouter aux favoris</span></button><a href="' + favoriteProfileUrl + '" class="erah-assistant-favorite-link" data-favorite-profile hidden>Voir dans mon profil</a></div>';
                 }
 
-                return '<div class="erah-assistant-response-actions"><a href="' + loginUrl + '" class="erah-assistant-favorite-link">Connectez-vous pour enregistrer cette reponse</a></div>';
+                return '<div class="erah-assistant-response-actions"><a href="' + loginUrl + '" class="erah-assistant-favorite-link">Connectez-vous pour enregistrer cette réponse</a></div>';
             };
 
             var setFavoriteButtonState = function (button, state) {
@@ -773,7 +773,7 @@
                         body: JSON.stringify({
                             question: question,
                             answer: data.answer || '',
-                            details: Array.isArray(data.details) ? data.details : [],
+                            détails: Array.isArray(data.détails) ? data.détails : [],
                             sources: Array.isArray(data.sources) ? data.sources : [],
                             next_steps: Array.isArray(data.next_steps) ? data.next_steps : [],
                         }),
@@ -786,7 +786,7 @@
                             return response.json()
                                 .catch(function () { return {}; })
                                 .then(function (payload) {
-                                    throw new Error(payload.message || 'Impossible d enregistrer cette reponse dans vos favoris.');
+                                    throw new Error(payload.message || 'Impossible d enregistrer cette réponse dans vos favoris.');
                                 });
                         })
                         .then(function () {
@@ -798,7 +798,7 @@
                         })
                         .catch(function (error) {
                             setFavoriteButtonState(button, 'default');
-                            alert(error.message || 'Impossible d enregistrer cette reponse dans vos favoris.');
+                            alert(error.message || 'Impossible d enregistrer cette réponse dans vos favoris.');
                         });
                 });
             };
@@ -850,7 +850,7 @@
 
                         extra += buildFavoriteAction();
 
-                        var assistantMessage = appendMessage('assistant', 'Assistant ERAH', '<p>' + escapeHtml(data.answer || 'Aucune reponse disponible pour le moment.') + '</p>', extra);
+                        var assistantMessage = appendMessage('assistant', 'Assistant ERAH', '<p>' + escapeHtml(data.answer || 'Aucune réponse disponible pour le moment.') + '</p>', extra);
                         bindFavoriteButton(assistantMessage, question, data);
                     })
                     .catch(function () {

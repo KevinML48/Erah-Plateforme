@@ -156,7 +156,7 @@ class PlatformPointService
     /**
      * @param array<string, mixed> $meta
      */
-    public function debit(
+    public function débit(
         User $user,
         int $amount,
         string $type,

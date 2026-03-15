@@ -30,7 +30,7 @@ return new class extends Migration
             $table->foreignId('shop_item_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedInteger('cost_points');
-            $table->string('status', 20)->default('completed');
+            $table->string('status', 20)->default('complèted');
             $table->json('payload')->nullable();
             $table->timestamp('purchased_at')->nullable();
             $table->timestamps();

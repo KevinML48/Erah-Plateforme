@@ -170,7 +170,7 @@
                                                 <span class="adm-pill">Validation admin</span>
                                             @endif
                                         </div>
-                                        <details class="adm-advanced">
+                                        <détails class="adm-advanced">
                                             <summary>Modifier ce cadeau</summary>
                                             <div class="adm-advanced-body">
                                                 <form method="POST" action="{{ route('admin.gifts.update', $gift->id) }}" enctype="multipart/form-data" class="tt-form tt-form-creative adm-form">
@@ -197,7 +197,7 @@
                                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Supprimer">Supprimer</span></button>
                                                 </form>
                                             </div>
-                                        </details>
+                                        </détails>
                                     </article>
                                 @endforeach
                             </div>
@@ -291,7 +291,7 @@
 
                         <div class="adm-sub-stack margin-bottom-20">
                             <h3 class="adm-surface-title">Commandes en cours a traiter</h3>
-                            <p class="adm-meta margin-bottom-10">Pending, approuvees et expediees avec acces detail + fiche utilisateur.</p>
+                            <p class="adm-meta margin-bottom-10">Pending, approuvees et expediees avec acces détail + fiche utilisateur.</p>
                             @if(($inProgressRedemptions ?? collect())->count())
                                 <div class="adm-table-wrap">
                                     <table class="adm-table">

@@ -237,7 +237,7 @@ class PlatformPreviewSeeder extends Seeder
             'email' => 'nolan.spark@erah.local',
             'role' => User::ROLE_USER,
             'password' => self::DEMO_PASSWORD,
-            'bio' => 'Nouveau membre en decouverte de la plateforme.',
+            'bio' => 'Nouveau membre en découverte de la plateforme.',
             'avatar_path' => 'https://picsum.photos/seed/erah-member-new/240/240',
             'created_at' => $this->now->subDays(7),
         ]);
@@ -329,7 +329,7 @@ class PlatformPreviewSeeder extends Seeder
                     ],
                     [
                         'role' => AssistantMessage::ROLE_ASSISTANT,
-                        'content' => 'Priorise 1 mission quotidienne rapide + 1 mission hebdo a forte valeur + 1 mission decouverte que tu peux valider en session courte.',
+                        'content' => 'Priorise 1 mission quotidienne rapide + 1 mission hebdo a forte valeur + 1 mission découverte que tu peux valider en session courte.',
                         'tokens' => 94,
                         'minutes_ago' => 418,
                     ],
@@ -347,7 +347,7 @@ class PlatformPreviewSeeder extends Seeder
                     ],
                     [
                         'role' => AssistantMessage::ROLE_ASSISTANT,
-                        'content' => 'Depuis Mes commandes cadeaux, ouvre le detail de la demande: le bloc expedition affiche transporteur, tracking et lien si disponible.',
+                        'content' => 'Depuis Mes commandes cadeaux, ouvre le détail de la demande: le bloc expedition affiche transporteur, tracking et lien si disponible.',
                         'tokens' => 78,
                         'minutes_ago' => 278,
                     ],
@@ -365,7 +365,7 @@ class PlatformPreviewSeeder extends Seeder
                     ],
                     [
                         'role' => AssistantMessage::ROLE_ASSISTANT,
-                        'content' => 'Commence par 2 missions decouverte, puis consulte matchs/paris et termine par 1 clip ou 1 duel pour activer plusieurs modules en une session.',
+                        'content' => 'Commence par 2 missions découverte, puis consulte matchs/paris et termine par 1 clip ou 1 duel pour activer plusieurs modules en une session.',
                         'tokens' => 81,
                         'minutes_ago' => 108,
                     ],
@@ -454,15 +454,15 @@ class PlatformPreviewSeeder extends Seeder
                 'alias' => 'member_active',
                 'question' => 'Quelle routine me conseilles-tu pour convertir mes points en cadeaux ?',
                 'answer' => 'Combine missions rapides + un pari raisonnable + verification du stock cadeaux avant checkout pour eviter les ruptures.',
-                'details' => ['module' => 'gifts', 'priority' => 'high'],
+                'détails' => ['module' => 'gifts', 'priority' => 'high'],
                 'sources' => ['missions', 'gifts', 'wallet'],
                 'next_steps' => ['Ouvrir Missions', 'Verifier mon solde points', 'Consulter Mes commandes cadeaux'],
             ],
             [
                 'alias' => 'member_medium',
                 'question' => 'Comment suivre simplement toutes mes commandes cadeaux ?',
-                'answer' => 'Passe par Mes commandes cadeaux: tu as le statut, la timeline et les infos transport sur chaque detail de demande.',
-                'details' => ['module' => 'gift_redemptions', 'priority' => 'medium'],
+                'answer' => 'Passe par Mes commandes cadeaux: tu as le statut, la timeline et les infos transport sur chaque détail de demande.',
+                'détails' => ['module' => 'gift_redemptions', 'priority' => 'medium'],
                 'sources' => ['gift_redemptions', 'gift_redemption_events'],
                 'next_steps' => ['Filtrer sur shipped', 'Ouvrir la commande la plus recente'],
             ],
@@ -470,7 +470,7 @@ class PlatformPreviewSeeder extends Seeder
                 'alias' => 'supporter_alpha',
                 'question' => 'Comment profiter au mieux de mes avantages supporter ?',
                 'answer' => 'Utilise les missions reservees supporters puis active les reactions supporter sur clips pour maximiser progression et visibilite.',
-                'details' => ['module' => 'supporter', 'priority' => 'high'],
+                'détails' => ['module' => 'supporter', 'priority' => 'high'],
                 'sources' => ['supporter_plans', 'missions', 'clips'],
                 'next_steps' => ['Verifier statut supporter', 'Completer mission supporter active'],
             ],
@@ -495,7 +495,7 @@ class PlatformPreviewSeeder extends Seeder
                 [
                     'question' => $question,
                     'answer' => (string) ($favorite['answer'] ?? ''),
-                    'details' => (array) ($favorite['details'] ?? []),
+                    'détails' => (array) ($favorite['détails'] ?? []),
                     'sources' => (array) ($favorite['sources'] ?? []),
                     'next_steps' => (array) ($favorite['next_steps'] ?? []),
                 ],
@@ -509,7 +509,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => true,
                 'started_at' => $this->now->subDays(20),
                 'last_seen_at' => $this->now->subDays(2),
-                'completed_at' => $this->now->subDays(2),
+                'complèted_at' => $this->now->subDays(2),
             ],
             'member_medium' => [
                 'status' => UserGuidedTour::STATUS_IN_PROGRESS,
@@ -517,7 +517,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => true,
                 'started_at' => $this->now->subDays(6),
                 'last_seen_at' => $this->now->subDays(1),
-                'completed_at' => null,
+                'complèted_at' => null,
             ],
             'member_new' => [
                 'status' => UserGuidedTour::STATUS_IN_PROGRESS,
@@ -525,7 +525,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_paused' => false,
                 'started_at' => $this->now->subDays(1),
                 'last_seen_at' => $this->now->subHours(4),
-                'completed_at' => null,
+                'complèted_at' => null,
             ],
         ];
 
@@ -872,7 +872,7 @@ class PlatformPreviewSeeder extends Seeder
 
             if ($inProgress) {
                 $inProgress->progress_count = min(1, (int) ($inProgress->instance?->template?->target_count ?? 1));
-                $inProgress->completed_at = null;
+                $inProgress->complèted_at = null;
                 $inProgress->rewarded_at = null;
                 $inProgress->claimed_at = null;
                 $inProgress->save();
@@ -881,22 +881,22 @@ class PlatformPreviewSeeder extends Seeder
 
         $activeUser = $this->users['member_active'] ?? null;
         if ($activeUser) {
-            $completed = UserMission::query()
+            $complèted = UserMission::query()
                 ->where('user_id', $activeUser->id)
                 ->whereHas('instance.template', fn ($query) => $query->where('key', 'launch.first-duel'))
                 ->latest('id')
                 ->first();
 
-            if ($completed) {
-                $completed->progress_count = max(1, (int) ($completed->instance?->template?->target_count ?? 1));
-                $completed->completed_at = $completed->completed_at ?: $this->now->subHours(6);
-                $completed->rewarded_at = $completed->rewarded_at ?: $completed->completed_at;
-                $completed->claimed_at = $completed->claimed_at ?: $completed->completed_at;
-                $completed->save();
+            if ($complèted) {
+                $complèted->progress_count = max(1, (int) ($complèted->instance?->template?->target_count ?? 1));
+                $complèted->complèted_at = $complèted->complèted_at ?: $this->now->subHours(6);
+                $complèted->rewarded_at = $complèted->rewarded_at ?: $complèted->complèted_at;
+                $complèted->claimed_at = $complèted->claimed_at ?: $complèted->complèted_at;
+                $complèted->save();
 
                 MissionCompletion::query()->updateOrCreate(
-                    ['user_id' => $activeUser->id, 'user_mission_id' => $completed->id],
-                    ['completed_at' => $completed->completed_at, 'created_at' => $completed->completed_at],
+                    ['user_id' => $activeUser->id, 'user_mission_id' => $complèted->id],
+                    ['complèted_at' => $complèted->complèted_at, 'created_at' => $complèted->complèted_at],
                 );
             }
         }
@@ -1345,7 +1345,7 @@ class PlatformPreviewSeeder extends Seeder
                 ],
             );
 
-            $platformPoints->debit(
+            $platformPoints->débit(
                 user: $user,
                 amount: (int) $gift->cost_points,
                 type: RewardWalletTransaction::TYPE_GIFT_PURCHASE,
@@ -1535,9 +1535,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'valorant',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Open League',
-            'competition_stage' => 'Regular Season',
-            'competition_split' => 'Week 7',
+            'compétition_name' => 'Preview Open League',
+            'compétition_stage' => 'Regular Season',
+            'compétition_split' => 'Week 7',
             'best_of' => 3,
             'parent_match_id' => null,
             'team_a_name' => 'ERAH Titans',
@@ -1563,9 +1563,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'cs2',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Live Cup',
-            'competition_stage' => 'Quarterfinal',
-            'competition_split' => 'Day 2',
+            'compétition_name' => 'Preview Live Cup',
+            'compétition_stage' => 'Quarterfinal',
+            'compétition_split' => 'Day 2',
             'best_of' => 3,
             'parent_match_id' => null,
             'team_a_name' => 'North Prime',
@@ -1591,9 +1591,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'lol',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Waiting Settlement',
-            'competition_stage' => 'Semifinal',
-            'competition_split' => 'Week 8',
+            'compétition_name' => 'Preview Waiting Settlement',
+            'compétition_stage' => 'Semifinal',
+            'compétition_split' => 'Week 8',
             'best_of' => 3,
             'parent_match_id' => null,
             'team_a_name' => 'Crimson Arc',
@@ -1619,9 +1619,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'valorant',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Settled Home',
-            'competition_stage' => 'Final',
-            'competition_split' => 'Week 6',
+            'compétition_name' => 'Preview Settled Home',
+            'compétition_stage' => 'Final',
+            'compétition_split' => 'Week 6',
             'best_of' => 5,
             'parent_match_id' => null,
             'team_a_name' => 'Pulse Squad',
@@ -1647,9 +1647,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'rocket_league',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Settled Void',
-            'competition_stage' => 'Swiss',
-            'competition_split' => 'Week 5',
+            'compétition_name' => 'Preview Settled Void',
+            'compétition_stage' => 'Swiss',
+            'compétition_split' => 'Week 5',
             'best_of' => 5,
             'parent_match_id' => null,
             'team_a_name' => 'Astra RL',
@@ -1675,9 +1675,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => 'valorant',
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => null,
-            'competition_name' => 'Preview Overdue Match',
-            'competition_stage' => 'Group Stage',
-            'competition_split' => 'Week 9',
+            'compétition_name' => 'Preview Overdue Match',
+            'compétition_stage' => 'Group Stage',
+            'compétition_split' => 'Week 9',
             'best_of' => 1,
             'parent_match_id' => null,
             'team_a_name' => 'Legacy Core',
@@ -1703,9 +1703,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
             'event_type' => EsportMatch::EVENT_TYPE_TOURNAMENT_RUN,
             'event_name' => 'Preview RLCS Run',
-            'competition_name' => 'RLCS Preview',
-            'competition_stage' => 'Open Qualifier',
-            'competition_split' => 'Spring',
+            'compétition_name' => 'RLCS Preview',
+            'compétition_stage' => 'Open Qualifier',
+            'compétition_split' => 'Spring',
             'best_of' => null,
             'parent_match_id' => null,
             'team_a_name' => null,
@@ -1731,9 +1731,9 @@ class PlatformPreviewSeeder extends Seeder
             'game_key' => EsportMatch::GAME_ROCKET_LEAGUE,
             'event_type' => EsportMatch::EVENT_TYPE_HEAD_TO_HEAD,
             'event_name' => $tournamentRun->event_name,
-            'competition_name' => $tournamentRun->competition_name,
-            'competition_stage' => 'Round 1',
-            'competition_split' => $tournamentRun->competition_split,
+            'compétition_name' => $tournamentRun->compétition_name,
+            'compétition_stage' => 'Round 1',
+            'compétition_split' => $tournamentRun->compétition_split,
             'best_of' => 5,
             'parent_match_id' => $tournamentRun->id,
             'team_a_name' => 'ERAH RL',
@@ -2025,7 +2025,7 @@ class PlatformPreviewSeeder extends Seeder
                 'ends_at' => null,
                 'questions' => [
                     [
-                        'prompt' => 'Quel module affiche le suivi detaille des cadeaux ?',
+                        'prompt' => 'Quel module affiche le suivi détaillé des cadeaux ?',
                         'type' => QuizQuestion::TYPE_SINGLE_CHOICE,
                         'points' => 1,
                         'answers' => [
@@ -2334,9 +2334,9 @@ class PlatformPreviewSeeder extends Seeder
 
         $manualGallery = [
             ['key' => 'preview-gallery-1', 'title' => 'Preview LAN Stage', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-1/1400/900', 'filter_key' => 'evenements'],
-            ['key' => 'preview-gallery-2', 'title' => 'Preview Team Warmup', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-2/1400/900', 'filter_key' => 'competitions'],
+            ['key' => 'preview-gallery-2', 'title' => 'Preview Team Warmup', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-2/1400/900', 'filter_key' => 'compétitions'],
             ['key' => 'preview-gallery-3', 'title' => 'Preview Studio Clip', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-3/1400/900', 'filter_key' => 'valorant'],
-            ['key' => 'preview-gallery-4', 'title' => 'Preview Rocket League Day', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-4/1400/900', 'filter_key' => 'competitions'],
+            ['key' => 'preview-gallery-4', 'title' => 'Preview Rocket League Day', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-4/1400/900', 'filter_key' => 'compétitions'],
             ['key' => 'preview-gallery-5', 'title' => 'Preview Community Meet', 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE, 'image_path' => 'https://picsum.photos/seed/preview-gallery-5/1400/900', 'filter_key' => 'evenements'],
             ['key' => 'preview-gallery-6', 'title' => 'Preview Story Reel', 'media_type' => GalleryPhoto::MEDIA_TYPE_VIDEO, 'video_path' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4', 'filter_key' => 'evenements'],
         ];
@@ -2450,7 +2450,7 @@ class PlatformPreviewSeeder extends Seeder
                 'is_active' => false,
                 'starts_at' => $this->now->subDays(20),
                 'ends_at' => $this->now->subDays(8),
-                'config' => ['result' => 'completed'],
+                'config' => ['result' => 'complèted'],
             ],
         ];
 
@@ -2711,7 +2711,7 @@ class PlatformPreviewSeeder extends Seeder
 
         foreach ($purchases as $purchase) {
             $this->upsertAuditLog(
-                action: 'shop.purchase.completed',
+                action: 'shop.purchase.complèted',
                 actor: $purchase->user,
                 target: $purchase,
                 createdAt: CarbonImmutable::instance($purchase->purchased_at ?: $purchase->created_at ?: now()),

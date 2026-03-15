@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Detail Contact | ERAH Plateforme')
-@section('meta_description', 'Detail et traitement d une demande de contact ERAH.')
+@section('meta_description', 'Detail et traitement d'une demande de contact ERAH.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -59,7 +59,7 @@
         'heroSubtitle' => 'ERAH Contact Ops',
         'heroTitle' => 'Message #'.$contactMessage->id,
         'heroDescription' => 'Demande recue le '.(optional($contactMessage->created_at)->format('d/m/Y H:i') ?: '-').' par '.$contactMessage->name.'.',
-        'heroMaskDescription' => 'Analyse detaillee du message, statut et donnees techniques utiles.',
+        'heroMaskDescription' => 'Analyse détaillée du message, statut et donnees techniques utiles.',
     ])
 
     <div id="tt-page-content">

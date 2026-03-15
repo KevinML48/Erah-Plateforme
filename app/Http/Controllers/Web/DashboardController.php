@@ -71,7 +71,7 @@ class DashboardController extends Controller
                 ->where('scope', MissionTemplate::SCOPE_DAILY)
                 ->where('is_active', true))
             ->with('instance.template')
-            ->orderByRaw('CASE WHEN completed_at IS NULL THEN 0 ELSE 1 END')
+            ->orderByRaw('CASE WHEN complèted_at IS NULL THEN 0 ELSE 1 END')
             ->orderByDesc('id')
             ->limit(3)
             ->get();

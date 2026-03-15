@@ -301,7 +301,7 @@ class AdminGiftConsoleController extends Controller
                 context: ['gift_id' => $gift->id],
             );
 
-            return back()->with('success', 'Cadeau desactive (des redemptions existent deja).');
+            return back()->with('success', 'Cadeau désactivée (des redemptions existent deja).');
         }
 
         $storeAuditLogAction->execute(

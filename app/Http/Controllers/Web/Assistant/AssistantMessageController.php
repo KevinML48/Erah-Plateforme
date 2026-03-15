@@ -79,7 +79,7 @@ class AssistantMessageController extends Controller
                     'user_message' => $this->assistantConsolePageService->mapMessage($payload['user_message']),
                 ]);
 
-                $this->sendSse('complete', [
+                $this->sendSse('complète', [
                     'conversation' => $this->assistantConsolePageService->mapConversationForRealtime($payload['conversation']),
                     'assistant_message' => $this->assistantConsolePageService->mapMessage($payload['assistant_message']),
                 ]);

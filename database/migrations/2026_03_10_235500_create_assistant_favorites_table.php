@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('fingerprint', 64);
             $table->string('question', 500);
             $table->text('answer');
-            $table->json('details')->nullable();
+            $table->json('détails')->nullable();
             $table->json('sources')->nullable();
             $table->json('next_steps')->nullable();
             $table->timestamps();

@@ -49,7 +49,7 @@ class AdminContactMessageController extends Controller
             'stats' => [
                 'total' => (clone $baseQuery)->count(),
                 'new' => (clone $baseQuery)->where('status', ContactMessage::STATUS_NEW)->count(),
-                'processed' => (clone $baseQuery)->where('status', ContactMessage::STATUS_PROCESSED)->count(),
+                'processused' => (clone $baseQuery)->where('status', ContactMessage::STATUS_PROCESSED)->count(),
                 'archived' => (clone $baseQuery)->where('status', ContactMessage::STATUS_ARCHIVED)->count(),
             ],
         ]);

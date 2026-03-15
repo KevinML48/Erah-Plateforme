@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Detail utilisateur admin | ERAH')
-@section('meta_description', 'Detail operationnel d un utilisateur pour moderation et suivi fulfilment.')
+@section('meta_description', 'Detail operationnel d'un utilisateur pour moderation et suivi fulfilment.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -22,7 +22,7 @@
     @include('pages.admin.partials.hero', [
         'heroSubtitle' => 'Administration ERAH',
         'heroTitle' => 'Detail utilisateur admin',
-        'heroDescription' => ($userProfile?->name ?? 'Utilisateur').' - investigation complete du compte.',
+        'heroDescription' => ($userProfile?->name ?? 'Utilisateur').' - investigation complète du compte.',
         'heroMaskDescription' => 'Detail compte, commandes, paris et activite.',
     ])
 

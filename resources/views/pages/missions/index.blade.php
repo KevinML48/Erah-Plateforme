@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Missions | ERAH Plateforme')
-@section('meta_description', 'Missions ERAH, progression utilisateur, missions decouverte et missions en focus.')
+@section('meta_description', 'Missions ERAH, progression utilisateur, missions découverte et missions en focus.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -150,7 +150,7 @@
             text-transform: uppercase;
         }
 
-        .mission-status.is-completed {
+        .mission-status.is-complèted {
             border-color: rgba(92, 213, 144, .44);
             color: #d4ffe4;
         }
@@ -318,7 +318,7 @@
             color: #0f172a;
         }
 
-        body.tt-lightmode-on .mission-status.is-completed {
+        body.tt-lightmode-on .mission-status.is-complèted {
             border-color: rgba(34, 197, 94, .26);
             background: rgba(220, 252, 231, .9);
             color: #166534;
@@ -423,7 +423,7 @@
                     <h2 class="ph-caption-subtitle">ERAH Progression Hub</h2>
                     <h1 class="ph-caption-title">Missions</h1>
                     <div class="ph-caption-description max-width-900">
-                        XP pour progresser, points pour agir partout, missions decouverte pour guider vos prochaines etapes.
+                        XP pour progresser, points pour agir partout, missions découverte pour guider vos prochaines etapes.
                     </div>
                 </div>
             </div>
@@ -462,7 +462,7 @@
                         <article class="mission-surface mission-summary-card">
                             <span class="mission-summary-kicker">Actives</span>
                             <span class="mission-summary-value">{{ (int) ($missionSummary['total_active'] ?? 0) }}</span>
-                            <p class="mission-summary-note">{{ (int) ($missionSummary['completed'] ?? 0) }} terminees, {{ (int) ($missionSummary['pending'] ?? 0) }} encore ouvertes.</p>
+                            <p class="mission-summary-note">{{ (int) ($missionSummary['complèted'] ?? 0) }} terminees, {{ (int) ($missionSummary['pending'] ?? 0) }} encore ouvertes.</p>
                         </article>
                         <article class="mission-surface mission-summary-card">
                             <span class="mission-summary-kicker">Points</span>
@@ -474,7 +474,7 @@
                     <section class="mission-surface">
                         <div class="mission-section-head">
                             <div>
-                                <span class="mission-card-kicker">Missions decouverte</span>
+                                <span class="mission-card-kicker">Missions découverte</span>
                                 <h2 class="mission-section-title">Commencer par les bases utiles.</h2>
                                 <p class="mission-section-note">
                                     Ces missions remontent en tete pour aider les nouveaux membres a comprendre la plateforme avant de pousser le volume.
@@ -497,7 +497,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="mission-empty">Aucune mission decouverte active pour le moment.</div>
+                            <div class="mission-empty">Aucune mission découverte active pour le moment.</div>
                         @endif
                     </section>
 
@@ -519,7 +519,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="mission-empty">Aucune mission en focus pour le moment. Depuis la liste complete, ajoutez vos priorites.</div>
+                            <div class="mission-empty">Aucune mission en focus pour le moment. Depuis la liste complète, ajoutez vos priorites.</div>
                         @endif
                     </section>
 

@@ -527,7 +527,7 @@
                         <h2 class="ph-caption-subtitle">ERAH Bet Center</h2>
                         <h1 class="ph-caption-title">Paris</h1>
                         <div class="ph-caption-description max-width-900">
-                            Suivi complet des mises, du potentiel de gain, des remboursements et du resultat final de chaque pari.
+                            Suivi complet des mises, du potentiel de gain, des remboursements et du résultat final de chaque pari.
                         </div>
                     </div>
                 </div>
@@ -663,8 +663,8 @@
                                             Choix: {{ $selectionLabel }}
                                             @if($bet->match?->displaySubtitle())
                                                 - {{ $bet->match->displaySubtitle() }}
-                                            @elseif($bet->match?->competition_name)
-                                                - {{ $bet->match->competition_name }}
+                                            @elseif($bet->match?->compétition_name)
+                                                - {{ $bet->match->compétition_name }}
                                             @endif
                                         </p>
                                     </div>
@@ -699,7 +699,7 @@
                                     <article class="bet-meta-card">
                                         <span>Resultat match</span>
                                         <strong>{{ $matchResult }}</strong>
-                                        <small>{{ $bet->match?->settled_at?->format('d/m/Y H:i') ? 'Regle le '.$bet->match->settled_at->format('d/m/Y H:i') : 'Toujours en attente de reglement.' }}</small>
+                                        <small>{{ $bet->match?->settled_at?->format('d/m/Y H:i') ? 'Regle le '.$bet->match->settled_at->format('d/m/Y H:i') : 'Toujours en attente de règlement.' }}</small>
                                     </article>
                                 </div>
 
@@ -768,10 +768,10 @@
                     </article>
                     <article class="bet-learning-card tt-anim-fadeinup">
                         <h3>Suivre la mise</h3>
-                        <p>Les paris en cours restent ici jusqu au reglement. Vous gardez un acces direct au match et au potentiel de gain.</p>
+                        <p>Les paris en cours restent ici jusqu au règlement. Vous gardez un acces direct au match et au potentiel de gain.</p>
                     </article>
                     <article class="bet-learning-card tt-anim-fadeinup">
-                        <h3>Comprendre le resultat</h3>
+                        <h3>Comprendre le résultat</h3>
                         <p>Un pari gagne credite vos points, un void rembourse la mise, un pari perdu ferme simplement la ligne sans gain.</p>
                     </article>
                 </section>

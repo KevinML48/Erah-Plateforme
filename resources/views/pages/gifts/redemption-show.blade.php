@@ -6,7 +6,7 @@
 
 @section('page_styles')
 <style>
-    .gift-order-detail-page {
+    .gift-order-détail-page {
         --gift-order-border: rgba(255, 255, 255, 0.12);
         --gift-order-muted: rgba(255, 255, 255, 0.72);
     }
@@ -140,7 +140,7 @@
         font-size: 13px;
     }
 
-    .gift-order-step.is-completed .gift-order-step-dot { background: #66c450; }
+    .gift-order-step.is-complèted .gift-order-step-dot { background: #66c450; }
     .gift-order-step.is-current .gift-order-step-dot { background: #ea5252; box-shadow: 0 0 0 4px rgba(234, 82, 82, 0.2); }
     .gift-order-step.is-skipped .gift-order-step-dot { background: rgba(255, 255, 255, 0.16); }
 
@@ -182,7 +182,7 @@
         line-height: 1.65;
     }
 
-    body.tt-lightmode-on .gift-order-detail-page {
+    body.tt-lightmode-on .gift-order-détail-page {
         --gift-order-border: rgba(148, 163, 184, 0.24);
         --gift-order-muted: rgba(51, 65, 85, 0.78);
     }
@@ -223,7 +223,7 @@
 @endsection
 
 @section('content')
-    <div class="gift-order-detail-page">
+    <div class="gift-order-détail-page">
         <div id="page-header" class="ph-full ph-center ph-cap-xxlg ph-caption-parallax">
             <div class="page-header-inner tt-wrap">
                 <div class="ph-caption">
@@ -341,7 +341,7 @@
                             </div>
 
                             <div class="gift-order-info margin-top-20">
-                                <p>Besoin d une autre commande? Retournez au catalogue cadeaux pour lancer une nouvelle demande.</p>
+                                <p>Besoin d'une autre commande? Retournez au catalogue cadeaux pour lancer une nouvelle demande.</p>
                             </div>
 
                             <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-secondary margin-top-20">

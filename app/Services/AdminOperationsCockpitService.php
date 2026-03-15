@@ -281,7 +281,7 @@ class AdminOperationsCockpitService
             ->get([
                 'id',
                 'event_name',
-                'competition_name',
+                'compétition_name',
                 'team_a_name',
                 'team_b_name',
                 'starts_at',
@@ -496,7 +496,7 @@ class AdminOperationsCockpitService
                 'code' => 'bets_not_settled',
                 'severity' => 'critical',
                 'title' => 'Paris non settles',
-                'description' => 'Paris en attente alors qu un resultat existe deja.',
+                'description' => 'Paris en attente alors qu un résultat existe deja.',
                 'count' => (int) $betsResultKnownNotSettled,
                 'url' => route('admin.dashboard', ['feed_module' => 'bets']).'#admin-feed',
             ],
@@ -667,7 +667,7 @@ class AdminOperationsCockpitService
             'target_label' => $target['label'],
             'target_url' => $target['url'],
             'summary' => $summary,
-            'detail_url' => $target['url'] ?? route('admin.dashboard', ['feed_type' => $actionMeta['type_key']]),
+            'détail_url' => $target['url'] ?? route('admin.dashboard', ['feed_type' => $actionMeta['type_key']]),
             'primary_action' => $this->resolvePrimaryAction(
                 typeKey: (string) $actionMeta['type_key'],
                 targetType: (string) ($log->target_type ?? ''),
@@ -774,7 +774,7 @@ class AdminOperationsCockpitService
             'target_label' => $targetLabel,
             'target_url' => $targetUrl,
             'summary' => (string) $activityMeta['label'].' - '.$targetLabel,
-            'detail_url' => $targetUrl ?: route('admin.dashboard', ['feed_source' => 'activity']),
+            'détail_url' => $targetUrl ?: route('admin.dashboard', ['feed_source' => 'activity']),
             'primary_action' => null,
         ];
     }
@@ -786,10 +786,10 @@ class AdminOperationsCockpitService
     private function auditActionMeta(string $action, array $context): ?array
     {
         return match (true) {
-            $action === 'shop.purchase.completed' => [
+            $action === 'shop.purchase.complèted' => [
                 'module_key' => 'shop',
                 'module_label' => 'Shop',
-                'type_key' => 'shop.purchase.completed',
+                'type_key' => 'shop.purchase.complèted',
                 'label' => 'Achat shop',
             ],
             $action === 'gift.redeem' => [
@@ -832,7 +832,7 @@ class AdminOperationsCockpitService
                 'module_key' => 'wallet',
                 'module_label' => 'Wallet',
                 'type_key' => $action,
-                'label' => 'Credit/debit points',
+                'label' => 'Credit/débit points',
             ],
             $action === 'reward_wallet.grant' => [
                 'module_key' => 'wallet',
@@ -903,10 +903,10 @@ class AdminOperationsCockpitService
                 'type_key' => 'missions.repair.run',
                 'label' => 'Maintenance missions',
             ],
-            $action === 'missions.progress.recorded' && ! empty($context['missions_completed']) => [
+            $action === 'missions.progress.recorded' && ! empty($context['missions_complèted']) => [
                 'module_key' => 'missions',
                 'module_label' => 'Missions',
-                'type_key' => 'missions.progress.completed',
+                'type_key' => 'missions.progress.complèted',
                 'label' => 'Mission validee',
             ],
             $action === 'live-codes.redeemed' => [
@@ -1177,7 +1177,7 @@ class AdminOperationsCockpitService
             'gift.redeem.reject' => 'Cadeau rejete',
             'gift.redeem.ship' => 'Cadeau expedie',
             'gift.redeem.deliver' => 'Cadeau livre',
-            'shop.purchase.completed' => 'Achat shop',
+            'shop.purchase.complèted' => 'Achat shop',
             'bets.placed' => 'Pari place',
             'matches.settled' => 'Settlement match',
             'duels.created' => 'Duel cree',
@@ -1228,7 +1228,7 @@ class AdminOperationsCockpitService
             ],
             [
                 'title' => 'Matchs',
-                'description' => 'Suivi live, resultats et settlement.',
+                'description' => 'Suivi live, résultats et settlement.',
                 'route' => route('admin.matches.index'),
                 'action' => 'Ouvrir matchs',
                 'count' => (int) ($pending['counts']['matches_to_settle'] ?? 0),
@@ -1408,13 +1408,13 @@ class AdminOperationsCockpitService
                 }
 
                 $builder->orWhere('event_name', 'like', $like)
-                    ->orWhere('competition_name', 'like', $like)
+                    ->orWhere('compétition_name', 'like', $like)
                     ->orWhere('team_a_name', 'like', $like)
                     ->orWhere('team_b_name', 'like', $like);
             })
             ->orderByDesc('starts_at')
             ->limit(6)
-            ->get(['id', 'event_name', 'competition_name', 'team_a_name', 'team_b_name', 'status', 'starts_at']);
+            ->get(['id', 'event_name', 'compétition_name', 'team_a_name', 'team_b_name', 'status', 'starts_at']);
 
         if ($matches->isNotEmpty()) {
             $groups[] = [

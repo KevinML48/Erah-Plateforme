@@ -46,7 +46,7 @@ class MissionFocusService
             $this->pruneUnavailable($user);
 
             if (! $this->isAvailableForUser($user, $template)) {
-                throw new RuntimeException('Cette mission n est pas disponible en focus pour le moment.');
+                throw new RuntimeException('Cette mission n'est pas disponible en focus pour le moment.');
             }
 
             $current = UserMissionFocus::query()

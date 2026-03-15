@@ -123,7 +123,7 @@ class PlatformGuidedTourService
                 'current_step_index' => 0,
                 'current_step_title' => null,
                 'is_paused' => false,
-                'is_completed' => false,
+                'is_complèted' => false,
                 'current_step_url' => route('console.help'),
             ];
         }
@@ -142,7 +142,7 @@ class PlatformGuidedTourService
                 'current_step_index' => 0,
                 'current_step_title' => null,
                 'is_paused' => false,
-                'is_completed' => false,
+                'is_complèted' => false,
                 'current_step_url' => $steps[0]['route'] ?? route('console.help'),
             ];
         }
@@ -168,7 +168,7 @@ class PlatformGuidedTourService
             'current_step_index' => $currentIndex,
             'current_step_title' => $currentStep['title'] ?? null,
             'is_paused' => (bool) $progress->is_paused,
-            'is_completed' => $isCompleted,
+            'is_complèted' => $isCompleted,
             'current_step_url' => $currentStep['route'] ?? route('console.help'),
         ];
     }
@@ -225,7 +225,7 @@ class PlatformGuidedTourService
         $progress->is_paused = false;
         $progress->started_at = $progress->started_at ?: now();
         $progress->last_seen_at = now();
-        $progress->completed_at = null;
+        $progress->complèted_at = null;
         $progress->save();
 
         return $this->show($user);
@@ -246,7 +246,7 @@ class PlatformGuidedTourService
         $progress->is_paused = false;
         $progress->started_at = now();
         $progress->last_seen_at = now();
-        $progress->completed_at = null;
+        $progress->complèted_at = null;
         $progress->save();
 
         return $this->show($user);
@@ -274,7 +274,7 @@ class PlatformGuidedTourService
             $progress->status = UserGuidedTour::STATUS_IN_PROGRESS;
             $progress->current_step_index = max(0, $currentIndex - 1);
             $progress->is_paused = false;
-            $progress->completed_at = null;
+            $progress->complèted_at = null;
         }
 
         if ($action === 'next') {
@@ -282,12 +282,12 @@ class PlatformGuidedTourService
                 $progress->status = UserGuidedTour::STATUS_COMPLETED;
                 $progress->current_step_index = $lastIndex;
                 $progress->is_paused = true;
-                $progress->completed_at = now();
+                $progress->complèted_at = now();
             } else {
                 $progress->status = UserGuidedTour::STATUS_IN_PROGRESS;
                 $progress->current_step_index = $currentIndex + 1;
                 $progress->is_paused = false;
-                $progress->completed_at = null;
+                $progress->complèted_at = null;
             }
         }
 
@@ -355,36 +355,36 @@ class PlatformGuidedTourService
             1 => [
                 'id' => 'help-hub',
                 'title' => 'Comprendre le parcours',
-                'summary' => 'Le centre d aide sert de point d entree pour relancer la visite et retrouver le bon module.',
+                'summary' => 'Le centre d aide sert de point d'entrée pour relancer la visite et retrouver le bon module.',
                 'description' => 'On commence ici pour garder un fil clair: FAQ, assistant et visite guidee sont regroupes au meme endroit avant de repartir vers la plateforme.',
-                'visual_title' => 'Point d entree unique',
+                'visual_title' => 'Point d'entrée unique',
                 'visual_body' => 'Aide, assistant et parcours interactif au meme endroit.',
                 'route' => route('console.help').'#starter-journey',
                 'selector' => '[data-tour="help-tour-entry"]',
                 'placement' => 'bottom',
                 'fallback_title' => 'La visite demarre depuis le hub d aide',
-                'fallback_body' => 'Si le bloc d entree n est pas visible, vous pouvez quand meme continuer vers le dashboard.',
+                'fallback_body' => 'Si le bloc d'entrée n'est pas visible, vous pouvez quand meme continuer vers le dashboard.',
             ],
             2 => [
                 'id' => 'dashboard-modules',
                 'title' => 'Ouvrir le dashboard',
-                'summary' => 'Reperez ici la grande grille de modules: c est votre point de depart pour naviguer partout dans la plateforme.',
-                'description' => 'Prenez une seconde pour identifier la grille des modules du dashboard. Quand c est clair pour vous, cliquez sur Suivant: la visite vous emmene ensuite directement vers Matchs.',
+                'summary' => 'Reperez ici la grande grille de modules: C'est votre point de depart pour naviguer partout dans la plateforme.',
+                'description' => 'Prenez une seconde pour identifier la grille des modules du dashboard. Quand C'est clair pour vous, cliquez sur Suivant: la visite vous emmene ensuite directement vers Matchs.',
                 'visual_title' => 'Console centrale',
                 'visual_body' => 'Une vue d ensemble pour repartir vers les bons modules.',
                 'route' => route('dashboard').'#portfolio-grid',
                 'selector' => '[data-tour="dashboard-module-grid"]',
                 'placement' => 'top',
-                'fallback_title' => 'Le dashboard est la porte d entree principale',
-                'fallback_body' => 'Si la grille n est pas encore visible, attendez que la page se charge puis reperez le grand bloc modules avant de continuer.',
+                'fallback_title' => 'Le dashboard est la porte d'entrée principale',
+                'fallback_body' => 'Si la grille n'est pas encore visible, attendez que la page se charge puis repèrez le grand bloc modules avant de continuer.',
             ],
             3 => [
                 'id' => 'matches-overview',
-                'title' => 'Lire les matchs et la competition',
-                'summary' => 'Le module matchs montre les affiches a venir, le live et les resultats.',
-                'description' => 'C est ici que vous comprenez le rythme competitif de la plateforme et, selon le contexte, que vous basculez ensuite vers les bets.',
+                'title' => 'Lire les matchs et la compétition',
+                'summary' => 'Le module matchs montre les affiches a venir, le live et les résultats.',
+                'description' => 'C est ici que vous comprenez le rythme compétitif de la plateforme et, selon le contexte, que vous basculez ensuite vers les bets.',
                 'visual_title' => 'Match center',
-                'visual_body' => 'Calendrier, statuts de match et entree vers la lecture competitive.',
+                'visual_body' => 'Calendrier, statuts de match et entrée vers la lecture competitive.',
                 'route' => route('matches.index'),
                 'selector' => '[data-tour="matches-overview"]',
                 'placement' => 'top',
@@ -415,20 +415,20 @@ class PlatformGuidedTourService
                 'selector' => '[data-tour="clips-feed"]',
                 'placement' => 'top',
                 'fallback_title' => 'Les clips portent la couche communautaire',
-                'fallback_body' => 'Si le feed change de place, gardez en tete que les clips restent le coeur de l engagement visible.',
+                'fallback_body' => 'Si le feed change de place, gardez en tete que les clips restent le cœur de l'engagement visible.',
             ],
             6 => [
                 'id' => 'profile-overview',
                 'title' => 'Revenir a votre profil',
-                'summary' => 'Le profil rassemble vos reperes personnels et les prochaines actions utiles.',
+                'summary' => 'Le profil rassemble vos repères personnels et les prochaines actions utiles.',
                 'description' => 'C est la bonne zone pour verifier votre image publique, votre progression, vos raccourcis et vos favoris assistant. Quand vous etes pret a convertir vos gains, les cadeaux sont la suite naturelle.',
                 'visual_title' => 'Repere personnel',
                 'visual_body' => 'Profil, stats visibles, raccourcis et memos utiles pour la suite.',
                 'route' => route('profile.show'),
                 'selector' => '[data-tour="profile-overview"]',
                 'placement' => 'right',
-                'fallback_title' => 'Le profil sert de repere final',
-                'fallback_body' => 'Si la zone laterale n est pas disponible, revenez quand meme sur votre profil pour verifier vos reperes et relancer les bons modules.',
+                'fallback_title' => 'Le profil sert de repère final',
+                'fallback_body' => 'Si la zone laterale n'est pas disponible, revenez quand meme sur votre profil pour verifier vos repères et relancer les bons modules.',
             ],
         ];
     }

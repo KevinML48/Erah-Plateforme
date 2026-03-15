@@ -96,7 +96,7 @@ class AssistantService
     private function beginConversation(User $user, string $message, ?int $conversationId): array
     {
         if (! config('assistant.enabled', true)) {
-            throw new RuntimeException("L assistant est temporairement desactive.");
+            throw new RuntimeException("L assistant est temporairement désactivée.");
         }
 
         $conversation = $conversationId

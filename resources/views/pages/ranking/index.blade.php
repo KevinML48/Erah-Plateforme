@@ -22,7 +22,7 @@
                 <article class="metric-card">
                     <span>Score classement</span>
                     <strong>{{ (int) ($progress->total_rank_points ?? 0) }}</strong>
-                    <p>Un repere utile pour departager les profils les plus actifs.</p>
+                    <p>Un repère utile pour departager les profils les plus actifs.</p>
                 </article>
                 <article class="metric-card">
                     <span>Experience totale</span>
@@ -99,7 +99,7 @@
             <span class="section-kicker">Tableau des ligues</span>
             <h2>Classement visible</h2>
             @if(empty($leaderboard) || empty($leaderboard['entries']))
-                <p class="meta">Aucune entree disponible pour cette ligue pour le moment.</p>
+                <p class="meta">Aucune entrée disponible pour cette ligue pour le moment.</p>
             @else
                 <div class="table-wrap" data-responsive="cards">
                     <table>

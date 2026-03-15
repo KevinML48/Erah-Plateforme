@@ -9,6 +9,7 @@
         ['label' => 'Contacts', 'route' => route('admin.contact-messages.index'), 'active' => request()->routeIs('admin.contact-messages.*')],
         ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
         ['label' => 'Galerie', 'route' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],
+        ['label' => 'Videos galerie', 'route' => route('admin.gallery-videos.index'), 'active' => request()->routeIs('admin.gallery-videos.*')],
         ['label' => 'Avis', 'route' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
         ['label' => 'Supporters', 'route' => route('admin.supporters.index'), 'active' => request()->routeIs('admin.supporters.*')],
         ['label' => 'Campagnes clips', 'route' => route('admin.clips.campaigns.index'), 'active' => request()->routeIs('admin.clips.campaigns.*')],

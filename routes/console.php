@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schedule;
 use Database\Seeders\PlatformPreviewSeeder;
 use App\Services\GrantMonthlySupporterRewards;
 use App\Services\GalleryPhotoImportService;
+use App\Services\GalleryVideoImportService;
 use App\Services\SupporterAccessResolver;
 use App\Services\SyncStripeSubscriptionStatus;
 use App\Models\User;
@@ -55,6 +56,15 @@ Artisan::command('gallery-photos:import-legacy', function (GalleryPhotoImportSer
     $this->info('Mises a jour: '.$result['updated']);
     $this->info('Ignorees: '.$result['skipped']);
 })->purpose('Import gallery photos from the legacy static Blade source.');
+
+Artisan::command('gallery-videos:import-legacy', function (GalleryVideoImportService $galleryVideoImportService) {
+    $result = $galleryVideoImportService->import();
+
+    $this->info('Sources trouvees: '.$result['found']);
+    $this->info('Creees: '.$result['created']);
+    $this->info('Mises a jour: '.$result['updated']);
+    $this->info('Ignorees: '.$result['skipped']);
+})->purpose('Import gallery videos from the legacy template source.');
 
 Artisan::command('demo:seed {--fresh : Reinitialise la base avant le seed preview}', function () {
     if (app()->environment('production')) {

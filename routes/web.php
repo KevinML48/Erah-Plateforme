@@ -22,10 +22,12 @@ use App\Http\Controllers\Web\Admin\AdminWalletController;
 use App\Http\Controllers\Web\Admin\ClipCampaignAdminController;
 use App\Http\Controllers\Web\Admin\ClipsAdminController;
 use App\Http\Controllers\Web\Admin\GalleryPhotoAdminController;
+use App\Http\Controllers\Web\Admin\GalleryVideoAdminController;
 use App\Http\Controllers\Web\Admin\PublicProfileModerationController;
 use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
 use App\Http\Controllers\Marketing\GalleryPhotoPageController;
+use App\Http\Controllers\Marketing\GalleryVideoPageController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
 use App\Http\Controllers\Web\BetPageController;
 use App\Http\Controllers\Web\AssistantFavoriteController;
@@ -460,6 +462,18 @@ Route::middleware('auth')->group(function () {
             Route::delete('/gallery-photos/{photoId}', [GalleryPhotoAdminController::class, 'destroy'])->name('admin.gallery-photos.destroy');
             Route::post('/gallery-photos/{photoId}/toggle', [GalleryPhotoAdminController::class, 'toggle'])->name('admin.gallery-photos.toggle');
             Route::post('/gallery-photos/{photoId}/reorder', [GalleryPhotoAdminController::class, 'reorder'])->name('admin.gallery-photos.reorder');
+
+            Route::get('/gallery-videos', [GalleryVideoAdminController::class, 'index'])->name('admin.gallery-videos.index');
+            Route::post('/gallery-videos/import-legacy', [GalleryVideoAdminController::class, 'importLegacy'])->name('admin.gallery-videos.import-legacy');
+            Route::post('/gallery-videos/import-legacy-if-empty', [GalleryVideoAdminController::class, 'importLegacyIfEmpty'])->name('admin.gallery-videos.import-legacy-if-empty');
+            Route::post('/gallery-videos', [GalleryVideoAdminController::class, 'store'])->name('admin.gallery-videos.store');
+            Route::put('/gallery-videos/{videoId}', [GalleryVideoAdminController::class, 'update'])->name('admin.gallery-videos.update');
+            Route::post('/gallery-videos/{videoId}/remove-thumbnail', [GalleryVideoAdminController::class, 'removeThumbnail'])->name('admin.gallery-videos.remove-thumbnail');
+            Route::post('/gallery-videos/{videoId}/publish', [GalleryVideoAdminController::class, 'publish'])->name('admin.gallery-videos.publish');
+            Route::post('/gallery-videos/{videoId}/unpublish', [GalleryVideoAdminController::class, 'unpublish'])->name('admin.gallery-videos.unpublish');
+            Route::post('/gallery-videos/{videoId}/archive', [GalleryVideoAdminController::class, 'archive'])->name('admin.gallery-videos.archive');
+            Route::delete('/gallery-videos/{videoId}', [GalleryVideoAdminController::class, 'destroy'])->name('admin.gallery-videos.destroy');
+            Route::post('/gallery-videos/{videoId}/reorder', [GalleryVideoAdminController::class, 'reorder'])->name('admin.gallery-videos.reorder');
         });
     });
 });
@@ -493,6 +507,8 @@ Route::view('/boutique', 'marketing.boutique')->name('marketing.boutique');
 Route::view('/boutique.html', 'marketing.boutique');
 Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');
 Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
+Route::get('/galerie-video', GalleryVideoPageController::class)->name('marketing.gallery-video');
+Route::get('/galerie-video.html', GalleryVideoPageController::class);
 Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');
 Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')

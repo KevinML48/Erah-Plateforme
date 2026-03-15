@@ -54,6 +54,7 @@
             ['label' => 'Cadeaux admin', 'href' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
             ['label' => 'Missions admin', 'href' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
             ['label' => 'Galerie admin', 'href' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],
+            ['label' => 'Videos galerie', 'href' => route('admin.gallery-videos.index'), 'active' => request()->routeIs('admin.gallery-videos.*')],
             ['label' => 'Avis admin', 'href' => route('admin.reviews.index'), 'active' => request()->routeIs('admin.reviews.*')],
         ]
         : [];

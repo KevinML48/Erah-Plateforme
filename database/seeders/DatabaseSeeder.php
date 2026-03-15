@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ClubReviewSeeder::class,
             CommunityPlatformSeeder::class,
             HelpCenterSeeder::class,
+            GalleryVideoLegacySeeder::class,
         ]);
     }
 }

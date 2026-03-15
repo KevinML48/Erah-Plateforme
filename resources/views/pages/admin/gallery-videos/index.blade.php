@@ -694,7 +694,7 @@
                         </details>
                     @endforeach
 
-                    <div class="adm-pagin">{{ $videos->links() }}</div>
+                    <div class="adm-pagin">{{ $videos->links('vendor.pagination.admin') }}</div>
                 @else
                     <div class="adm-video-empty">
                         <h3>Aucune vidéo trouvée</h3>

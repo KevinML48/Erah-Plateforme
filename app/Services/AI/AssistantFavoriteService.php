@@ -19,7 +19,7 @@ class AssistantFavoriteService
         $attributes = [
             'question' => trim((string) ($payload['question'] ?? '')),
             'answer' => trim((string) ($payload['answer'] ?? '')),
-            'détails' => array_values($payload['détails'] ?? []),
+            'details' => array_values($payload['details'] ?? []),
             'sources' => array_values($payload['sources'] ?? []),
             'next_steps' => array_values($payload['next_steps'] ?? []),
         ];

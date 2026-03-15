@@ -16,7 +16,7 @@ class GalleryPhotoImportService
     private const FILTER_LABELS = [
         'valorant' => 'Valorant',
         'evenements' => 'Evenements',
-        'compétitions' => 'Competitions',
+        'competitions' => 'Competitions',
     ];
 
     public function legacySourceExists(): bool

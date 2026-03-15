@@ -281,7 +281,7 @@ class AdminOperationsCockpitService
             ->get([
                 'id',
                 'event_name',
-                'compétition_name',
+                'competition_name',
                 'team_a_name',
                 'team_b_name',
                 'starts_at',
@@ -667,7 +667,7 @@ class AdminOperationsCockpitService
             'target_label' => $target['label'],
             'target_url' => $target['url'],
             'summary' => $summary,
-            'détail_url' => $target['url'] ?? route('admin.dashboard', ['feed_type' => $actionMeta['type_key']]),
+            'detail_url' => $target['url'] ?? route('admin.dashboard', ['feed_type' => $actionMeta['type_key']]),
             'primary_action' => $this->resolvePrimaryAction(
                 typeKey: (string) $actionMeta['type_key'],
                 targetType: (string) ($log->target_type ?? ''),
@@ -774,7 +774,7 @@ class AdminOperationsCockpitService
             'target_label' => $targetLabel,
             'target_url' => $targetUrl,
             'summary' => (string) $activityMeta['label'].' - '.$targetLabel,
-            'détail_url' => $targetUrl ?: route('admin.dashboard', ['feed_source' => 'activity']),
+            'detail_url' => $targetUrl ?: route('admin.dashboard', ['feed_source' => 'activity']),
             'primary_action' => null,
         ];
     }
@@ -1408,13 +1408,13 @@ class AdminOperationsCockpitService
                 }
 
                 $builder->orWhere('event_name', 'like', $like)
-                    ->orWhere('compétition_name', 'like', $like)
+                    ->orWhere('competition_name', 'like', $like)
                     ->orWhere('team_a_name', 'like', $like)
                     ->orWhere('team_b_name', 'like', $like);
             })
             ->orderByDesc('starts_at')
             ->limit(6)
-            ->get(['id', 'event_name', 'compétition_name', 'team_a_name', 'team_b_name', 'status', 'starts_at']);
+            ->get(['id', 'event_name', 'competition_name', 'team_a_name', 'team_b_name', 'status', 'starts_at']);
 
         if ($matches->isNotEmpty()) {
             $groups[] = [

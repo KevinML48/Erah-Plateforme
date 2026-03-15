@@ -119,7 +119,7 @@ class HelpAssistantService
             'mode' => config('help-center.assistant.mode', 'knowledge_base'),
             'answer' => $answer,
             'confidence' => ($bestArticle['score'] ?? 0) >= $strongKnowledgeScore ? 'high' : 'medium',
-            'détails' => array_slice($paragraphs, 0, 2),
+            'details' => array_slice($paragraphs, 0, 2),
             'sources' => [[
                 'type' => 'article',
                 'title' => $article->title,

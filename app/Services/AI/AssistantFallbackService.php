@@ -399,9 +399,9 @@ class AssistantFallbackService
 
         $sections[] = $answer !== '' ? $answer : 'Je n ai pas trouve de réponse fiable pour le moment.';
 
-        $détails = collect($knowledge['détails'] ?? [])->filter()->values()->all();
-        if ($détails !== []) {
-            $sections[] = implode("\n\n", $détails);
+        $details = collect($knowledge['details'] ?? [])->filter()->values()->all();
+        if ($details !== []) {
+            $sections[] = implode("\n\n", $details);
         }
 
         $nextSteps = collect($knowledge['next_steps'] ?? [])

@@ -212,7 +212,7 @@
                                 <form method="POST" action="{{ route('supporter.portal') }}">
                                     @csrf
                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Gerer dans Stripe">Gerer dans Stripe</span>
+                                        <span data-hover="Gérer dans Stripe">Gérer dans Stripe</span>
                                     </button>
                                 </form>
                             @else
@@ -231,7 +231,7 @@
                         <p class="supporter-console-muted margin-top-20 no-margin">
                             Statut: {{ strtoupper((string) ($supporterSummary['status'] ?? 'inactive')) }}
                             @if($currentSubscription?->current_period_end)
-                                - renouvellement / fin de periode: {{ $currentSubscription->current_period_end->format('d/m/Y H:i') }}
+                                  - renouvellement / fin de période: {{ $currentSubscription->current_period_end->format('d/m/Y H:i') }}
                             @endif
                         </p>
                     </section>
@@ -241,7 +241,7 @@
                             <div class="supporter-console-card tt-anim-fadeinup">
                                 <div class="tt-heading tt-heading-sm margin-bottom-20">
                                     <h3 class="tt-heading-subtitle">Mur supporters</h3>
-                                    <h2 class="tt-heading-title">Visibilite publique</h2>
+                                    <h2 class="tt-heading-title">Visibilité publique</h2>
                                 </div>
 
                                 <form method="POST" action="{{ route('profile.update') }}" class="tt-form tt-form-creative tt-form-lg supporter-inline-form">
@@ -277,17 +277,17 @@
                             <div class="supporter-console-card tt-anim-fadeinup">
                                 <div class="tt-heading tt-heading-sm margin-bottom-20">
                                     <h3 class="tt-heading-subtitle">Activation</h3>
-                                    <h2 class="tt-heading-title">Ce que vous debloquez</h2>
+                                    <h2 class="tt-heading-title">Ce que vous débloquez</h2>
                                 </div>
 
                                 <div class="supporter-console-highlight-grid">
                                     <article class="supporter-console-highlight-item">
                                         <strong>Clips</strong>
-                                        <div class="supporter-console-muted">Votes premium, reactions supporter et commentaires prioritaires sur les clips admin.</div>
+                                        <div class="supporter-console-muted">Votes premium, réactions supporter et commentaires prioritaires sur les clips admin.</div>
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Missions</strong>
-                                        <div class="supporter-console-muted">Missions exclusives, bonus XP mensuel et progression fidelite reservee aux supporters.</div>
+                                        <div class="supporter-console-muted">Missions exclusives, bonus XP mensuel et progression fidélité réservée aux supporters.</div>
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Communaute</strong>
@@ -295,15 +295,15 @@
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Classement</strong>
-                                        <div class="supporter-console-muted">Badge supporter dans les leaderboards et profil mieux expose dans les espaces competitifs.</div>
+                                        <div class="supporter-console-muted">Badge supporter dans les leaderboards et profil mieux exposé dans les espaces compétitifs.</div>
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Profil</strong>
-                                        <div class="supporter-console-muted">Clips favoris visibles, espace dedie et options supporter centralisees dans votre compte.</div>
+                                        <div class="supporter-console-muted">Clips favoris visibles, espace dédié et options supporter centralisées dans votre compte.</div>
                                     </article>
                                     <article class="supporter-console-highlight-item">
                                         <strong>Club / IRL</strong>
-                                        <div class="supporter-console-muted">Acces anticipe aux drops, reductions merchandising et activations communaute ERAH.</div>
+                                        <div class="supporter-console-muted">Accès anticipé aux drops, réductions merchandising et activations communauté ERAH.</div>
                                     </article>
                                 </div>
                             </div>
@@ -317,9 +317,9 @@
 
                             <div class="supporter-console-badge-grid">
                                 <article class="supporter-console-badge-card">
-                                    <span class="supporter-console-badge-label">Badge fidelite</span>
+                                    <span class="supporter-console-badge-label">Badge fidélité</span>
                                     <div class="supporter-console-badge-value">{{ $supporterSummary['loyalty_badge'] ?? 'Aucun' }}</div>
-                                    <div class="supporter-console-muted">Progression selon votre anciennete supporter.</div>
+                                    <div class="supporter-console-muted">Progression selon votre ancinneté supporter.</div>
                                 </article>
                                 <article class="supporter-console-badge-card">
                                     <span class="supporter-console-badge-label">Badge fondateur</span>

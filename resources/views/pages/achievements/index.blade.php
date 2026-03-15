@@ -50,7 +50,7 @@
                                 <p class="no-margin">{{ $achievement?->description }}</p>
                                 <div class="community-meta">
                                     <span class="community-pill">Progression {{ (int) $row->progress_value }} / {{ (int) ($achievement->threshold ?? 0) }}</span>
-                                    <span class="community-pill">{{ $row->unlocked_at ? 'Debloque' : 'En cours' }}</span>
+                                    <span class="community-pill">{{ $row->unlocked_at ? 'Débloqué' : 'En cours' }}</span>
                                 </div>
                                 <div class="community-meta">
                                     <span class="community-pill">Debloque le {{ optional($row->unlocked_at)->format('d/m/Y H:i') ?: 'A venir' }}</span>

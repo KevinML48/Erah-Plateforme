@@ -108,7 +108,7 @@
                                     aria-expanded="{{ $isReplyOpen ? 'true' : 'false' }}"
                                     aria-controls="clip-reply-panel-{{ $comment->id }}"
                                 >
-                                    {{ $isReplyOpen ? 'Masquer' : 'Repondre' }}
+                                    {{ $isReplyOpen ? 'Masquer' : 'Répondre' }}
                                 </button>
                             </div>
 
@@ -119,17 +119,17 @@
                                 @if(!$isReplyOpen) hidden @endif
                             >
                                 <div class="clip-reply-panel-header">
-                                    <h5 class="clip-reply-panel-title">Repondre a {{ $commentAuthor }}</h5>
+                                    <h5 class="clip-reply-panel-title">Répondre à {{ $commentAuthor }}</h5>
                                     <button type="button" class="clip-comment-action" data-clip-reply-cancel data-target="clip-reply-panel-{{ $comment->id }}">Annuler</button>
                                 </div>
-                                <p class="clip-reply-panel-copy">Votre reponse sera affichee sous ce commentaire pour garder l’echange clair.</p>
+                                <p class="clip-reply-panel-copy">Votre réponse sera affichée sous ce commentaire pour garder l'échange clair.</p>
                                 <form method="POST" action="{{ route($commentStoreRouteName, $clip->id) }}">
                                     @csrf
                                     <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                     <input type="hidden" name="comment_form_type" value="reply">
                                     <div class="tt-form-group">
-                                        <label for="reply_{{ $comment->id }}">Votre reponse</label>
-                                        <textarea class="tt-form-control" id="reply_{{ $comment->id }}" name="body" rows="3" maxlength="2000" placeholder="Ajoutez une reponse concise et utile...">{{ $isReplyOpen ? old('body') : '' }}</textarea>
+                                        <label for="reply_{{ $comment->id }}">Votre réponse</label>
+                                        <textarea class="tt-form-control" id="reply_{{ $comment->id }}" name="body" rows="3" maxlength="2000" placeholder="Ajoutez une réponse concise et utile...">{{ $isReplyOpen ? old('body') : '' }}</textarea>
                                     </div>
                                     <div class="clip-reply-panel-actions">
                                         <button type="submit" class="tt-btn tt-btn-outline">

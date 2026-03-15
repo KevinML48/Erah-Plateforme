@@ -564,10 +564,10 @@
                                                     </strong>
                                                 </li>
                                                 <li>
-                                                    <span>{{ $planCard['months'] > 1 ? 'Economie' : 'Engagement' }}</span>
+                                                    <span>{{ $planCard['months'] > 1 ? '\u00c9conomie' : 'Engagement' }}</span>
                                                     <strong>
                                                         @if($planCard['months'] > 1)
-                                                            {{ $planCard['savings_label'] }} EUR economises, soit -{{ rtrim(rtrim(number_format($planCard['discount_percent'], 2, '.', ''), '0'), '.') }}%
+                                                            {{ $planCard['savings_label'] }} EUR économisés, soit -{{ rtrim(rtrim(number_format($planCard['discount_percent'], 2, '.', ''), '0'), '.') }}%
                                                         @else
                                                             Sans avance sur 6 ou 12 mois
                                                         @endif
@@ -605,7 +605,7 @@
                             </div>
 
                             <div class="supporter-billing-note">
-                                Supporter ERAH reste un abonnement. Vous pouvez choisir un debit mensuel a 5,00 EUR, un paiement tous les 6 mois avec 8% de reduction, ou un paiement annuel avec 16% de reduction sur le total.
+                                Supporter ERAH reste un abonnement. Vous pouvez choisir un débit mensuel à 5,00 EUR, un paiement tous les 6 mois avec 8% de réduction, ou un paiement annuel avec 16% de réduction sur le total.
                             </div>
 
                             <div class="supporter-note-grid">
@@ -619,7 +619,7 @@
                                 </article>
                                 <article class="supporter-note-tile">
                                     <strong>Avantages club</strong>
-                                    <span>Merchandising, drops anticipes, rencontres et activations communaute selon les paliers.</span>
+                                    <span>Merchandise, drops anticipés, rencontres et activations communauté selon les paliers.</span>
                                 </article>
                             </div>
 
@@ -632,7 +632,7 @@
                                     </article>
                                     <article class="supporter-pricing-fill-item">
                                         <span>6 mois</span>
-                                        <strong>Le bon compromis pour reduire le prix tout en gardant un rythme intermediaire.</strong>
+                                        <strong>Le bon compromis pour réduire le prix tout en gardant un rythme intermédiaire.</strong>
                                     </article>
                                     <article class="supporter-pricing-fill-item">
                                         <span>Annuel</span>
@@ -645,7 +645,7 @@
                         <aside class="supporter-card tt-anim-fadeinup">
                             <div class="tt-heading tt-heading-sm no-margin">
                                 <h3 class="tt-heading-subtitle">Mon statut</h3>
-                                <h2 class="tt-heading-title">{{ auth()->check() ? (($supporterSummary['is_active'] ?? false) ? 'Supporter actif' : 'Pret a soutenir') : 'Connectez-vous' }}</h2>
+                                <h2 class="tt-heading-title">{{ auth()->check() ? (($supporterSummary['is_active'] ?? false) ? 'Supporter actif' : 'Prêt à soutenir') : 'Connectez-vous' }}</h2>
                             </div>
 
                             <div class="supporter-summary-list margin-top-30">
@@ -658,7 +658,7 @@
                                     <span>{{ $supporterSummary['current_plan_name'] ?? 'Aucune formule active' }}</span>
                                 </div>
                                 <div class="supporter-summary-row">
-                                    <span>Badge fidelite</span>
+                                    <span>Badge fidélité</span>
                                     <span>{{ $supporterSummary['loyalty_badge'] ?? 'Aucun pour le moment' }}</span>
                                 </div>
                                 <div class="supporter-summary-row">
@@ -666,7 +666,7 @@
                                     <span>{{ ($supporterSummary['is_founder'] ?? false) ? 'Oui' : 'Non' }}</span>
                                 </div>
                                 <div class="supporter-summary-row">
-                                    <span>XP cumule</span>
+                                    <span>XP cumulé</span>
                                     <span>{{ (int) ($progress->total_xp ?? 0) }}</span>
                                 </div>
                                 <div class="supporter-summary-row">

@@ -601,10 +601,10 @@
                     <div class="bet-quick-band-copy">
                         <span class="bet-quick-band-kicker">Rythme de la session</span>
                         <h2 class="bet-quick-band-title">
-                            {{ $tab === 'active' ? 'Suivez vos mises avant le lock des matchs.' : 'Relisez vos resultats sans perdre le fil.' }}
+                            {{ $tab === 'active' ? 'Suivez vos mises avant le lock des matchs.' : 'Relisez vos résultats sans perdre le fil.' }}
                         </h2>
                         <p class="bet-quick-band-text">
-                            Chaque pari utilise votre solde points unique. Tant qu un match reste ouvert et que la fenetre d annulation le permet, vous pouvez encore revenir sur une mise en cours.
+                            Chaque pari utilise votre solde points unique. Tant qu\'un match reste ouvert et que la fenêtre d\'annulation le permet, vous pouvez encore revenir sur une mise en cours.
                         </p>
                     </div>
 
@@ -633,17 +633,17 @@
                                     \App\Models\Bet::STATUS_CANCELLED => 'is-cancelled',
                                     default => 'is-active',
                                 };
-                                $gainLabel = $isActive ? 'Gain potentiel' : 'Gain regle';
+                                $gainLabel = $isActive ? 'Gain potentiel' : 'Gain réglé';
                                 $placedAt = $bet->placed_at ?? $bet->created_at;
                                 $matchResult = $bet->match && $bet->match->settled_at
                                     ? $matchLabelResolver->labelForResult($bet->match, $bet->match->result)
                                     : 'En attente';
                                 $cardNote = match ($bet->status) {
-                                    \App\Models\Bet::STATUS_WON => 'Le pari est gagne. Les points ont deja ete credites dans votre wallet.',
-                                    \App\Models\Bet::STATUS_LOST => 'Le pari est termine. Aucun gain n a ete verse sur cette mise.',
-                                    \App\Models\Bet::STATUS_VOID => 'Le pari a ete rembourse apres annulation ou resultat void du match.',
-                                    \App\Models\Bet::STATUS_CANCELLED => 'La mise a ete annulee et les points ont ete renvoyes dans votre solde.',
-                                    default => 'Le pari reste actif tant que le match n est pas regle. Vous pouvez encore verifier le marche ou l annuler si la fenetre est toujours ouverte.',
+                                    \App\Models\Bet::STATUS_WON => 'Le pari est gagné. Les points ont déjà été crédités dans votre wallet.',
+                                    \App\Models\Bet::STATUS_LOST => 'Le pari est terminé. Aucun gain n\'a été versé sur cette mise.',
+                                    \App\Models\Bet::STATUS_VOID => 'Le pari a été remboursé après annulation ou résultat void du match.',
+                                    \App\Models\Bet::STATUS_CANCELLED => 'La mise a été annulée et les points ont été renvoyés dans votre solde.',
+                                    default => 'Le pari reste actif tant que le match n\'est pas réglé. Vous pouvez encore vérifier le marché ou l\'annuler si la fenêtre est toujours ouverte.',
                                 };
                             @endphp
 
@@ -651,7 +651,7 @@
                                 <div class="bet-card-head">
                                     <div>
                                         <div class="bet-pill-row">
-                                            <span class="bet-status-pill {{ $statusTone }}">{{ $matchLabelResolver->labelForBetStatus($bet->status) }}</span>
+                                            <strong>{{ $matchLabelResolver->labelForBetStatus($bet->status) }}</strong>
                                             @if($bet->match)
                                                 <span class="bet-pill">{{ $matchLabelResolver->labelForStatus($bet->match->status, true) }}</span>
                                             @endif

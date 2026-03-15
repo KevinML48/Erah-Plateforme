@@ -546,14 +546,15 @@
     $availabilityState = ! $gift->is_active || $giftStock < 1 ? 'unavailable' : ($giftStock <= 5 ? 'limited' : 'available');
     $availabilityTitle = ! $gift->is_active
         ? 'Cadeau temporairement indisponible'
-        : ($giftStock < 1 ? 'Rupture de stock' : ($giftStock <= 5 ? 'Stock limite' : 'Demande ouverte'));
+        : ($giftStock < 1 ? 'Rupture de stock' : ($giftStock <= 5 ? 'Stock limité' : 'Demande ouverte'));
     $availabilityCopy = ! $gift->is_active
-        ? 'Ce cadeau est desactive pour le moment. Il redeviendra accessible des sa republication.'
+        ? 'Ce cadeau est désactivé pour le moment. Il redevi
+endra accessible dès sa républication.'
         : ($giftStock < 1
-            ? 'Le stock actuel est epuise. Revenez plus tard pour verifier un reapprovisionnement.'
+            ? 'Le stock actuel est épuisé. Revenez plus tard pour vérifier un réapprovisionnement.'
             : ($giftStock <= 5
-                ? 'Il reste peu d exemplaires. Une fois votre demande envoyee, le stock est reserve immediatement.'
-                : 'La demande est disponible. Les points sont debites a la demande et le stock est bloque.'));
+                ? 'Il reste peu d\'exemplaires. Une fois votre demande envoyée, le stock est réservé immédiatement.'
+                : 'La demande est disponible. Les points sont débités à la demande et le stock est bloqué.');
     $latestRedemption = ($myRecentRedemptions ?? collect())->first();
 @endphp
 
@@ -571,7 +572,7 @@
                     <h2 class="ph-caption-subtitle">Catalogue cadeaux</h2>
                     <h1 class="ph-caption-title">{{ $gift->title }}</h1>
                     <div class="ph-caption-description">
-                        {{ $gift->description ?: 'Une recompense membre a debloquer avec vos points sur la plateforme.' }}
+                        {{ $gift->description ?: 'Une récompense membre à débloquer avec vos points sur la plateforme.' }}
                     </div>
                     <div class="gift-detail-header-pills margin-top-30">
                         <span class="gift-detail-pill">{{ $giftCategoryLabel }}</span>
@@ -624,23 +625,23 @@
                             <div class="gift-detail-visual-copy">
                                 <strong>{{ $gift->title }}</strong>
                                 <p>
-                                    {{ $gift->description ?: 'Une recompense membre pensee pour valoriser votre activite et vos points cumules sur ERAH.' }}
+                                    {{ $gift->description ?: 'Une récompense membre pensée pour valoriser votre activité et vos points cumulés sur ERAH.' }}
                                 </p>
                             </div>
                         </div>
 
                         <div class="gift-detail-usp-grid">
                             <div class="gift-detail-usp-card">
-                                <strong>Debit immediat</strong>
-                                <p>Les points sont preleves au moment de la demande.</p>
+                                <strong>Débit immédiat</strong>
+                                <p>Les points sont prélevés au moment de la demande.</p>
                             </div>
                             <div class="gift-detail-usp-card">
-                                <strong>Stock reserve</strong>
-                                <p>Le stock diminue des que votre demande est envoyee.</p>
+                                <strong>Stock réservé</strong>
+                                <p>Le stock diminue dès que votre demande est envoyée.</p>
                             </div>
                             <div class="gift-detail-usp-card">
                                 <strong>Suivi membre</strong>
-                                <p>Vous retrouvez l etat de vos demandes dans votre historique.</p>
+                                <p>Vous retrouvez l\'\u00e9tat de vos demandes dans votre historique.</p>
                             </div>
                         </div>
                     </div>
@@ -670,7 +671,7 @@
                                 <strong>{{ $giftStock }}</strong>
                             </div>
                             <div class="gift-detail-metric">
-                                <span>{{ $isAuthenticated ? ($canAffordGift ? 'Etat achat' : 'Points manquants') : 'Connexion' }}</span>
+                                <span>{{ $isAuthenticated ? ($canAffordGift ? '\u00c9tat achat' : 'Points manquants') : 'Connexion' }}</span>
                                 <strong>{{ $isAuthenticated ? ($canAffordGift ? 'Pret' : $pointsMissing) : 'Requise' }}</strong>
                             </div>
                         </div>
@@ -752,7 +753,7 @@
                                     @endif
                                 </p>
                                 <a href="{{ route('gifts.redemptions.show', $latestRedemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
-                                    <span data-hover="Voir le detail">Voir le detail de la commande</span>
+                                    <span data-hover="Détail">Voir le détail de la commande</span>
                                 </a>
                             </div>
                         @endif
@@ -766,8 +767,8 @@
                 <div class="gift-detail-content-grid">
                     <div class="gift-detail-surface gift-detail-history tt-anim-fadeinup">
                         <div class="gift-detail-section-heading">
-                            <h3>Mes demandes recentes</h3>
-                            <p>Retrouvez le suivi de vos demandes pour ce cadeau, avec les etapes de validation, expedition ou refus.</p>
+                            <h3>Mes demandes récentes</h3>
+                            <p>Retrouvez le suivi de vos demandes pour ce cadeau, avec les étapes de validation, expédition ou refus.</p>
                         </div>
 
                         @if ($isAuthenticated && ($myRecentRedemptions ?? null) && $myRecentRedemptions->count())
@@ -805,10 +806,10 @@
                                                 <span>Validee {{ $redemption->approved_at->format('d/m/Y') }}</span>
                                             @endif
                                             @if ($redemption->shipped_at)
-                                                <span>Expediee {{ $redemption->shipped_at->format('d/m/Y') }}</span>
+                                                <span>Expédiée {{ $redemption->shipped_at->format('d/m/Y') }}</span>
                                             @endif
                                             @if ($redemption->delivered_at)
-                                                <span>Livree {{ $redemption->delivered_at->format('d/m/Y') }}</span>
+                                                <span>Livrée {{ $redemption->delivered_at->format('d/m/Y') }}</span>
                                             @endif
                                         </div>
 
@@ -837,7 +838,7 @@
                     <div class="gift-detail-side-stack">
                         <aside class="gift-detail-surface gift-detail-side-card tt-anim-fadeinup">
                             <div class="gift-detail-section-heading">
-                                <h3>Comment ca marche</h3>
+                                <h3>Comment ça marche</h3>
                                 <p>Le process reste simple et visible depuis votre espace membre.</p>
                             </div>
 
@@ -851,7 +852,7 @@
 
                         <aside class="gift-detail-surface gift-detail-side-card tt-anim-fadeinup">
                             <div class="gift-detail-section-heading">
-                                <h3>Portefeuille points</h3>
+                                <h3>Portefeuille de points</h3>
                                 <p>Consultez votre reserve de points avant de confirmer une nouvelle demande.</p>
                             </div>
 
@@ -860,7 +861,7 @@
                                     <strong>{{ $walletBalance }} pts</strong>
                                     <p>
                                         Votre solde actuel permet
-                                        {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine demande.' }}
+                                        {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de préparer une prochaine demande.' }}
                                     </p>
                                 </div>
 

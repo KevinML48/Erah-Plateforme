@@ -25,7 +25,7 @@
                 <article class="metric-card">
                     <span>Lecture rapide</span>
                     <strong>{{ auth()->user()->role === 'admin' ? 'Admin' : 'Membre' }}</strong>
-                    <p>{{ auth()->user()->role === 'admin' ? 'Les formulaires d ajustement restent disponibles ci dessous.' : 'Vous consultez ici vos mouvements et vos soldes visibles.' }}</p>
+                    <p>{{ auth()->user()->role === 'admin' ? 'Les formulaires d\'ajustement restent disponibles ci-dessous.' : 'Vous consultez ici vos mouvements et vos soldes visibles.' }}</p>
                 </article>
             </div>
         </section>

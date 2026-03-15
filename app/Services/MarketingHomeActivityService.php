@@ -74,14 +74,11 @@ class MarketingHomeActivityService
         $activeMission = (clone $missionQuery)->latest('updated_at')->first();
         $activeCount = (clone $missionQuery)->count();
 
-        $availableCount = 0;
-        if ($activeCount === 0) {
-            $availableCount = MissionTemplate::query()
-                ->where('is_active', true)
-                ->where(fn ($q) => $q->whereNull('start_at')->orWhere('start_at', '<=', now()))
-                ->where(fn ($q) => $q->whereNull('end_at')->orWhere('end_at', '>=', now()))
-                ->count();
-        }
+        $availableCount = MissionTemplate::query()
+            ->where('is_active', true)
+            ->where(fn ($q) => $q->whereNull('start_at')->orWhere('start_at', '<=', now()))
+            ->where(fn ($q) => $q->whereNull('end_at')->orWhere('end_at', '>=', now()))
+            ->count();
 
         $quickStats = [
             'total_xp' => (int) ($progress->total_xp ?? 0),
@@ -115,13 +112,22 @@ class MarketingHomeActivityService
         if ($pendingDuels > 0) {
             $items[] = $this->item('duel', 'Duel', $pendingDuels.' duel(s) en attente', 'Des reponses sont attendues sur vos defis.', 'En attente', route('app.duels.index', ['status' => 'pending']), now(), 2);
         }
-        if ($activeMission !== null && $activeCount > 0) {
+        if ($activeMission !== null || $availableCount > 0) {
             $template = $activeMission->instance?->template;
             $target = max(1, (int) ($template->target_count ?? 1));
             $done = max(0, min((int) $activeMission->progress_count, $target));
-            $items[] = $this->item('mission', 'Mission', $activeCount.' mission(s) en cours', (string) ($template?->title ?? 'Mission active').' - '.$done.'/'.$target, 'En cours', route('app.missions.index'), $activeMission->updated_at, 1);
-        } elseif ($availableCount > 0) {
-            $items[] = $this->item('mission', 'Mission', 'Missions disponibles', $availableCount.' mission(s) disponible(s) a activer.', 'Disponible', route('app.missions.index'), now(), 3);
+            $items[] = $this->item(
+                'mission',
+                'Mission',
+                $availableCount > 0 ? $availableCount.' mission(s) disponible(s)' : 'Aucune mission disponible',
+                $activeMission !== null
+                    ? 'Mission suivie actuellement: '.(string) ($template?->title ?? 'Mission active').' - '.$done.'/'.$target
+                    : ($availableCount > 0 ? 'Ouvrez le module Missions pour choisir votre prochaine priorite.' : 'Aucune mission n est ouverte pour le moment.'),
+                $availableCount > 0 ? 'Disponible' : 'A surveiller',
+                route('app.missions.index'),
+                $activeMission?->updated_at ?? now(),
+                1
+            );
         }
 
         if ($unreadNotifications > 0) {

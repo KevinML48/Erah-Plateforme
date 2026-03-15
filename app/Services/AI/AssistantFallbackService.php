@@ -191,17 +191,19 @@ class AssistantFallbackService
         $matches = collect($userContext['upcoming_matches'] ?? [])->take(2);
 
         $sections = [
-            'Sur ERAH, les bets se preparent a partir des matchs disponibles. Le plus utile est de miser avec du contexte, pas a l aveugle.',
-            "Ton solde actuel est de {$points} points.",
+            'Oui, vous pouvez parier sur un match quand la plateforme propose un marche ouvert pour cette rencontre.',
+            'Le plus simple est d ouvrir '.($this->contextLink($context, 'Matchs') ?: 'Matchs').' pour acceder a la fiche du match, choisir une selection puis valider votre mise. '.($this->contextLink($context, 'Paris') ?: 'Paris').' sert ensuite surtout a suivre vos paris deja places.',
+            'Un pari est possible tant que le match n est pas verrouille, qu au moins une selection est ouverte et que vous avez assez de points pour miser.',
+            $points > 0 ? "Ton solde actuel est de {$points} points." : 'Pensez a verifier votre solde avant de miser.',
         ];
 
         if ($matches->isNotEmpty()) {
-            $sections[] = "Pour ne pas partir de zero, tu peux surveiller :\n".$matches
+            $sections[] = "Pour ne pas partir de zero, vous pouvez surveiller :\n".$matches
                 ->map(fn (array $match): string => '- '.$match['title'])
                 ->implode("\n");
         }
 
-        $sections[] = 'Le meilleur prochain pas : '.($this->contextLink($context, 'Paris') ?: 'ouvrir Paris').' ou '.($this->contextLink($context, 'Matchs') ?: 'ouvrir Matchs').' pour voir les opportunites reellement disponibles.';
+        $sections[] = 'Si aucun pari n est ouvert, cela veut simplement dire qu aucun match eligible n est disponible pour le moment ou que le lock est deja passe. Dans ce cas, il faut attendre le prochain match ouvert.';
 
         return new AssistantResponse(
             content: trim(implode("\n\n", array_filter($sections))),

@@ -102,6 +102,11 @@
         color: var(--gift-orders-muted);
     }
 
+    .gift-orders-table-wrap {
+        display: grid;
+        gap: 18px;
+    }
+
     body.tt-lightmode-on .gift-orders-page {
         --gift-orders-border: rgba(148, 163, 184, 0.24);
         --gift-orders-muted: rgba(51, 65, 85, 0.78);
@@ -238,56 +243,58 @@
                     </form>
 
                     @if(($redemptions ?? null) && $redemptions->count())
-                        <table class="gift-order-table">
-                            <thead>
-                                <tr>
-                                    <th>Commande</th>
-                                    <th>Cadeau</th>
-                                    <th>Date demande</th>
-                                    <th>Statut</th>
-                                    <th>Cout</th>
-                                    <th>Tracking</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($redemptions as $redemption)
-                                    @php
-                                        $orderNumber = 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT);
-                                        $status = (string) $redemption->status;
-                                    @endphp
+                        <div class="gift-orders-table-wrap">
+                            <table class="gift-order-table">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <strong>{{ $orderNumber }}</strong>
-                                            <span class="gift-order-meta">ID interne #{{ $redemption->id }}</span>
-                                        </td>
-                                        <td>{{ $redemption->gift->title ?? 'Cadeau' }}</td>
-                                        <td>{{ optional($redemption->requested_at)->format('d/m/Y H:i') ?: '-' }}</td>
-                                        <td>
-                                            <span class="gift-order-status is-{{ $status }}">
-                                                {{ $statusLabels[$status] ?? \Illuminate\Support\Str::headline($status) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ (int) $redemption->cost_points_snapshot }} pts</td>
-                                        <td>
-                                            @if($redemption->tracking_code)
-                                                {{ $redemption->tracking_code }}
-                                                @if($redemption->tracking_carrier)
-                                                    <span class="gift-order-meta">{{ $redemption->tracking_carrier }}</span>
-                                                @endif
-                                            @else
-                                                -
-                                            @endif
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('gifts.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline">
-                                                <span data-hover="Detail">Detail</span>
-                                            </a>
-                                        </td>
+                                        <th>Commande</th>
+                                        <th>Cadeau</th>
+                                        <th>Date demande</th>
+                                        <th>Statut</th>
+                                        <th>Cout</th>
+                                        <th>Tracking</th>
+                                        <th>Action</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($redemptions as $redemption)
+                                        @php
+                                            $orderNumber = 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT);
+                                            $status = (string) $redemption->status;
+                                        @endphp
+                                        <tr>
+                                            <td data-label="Commande">
+                                                <strong>{{ $orderNumber }}</strong>
+                                                <span class="gift-order-meta">ID interne #{{ $redemption->id }}</span>
+                                            </td>
+                                            <td data-label="Cadeau">{{ $redemption->gift->title ?? 'Cadeau' }}</td>
+                                            <td data-label="Date demande">{{ optional($redemption->requested_at)->format('d/m/Y H:i') ?: '-' }}</td>
+                                            <td data-label="Statut">
+                                                <span class="gift-order-status is-{{ $status }}">
+                                                    {{ $statusLabels[$status] ?? \Illuminate\Support\Str::headline($status) }}
+                                                </span>
+                                            </td>
+                                            <td data-label="Cout">{{ (int) $redemption->cost_points_snapshot }} pts</td>
+                                            <td data-label="Tracking">
+                                                @if($redemption->tracking_code)
+                                                    {{ $redemption->tracking_code }}
+                                                    @if($redemption->tracking_carrier)
+                                                        <span class="gift-order-meta">{{ $redemption->tracking_carrier }}</span>
+                                                    @endif
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                            <td data-label="Action">
+                                                <a href="{{ route('gifts.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline">
+                                                    <span data-hover="Detail">Detail</span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div class="margin-top-30">
                             {{ $redemptions->links() }}

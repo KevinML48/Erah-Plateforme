@@ -130,8 +130,8 @@
                 <span>Missions disponibles</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
-                <strong>{{ (int) ($quickStats['available_missions'] ?? 0) }}</strong>
-                <span>Missions dispo</span>
+                <strong>{{ (int) ($quickStats['active_missions'] ?? 0) }}</strong>
+                <span>Missions actives</span>
             </article>
             <article class="home-summary-card tt-anim-fadeinup">
                 <strong>{{ (int) ($quickStats['unread_notifications'] ?? 0) }}</strong>

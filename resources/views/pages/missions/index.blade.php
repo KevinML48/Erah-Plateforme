@@ -1,7 +1,7 @@
 @extends('marketing.layouts.template')
 
 @section('title', 'Missions | ERAH Plateforme')
-@section('meta_description', 'Missions ERAH, progression utilisateur, missions decouverte et missions en focus.')
+@section('meta_description', 'Missions ERAH, progression utilisateur, missions decouverte et missions favorites.')
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('head_extra')
@@ -504,7 +504,7 @@
                     <section class="mission-surface">
                         <div class="mission-section-head">
                             <div>
-                                <span class="mission-card-kicker">Mes 3 missions en focus</span>
+                                <span class="mission-card-kicker">Mes 3 missions favorites</span>
                                 <h2 class="mission-section-title">Garder les priorites visibles.</h2>
                                 <p class="mission-section-note">
                                     Vous pouvez epingler jusqu a {{ (int) $focusLimit }} missions maximum pour les retrouver ici et dans votre profil.
@@ -519,7 +519,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="mission-empty">Aucune mission en focus pour le moment. Depuis la liste complete, ajoutez vos priorites.</div>
+                            <div class="mission-empty">Aucune mission favorite pour le moment. Depuis la liste complete, ajoutez vos priorites.</div>
                         @endif
                     </section>
 

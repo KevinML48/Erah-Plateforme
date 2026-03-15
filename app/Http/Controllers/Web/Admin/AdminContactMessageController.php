@@ -87,5 +87,32 @@ class AdminContactMessageController extends Controller
 
         return back()->with('success', 'Statut du message mis a jour.');
     }
+
+    public function destroy(
+        Request $request,
+        ContactMessage $contactMessage,
+        StoreAuditLogAction $storeAuditLogAction
+    ): RedirectResponse {
+        $messageId = $contactMessage->id;
+        $messageStatus = $contactMessage->status;
+
+        $storeAuditLogAction->execute(
+            action: 'contact.messages.deleted',
+            actor: $request->user(),
+            target: $contactMessage,
+            context: [
+                'contact_message_id' => $messageId,
+                'status' => $messageStatus,
+                'email' => $contactMessage->email,
+                'subject' => $contactMessage->subject,
+            ],
+        );
+
+        $contactMessage->delete();
+
+        return redirect()
+            ->route('admin.contact-messages.index')
+            ->with('success', 'Message de contact supprime.');
+    }
 }
 

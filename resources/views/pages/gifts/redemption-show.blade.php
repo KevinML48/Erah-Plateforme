@@ -24,6 +24,11 @@
         background: rgba(255, 255, 255, 0.03);
     }
 
+    .gift-order-aside-actions {
+        display: grid;
+        gap: 10px;
+    }
+
     .gift-order-head {
         display: flex;
         flex-wrap: wrap;
@@ -218,6 +223,14 @@
         .gift-order-meta-grid {
             grid-template-columns: 1fr;
         }
+
+        .gift-order-card {
+            padding: 18px;
+        }
+
+        .gift-order-aside-actions .tt-btn {
+            width: 100%;
+        }
     }
 </style>
 @endsection
@@ -344,12 +357,14 @@
                                 <p>Besoin d une autre commande? Retournez au catalogue cadeaux pour lancer une nouvelle demande.</p>
                             </div>
 
-                            <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-secondary margin-top-20">
-                                <span data-hover="Catalogue cadeaux">Retour au catalogue</span>
-                            </a>
-                            <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-outline margin-top-10">
-                                <span data-hover="Mes commandes cadeaux">Retour a mes commandes</span>
-                            </a>
+                            <div class="gift-order-aside-actions margin-top-20">
+                                <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-secondary">
+                                    <span data-hover="Catalogue cadeaux">Retour au catalogue</span>
+                                </a>
+                                <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-outline">
+                                    <span data-hover="Mes commandes cadeaux">Retour a mes commandes</span>
+                                </a>
+                            </div>
                         </aside>
                     </div>
                 </div>

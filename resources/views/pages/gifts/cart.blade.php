@@ -24,6 +24,12 @@
         background: rgba(255, 255, 255, 0.03);
     }
 
+    .gift-cart-summary-card {
+        position: sticky;
+        top: 110px;
+        align-self: start;
+    }
+
     .gift-cart-table {
         width: 100%;
         border-collapse: collapse;
@@ -36,6 +42,10 @@
         text-align: left;
         vertical-align: middle;
         color: #fff;
+    }
+
+    .gift-cart-table td::before {
+        display: none;
     }
 
     .gift-cart-table th {
@@ -120,6 +130,11 @@
         margin-top: 14px;
     }
 
+    .gift-cart-summary-actions {
+        display: grid;
+        gap: 10px;
+    }
+
     .gift-cart-summary-row {
         display: flex;
         align-items: center;
@@ -184,6 +199,10 @@
         .gift-cart-layout {
             grid-template-columns: 1fr;
         }
+
+        .gift-cart-summary-card {
+            position: static;
+        }
     }
 
     @media (max-width: 991.98px) {
@@ -195,6 +214,10 @@
     }
 
     @media (max-width: 767.98px) {
+        .gift-cart-layout > aside {
+            order: -1;
+        }
+
         .gift-cart-table {
             display: flex;
             flex-direction: column;
@@ -227,6 +250,16 @@
             margin: 0;
         }
 
+        .gift-cart-table td::before {
+            content: attr(data-label);
+            display: block;
+            margin-bottom: 4px;
+            color: rgba(255, 255, 255, 0.64);
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
         .gift-cart-table td:first-child {
             margin-bottom: 8px;
         }
@@ -242,12 +275,18 @@
 
         .gift-cart-inline {
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
         .gift-cart-inline .tt-btn {
+            width: 100%;
             flex-shrink: 0;
             padding: 8px 14px;
+        }
+
+        .gift-cart-summary-actions .tt-btn {
+            width: 100%;
         }
     }
 
@@ -324,7 +363,7 @@
                                                 $cartItem = $lineItem['cart_item'];
                                             @endphp
                                             <tr>
-                                                <td>
+                                                <td data-label="Cadeau">
                                                     <div class="gift-cart-gift">
                                                         <img src="{{ $gift?->image_url ?: '/template/assets/img/logo.png' }}" alt="{{ $gift?->title ?: 'Cadeau indisponible' }}">
                                                         <div>
@@ -333,35 +372,35 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>{{ (int) ($gift?->cost_points ?? 0) }} pts</td>
-                                                <td>
+                                                <td data-label="Cout unitaire">{{ (int) ($gift?->cost_points ?? 0) }} pts</td>
+                                                <td data-label="Quantite">
                                                     <form method="POST" action="{{ route('gifts.cart.update', $cartItem->id) }}" class="gift-cart-inline">
                                                         @csrf
                                                         @method('PATCH')
                                                         <input class="gift-cart-input" type="number" min="1" max="50" name="quantity" value="{{ (int) $cartItem->quantity }}">
                                                         <button type="submit" class="tt-btn tt-btn-outline">
-                                                            <span data-hover="Maj">Maj</span>
+                                                            <span data-hover="Mettre a jour">Mettre a jour</span>
                                                         </button>
                                                     </form>
                                                 </td>
-                                                <td>{{ (int) $lineItem['line_total'] }} pts</td>
-                                                <td>
+                                                <td data-label="Total ligne"><strong>{{ (int) $lineItem['line_total'] }} pts</strong></td>
+                                                <td data-label="Disponibilite">
                                                     <span class="gift-cart-status {{ $lineItem['is_available'] ? 'is-ok' : 'is-ko' }}">
                                                         {{ $lineItem['status_copy'] }}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Actions">
                                                     <div class="gift-cart-inline">
                                                         @if($gift)
                                                             <a href="{{ route('gifts.show', $gift->id) }}" class="tt-btn tt-btn-outline">
-                                                                <span data-hover="Fiche">Fiche</span>
+                                                                <span data-hover="Voir le cadeau">Voir le cadeau</span>
                                                             </a>
                                                         @endif
                                                         <form method="POST" action="{{ route('gifts.cart.remove', $cartItem->id) }}">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="tt-btn tt-btn-secondary">
-                                                                <span data-hover="Retirer">Retirer</span>
+                                                                <span data-hover="Supprimer">Supprimer</span>
                                                             </button>
                                                         </form>
                                                     </div>
@@ -377,12 +416,16 @@
                             @endif
                         </section>
 
-                        <aside class="gift-cart-card">
+                        <aside class="gift-cart-card gift-cart-summary-card">
                             <div class="tt-heading tt-heading-sm no-margin">
                                 <h3 class="tt-heading-title">Resume commande</h3>
                             </div>
 
                             <div class="gift-cart-summary-list">
+                                <div class="gift-cart-summary-row">
+                                    <span>Articles</span>
+                                    <strong>{{ $lineItems->count() }}</strong>
+                                </div>
                                 <div class="gift-cart-summary-row">
                                     <span>Sous-total</span>
                                     <strong>{{ $totalPoints }} pts</strong>
@@ -421,7 +464,7 @@
                                 </button>
                             </form>
 
-                            <div class="gift-cart-inline margin-top-15">
+                            <div class="gift-cart-summary-actions margin-top-15">
                                 <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-outline">
                                     <span data-hover="Catalogue">Retour catalogue</span>
                                 </a>

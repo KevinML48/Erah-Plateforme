@@ -1308,12 +1308,12 @@
         <div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top" id="missions-focus">
             <div class="tt-section-inner tt-wrap max-width-1000">
                 <div class="tt-heading tt-heading-lg margin-bottom-20">
-                    <h3 class="tt-heading-subtitle">Missions focus</h3>
+                    <h3 class="tt-heading-subtitle">Missions favorites</h3>
                     <h2 class="tt-heading-title">Mes priorites du moment</h2>
                 </div>
                 <div class="profile-inline-actions margin-bottom-30">
                     <span class="tt-form-text">
-                        {{ (int) ($missionSummary['focus'] ?? 0) }} mission(s) en focus sur 3 maximum.
+                        {{ (int) ($missionSummary['focus'] ?? 0) }} mission(s) en favoris sur 3 maximum.
                     </span>
                     <a href="{{ route(request()->routeIs('app.*') ? 'app.missions.index' : 'missions.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                         <span data-hover="Ouvrir les missions">Ouvrir les missions</span>
@@ -1366,7 +1366,7 @@
                     </div>
                 @else
                     <div class="profile-mission-empty">
-                        Aucune mission en focus pour le moment. Depuis la page Missions, vous pouvez epingler jusqu a 3 priorites.
+                        Aucune mission favorite pour le moment. Depuis la page Missions, vous pouvez epingler jusqu a 3 priorites.
                     </div>
                 @endif
             </div>

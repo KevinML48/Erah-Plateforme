@@ -357,6 +357,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/contact-messages', [AdminContactMessageController::class, 'index'])->name('admin.contact-messages.index');
             Route::get('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('admin.contact-messages.show');
             Route::put('/contact-messages/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->name('admin.contact-messages.status');
+            Route::delete('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
             Route::get('/users/{userId}', [UsersConsoleController::class, 'show'])
                 ->whereNumber('userId')
                 ->name('admin.users.show');

@@ -91,7 +91,7 @@ class MissionsAndGiftsPagesTest extends TestCase
         $this->actingAs($user)
             ->get(route('missions.index'))
             ->assertOk()
-            ->assertSee('Mes 3 missions en focus')
+            ->assertSee('Mes 3 missions favorites')
             ->assertSee('Mission focus profil');
 
         $this->actingAs($user)

@@ -138,6 +138,14 @@
                                     </form>
                                 @endif
                             @endforeach
+
+                            <form method="POST" action="{{ route('admin.contact-messages.destroy', $contactMessage) }}" onsubmit="return confirm('Supprimer definitivement ce message de contact ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
+                                    <span data-hover="Supprimer">Supprimer</span>
+                                </button>
+                            </form>
                         </div>
                     </section>
                 </div>

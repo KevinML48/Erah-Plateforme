@@ -38,7 +38,7 @@
 
                 <a href="{{ route('missions.index') }}" class="link-card">
                     <span class="link-card-title">Progression</span>
-                    <strong>Missions et focus</strong>
+                    <strong>Missions et favoris</strong>
                     <p>Suivre vos missions actives, vos priorites et votre progression globale.</p>
                 </a>
 

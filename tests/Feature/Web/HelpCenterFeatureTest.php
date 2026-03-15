@@ -6,6 +6,7 @@ use App\Models\HelpCategory;
 use App\Models\User;
 use Database\Seeders\HelpCenterSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class HelpCenterFeatureTest extends TestCase
@@ -63,7 +64,8 @@ class HelpCenterFeatureTest extends TestCase
             ->assertOk()
             ->assertViewIs('pages.help.assistant')
             ->assertSee('Posez une question a la plateforme.')
-            ->assertSee('Assistant ERAH');
+                ->assertSee('Assistant ERAH')
+                ->assertSee('Peut-on parier sur un match ?');
     }
 
     public function test_help_center_global_search_returns_results_for_points(): void
@@ -91,15 +93,40 @@ class HelpCenterFeatureTest extends TestCase
         $this->seed(HelpCenterSeeder::class);
 
         $response = $this->postJson(route('help.assistant.ask'), [
-            'message' => 'Comment gagner des points avec les missions ?',
+            'message' => 'Que veut dire reward wallet ?',
         ]);
 
         $response->assertOk()
-            ->assertJsonPath('data.answer', 'Oui, je peux t expliquer ca simplement. Les missions quotidiennes structurent l activite et donnent des recompenses directes en points et progression.')
+            ->assertJsonPath('data.answer', 'Oui, je peux t expliquer ca simplement. Le reward wallet affiche votre reserve et le catalogue cadeaux permet de lancer une redemption si le solde est suffisant.')
             ->assertJsonPath('data.sources.0.type', 'article');
 
         $this->assertStringStartsWith('/', (string) $response->json('data.sources.0.url'));
         $this->assertStringNotContainsString('127.0.0.1', (string) $response->json('data.sources.0.url'));
+    }
+
+    public function test_help_assistant_guarantees_all_public_suggested_prompts(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $prompts = [
+            'Comment fonctionne la plateforme ?',
+            'Comment gagner des points ?',
+            'Comment voir les matchs a venir ?',
+            'Comment marchent les missions ?',
+            'Comment recuperer des cadeaux ?',
+            'Comment ameliorer mon profil ?',
+            'Peut-on parier sur un match ?',
+        ];
+
+        foreach ($prompts as $prompt) {
+            $response = $this->postJson(route('help.assistant.ask'), [
+                'message' => $prompt,
+            ]);
+
+            $response->assertOk();
+            $this->assertNotEmpty((string) $response->json('data.answer'), $prompt);
+            $this->assertContains((string) $response->json('data.confidence'), ['high', 'medium'], $prompt);
+        }
     }
 
     public function test_help_assistant_can_explain_how_to_become_a_supporter(): void
@@ -115,17 +142,34 @@ class HelpCenterFeatureTest extends TestCase
             ->assertJsonPath('data.sources.0.url', route('supporter.show', [], false));
     }
 
-    public function test_help_assistant_requests_precision_for_a_broad_but_relevant_question(): void
+    public function test_help_assistant_prioritizes_known_variants_over_generic_clarification(): void
     {
         $this->seed(HelpCenterSeeder::class);
 
-        $this->postJson(route('help.assistant.ask'), [
+        $response = $this->postJson(route('help.assistant.ask'), [
             'message' => 'comment ca marche',
-        ])
-            ->assertOk()
-            ->assertJsonPath('data.confidence', 'clarification')
-            ->assertJsonPath('data.answer', 'Je peux t aider, mais ta question est assez large. Tu veux comprendre le fonctionnement global de la plateforme, les points, les matchs, les missions ou une autre partie precise ?')
-            ->assertJsonCount(0, 'data.sources');
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.confidence', 'high')
+            ->assertJsonPath('data.sources.0.title', 'Comprendre le role de la plateforme');
+
+        $this->assertStringContainsString('ERAH regroupe la progression', (string) $response->json('data.answer'));
+    }
+
+    public function test_help_assistant_handles_close_variants_for_betting_question(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $response = $this->postJson(route('help.assistant.ask'), [
+            'message' => 'Peut-on faire des paris ? ',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.confidence', 'high')
+            ->assertJsonPath('data.sources.0.title', 'Peut-on parier sur un match ?');
+
+        $this->assertStringContainsString('vous pouvez parier sur un match', Str::lower((string) $response->json('data.answer')));
     }
 
     public function test_help_assistant_does_not_force_an_answer_for_an_incomprehensible_question(): void

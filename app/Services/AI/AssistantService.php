@@ -130,7 +130,7 @@ class AssistantService
         $latestMessage = (string) optional($conversation->messages()->latest('id')->first())->content;
         $classification = $this->assistantQueryClassifier->classify($latestMessage);
 
-        if ($classification->requiresGuardResponse()) {
+        if ($classification->requiresGuardResponse() && ! $this->assistantFallbackService->hasDedicatedPrompt($latestMessage)) {
             $guardedResponse = $this->assistantFallbackService->guardedReply($classification);
 
             if ($onDelta) {

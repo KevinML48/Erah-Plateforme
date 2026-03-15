@@ -186,13 +186,11 @@ export default function AssistantShow({ page }) {
             return;
         }
 
-        setDraft(prompt);
+        void submitMessage(prompt);
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const message = draft.trim();
+    const submitMessage = async (rawMessage) => {
+        const message = rawMessage.trim();
 
         if (!message || isStreaming || !page.availability.enabled) {
             return;
@@ -312,6 +310,12 @@ export default function AssistantShow({ page }) {
         } finally {
             setIsStreaming(false);
         }
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        await submitMessage(draft);
     };
 
     const handleRenameConversation = async (event) => {

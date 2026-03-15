@@ -22,6 +22,10 @@ class AssistantFallbackService
         $normalized = Str::of($message)->lower()->ascii()->squish()->toString();
         $userContext = Arr::get($context, 'user', []);
 
+        if ($intent = $this->helpAssistantService->matchDedicatedPromptIntent($message)) {
+            return $this->dedicatedPromptReply($intent, $message, $user, $userContext, $context, $normalized);
+        }
+
         if ($classification?->requiresGuardResponse()) {
             return $this->guardedReply($classification);
         }
@@ -100,6 +104,11 @@ class AssistantFallbackService
                 ],
             ],
         );
+    }
+
+    public function hasDedicatedPrompt(string $message): bool
+    {
+        return $this->helpAssistantService->matchDedicatedPromptIntent($message) !== null;
     }
 
     /**
@@ -430,6 +439,53 @@ class AssistantFallbackService
         }
 
         return trim(implode("\n\n", array_filter($sections)));
+    }
+
+    /**
+     * @param array<string, mixed> $userContext
+     * @param array<string, mixed> $context
+     */
+    private function dedicatedPromptReply(
+        string $intent,
+        string $message,
+        User $user,
+        array $userContext,
+        array $context,
+        string $normalized,
+    ): AssistantResponse {
+        return match ($intent) {
+            'overview' => $this->overviewReply($userContext, $context),
+            'missions' => $this->missionReply($userContext, $context),
+            'upcoming_matches' => Arr::get($userContext, 'upcoming_matches')
+                ? $this->upcomingMatchesReply($userContext, $context)
+                : $this->dedicatedKnowledgeResponse($message, $user, $userContext, $context),
+            'betting' => $this->betReply($userContext, $context),
+            'supporter' => $this->supporterReply($userContext, $context),
+            'gifts' => $this->rewardReply($userContext, $context),
+            'points' => $this->pointsReply($userContext, $context),
+            'profile' => $this->profileReply($userContext, $context),
+            'next_step' => $this->nextStepReply($userContext, $context),
+            default => $this->dedicatedKnowledgeResponse($message, $user, $userContext, $context),
+        };
+    }
+
+    /**
+     * @param array<string, mixed> $userContext
+     * @param array<string, mixed> $context
+     */
+    private function dedicatedKnowledgeResponse(string $message, User $user, array $userContext, array $context): AssistantResponse
+    {
+        $dedicated = $this->helpAssistantService->dedicatedPromptPayload($message, $user);
+
+        return new AssistantResponse(
+            content: $this->knowledgeReply($dedicated ?? [], $userContext, $context),
+            provider: 'knowledge-base',
+            model: 'local-fallback',
+            metadata: [
+                'sources' => $dedicated['sources'] ?? [],
+                'next_steps' => $dedicated['next_steps'] ?? [],
+            ],
+        );
     }
 
     private function looksLikeOverviewQuestion(string $message): bool

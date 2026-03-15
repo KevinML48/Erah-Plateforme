@@ -386,6 +386,7 @@ class HelpCenterService
                     'Comment marchent les missions ?',
                     'Comment recuperer des cadeaux ?',
                     'Comment ameliorer mon profil ?',
+                    'Peut-on parier sur un match ?',
                 ],
                 'disclaimer' => "L'assistant ne doit pas halluciner. S'il n'a pas de reponse fiable, il vous le dit et vous renvoie vers la meilleure section.",
             ],

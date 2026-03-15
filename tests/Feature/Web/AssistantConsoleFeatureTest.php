@@ -191,9 +191,32 @@ class AssistantConsoleFeatureTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString(
-            'ta question est assez large',
+            'tout est rassemble dans le meme espace pour suivre ta progression',
             (string) $response->json('data.assistant_message.content')
         );
+    }
+
+    public function test_console_assistant_guarantees_all_configured_starter_prompts(): void
+    {
+        $this->seed(HelpCenterSeeder::class);
+
+        $user = User::factory()->create();
+
+        foreach ((array) config('assistant.ui.starter_prompts', []) as $prompt) {
+            $response = $this->actingAs($user)
+                ->postJson(route('assistant.messages.store'), [
+                    'message' => $prompt,
+                ]);
+
+            $response->assertOk();
+
+            $content = (string) $response->json('data.assistant_message.content');
+
+            $this->assertNotSame('', trim($content), $prompt);
+            $this->assertStringNotContainsString('ta question est assez large', $content, $prompt);
+            $this->assertStringNotContainsString('Je n ai pas bien compris ta question', $content, $prompt);
+            $this->assertStringNotContainsString('Je vois le sujet, mais je prefere rester prudent', $content, $prompt);
+        }
     }
 
     public function test_console_assistant_does_not_answer_randomly_when_message_is_incomprehensible(): void

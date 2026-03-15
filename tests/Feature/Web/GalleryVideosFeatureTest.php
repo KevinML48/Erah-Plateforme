@@ -364,6 +364,8 @@ class GalleryVideosFeatureTest extends TestCase
 
         $this->seed(GalleryVideoLegacySeeder::class);
 
+        $this->assertSame(13, GalleryVideo::query()->count());
+
         $this->assertDatabaseHas('gallery_videos', [
             'title' => 'Présentation',
             'legacy_source' => '_template_site/galerie-video.html',

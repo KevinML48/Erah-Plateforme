@@ -55,9 +55,9 @@ class GalleryVideoLegacySeeder extends Seeder
                 continue;
             }
 
-            GalleryVideo::query()->create($item + [
+            GalleryVideo::query()->create(array_merge($item, [
                 'slug' => GalleryVideo::uniqueSlug($item['title']),
-            ]);
+            ]));
             $created++;
         }
 
@@ -119,11 +119,46 @@ class GalleryVideoLegacySeeder extends Seeder
                 'preview_video_webm_url' => '/template/assets/vids/interview-HopLan-2024.webm',
             ],
             [
+                'title' => 'Gamers Assembly 2025',
+                'category_label' => 'LAN',
+                'video_url' => 'https://youtu.be/I1o44CVvCFA?si=AQtilTw4pJRt3kJu',
+                'preview_video_url' => '/template/assets/vids/interview-GA-2025.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-GA-2025.webm',
+            ],
+            [
                 'title' => 'Bootcamp GC',
                 'category_label' => 'Esport',
                 'video_url' => 'https://youtu.be/80qtJPHgmqY',
                 'preview_video_url' => '/template/assets/vids/bootcamp feminin.mp4',
                 'preview_video_webm_url' => '/template/assets/vids/bootcamp feminin.webm',
+            ],
+            [
+                'title' => 'LAN TGF',
+                'category_label' => 'Esport',
+                'video_url' => 'https://youtu.be/mWA_KWJfFU0',
+                'preview_video_url' => '/template/assets/vids/Interview_Equipe_Rocket-league - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Interview_Equipe_Rocket-league - Trim.webm',
+            ],
+            [
+                'title' => 'Interview',
+                'category_label' => 'Lyon Esport',
+                'video_url' => 'https://youtube.com/shorts/5TNjRatspIc?feature=share',
+                'preview_video_url' => '/template/assets/vids/interview-LyonEsport.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-LyonEsport.webm',
+            ],
+            [
+                'title' => 'Conférence',
+                'category_label' => 'Événement',
+                'video_url' => 'https://youtu.be/iXSCfTEAs_0',
+                'preview_video_url' => '/template/assets/vids/Retour Yusoh (1).mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Retour Yusoh (1).webm',
+            ],
+            [
+                'title' => 'Intervention',
+                'category_label' => 'Talk',
+                'video_url' => 'https://youtu.be/iXSCfTEAs_0',
+                'preview_video_url' => '/template/assets/vids/PYUSOH 1 - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/PYUSOH 1 - Trim.webm',
             ],
             [
                 'title' => 'Recap MW3',

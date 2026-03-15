@@ -4,6 +4,7 @@ namespace Tests\Feature\Web;
 
 use App\Models\GalleryVideo;
 use App\Models\User;
+use App\Services\GalleryVideoImportService;
 use Database\Seeders\GalleryVideoLegacySeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -347,6 +348,29 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertGreaterThan(0, GalleryVideo::query()->count());
         $this->assertDatabaseHas('gallery_videos', [
             'title' => 'Présentation',
+            'legacy_source' => '_template_site/galerie-video.html',
+        ]);
+    }
+
+    public function test_legacy_gallery_video_seeder_uses_fallback_data_when_import_returns_nothing(): void
+    {
+        app()->instance(GalleryVideoImportService::class, new class extends GalleryVideoImportService
+        {
+            public function import(): array
+            {
+                return ['processed' => 0, 'created' => 0, 'updated' => 0, 'skipped' => 0, 'found' => 0];
+            }
+        });
+
+        $this->seed(GalleryVideoLegacySeeder::class);
+
+        $this->assertDatabaseHas('gallery_videos', [
+            'title' => 'Présentation',
+            'legacy_source' => '_template_site/galerie-video.html',
+        ]);
+
+        $this->assertDatabaseHas('gallery_videos', [
+            'title' => 'VCL Split 1 2026',
             'legacy_source' => '_template_site/galerie-video.html',
         ]);
     }

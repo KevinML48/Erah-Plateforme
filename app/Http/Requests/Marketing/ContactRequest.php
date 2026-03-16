@@ -28,9 +28,11 @@ class ContactRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $authenticatedEmail = $this->user()?->email;
+
         $this->merge([
             'name' => trim(strip_tags((string) $this->input('name'))),
-            'email' => strtolower(trim((string) $this->input('email'))),
+            'email' => strtolower(trim((string) ($authenticatedEmail ?: $this->input('email')))),
             'category' => trim((string) $this->input('category')),
             'subject' => trim(strip_tags((string) $this->input('subject'))),
             'message' => trim(strip_tags((string) $this->input('message'))),

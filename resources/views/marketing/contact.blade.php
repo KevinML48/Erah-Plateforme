@@ -97,6 +97,8 @@
 @php
     $contactCategories = $contactCategories ?? \App\Models\ContactMessage::categoryLabels();
     $contactSubmissionToken = $contactSubmissionToken ?? '';
+    $contactUser = auth()->user();
+    $contactEmailValue = $contactUser?->email ? (string) $contactUser->email : (string) old('email');
 @endphp
 <div id="page-header"
     class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -237,7 +239,10 @@
                             <div class="tt-form-group tt-anim-fadeinup">
                                 <label>Votre email <span class="required">*</span></label>
                                 <input class="tt-form-control" type="email" name="email"
-                                    placeholder="example@gmail.com" value="{{ old('email') }}" required>
+                                    placeholder="example@gmail.com" value="{{ $contactEmailValue }}" @readonly($contactUser !== null) required>
+                                @if($contactUser)
+                                    <p class="tt-field-error" style="color: rgba(255,255,255,.72);">Email recupere depuis votre compte connecte.</p>
+                                @endif
                                 @error('email')
                                     <p class="tt-field-error">{{ $message }}</p>
                                 @enderror

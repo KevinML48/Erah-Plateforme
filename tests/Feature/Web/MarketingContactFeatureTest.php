@@ -22,6 +22,30 @@ class MarketingContactFeatureTest extends TestCase
             ->assertSee('name="category"', false);
     }
 
+    public function test_guest_contact_page_keeps_email_field_editable(): void
+    {
+        $this->get(route('marketing.contact'))
+            ->assertOk()
+            ->assertSee('name="email"', false)
+            ->assertDontSee('readonly', false)
+            ->assertDontSee('Email recupere depuis votre compte connecte.');
+    }
+
+    public function test_authenticated_contact_page_prefills_account_email_and_marks_it_readonly(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'member@erah.test',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('marketing.contact'))
+            ->assertOk()
+            ->assertSee('name="email"', false)
+            ->assertSee('value="member@erah.test"', false)
+            ->assertSee('readonly', false)
+            ->assertSee('Email recupere depuis votre compte connecte.');
+    }
+
     public function test_contact_form_validates_required_fields(): void
     {
         $token = $this->freshSubmissionToken();
@@ -139,6 +163,46 @@ class MarketingContactFeatureTest extends TestCase
             ->assertSessionHas('error');
 
         $this->assertDatabaseCount('contact_messages', 1);
+    }
+
+    public function test_authenticated_contact_form_uses_account_email_instead_of_browser_value(): void
+    {
+        Mail::fake();
+
+        config([
+            'mail.contact.address' => 'contact@erah.local',
+            'queue.default' => 'sync',
+        ]);
+
+        $user = User::factory()->create([
+            'email' => 'secure-user@erah.test',
+        ]);
+
+        $token = $this->actingAs($user)->freshSubmissionToken();
+
+        $this->post(route('marketing.contact.submit'), [
+            'name' => 'Secure User',
+            'email' => 'spoofed@example.com',
+            'category' => ContactMessage::CATEGORY_SUPPORT,
+            'subject' => 'Question support',
+            'message' => 'Je souhaite confirmer que mon compte utilise bien son email source.',
+            'website' => '',
+            'submission_token' => $token,
+        ])->assertRedirect(route('marketing.contact'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('contact_messages', [
+            'name' => 'Secure User',
+            'email' => 'secure-user@erah.test',
+            'subject' => 'Question support',
+            'status' => ContactMessage::STATUS_NEW,
+        ]);
+
+        $this->assertDatabaseMissing('contact_messages', [
+            'email' => 'spoofed@example.com',
+        ]);
+
+        Mail::assertSent(MarketingContactMailable::class, 1);
     }
 
     public function test_admin_can_list_view_and_update_contact_messages(): void

@@ -256,56 +256,249 @@
     body.tt-lightmode-on #tt-header .tt-main-menu-holder {
       background: rgba(255, 255, 255, .98);
     }
+    #tt-header .tt-main-menu-holder {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    #tt-header .tt-main-menu-holder::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
     @media (min-width: 1025px) {
-      body.tt-lightmode-on #tt-header .tt-header-col-center {
-        min-width: 0;
+      #tt-header .tt-header-inner {
+        width: min(1320px, calc(100% - 48px));
+        margin: 22px auto 0;
+        padding: 14px 18px 14px 14px;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 18px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(8, 12, 18, .78), rgba(9, 13, 19, .7));
+        box-shadow: 0 22px 48px rgba(0, 0, 0, .24);
+        backdrop-filter: blur(10px);
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list {
+      #tt-header .tt-header-col-left,
+      #tt-header .tt-header-col-center,
+      #tt-header .tt-header-col-right {
         display: flex;
         align-items: center;
-        gap: 0;
-        flex-wrap: wrap;
+        min-width: 0;
+      }
+      #tt-header .tt-header-col-center {
         justify-content: center;
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li {
-        margin-right: 42px;
+      #tt-header .tt-header-col-right {
+        justify-content: flex-end;
+        gap: 12px;
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li:last-child {
+      #tt-header .tt-logo a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 58px;
+        padding: 8px 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .04);
+      }
+      #tt-header .tt-logo img {
+        max-height: 34px;
+      }
+      #tt-header .tt-main-menu {
+        display: block;
+        width: 100%;
+      }
+      #tt-header .tt-main-menu-holder {
+        overflow: visible;
         margin-right: 0;
+        background: transparent;
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > a,
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a {
-        padding: 4px 0;
+      #tt-header .tt-main-menu-inner {
+        display: block;
+        height: auto;
+        padding: 0;
+      }
+      #tt-header .tt-main-menu-content {
+        display: block;
+      }
+      #tt-header .tt-main-menu-list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin: 0;
+        padding: 8px 10px;
+        list-style: none;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .04);
+      }
+      #tt-header .tt-main-menu-list > li {
+        position: relative;
+        margin: 0;
+      }
+      #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more {
+        margin-left: 8px;
+        padding-left: 12px;
+      }
+      #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 11px;
+        bottom: 11px;
+        width: 1px;
+        background: rgba(255, 255, 255, .1);
+      }
+      #tt-header .tt-main-menu-list > li > a,
+      #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a {
+        min-height: 40px;
+        padding: 0 14px;
         border: 0;
-        border-radius: 0;
+        border-radius: 12px;
         background: transparent;
         box-shadow: none;
-        font-size: 24px;
-        line-height: 1.1;
-        color: #0f172a !important;
-        -webkit-text-fill-color: #0f172a;
+        color: rgba(248, 250, 252, .92) !important;
+        -webkit-text-fill-color: rgba(248, 250, 252, .92);
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: .11em;
+        text-transform: uppercase;
         white-space: nowrap;
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > a::before,
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a::before {
-        display: block;
-        background-color: #d80707;
+      #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more > a,
+      #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more > .tt-submenu-trigger > a {
+        color: rgba(226, 232, 240, .72) !important;
+        -webkit-text-fill-color: rgba(226, 232, 240, .72);
+        font-size: 12px;
+        font-weight: 500;
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.active > a,
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.active > .tt-submenu-trigger > a,
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.tt-submenu-open > .tt-submenu-trigger > a,
+      #tt-header .tt-main-menu-list > li > a:hover,
+      #tt-header .tt-main-menu-list > li > a:focus-visible,
+      #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a:hover,
+      #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a:focus-visible,
+      #tt-header .tt-main-menu-list > li.tt-submenu-open > .tt-submenu-trigger > a {
+        background: rgba(255, 255, 255, .08);
+        color: #fff !important;
+        -webkit-text-fill-color: #fff;
+      }
+      #tt-header .tt-main-menu-list > li > a::before,
+      #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a::before {
+        display: none;
+      }
+      #tt-header .tt-submenu {
+        padding-top: 14px;
+      }
+      #tt-header .tt-submenu-list {
+        min-width: 220px;
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        background: rgba(8, 12, 18, .94);
+        box-shadow: 0 22px 46px rgba(0, 0, 0, .24);
+        backdrop-filter: blur(10px);
+      }
+      #tt-header .tt-submenu-list > li > a {
+        min-height: 40px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: rgba(241, 245, 249, .9);
+        -webkit-text-fill-color: rgba(241, 245, 249, .9);
+        font-size: 13px;
+        letter-spacing: .04em;
+      }
+      #tt-header .tt-submenu-list > li > a:hover,
+      #tt-header .tt-submenu-list > li > a:focus-visible,
+      #tt-header .tt-submenu-list > li.active > a {
+        color: #fff;
+        -webkit-text-fill-color: #fff;
+        background: rgba(255, 255, 255, .08);
+      }
+      #tt-header .tt-header-account-cluster {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-left: 16px;
+        border-left: 1px solid rgba(255, 255, 255, .08);
+      }
+      #tt-header .tt-header-account-btn {
+        min-height: 40px;
+        padding: 0 14px;
+      }
+      #tt-header .tt-header-account-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        min-height: 40px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, .1);
+        background: rgba(255, 255, 255, .04);
+        color: rgba(248, 250, 252, .9);
+      }
+      #tt-header #tt-m-menu-toggle-btn-wrap {
+        display: none;
+      }
+      body.tt-lightmode-on #tt-header .tt-header-inner {
+        border: 1px solid rgba(148, 163, 184, .22);
+        background: linear-gradient(180deg, rgba(255, 255, 255, .95), rgba(248, 250, 252, .9));
+        box-shadow: 0 20px 44px rgba(148, 163, 184, .18);
+      }
+      body.tt-lightmode-on #tt-header .tt-logo a,
+      body.tt-lightmode-on #tt-header .tt-main-menu-list,
+      body.tt-lightmode-on #tt-header .tt-header-account-icon {
+        border-color: rgba(148, 163, 184, .2);
+        background: rgba(255, 255, 255, .82);
+        box-shadow: 0 10px 22px rgba(148, 163, 184, .1);
+      }
+      body.tt-lightmode-on #tt-header .tt-header-account-cluster {
+        border-left-color: rgba(148, 163, 184, .2);
+      }
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more::before {
+        background: rgba(148, 163, 184, .2);
+      }
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > a,
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a,
+      body.tt-lightmode-on #tt-header .tt-header-account-icon {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a;
+      }
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more > a,
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.tt-main-menu-secondary-more > .tt-submenu-trigger > a {
+        color: rgba(51, 65, 85, .62) !important;
+        -webkit-text-fill-color: rgba(51, 65, 85, .62);
+      }
       body.tt-lightmode-on #tt-header .tt-main-menu-list > li > a:hover,
       body.tt-lightmode-on #tt-header .tt-main-menu-list > li > a:focus-visible,
       body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a:hover,
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a:focus-visible {
-        background: transparent;
-        border-color: transparent;
-        color: #d80707 !important;
-        -webkit-text-fill-color: #d80707;
-        box-shadow: none;
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a:focus-visible,
+      body.tt-lightmode-on #tt-header .tt-main-menu-list > li.tt-submenu-open > .tt-submenu-trigger > a,
+      body.tt-lightmode-on #tt-header .tt-header-account-icon:hover,
+      body.tt-lightmode-on #tt-header .tt-header-account-icon:focus-visible {
+        color: #0f172a !important;
+        -webkit-text-fill-color: #0f172a;
+        border-color: rgba(148, 163, 184, .28);
+        background: rgba(241, 245, 249, .94);
       }
-      body.tt-lightmode-on #tt-header .tt-main-menu-list > li > .tt-submenu-trigger > a::after {
-        background-color: currentColor;
+      body.tt-lightmode-on #tt-header .tt-submenu-list {
+        border-color: rgba(148, 163, 184, .2);
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 22px 42px rgba(148, 163, 184, .16);
+      }
+      body.tt-lightmode-on #tt-header .tt-submenu-list > li > a {
+        color: #0f172a;
+        -webkit-text-fill-color: #0f172a;
+      }
+      body.tt-lightmode-on #tt-header .tt-submenu-list > li > a:hover,
+      body.tt-lightmode-on #tt-header .tt-submenu-list > li > a:focus-visible,
+      body.tt-lightmode-on #tt-header .tt-submenu-list > li.active > a {
+        background: rgba(241, 245, 249, .94);
+        color: #0f172a;
+        -webkit-text-fill-color: #0f172a;
       }
     }
     body.tt-lightmode-on .tt-scroll-down-inner,

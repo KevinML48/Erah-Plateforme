@@ -83,8 +83,10 @@
                             </div>
 
                             @foreach(($marketSummary['selections'] ?? []) as $selection)
-                                @php($stakeShareStyle = 'width: '.max(0, min(100, (float) ($selection['stake_share'] ?? 0))).'%;')
-                                @php($stakeShareAttr = ' style="'.e($stakeShareStyle).'"')
+                                @php
+                                    $stakeShareStyle = 'width: '.max(0, min(100, (float) ($selection['stake_share'] ?? 0))).'%;';
+                                    $stakeShareAttr = ' style="'.e($stakeShareStyle).'"';
+                                @endphp
                                 <div class="match-community-market-item">
                                     <div class="match-community-market-item-head">
                                         <strong>{{ $selection['selection_label'] ?? 'Camp' }}</strong>

@@ -1712,7 +1712,9 @@
                                         <strong>{{ (int) ($mission['progress_count'] ?? 0) }} / {{ (int) ($mission['target_count'] ?? 0) }}</strong>
                                     </div>
                                     <div class="profile-mission-progress-track">
-                                        @php($missionProgressAttr = ' style="width: '.e((string) ((int) ($mission['progress_percent'] ?? 0))).'%"')
+                                        @php
+                                            $missionProgressAttr = ' style="width: '.e((string) ((int) ($mission['progress_percent'] ?? 0))).'%"';
+                                        @endphp
                                         <span{!! $missionProgressAttr !!}></span>
                                     </div>
                                 </div>

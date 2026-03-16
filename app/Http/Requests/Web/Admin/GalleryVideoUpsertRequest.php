@@ -41,12 +41,12 @@ class GalleryVideoUpsertRequest extends FormRequest
             'preview_video_webm_url' => ['nullable', 'url', 'max:2048'],
             'category_key' => ['nullable', 'string', 'max:64'],
             'category_label' => ['nullable', 'string', 'max:120'],
-            'status' => ['required', Rule::in([
+            'status' => ['nullable', Rule::in([
                 GalleryVideo::STATUS_DRAFT,
                 GalleryVideo::STATUS_PUBLISHED,
                 GalleryVideo::STATUS_ARCHIVED,
             ])],
-            'sort_order' => ['required', 'integer', 'min:0', 'max:99999'],
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'published_at' => ['nullable', 'date'],
             'is_featured' => ['nullable', 'boolean'],
         ];
@@ -67,9 +67,9 @@ class GalleryVideoUpsertRequest extends FormRequest
             'preview_video_webm_url' => $this->filled('preview_video_webm_url') ? trim((string) $this->input('preview_video_webm_url')) : null,
             'category_key' => $this->filled('category_key') ? trim((string) $this->input('category_key')) : null,
             'category_label' => $this->filled('category_label') ? trim((string) $this->input('category_label')) : null,
-            'status' => $this->input('status', GalleryVideo::STATUS_DRAFT),
-            'sort_order' => $this->input('sort_order', 0),
-            'is_featured' => $this->boolean('is_featured', false),
+            'status' => $this->filled('status') ? (string) $this->input('status') : null,
+            'sort_order' => $this->filled('sort_order') ? (int) $this->input('sort_order') : null,
+            'is_featured' => $this->has('is_featured') ? $this->boolean('is_featured') : null,
         ]);
     }
 }

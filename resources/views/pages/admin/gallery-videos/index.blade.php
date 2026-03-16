@@ -488,49 +488,34 @@
                     <div class="adm-video-topbar">
                         <div>
                             <h3>Ajouter une vidéo</h3>
-                            <p>Utilisez l'URL publique comme source, ajoutez une preview vidéo si besoin, et sinon la galerie affichera simplement le logo par défaut quand aucune image n'est fournie.</p>
+                            <p>Renseignez uniquement le titre, la description, le MP4 du slider et le lien YouTube. Le reste est géré automatiquement.</p>
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.gallery-videos.store') }}" class="adm-form tt-form tt-form-creative tt-form-lg" enctype="multipart/form-data" data-video-preview-root>
+                    <form method="POST" action="{{ route('admin.gallery-videos.store') }}" class="adm-form tt-form tt-form-creative tt-form-lg" data-video-preview-root>
                         @csrf
 
                         <div class="adm-video-form-shell">
                             <div class="adm-video-form-grid">
                                 <div class="tt-form-group"><label for="create-title">Titre</label><input id="create-title" type="text" name="title" class="tt-form-control" value="{{ old('title') }}" required data-preview-field="title"></div>
-                                <div class="tt-form-group"><label for="create-slug">Slug</label><input id="create-slug" type="text" name="slug" class="tt-form-control" value="{{ old('slug') }}" placeholder="Genere automatiquement si vide"></div>
-                                <div class="tt-form-group adm-span-2"><label for="create-excerpt">Accroche courte</label><textarea id="create-excerpt" name="excerpt" class="tt-form-control" placeholder="Texte court affiche dans les cartes" data-preview-field="excerpt">{{ old('excerpt') }}</textarea></div>
-                                <div class="tt-form-group adm-span-2"><label for="create-description">Description detaillee</label><textarea id="create-description" name="description" class="tt-form-control" placeholder="Contexte, evenement, contenu de la video" data-preview-field="description">{{ old('description') }}</textarea></div>
-                                <div class="tt-form-group"><label for="create-platform">Plateforme</label><select id="create-platform" name="platform" class="tt-form-control" data-preview-field="platform"><option value="youtube" @selected(old('platform', 'youtube') === 'youtube')>YouTube</option><option value="twitch" @selected(old('platform') === 'twitch')>Twitch</option><option value="other" @selected(old('platform') === 'other')>Autre</option></select></div>
-                                <div class="tt-form-group"><label for="create-video-url">URL video</label><input id="create-video-url" type="url" name="video_url" class="tt-form-control" value="{{ old('video_url') }}" required data-preview-field="video_url"></div>
-                                <div class="tt-form-group"><label for="create-embed-url">URL embed</label><input id="create-embed-url" type="url" name="embed_url" class="tt-form-control" value="{{ old('embed_url') }}" placeholder="Optionnel si vous voulez forcer l'embed" data-preview-field="embed_url"></div>
-                                <div class="tt-form-group"><label for="create-thumbnail-url">URL miniature</label><input id="create-thumbnail-url" type="url" name="thumbnail_url" class="tt-form-control" value="{{ old('thumbnail_url') }}" placeholder="Optionnel, sinon logo par defaut" data-preview-field="thumbnail_url"></div>
-                                <div class="tt-form-group"><label for="create-thumbnail-image">Miniature uploadee</label><input id="create-thumbnail-image" type="file" name="thumbnail_image" class="tt-form-control" accept="image/png,image/jpeg,image/webp,image/avif" data-preview-field="thumbnail_image"></div>
-                                <div class="tt-form-group"><label for="create-preview-video-url">Preview MP4</label><input id="create-preview-video-url" type="url" name="preview_video_url" class="tt-form-control" value="{{ old('preview_video_url') }}" placeholder="Utilisee dans le slider plein ecran" data-preview-field="preview_video_url"></div>
-                                <div class="tt-form-group"><label for="create-preview-video-webm-url">Preview WebM</label><input id="create-preview-video-webm-url" type="url" name="preview_video_webm_url" class="tt-form-control" value="{{ old('preview_video_webm_url') }}"></div>
-                                <div class="tt-form-group"><label for="create-category-key">Cle categorie</label><input id="create-category-key" type="text" name="category_key" class="tt-form-control" value="{{ old('category_key') }}" placeholder="valorant, lan, club"></div>
-                                <div class="tt-form-group"><label for="create-category-label">Libelle categorie</label><input id="create-category-label" type="text" name="category_label" class="tt-form-control" value="{{ old('category_label') }}" placeholder="Valorant, LAN, Club" data-preview-field="category_label"></div>
-                                <div class="tt-form-group"><label for="create-status">Statut</label><select id="create-status" name="status" class="tt-form-control" data-preview-field="status"><option value="draft" @selected(old('status', 'draft') === 'draft')>Brouillon</option><option value="published" @selected(old('status') === 'published')>Publiee</option><option value="archived" @selected(old('status') === 'archived')>Archivee</option></select></div>
-                                <div class="tt-form-group"><label for="create-sort-order">Ordre</label><input id="create-sort-order" type="number" name="sort_order" class="tt-form-control" value="{{ old('sort_order', 0) }}" min="0"></div>
-                                <div class="tt-form-group"><label for="create-published-at">Date publication</label><input id="create-published-at" type="datetime-local" name="published_at" class="tt-form-control" value="{{ old('published_at') }}"></div>
-                                <div class="tt-form-group"><label class="tt-form-check"><input type="checkbox" name="is_featured" value="1" @checked(old('is_featured')) data-preview-field="is_featured"><span>Mise en avant</span></label></div>
+                                <div class="tt-form-group"><label for="create-video-url">Lien YouTube</label><input id="create-video-url" type="url" name="video_url" class="tt-form-control" value="{{ old('video_url') }}" required placeholder="https://www.youtube.com/watch?v=..." data-preview-field="video_url"></div>
+                                <div class="tt-form-group adm-span-2"><label for="create-description">Description</label><textarea id="create-description" name="description" class="tt-form-control" rows="6" placeholder="Description de la video" data-preview-field="description">{{ old('description') }}</textarea></div>
+                                <div class="tt-form-group adm-span-2"><label for="create-preview-video-url">Vidéo MP4</label><input id="create-preview-video-url" type="url" name="preview_video_url" class="tt-form-control" value="{{ old('preview_video_url') }}" placeholder="https://.../video.mp4" data-preview-field="preview_video_url"></div>
                             </div>
 
                             <aside class="adm-video-preview" aria-live="polite">
                                 <div class="adm-video-card-media" data-preview-media>
-                                    <img src="{{ old('thumbnail_url') ?: $defaultPoster }}" alt="Apercu miniature" data-preview-image>
+                                    <img src="{{ $defaultPoster }}" alt="Apercu miniature" data-preview-image data-preview-fallback-src="{{ $defaultPoster }}">
                                     <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video></video>
                                 </div>
 
                                 <div class="adm-video-preview-copy">
                                     <div class="adm-video-card-meta">
-                                        <span class="adm-video-pill" data-preview-status>{{ old('status', 'draft') === 'published' ? 'Publiee' : (old('status') === 'archived' ? 'Archivee' : 'Brouillon') }}</span>
-                                        <span class="adm-video-pill" data-preview-category>{{ old('category_label') ?: 'Categorie' }}</span>
-                                        <span class="adm-video-pill" data-preview-platform>{{ Str::headline(old('platform', 'youtube')) }}</span>
-                                        <span class="adm-video-pill" data-preview-featured @if(! old('is_featured')) style="display: none;" @endif>A la une</span>
+                                        <span class="adm-video-pill">Brouillon</span>
+                                        <span class="adm-video-pill" data-preview-platform>YouTube</span>
                                     </div>
                                     <h4 data-preview-title>{{ old('title') ?: 'Titre de la video' }}</h4>
-                                    <p data-preview-summary>{{ old('excerpt') ?: (old('description') ?: 'L apercu se met a jour pendant la saisie pour verifier le rendu editorial et visuel.') }}</p>
+                                    <p data-preview-summary>{{ old('description') ?: 'L apercu se met a jour pendant la saisie pour verifier le rendu de la slide.' }}</p>
                                     <div class="adm-video-preview-actions">
                                         <a href="{{ old('video_url') ?: '#' }}" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener" data-preview-link>
                                             <span data-hover="Ouvrir la video">Ouvrir la video</span>
@@ -594,59 +579,38 @@
                                 </div>
 
                                 <div class="adm-video-grid">
-                                    <form method="POST" action="{{ route('admin.gallery-videos.update', $video->id) }}" class="adm-form tt-form tt-form-creative tt-form-lg" enctype="multipart/form-data" data-video-preview-root>
+                                    <form method="POST" action="{{ route('admin.gallery-videos.update', $video->id) }}" class="adm-form tt-form tt-form-creative tt-form-lg" data-video-preview-root>
                                         @csrf
                                         @method('PUT')
 
                                         <div class="adm-video-form-shell">
                                             <div class="adm-video-form-grid">
                                                 <div class="tt-form-group"><label for="title-{{ $video->id }}">Titre</label><input id="title-{{ $video->id }}" type="text" name="title" class="tt-form-control" value="{{ $video->title }}" required data-preview-field="title"></div>
-                                                <div class="tt-form-group"><label for="slug-{{ $video->id }}">Slug</label><input id="slug-{{ $video->id }}" type="text" name="slug" class="tt-form-control" value="{{ $video->slug }}"></div>
-                                                <div class="tt-form-group adm-span-2"><label for="excerpt-{{ $video->id }}">Accroche courte</label><textarea id="excerpt-{{ $video->id }}" name="excerpt" class="tt-form-control" data-preview-field="excerpt">{{ $video->excerpt }}</textarea></div>
-                                                <div class="tt-form-group adm-span-2"><label for="description-{{ $video->id }}">Description detaillee</label><textarea id="description-{{ $video->id }}" name="description" class="tt-form-control" data-preview-field="description">{{ $video->description }}</textarea></div>
-                                                <div class="tt-form-group"><label for="platform-{{ $video->id }}">Plateforme</label><select id="platform-{{ $video->id }}" name="platform" class="tt-form-control" data-preview-field="platform"><option value="youtube" @selected($video->platform === 'youtube')>YouTube</option><option value="twitch" @selected($video->platform === 'twitch')>Twitch</option><option value="other" @selected($video->platform === 'other')>Autre</option></select></div>
-                                                <div class="tt-form-group"><label for="video-url-{{ $video->id }}">URL video</label><input id="video-url-{{ $video->id }}" type="url" name="video_url" class="tt-form-control" value="{{ $video->video_url }}" required data-preview-field="video_url"></div>
-                                                <div class="tt-form-group"><label for="embed-url-{{ $video->id }}">URL embed</label><input id="embed-url-{{ $video->id }}" type="url" name="embed_url" class="tt-form-control" value="{{ $video->embed_url }}" data-preview-field="embed_url"></div>
-                                                <div class="tt-form-group"><label for="thumbnail-url-{{ $video->id }}">URL miniature</label><input id="thumbnail-url-{{ $video->id }}" type="url" name="thumbnail_url" class="tt-form-control" value="{{ $video->thumbnail_url }}" data-preview-field="thumbnail_url"></div>
-                                                <div class="tt-form-group"><label for="thumbnail-image-{{ $video->id }}">Miniature uploadee</label><input id="thumbnail-image-{{ $video->id }}" type="file" name="thumbnail_image" class="tt-form-control" accept="image/png,image/jpeg,image/webp,image/avif" data-preview-field="thumbnail_image"></div>
-                                                <div class="tt-form-group"><label for="preview-url-{{ $video->id }}">Preview MP4</label><input id="preview-url-{{ $video->id }}" type="url" name="preview_video_url" class="tt-form-control" value="{{ $video->preview_video_url }}" data-preview-field="preview_video_url"></div>
-                                                <div class="tt-form-group"><label for="preview-webm-url-{{ $video->id }}">Preview WebM</label><input id="preview-webm-url-{{ $video->id }}" type="url" name="preview_video_webm_url" class="tt-form-control" value="{{ $video->preview_video_webm_url }}"></div>
-                                                <div class="tt-form-group"><label for="category-key-{{ $video->id }}">Cle categorie</label><input id="category-key-{{ $video->id }}" type="text" name="category_key" class="tt-form-control" value="{{ $video->category_key }}"></div>
-                                                <div class="tt-form-group"><label for="category-label-{{ $video->id }}">Libelle categorie</label><input id="category-label-{{ $video->id }}" type="text" name="category_label" class="tt-form-control" value="{{ $video->category_label }}" data-preview-field="category_label"></div>
-                                                <div class="tt-form-group"><label for="status-{{ $video->id }}">Statut</label><select id="status-{{ $video->id }}" name="status" class="tt-form-control" data-preview-field="status"><option value="draft" @selected($video->status === GalleryVideo::STATUS_DRAFT)>Brouillon</option><option value="published" @selected($video->status === GalleryVideo::STATUS_PUBLISHED)>Publiee</option><option value="archived" @selected($video->status === GalleryVideo::STATUS_ARCHIVED)>Archivee</option></select></div>
-                                                <div class="tt-form-group"><label for="sort-order-{{ $video->id }}">Ordre</label><input id="sort-order-{{ $video->id }}" type="number" name="sort_order" class="tt-form-control" value="{{ $video->sort_order }}" min="0"></div>
-                                                <div class="tt-form-group"><label for="published-at-{{ $video->id }}">Date publication</label><input id="published-at-{{ $video->id }}" type="datetime-local" name="published_at" class="tt-form-control" value="{{ $video->published_at?->format('Y-m-d\TH:i') }}"></div>
-                                                <div class="tt-form-group"><label class="tt-form-check"><input type="checkbox" name="is_featured" value="1" @checked($video->is_featured) data-preview-field="is_featured"><span>Mise en avant</span></label></div>
+                                                <div class="tt-form-group"><label for="video-url-{{ $video->id }}">Lien YouTube</label><input id="video-url-{{ $video->id }}" type="url" name="video_url" class="tt-form-control" value="{{ $video->video_url }}" required data-preview-field="video_url"></div>
+                                                <div class="tt-form-group adm-span-2"><label for="description-{{ $video->id }}">Description</label><textarea id="description-{{ $video->id }}" name="description" class="tt-form-control" rows="6" data-preview-field="description">{{ $video->description }}</textarea></div>
+                                                <div class="tt-form-group adm-span-2"><label for="preview-url-{{ $video->id }}">Vidéo MP4</label><input id="preview-url-{{ $video->id }}" type="url" name="preview_video_url" class="tt-form-control" value="{{ $video->preview_video_url }}" placeholder="https://.../video.mp4" data-preview-field="preview_video_url"></div>
                                             </div>
 
                                             <aside class="adm-video-preview" aria-live="polite">
                                                 <div class="adm-video-card-media" data-preview-media>
-                                                    <img src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}" alt="Apercu miniature" data-preview-image>
+                                                    <img src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}" alt="Apercu miniature" data-preview-image data-preview-fallback-src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}">
                                                     <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video></video>
                                                 </div>
 
                                                 <div class="adm-video-preview-copy">
                                                     <div class="adm-video-card-meta">
                                                         <span class="adm-video-pill" data-preview-status>{{ $video->status_label }}</span>
-                                                        <span class="adm-video-pill" data-preview-category>{{ $video->display_category_label }}</span>
                                                         <span class="adm-video-pill" data-preview-platform>{{ Str::headline($video->platform) }}</span>
-                                                        <span class="adm-video-pill" data-preview-featured @if(! $video->is_featured) style="display: none;" @endif>A la une</span>
                                                         @if($video->legacy_source)
                                                             <span class="adm-video-pill">Source {{ $video->legacy_source }}</span>
                                                         @endif
                                                     </div>
                                                     <h4 data-preview-title>{{ $video->title }}</h4>
-                                                    <p data-preview-summary>{{ $video->excerpt ?: ($video->description ?: 'L apercu se met a jour pendant la saisie.') }}</p>
+                                                    <p data-preview-summary>{{ $video->description ?: 'L apercu se met a jour pendant la saisie.' }}</p>
                                                     <div class="adm-video-preview-actions">
                                                         <a href="{{ $video->video_url }}" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener" data-preview-link>
                                                             <span data-hover="Ouvrir la video">Ouvrir la video</span>
                                                         </a>
-                                                        @if($video->thumbnail_url)
-                                                            <form method="POST" action="{{ route('admin.gallery-videos.remove-thumbnail', $video->id) }}" onsubmit="return confirm('Retirer la miniature de cette video ?');">
-                                                                @csrf
-                                                                <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item"><span data-hover="Retirer la miniature">Retirer la miniature</span></button>
-                                                            </form>
-                                                        @endif
                                                     </div>
                                                 </div>
                                             </aside>
@@ -713,17 +677,29 @@
         document.addEventListener('DOMContentLoaded', function () {
             var previewRoots = Array.prototype.slice.call(document.querySelectorAll('[data-video-preview-root]'));
 
+            var detectPlatformLabel = function (url) {
+                var normalized = (url || '').toLowerCase();
+
+                if (normalized.indexOf('youtu.be') !== -1 || normalized.indexOf('youtube.com') !== -1) {
+                    return 'YouTube';
+                }
+
+                if (normalized.indexOf('twitch.tv') !== -1) {
+                    return 'Twitch';
+                }
+
+                return 'Video';
+            };
+
             previewRoots.forEach(function (root) {
                 var title = root.querySelector('[data-preview-title]');
                 var summary = root.querySelector('[data-preview-summary]');
-                var category = root.querySelector('[data-preview-category]');
                 var platform = root.querySelector('[data-preview-platform]');
-                var status = root.querySelector('[data-preview-status]');
-                var featured = root.querySelector('[data-preview-featured]');
                 var image = root.querySelector('[data-preview-image]');
                 var video = root.querySelector('[data-preview-video]');
                 var link = root.querySelector('[data-preview-link]');
                 var fields = Array.prototype.slice.call(root.querySelectorAll('[data-preview-field]'));
+                var fallbackSrc = image ? (image.getAttribute('data-preview-fallback-src') || '{{ $defaultPoster }}') : '{{ $defaultPoster }}';
 
                 var syncPreview = function () {
                     var values = {};
@@ -731,50 +707,14 @@
                     fields.forEach(function (field) {
                         var key = field.getAttribute('data-preview-field');
 
-                        if (field.type === 'checkbox') {
-                            values[key] = field.checked;
-                            return;
-                        }
-
-                        if (field.type === 'file') {
-                            values[key] = field.files && field.files[0] ? field.files[0] : null;
-                            return;
-                        }
-
                         values[key] = field.value || '';
                     });
 
                     title.textContent = values.title || 'Titre de la video';
-                    summary.textContent = values.excerpt || values.description || 'L apercu se met a jour pendant la saisie pour verifier le rendu editorial et visuel.';
-                    category.textContent = values.category_label || 'Categorie';
-                    platform.textContent = values.platform ? values.platform.charAt(0).toUpperCase() + values.platform.slice(1) : 'Plateforme';
-
-                    if (values.status === 'published') {
-                        status.textContent = 'Publiee';
-                    } else if (values.status === 'archived') {
-                        status.textContent = 'Archivee';
-                    } else {
-                        status.textContent = 'Brouillon';
-                    }
-
-                    featured.style.display = values.is_featured ? 'inline-flex' : 'none';
+                    summary.textContent = values.description || 'L apercu se met a jour pendant la saisie pour verifier le rendu de la slide.';
+                    platform.textContent = detectPlatformLabel(values.video_url);
 
                     link.setAttribute('href', values.video_url || '#');
-
-                    if (values.thumbnail_image instanceof File) {
-                        var reader = new FileReader();
-                        reader.onload = function (event) {
-                            image.src = event.target && event.target.result ? event.target.result : image.src;
-                            image.style.display = 'block';
-                            video.pause();
-                            video.removeAttribute('src');
-                            video.load();
-                            video.style.display = 'none';
-                        };
-                        reader.readAsDataURL(values.thumbnail_image);
-
-                        return;
-                    }
 
                     if (values.preview_video_url) {
                         video.src = values.preview_video_url;
@@ -789,7 +729,7 @@
                     video.load();
                     video.style.display = 'none';
                     image.style.display = 'block';
-                    image.src = values.thumbnail_url || image.getAttribute('src') || '{{ $defaultPoster }}';
+                    image.src = fallbackSrc;
                 };
 
                 fields.forEach(function (field) {

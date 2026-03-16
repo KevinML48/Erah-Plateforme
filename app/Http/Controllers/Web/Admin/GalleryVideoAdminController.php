@@ -300,9 +300,9 @@ class GalleryVideoAdminController extends Controller
     {
         $title = trim((string) $validated['title']);
         $videoUrl = trim((string) $validated['video_url']);
-        $platform = GalleryVideo::resolvePlatform($validated['platform'] ?? null, $videoUrl);
-        $categoryKey = trim((string) ($validated['category_key'] ?? ''));
-        $categoryLabel = trim((string) ($validated['category_label'] ?? ''));
+        $platform = GalleryVideo::resolvePlatform($validated['platform'] ?? $video?->platform, $videoUrl);
+        $categoryKey = trim((string) ($validated['category_key'] ?? $video?->category_key ?? ''));
+        $categoryLabel = trim((string) ($validated['category_label'] ?? $video?->category_label ?? ''));
 
         if ($categoryKey === '' && $categoryLabel !== '') {
             $categoryKey = Str::slug($categoryLabel);
@@ -312,11 +312,13 @@ class GalleryVideoAdminController extends Controller
             $categoryLabel = Str::headline($categoryKey);
         }
 
-        $status = (string) $validated['status'];
+        $status = (string) ($validated['status'] ?? $video?->status ?? GalleryVideo::STATUS_DRAFT);
         $publishedAt = $status === GalleryVideo::STATUS_PUBLISHED
             ? ($validated['published_at'] ?? $video?->published_at ?? now())
             : null;
-        $thumbnailUrl = $validated['thumbnail_url'] ?: null;
+        $thumbnailUrl = array_key_exists('thumbnail_url', $validated)
+            ? ($validated['thumbnail_url'] ?: null)
+            : $video?->thumbnail_url;
 
         if ($request->hasFile('thumbnail_image')) {
             $thumbnailPath = $request->file('thumbnail_image')->store('gallery-videos/thumbnails', 'public');
@@ -325,22 +327,32 @@ class GalleryVideoAdminController extends Controller
 
         $this->deleteStoredThumbnailIfReplaced($video?->thumbnail_url, $thumbnailUrl);
 
+        $sortOrder = array_key_exists('sort_order', $validated) && $validated['sort_order'] !== null
+            ? (int) $validated['sort_order']
+            : ($video?->sort_order ?? ((int) GalleryVideo::query()->max('sort_order') + 1));
+
+        $isFeatured = array_key_exists('is_featured', $validated) && $validated['is_featured'] !== null
+            ? (bool) $validated['is_featured']
+            : (bool) ($video?->is_featured ?? false);
+
+        $description = $validated['description'] ?? null;
+
         return [
             'title' => $title,
             'slug' => GalleryVideo::uniqueSlug((string) ($validated['slug'] ?: $title), $video?->id),
-            'excerpt' => $validated['excerpt'] ?? null,
-            'description' => $validated['description'] ?? null,
+            'excerpt' => null,
+            'description' => $description,
             'platform' => $platform,
             'video_url' => $videoUrl,
-            'embed_url' => $validated['embed_url'] ?: GalleryVideo::buildEmbedUrl($videoUrl, $platform),
+            'embed_url' => ($validated['embed_url'] ?? $video?->embed_url) ?: GalleryVideo::buildEmbedUrl($videoUrl, $platform),
             'thumbnail_url' => $thumbnailUrl,
-            'preview_video_url' => $validated['preview_video_url'] ?? null,
-            'preview_video_webm_url' => $validated['preview_video_webm_url'] ?? null,
+            'preview_video_url' => $validated['preview_video_url'] ?? $video?->preview_video_url,
+            'preview_video_webm_url' => $validated['preview_video_webm_url'] ?? $video?->preview_video_webm_url,
             'category_key' => $categoryKey !== '' ? $categoryKey : null,
             'category_label' => $categoryLabel !== '' ? $categoryLabel : null,
             'status' => $status,
-            'sort_order' => (int) $validated['sort_order'],
-            'is_featured' => (bool) ($validated['is_featured'] ?? false),
+            'sort_order' => $sortOrder,
+            'is_featured' => $isFeatured,
             'published_at' => $publishedAt,
             'legacy_source' => $video?->legacy_source,
             'imported_hash' => $video?->imported_hash,

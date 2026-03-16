@@ -190,59 +190,41 @@ class GalleryVideosFeatureTest extends TestCase
     public function test_admin_can_create_update_and_change_video_status(): void
     {
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        Storage::fake('public');
 
         $this->actingAs($adminUser)->post(route('admin.gallery-videos.store'), [
             'title' => 'Interview ERAH',
-            'slug' => 'interview-erah',
-            'excerpt' => 'Une accroche claire',
             'description' => 'Description complete',
-            'platform' => 'youtube',
             'video_url' => 'https://youtu.be/n_LEo-tp3Jk',
-            'thumbnail_image' => $this->fakeThumbnail('thumb-one.png'),
-            'category_key' => 'lan',
-            'category_label' => 'LAN',
-            'status' => 'draft',
-            'sort_order' => 3,
-            'is_featured' => '1',
+            'preview_video_url' => 'https://cdn.example.com/videos/interview-erah.mp4',
         ])->assertRedirect()->assertSessionHas('success');
 
         $video = GalleryVideo::query()->where('slug', 'interview-erah')->firstOrFail();
 
         $this->assertSame('youtube', $video->platform);
         $this->assertSame(GalleryVideo::STATUS_DRAFT, $video->status);
-        $this->assertTrue($video->is_featured);
+        $this->assertFalse($video->is_featured);
         $this->assertNotNull($video->embed_url);
-        $this->assertNotNull($video->thumbnail_url);
-        $this->assertStringStartsWith('/storage/gallery-videos/thumbnails/', $video->thumbnail_url);
-        Storage::disk('public')->assertExists(str_replace('/storage/', '', $video->thumbnail_url));
-
-        $storedThumbnail = $video->thumbnail_url;
+        $this->assertSame('Description complete', $video->description);
+        $this->assertNull($video->excerpt);
+        $this->assertSame('https://cdn.example.com/videos/interview-erah.mp4', $video->preview_video_url);
+        $this->assertSame(1, $video->sort_order);
 
         $this->actingAs($adminUser)->put(route('admin.gallery-videos.update', $video->id), [
             'title' => 'Interview ERAH MAJ',
-            'slug' => 'interview-erah-maj',
-            'excerpt' => 'Accroche revue',
             'description' => 'Description revue',
-            'platform' => 'youtube',
             'video_url' => 'https://youtu.be/6-ebq2tKpAs',
-            'thumbnail_image' => $this->fakeThumbnail('thumb-two.png'),
-            'category_key' => 'event',
-            'category_label' => 'Event',
-            'status' => 'published',
-            'sort_order' => 1,
-            'published_at' => now()->subHour()->format('Y-m-d H:i:s'),
+            'preview_video_url' => 'https://cdn.example.com/videos/interview-erah-maj.mp4',
         ])->assertRedirect()->assertSessionHas('success');
 
         $video->refresh();
 
         $this->assertSame('Interview ERAH MAJ', $video->title);
         $this->assertSame('interview-erah-maj', $video->slug);
-        $this->assertSame(GalleryVideo::STATUS_PUBLISHED, $video->status);
+        $this->assertSame(GalleryVideo::STATUS_DRAFT, $video->status);
         $this->assertSame(1, $video->sort_order);
-        $this->assertNotSame($storedThumbnail, $video->thumbnail_url);
-        Storage::disk('public')->assertMissing(str_replace('/storage/', '', $storedThumbnail));
-        Storage::disk('public')->assertExists(str_replace('/storage/', '', $video->thumbnail_url));
+        $this->assertSame('Description revue', $video->description);
+        $this->assertNull($video->excerpt);
+        $this->assertSame('https://cdn.example.com/videos/interview-erah-maj.mp4', $video->preview_video_url);
 
         $this->actingAs($adminUser)
             ->post(route('admin.gallery-videos.archive', $video->id))
@@ -375,13 +357,5 @@ class GalleryVideosFeatureTest extends TestCase
             'title' => 'VCL Split 1 2026',
             'legacy_source' => '_template_site/galerie-video.html',
         ]);
-    }
-
-    private function fakeThumbnail(string $name): UploadedFile
-    {
-        return UploadedFile::fake()->createWithContent(
-            $name,
-            base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9sF2r4YAAAAASUVORK5CYII=')
-        );
     }
 }

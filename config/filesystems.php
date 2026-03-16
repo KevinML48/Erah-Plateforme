@@ -1,5 +1,14 @@
 <?php
 
+$filesystemDisk = env('FILESYSTEM_DISK');
+$mediaDisk = env('MEDIA_DISK');
+
+if (! is_string($mediaDisk) || $mediaDisk === '') {
+    $mediaDisk = is_string($filesystemDisk) && $filesystemDisk !== '' && $filesystemDisk !== 'local'
+        ? $filesystemDisk
+        : 'public';
+}
+
 return [
 
     /*
@@ -14,6 +23,8 @@ return [
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
+
+    'media_disk' => $mediaDisk,
 
     /*
     |--------------------------------------------------------------------------

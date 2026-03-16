@@ -17,11 +17,11 @@ use App\Models\Gift;
 use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
+use App\Support\MediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -779,9 +779,9 @@ class AdminGiftConsoleController extends Controller
     private function resolveImageUrl(Request $request, ?string $fallback = null): ?string
     {
         if ($request->hasFile('image_file')) {
-            $path = $request->file('image_file')->store('gifts', 'public');
+            $path = MediaStorage::store($request->file('image_file'), 'gifts');
 
-            return asset(Storage::url($path));
+            return MediaStorage::url($path);
         }
 
         $imageUrl = trim((string) $request->input('image_url', ''));

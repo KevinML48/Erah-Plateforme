@@ -26,6 +26,7 @@ use App\Http\Controllers\Web\Admin\GalleryVideoAdminController;
 use App\Http\Controllers\Web\Admin\PublicProfileModerationController;
 use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
+use App\Http\Controllers\Marketing\GalleryVideoMediaController;
 use App\Http\Controllers\Marketing\GalleryPhotoPageController;
 use App\Http\Controllers\Marketing\GalleryVideoPageController;
 use App\Http\Controllers\Marketing\PageController as MarketingPageController;
@@ -509,6 +510,12 @@ Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketin
 Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
 Route::get('/galerie-video', GalleryVideoPageController::class)->name('marketing.gallery-video');
 Route::get('/galerie-video.html', GalleryVideoPageController::class);
+Route::get('/media/gallery-videos/thumbnails/{path}', [GalleryVideoMediaController::class, 'thumbnail'])
+    ->where('path', '.*')
+    ->name('marketing.gallery-video.thumbnail');
+Route::get('/media/gallery-videos/previews/{path}', [GalleryVideoMediaController::class, 'preview'])
+    ->where('path', '.*')
+    ->name('marketing.gallery-video.preview');
 Route::get('/contact', [MarketingContactController::class, 'show'])->name('marketing.contact');
 Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')

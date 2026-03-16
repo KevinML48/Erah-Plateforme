@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Admin\GalleryPhotoUpsertRequest;
 use App\Models\GalleryPhoto;
 use App\Services\GalleryPhotoImportService;
+use App\Support\MediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -265,7 +266,7 @@ class GalleryPhotoAdminController extends Controller
                 'image_path' => null,
                 'video_path' => null,
                 'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE,
-                'storage_disk' => 'public',
+                'storage_disk' => MediaStorage::disk(),
                 'media_mime_type' => null,
                 'media_size' => null,
             ];
@@ -274,13 +275,14 @@ class GalleryPhotoAdminController extends Controller
         $mimeType = $file->getMimeType();
         $isVideo = Str::startsWith((string) $mimeType, 'video/');
         $directory = $isVideo ? 'gallery/videos' : 'gallery/photos';
-        $path = $file->store($directory, 'public');
+        $disk = MediaStorage::disk();
+        $path = $file->store($directory, $disk);
 
         return [
             'image_path' => $isVideo ? null : $path,
             'video_path' => $isVideo ? $path : null,
             'media_type' => $isVideo ? GalleryPhoto::MEDIA_TYPE_VIDEO : GalleryPhoto::MEDIA_TYPE_IMAGE,
-            'storage_disk' => 'public',
+            'storage_disk' => $disk,
             'media_mime_type' => $mimeType,
             'media_size' => $file->getSize(),
         ];

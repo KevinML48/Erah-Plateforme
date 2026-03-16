@@ -5,9 +5,9 @@ namespace App\Application\Actions\Users;
 use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Models\ClubReview;
 use App\Models\User;
+use App\Support\MediaStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
 class ModeratePublicProfileAction
 {
@@ -95,12 +95,6 @@ class ModeratePublicProfileAction
             );
         });
 
-        if (
-            filled($avatarToDelete)
-            && ! str_starts_with((string) $avatarToDelete, 'http://')
-            && ! str_starts_with((string) $avatarToDelete, 'https://')
-        ) {
-            Storage::disk('public')->delete((string) $avatarToDelete);
-        }
+        MediaStorage::delete($avatarToDelete);
     }
 }

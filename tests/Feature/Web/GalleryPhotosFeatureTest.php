@@ -59,6 +59,7 @@ class GalleryPhotosFeatureTest extends TestCase
 
     public function test_admin_can_create_gallery_photo_with_upload(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         Storage::fake('public');
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
@@ -90,6 +91,7 @@ class GalleryPhotosFeatureTest extends TestCase
 
     public function test_admin_can_update_gallery_photo_and_toggle_state(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         Storage::fake('public');
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $originalPath = UploadedFile::fake()->create('initial.jpg', 120, 'image/jpeg')->store('gallery/photos', 'public');
@@ -180,6 +182,7 @@ class GalleryPhotosFeatureTest extends TestCase
 
     public function test_admin_can_delete_gallery_photo_and_uploaded_file(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         Storage::fake('public');
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $path = UploadedFile::fake()->create('delete-me.jpg', 90, 'image/jpeg')->store('gallery/photos', 'public');

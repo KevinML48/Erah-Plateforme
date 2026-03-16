@@ -10,6 +10,7 @@ use App\Models\Bet;
 use App\Models\Duel;
 use App\Models\PointsTransaction;
 use App\Models\User;
+use App\Support\MediaStorage;
 use App\Services\ExperienceService;
 use App\Services\MissionEngine;
 use App\Services\ShortcutService;
@@ -23,7 +24,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -101,7 +101,7 @@ class ProfileController extends Controller
         $profileCompletion = 0;
 
         if ($request->hasFile('avatar')) {
-            $newAvatarPath = $request->file('avatar')->store('avatars', 'public');
+            $newAvatarPath = MediaStorage::store($request->file('avatar'), 'avatars');
         }
 
         DB::transaction(function () use ($user, $validated, $newAvatarPath, $storeAuditLogAction, $isSupporterActive, $request, &$profileCompletion) {
@@ -159,9 +159,7 @@ class ProfileController extends Controller
         });
 
         if ($newAvatarPath !== null && ! blank($oldAvatarPath) && $oldAvatarPath !== $newAvatarPath) {
-            if (! str_starts_with((string) $oldAvatarPath, 'http://') && ! str_starts_with((string) $oldAvatarPath, 'https://')) {
-                Storage::disk('public')->delete((string) $oldAvatarPath);
-            }
+            MediaStorage::delete((string) $oldAvatarPath);
         }
 
         if ($profileCompletion >= 75) {
@@ -272,9 +270,7 @@ class ProfileController extends Controller
         Auth::guard('web')->logout();
         $user->delete();
 
-        if ($avatarPath !== '' && ! str_starts_with($avatarPath, 'http://') && ! str_starts_with($avatarPath, 'https://')) {
-            Storage::disk('public')->delete($avatarPath);
-        }
+        MediaStorage::delete($avatarPath);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

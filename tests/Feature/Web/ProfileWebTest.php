@@ -17,6 +17,7 @@ class ProfileWebTest extends TestCase
 
     public function test_authenticated_user_can_update_profile_public_fields_and_avatar(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         Storage::fake('public');
         $this->seed(LeagueSeeder::class);
 

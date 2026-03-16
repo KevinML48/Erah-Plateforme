@@ -16,6 +16,7 @@ class PublicProfileModerationTest extends TestCase
 
     public function test_admin_can_moderate_profile_directly_from_public_profile(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         Storage::fake('public');
         $this->seed(LeagueSeeder::class);
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GalleryVideo extends Model
@@ -96,11 +97,56 @@ class GalleryVideo extends Model
 
     public function getResolvedThumbnailUrlAttribute(): ?string
     {
-        if (filled($this->thumbnail_url)) {
-            return (string) $this->thumbnail_url;
+        return $this->resolveManagedMediaUrl($this->thumbnail_url, 'thumbnail');
+    }
+
+    public function getResolvedPreviewVideoUrlAttribute(): ?string
+    {
+        return $this->resolveManagedMediaUrl($this->preview_video_url, 'preview');
+    }
+
+    private function resolveManagedMediaUrl(?string $value, string $type): ?string
+    {
+        if (! filled($value)) {
+            return null;
         }
 
-        return null;
+        $mediaValue = (string) $value;
+
+        if (Str::startsWith($mediaValue, ['http://', 'https://'])) {
+            return $mediaValue;
+        }
+
+        if ($type === 'thumbnail' && Str::startsWith($mediaValue, '/storage/gallery-videos/thumbnails/')) {
+            return $this->buildManagedMediaUrl(Str::after($mediaValue, '/storage/'), $type);
+        }
+
+        if ($type === 'preview' && Str::startsWith($mediaValue, '/storage/gallery-videos/previews/')) {
+            return $this->buildManagedMediaUrl(Str::after($mediaValue, '/storage/'), $type);
+        }
+
+        if (Str::startsWith($mediaValue, 'gallery-videos/')) {
+            return $this->buildManagedMediaUrl($mediaValue, $type);
+        }
+
+        if (Str::startsWith($mediaValue, '/')) {
+            return $mediaValue;
+        }
+
+        return $mediaValue;
+    }
+
+    private function buildManagedMediaUrl(string $path, string $type): string
+    {
+        $disk = (string) config('filesystems.media_disk', 'public');
+
+        if ($disk === 'public') {
+            return $type === 'thumbnail'
+                ? route('marketing.gallery-video.thumbnail', ['path' => $path])
+                : route('marketing.gallery-video.preview', ['path' => $path]);
+        }
+
+        return Storage::disk($disk)->url($path);
     }
 
     public function getDisplayCategoryLabelAttribute(): string

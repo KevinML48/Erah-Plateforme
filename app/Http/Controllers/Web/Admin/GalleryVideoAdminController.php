@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Admin\GalleryVideoUpsertRequest;
 use App\Models\GalleryVideo;
 use App\Services\GalleryVideoImportService;
+use App\Support\MediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -322,8 +323,7 @@ class GalleryVideoAdminController extends Controller
             : $video?->thumbnail_url;
 
         if ($request->hasFile('thumbnail_image')) {
-            $thumbnailPath = $request->file('thumbnail_image')->store('gallery-videos/thumbnails', 'public');
-            $thumbnailUrl = Storage::url($thumbnailPath);
+            $thumbnailUrl = MediaStorage::store($request->file('thumbnail_image'), 'gallery-videos/thumbnails');
         }
 
         $this->deleteStoredThumbnailIfReplaced($video?->thumbnail_url, $thumbnailUrl);
@@ -331,8 +331,7 @@ class GalleryVideoAdminController extends Controller
         $previewVideoUrl = $validated['preview_video_url'] ?? $video?->preview_video_url;
 
         if ($request->hasFile('preview_video_file')) {
-            $previewPath = $request->file('preview_video_file')->store('gallery-videos/previews', 'public');
-            $previewVideoUrl = Storage::url($previewPath);
+            $previewVideoUrl = MediaStorage::store($request->file('preview_video_file'), 'gallery-videos/previews');
         }
 
         $this->deleteStoredPreviewVideoIfReplaced($video?->preview_video_url, $previewVideoUrl);
@@ -371,7 +370,9 @@ class GalleryVideoAdminController extends Controller
 
     private function deleteStoredThumbnailIfReplaced(?string $currentThumbnailUrl, ?string $nextThumbnailUrl): void
     {
-        if (! $this->isStoredThumbnailUrl($currentThumbnailUrl)) {
+        $storagePath = $this->managedGalleryVideoPath($currentThumbnailUrl, 'gallery-videos/thumbnails/');
+
+        if ($storagePath === null) {
             return;
         }
 
@@ -379,22 +380,14 @@ class GalleryVideoAdminController extends Controller
             return;
         }
 
-        $storagePath = Str::after((string) $currentThumbnailUrl, '/storage/');
-
-        if ($storagePath !== '') {
-            Storage::disk('public')->delete($storagePath);
-        }
-    }
-
-    private function isStoredThumbnailUrl(?string $thumbnailUrl): bool
-    {
-        return filled($thumbnailUrl)
-            && Str::startsWith((string) $thumbnailUrl, '/storage/gallery-videos/thumbnails/');
+        Storage::disk(MediaStorage::disk())->delete($storagePath);
     }
 
     private function deleteStoredPreviewVideoIfReplaced(?string $currentPreviewVideoUrl, ?string $nextPreviewVideoUrl): void
     {
-        if (! $this->isStoredPreviewVideoUrl($currentPreviewVideoUrl)) {
+        $storagePath = $this->managedGalleryVideoPath($currentPreviewVideoUrl, 'gallery-videos/previews/');
+
+        if ($storagePath === null) {
             return;
         }
 
@@ -402,17 +395,26 @@ class GalleryVideoAdminController extends Controller
             return;
         }
 
-        $storagePath = Str::after((string) $currentPreviewVideoUrl, '/storage/');
-
-        if ($storagePath !== '') {
-            Storage::disk('public')->delete($storagePath);
-        }
+        Storage::disk(MediaStorage::disk())->delete($storagePath);
     }
 
-    private function isStoredPreviewVideoUrl(?string $previewVideoUrl): bool
+    private function managedGalleryVideoPath(?string $value, string $expectedPrefix): ?string
     {
-        return filled($previewVideoUrl)
-            && Str::startsWith((string) $previewVideoUrl, '/storage/gallery-videos/previews/');
+        if (! filled($value)) {
+            return null;
+        }
+
+        $stringValue = (string) $value;
+
+        if (Str::startsWith($stringValue, '/storage/'.$expectedPrefix)) {
+            return Str::after($stringValue, '/storage/');
+        }
+
+        if (Str::startsWith($stringValue, $expectedPrefix)) {
+            return $stringValue;
+        }
+
+        return null;
     }
 
     private function rebalanceOrder(): void

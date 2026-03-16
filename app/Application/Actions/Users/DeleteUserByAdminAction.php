@@ -6,9 +6,9 @@ use App\Application\Actions\Audit\StoreAuditLogAction;
 use App\Models\Clip;
 use App\Models\EsportMatch;
 use App\Models\User;
+use App\Support\MediaStorage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class DeleteUserByAdminAction
@@ -57,8 +57,6 @@ class DeleteUserByAdminAction
             $lockedUser->delete();
         });
 
-        if ($avatarPath !== '' && ! str_starts_with($avatarPath, 'http://') && ! str_starts_with($avatarPath, 'https://')) {
-            Storage::disk('public')->delete($avatarPath);
-        }
+        MediaStorage::delete($avatarPath);
     }
 }

@@ -102,6 +102,28 @@ class GalleryVideosFeatureTest extends TestCase
         $response->assertSee('Voir la vidéo');
     }
 
+    public function test_public_gallery_uses_resolved_route_for_uploaded_preview_videos(): void
+    {
+        config(['filesystems.media_disk' => 'public']);
+        Storage::fake('public');
+
+        $storedPath = UploadedFile::fake()->create('public-preview.mp4', 2048, 'video/mp4')
+            ->store('gallery-videos/previews', 'public');
+
+        GalleryVideo::factory()->create([
+            'title' => 'Preview uploadée',
+            'status' => GalleryVideo::STATUS_PUBLISHED,
+            'published_at' => now()->subMinute(),
+            'preview_video_url' => $storedPath,
+        ]);
+
+        $response = $this->get(route('marketing.gallery-video'));
+
+        $response->assertOk();
+        $response->assertSee('Preview uploadée');
+        $response->assertSee(route('marketing.gallery-video.preview', ['path' => $storedPath]), false);
+    }
+
     public function test_admin_gallery_video_route_is_protected(): void
     {
         $regularUser = User::factory()->create();
@@ -189,6 +211,7 @@ class GalleryVideosFeatureTest extends TestCase
 
     public function test_admin_can_create_update_and_change_video_status(): void
     {
+        config(['filesystems.media_disk' => 'public']);
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Storage::fake('public');
 
@@ -207,11 +230,11 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertNotNull($video->embed_url);
         $this->assertSame('Description complete', $video->description);
         $this->assertNull($video->excerpt);
-        $this->assertStringStartsWith('/storage/gallery-videos/previews/', (string) $video->preview_video_url);
+        $this->assertStringStartsWith('gallery-videos/previews/', (string) $video->preview_video_url);
         $this->assertSame(1, $video->sort_order);
 
         $storedPreview = $video->preview_video_url;
-        Storage::disk('public')->assertExists(str_replace('/storage/', '', (string) $storedPreview));
+        Storage::disk('public')->assertExists((string) $storedPreview);
 
         $this->actingAs($adminUser)->put(route('admin.gallery-videos.update', $video->id), [
             'title' => 'Interview ERAH MAJ',
@@ -228,10 +251,10 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertSame(1, $video->sort_order);
         $this->assertSame('Description revue', $video->description);
         $this->assertNull($video->excerpt);
-        $this->assertStringStartsWith('/storage/gallery-videos/previews/', (string) $video->preview_video_url);
+        $this->assertStringStartsWith('gallery-videos/previews/', (string) $video->preview_video_url);
         $this->assertNotSame($storedPreview, $video->preview_video_url);
-        Storage::disk('public')->assertMissing(str_replace('/storage/', '', (string) $storedPreview));
-        Storage::disk('public')->assertExists(str_replace('/storage/', '', (string) $video->preview_video_url));
+        Storage::disk('public')->assertMissing((string) $storedPreview);
+        Storage::disk('public')->assertExists((string) $video->preview_video_url);
 
         $this->actingAs($adminUser)
             ->post(route('admin.gallery-videos.archive', $video->id))

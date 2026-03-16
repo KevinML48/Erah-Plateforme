@@ -570,7 +570,7 @@
                                             <aside class="adm-video-preview" aria-live="polite">
                                                 <div class="adm-video-card-media" data-preview-media>
                                                     <img src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}" alt="Apercu miniature" data-preview-image data-preview-fallback-src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}">
-                                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video data-preview-existing-video-src="{{ $video->preview_video_url ?: '' }}"></video>
+                                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video data-preview-existing-video-src="{{ $video->resolved_preview_video_url ?: '' }}"></video>
                                                 </div>
 
                                                 <div class="adm-video-preview-copy">

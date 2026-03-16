@@ -138,10 +138,10 @@
 									<div class="tt-posl-image-wrap cover-opacity-2">
 										<div class="gallery-video-slide-media">
 											@if($video->preview_video_url || $video->preview_video_webm_url)
-												<video class="tt-posl-video" loop muted playsinline preload="metadata"
+												<video class="tt-posl-video" autoplay loop muted playsinline preload="metadata"
 													poster="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}">
-													@if($video->preview_video_url)
-														<source src="{{ $video->preview_video_url }}" type="video/mp4">
+													@if($video->resolved_preview_video_url)
+														<source src="{{ $video->resolved_preview_video_url }}" type="video/mp4">
 													@endif
 													@if($video->preview_video_webm_url)
 														<source src="{{ $video->preview_video_webm_url }}" type="video/webm">

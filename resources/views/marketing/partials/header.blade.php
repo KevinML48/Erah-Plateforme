@@ -59,8 +59,6 @@
 			? ['label' => 'Admin', 'url' => route('admin.dashboard')]
 			: null;
 
-		$showSettingsShortcut = $isAuthenticated && ! request()->routeIs('settings.*');
-
 		$mobilePrimaryLinks = collect($primaryNavigation)
 			->filter(fn ($item) => !empty($item['url']))
 			->map(fn ($item) => [
@@ -89,7 +87,6 @@
 		$mobileSessionLinks = $isAuthenticated
 			? [
 				['label' => 'Mon profil', 'url' => route('app.profile')],
-				['label' => 'Parametres', 'url' => route('settings.index')],
 				['label' => 'Notifications', 'url' => route('notifications.preferences')],
 				['label' => 'Portefeuille', 'url' => route('wallet.index')],
 				['label' => 'Centre d aide', 'url' => route('console.help')],
@@ -186,14 +183,6 @@
 				</div>
 
 				<div class="tt-header-utility-cluster">
-					@if($showSettingsShortcut)
-						<a href="{{ route('settings.index') }}"
-							class="tt-header-account-icon tt-magnetic-item tt-header-settings-shortcut"
-							aria-label="Parametres">
-							<i class="fas fa-cog" aria-hidden="true"></i>
-						</a>
-					@endif
-
 					<div class="tt-style-switch tt-header-style-switch">
 						<div class="tt-style-switch-inner tt-magnetic-item">
 							<div class="tt-stsw-light"><i class="fas fa-sun"></i></div>

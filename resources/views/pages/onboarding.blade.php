@@ -8,7 +8,7 @@
             <span class="section-kicker">Derniere etape</span>
             <h1 class="page-title">Finaliser vos preferences</h1>
             <p class="page-description">
-                Choisissez simplement comment ERAH peut vous prevenir. Vous pourrez modifier ces reglages plus tard depuis vos parametres.
+                Choisissez simplement comment ERAH peut vous prevenir. Vous pourrez modifier ces reglages plus tard depuis vos preferences de notifications.
             </p>
             <div class="chip-row">
                 <span class="chip">1 minute</span>

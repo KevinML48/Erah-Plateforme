@@ -127,10 +127,6 @@ body.platform-app #tt-header.tt-header-platform .tt-header-account-icon {
     color: #fff;
 }
 
-body.platform-app #tt-header.tt-header-platform .tt-header-settings-shortcut {
-    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.16);
-}
-
 body.platform-app #tt-header.tt-header-platform .tt-header-style-switch .tt-style-switch-inner {
     width: 42px;
     height: 42px;
@@ -277,10 +273,6 @@ body.platform-app .page-shell {
     gap: 24px;
 }
 
-body.platform-app .page-shell-settings {
-    gap: 26px;
-}
-
 body.platform-app .page-hero {
     display: grid;
     gap: 18px;
@@ -306,219 +298,6 @@ body.platform-app .section-kicker::before {
 
 body.platform-app .page-title {
     margin: 0;
-}
-
-body.platform-app .settings-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
-    gap: 24px;
-    align-items: stretch;
-}
-
-body.platform-app .settings-hero-copy,
-body.platform-app .settings-hero-panel,
-body.platform-app .settings-section-head {
-    position: relative;
-    z-index: 1;
-}
-
-body.platform-app .settings-hero-copy {
-    display: grid;
-    gap: 18px;
-    align-content: start;
-}
-
-body.platform-app .settings-chip-row {
-    gap: 12px;
-}
-
-body.platform-app .settings-hero-actions {
-    margin-top: 2px;
-}
-
-body.platform-app .settings-hero-panel {
-    display: grid;
-    gap: 18px;
-    align-content: start;
-    padding: 24px;
-    border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-        radial-gradient(circle at top right, rgba(216, 7, 7, 0.24), transparent 40%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-body.platform-app .settings-panel-kicker {
-    color: rgba(255, 255, 255, 0.56);
-    font-size: 0.72rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-}
-
-body.platform-app .settings-panel-title {
-    font-size: clamp(1.7rem, 3vw, 2.35rem);
-    line-height: 1;
-}
-
-body.platform-app .settings-panel-copy {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.74);
-    line-height: 1.7;
-}
-
-body.platform-app .settings-panel-stats {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-}
-
-body.platform-app .settings-panel-stat {
-    padding: 16px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(7, 9, 14, 0.42);
-}
-
-body.platform-app .settings-panel-stat span {
-    display: block;
-    margin-bottom: 10px;
-    color: rgba(255, 255, 255, 0.56);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-body.platform-app .settings-panel-stat strong {
-    display: block;
-    color: #fff;
-    font-size: 1.3rem;
-    line-height: 1.1;
-}
-
-body.platform-app .settings-panel-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-body.platform-app .settings-inline-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    padding: 0 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.04);
-    color: #fff;
-}
-
-body.platform-app .settings-inline-link:hover,
-body.platform-app .settings-inline-link:focus-visible {
-    border-color: rgba(216, 7, 7, 0.48);
-    background: rgba(216, 7, 7, 0.12);
-    text-decoration: none;
-}
-
-body.platform-app .settings-section {
-    display: grid;
-    gap: 22px;
-}
-
-body.platform-app .settings-card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-}
-
-body.platform-app .settings-card {
-    display: grid;
-    gap: 14px;
-    min-height: 100%;
-    padding: 22px;
-    border-radius: 22px;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(7, 9, 14, 0.9)),
-        radial-gradient(circle at top right, rgba(216, 7, 7, 0.18), transparent 34%);
-}
-
-body.platform-app .settings-card-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-body.platform-app .settings-card-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
-    font-size: 1rem;
-}
-
-body.platform-app .settings-card-meta {
-    color: rgba(255, 255, 255, 0.58);
-    font-size: 0.88rem;
-    line-height: 1.55;
-}
-
-body.platform-app .settings-support-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-    gap: 20px;
-}
-
-body.platform-app .settings-support-card,
-body.platform-app .settings-logout-card {
-    display: grid;
-    gap: 18px;
-}
-
-body.platform-app .settings-inline-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-}
-
-body.platform-app .settings-inline-card {
-    display: grid;
-    gap: 8px;
-    padding: 18px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.04);
-    color: #fff;
-    text-decoration: none;
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-body.platform-app .settings-inline-card span {
-    color: rgba(255, 255, 255, 0.66);
-    line-height: 1.6;
-}
-
-body.platform-app .settings-inline-card:hover,
-body.platform-app .settings-inline-card:focus-visible {
-    transform: translateY(-2px);
-    border-color: rgba(216, 7, 7, 0.46);
-    background: rgba(216, 7, 7, 0.08);
-    text-decoration: none;
-}
-
-body.platform-app .settings-logout-card {
-    background:
-        linear-gradient(180deg, rgba(216, 7, 7, 0.12), rgba(9, 11, 16, 0.94)),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(9, 11, 16, 0.94));
-}
-
-body.platform-app .settings-logout-form {
-    display: grid;
-    gap: 12px;
 }
 
 body.platform-app .page-description {
@@ -860,11 +639,6 @@ body.platform-app .app-dropdown-menu {
     body.platform-app .grid-4 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    body.platform-app .settings-hero,
-    body.platform-app .settings-support-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 768px) {
@@ -878,12 +652,6 @@ body.platform-app .app-dropdown-menu {
     body.platform-app .grid-2,
     body.platform-app .grid-3,
     body.platform-app .grid-4 {
-        grid-template-columns: 1fr;
-    }
-
-    body.platform-app .settings-panel-stats,
-    body.platform-app .settings-card-grid,
-    body.platform-app .settings-inline-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -941,10 +709,6 @@ body.platform-app .app-dropdown-menu {
 }
 
 @media (max-width: 1280px) {
-    body.platform-app #tt-header.tt-header-platform .tt-header-settings-shortcut {
-        display: none;
-    }
-
     body.platform-app #tt-header.tt-header-platform .tt-header-account-cluster {
         gap: 6px;
         padding: 5px;
@@ -960,11 +724,5 @@ body.platform-app .app-dropdown-menu {
     body.platform-app #tt-header.tt-header-platform .tt-header-inner {
         min-height: 70px;
         padding-inline: 14px;
-    }
-
-    body.platform-app .settings-hero-panel,
-    body.platform-app .settings-card {
-        padding: 18px;
-        border-radius: 18px;
     }
 }

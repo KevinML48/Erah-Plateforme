@@ -56,7 +56,6 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\ProfileCosmeticController;
 use App\Http\Controllers\Web\ProfileClubReviewController;
 use App\Http\Controllers\Web\PublicProfileController;
-use App\Http\Controllers\Web\SettingsController;
 use App\Http\Controllers\Web\ShopPageController;
 use App\Http\Controllers\Web\StripeWebhookController;
 use App\Http\Controllers\Web\StatisticsPageController;
@@ -349,7 +348,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/profile/review', [ProfileClubReviewController::class, 'store'])->name('profile.reviews.store');
         Route::put('/profile/review', [ProfileClubReviewController::class, 'update'])->name('profile.reviews.update');
         Route::delete('/profile/review', [ProfileClubReviewController::class, 'destroy'])->name('profile.reviews.destroy');
-        Route::get('/settings', SettingsController::class)->name('settings.index');
 
         Route::middleware('admin')->prefix('admin')->group(function () {
             Route::get('/dashboard', AdminDashboardController::class)->name('admin.dashboard');

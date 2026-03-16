@@ -21,8 +21,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 		<!-- Favicon (http://www.favicon-generator.org/) -->
-		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-		<link rel="icon" href="/favicon.ico" type="image/x-icon">
+		<link rel="shortcut icon" href="/template/assets/img/logo.png" type="image/png">
+		<link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">
+		<link rel="apple-touch-icon" href="/template/assets/img/logo.png">
 
 		<!-- Your Google Analytics code goes here -->
 
@@ -415,7 +416,7 @@
 					'category' => 'Guidage',
 					'description' => 'Discutez avec l assistant ERAH pour comprendre la plateforme et savoir quoi faire ensuite.',
 					'route' => route('assistant.index'),
-					'image' => '/app-ui/assets/img/logo-dark.png',
+					'image' => '/template/assets/img/logo.png',
 				],
 				[
 					'title' => 'Duels',

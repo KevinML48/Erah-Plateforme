@@ -6,6 +6,8 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#d80707">
         <link rel="manifest" href="/manifest.json">
+        <link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">
+        <link rel="shortcut icon" href="/template/assets/img/logo.png" type="image/png">
         <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
 
         <title>{{ config('app.name', 'Laravel') }}</title>

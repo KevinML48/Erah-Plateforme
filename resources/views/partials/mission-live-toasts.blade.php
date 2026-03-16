@@ -22,31 +22,124 @@
             position: fixed;
             left: 16px;
             bottom: 18px;
-            width: min(400px, calc(100vw - 24px));
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: min(68vh, calc(100vh - 96px));
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding: 6px 6px 2px 0;
-            scroll-behavior: smooth;
+            width: min(440px, calc(100vw - 24px));
+            max-height: min(78vh, calc(100vh - 72px));
             z-index: 2950;
             pointer-events: none;
         }
-        .mission-live-stack::-webkit-scrollbar {
+        .mission-live-stack-shell {
+            display: flex;
+            flex-direction: column;
+            max-height: inherit;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(8, 9, 14, .9);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+            overflow: hidden;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+        }
+        .mission-live-stack[data-empty="true"] {
+            display: none;
+        }
+        .mission-live-stack-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
+        }
+        .mission-live-stack-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, .58);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+        }
+        .mission-live-stack-kicker::before {
+            content: '';
+            width: 18px;
+            height: 1px;
+            background: rgba(216, 7, 7, .88);
+        }
+        .mission-live-stack-title {
+            margin: 8px 0 0;
+            font-size: 17px;
+            line-height: 1.1;
+            font-weight: 700;
+            color: #fff;
+        }
+        .mission-live-stack-subtitle {
+            margin: 6px 0 0;
+            color: rgba(255, 255, 255, .64);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+        .mission-live-stack-tools {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .mission-live-stack-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .05);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .mission-live-stack-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .04);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .mission-live-stack-link:hover {
+            border-color: rgba(216, 7, 7, .38);
+            background: rgba(216, 7, 7, .14);
+        }
+        .mission-live-stack-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 12px 8px 10px;
+            scroll-behavior: smooth;
+        }
+        .mission-live-stack-list::-webkit-scrollbar {
             width: 6px;
         }
-        .mission-live-stack::-webkit-scrollbar-thumb {
+        .mission-live-stack-list::-webkit-scrollbar-thumb {
             border-radius: 999px;
             background: rgba(255, 255, 255, .14);
         }
-        .mission-live-stack::-webkit-scrollbar-track {
+        .mission-live-stack-list::-webkit-scrollbar-track {
             background: transparent;
         }
         .mission-live-toast {
-            padding: 18px;
-            border-radius: 22px;
+            padding: 14px;
+            border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, .12);
             background:
                 radial-gradient(circle at top left, rgba(216, 7, 7, .18), transparent 42%),
@@ -55,6 +148,9 @@
             color: #fff;
             pointer-events: auto;
             transition: opacity .2s ease, transform .2s ease;
+        }
+        .mission-live-toast.is-hidden {
+            display: none;
         }
         .mission-live-toast.is-leaving {
             opacity: 0;
@@ -65,6 +161,9 @@
         }
         .mission-live-toast.is-completed {
             border-color: rgba(104, 220, 150, .3);
+            background:
+                radial-gradient(circle at top left, rgba(56, 189, 120, .18), transparent 42%),
+                linear-gradient(180deg, rgba(14, 15, 21, .98), rgba(7, 8, 12, .98));
         }
         .mission-live-toast.is-claim {
             border-color: rgba(126, 196, 255, .34);
@@ -92,42 +191,69 @@
             background: rgba(216, 7, 7, .88);
         }
         .mission-live-toast-title {
-            margin: 10px 0 0;
-            font-size: 28px;
-            line-height: .95;
+            margin: 8px 0 0;
+            font-size: 24px;
+            line-height: .96;
             font-family: "Big Shoulders Display", sans-serif;
             text-transform: uppercase;
         }
+        .mission-live-toast-status {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .04);
+            color: rgba(255, 255, 255, .88);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+        }
+        .mission-live-toast-status.is-completed {
+            border-color: rgba(104, 220, 150, .35);
+            color: #d8ffe5;
+        }
+        .mission-live-toast-status.is-claim {
+            border-color: rgba(126, 196, 255, .35);
+            color: #dff1ff;
+        }
+        .mission-live-toast-status.is-progress {
+            border-color: rgba(255, 214, 102, .32);
+            color: #fff0c2;
+        }
         .mission-live-toast-close {
             flex: 0 0 auto;
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, .12);
             background: rgba(255, 255, 255, .04);
             color: rgba(255, 255, 255, .76);
-            font-size: 18px;
+            font-size: 16px;
             line-height: 1;
             cursor: pointer;
         }
         .mission-live-toast-body {
-            margin: 12px 0 0;
+            margin: 10px 0 0;
             color: rgba(255, 255, 255, .8);
-            line-height: 1.55;
+            line-height: 1.45;
+            font-size: 15px;
         }
         .mission-live-toast-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 14px;
+            gap: 7px;
+            margin-top: 12px;
         }
         .mission-live-toast-pill {
             display: inline-flex;
             align-items: center;
             border: 1px solid rgba(255, 255, 255, .16);
             border-radius: 999px;
-            padding: 4px 10px;
-            font-size: 11px;
+            padding: 3px 9px;
+            font-size: 10px;
             letter-spacing: .08em;
             text-transform: uppercase;
             color: rgba(255, 255, 255, .84);
@@ -135,23 +261,48 @@
         .mission-live-toast-actions {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 16px;
+            gap: 8px;
+            margin-top: 12px;
         }
         .mission-live-toast-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 42px;
-            padding: 0 16px;
-            border-radius: 14px;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, .12);
             background: rgba(255, 255, 255, .04);
             color: #fff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
         }
         .mission-live-toast-link:hover {
+            border-color: rgba(216, 7, 7, .38);
+            background: rgba(216, 7, 7, .14);
+        }
+        .mission-live-stack-footer {
+            display: none;
+            padding: 0 8px 10px;
+        }
+        .mission-live-stack-footer.is-visible {
+            display: block;
+        }
+        .mission-live-stack-toggle {
+            width: 100%;
+            min-height: 38px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .04);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        .mission-live-stack-toggle:hover {
             border-color: rgba(216, 7, 7, .38);
             background: rgba(216, 7, 7, .14);
         }
@@ -161,22 +312,36 @@
                 right: 12px;
                 bottom: 12px;
                 width: auto;
-                gap: 8px;
-                max-height: min(58vh, calc(100vh - 88px));
-                padding-right: 2px;
+                max-height: min(82vh, calc(100vh - 40px));
+            }
+            .mission-live-stack-header {
+                padding: 12px 12px 10px;
+            }
+            .mission-live-stack-title {
+                font-size: 15px;
+            }
+            .mission-live-stack-subtitle {
+                font-size: 11px;
+            }
+            .mission-live-stack-tools {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .mission-live-stack-link {
+                flex: 1 1 auto;
             }
             .mission-live-toast {
-                padding: 14px;
-                border-radius: 18px;
+                padding: 12px;
+                border-radius: 16px;
             }
             .mission-live-toast-title {
-                margin-top: 8px;
-                font-size: 19px;
+                margin-top: 6px;
+                font-size: 18px;
                 line-height: 1;
             }
             .mission-live-toast-body {
-                margin-top: 10px;
-                font-size: 14px;
+                margin-top: 8px;
+                font-size: 13px;
                 line-height: 1.45;
             }
             .mission-live-toast-pill {
@@ -188,7 +353,7 @@
             }
             .mission-live-toast-link {
                 width: 100%;
-                min-height: 40px;
+                min-height: 36px;
                 font-size: 12px;
             }
         }
@@ -215,9 +380,95 @@
 
             var cursorKey = 'erah-mission-toast-last-id:' + bootstrap.user_id;
             var pendingKey = 'erah-mission-toast-pending:' + bootstrap.user_id;
+            var visibleToastLimit = 3;
+            var isExpanded = false;
             var stack = document.createElement('div');
             stack.className = 'mission-live-stack';
+            stack.dataset.empty = 'true';
+            stack.innerHTML =
+                '<div class="mission-live-stack-shell">' +
+                    '<div class="mission-live-stack-header">' +
+                        '<div>' +
+                            '<span class="mission-live-stack-kicker">Notifications missions</span>' +
+                            '<p class="mission-live-stack-title">Suivi mission en direct</p>' +
+                            '<p class="mission-live-stack-subtitle">Les notifications les plus recentes restent en haut. Faites defiler pour voir l historique.</p>' +
+                        '</div>' +
+                        '<div class="mission-live-stack-tools">' +
+                            '<span class="mission-live-stack-count" data-role="mission-toast-count">0</span>' +
+                            '<a class="mission-live-stack-link" href="' + bootstrap.missions_url + '">Missions</a>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="mission-live-stack-list" data-role="mission-toast-list"></div>' +
+                    '<div class="mission-live-stack-footer" data-role="mission-toast-footer">' +
+                        '<button type="button" class="mission-live-stack-toggle" data-role="mission-toast-toggle">Voir les suivantes</button>' +
+                    '</div>' +
+                '</div>';
             document.body.appendChild(stack);
+
+            var list = stack.querySelector('[data-role="mission-toast-list"]');
+            var countNode = stack.querySelector('[data-role="mission-toast-count"]');
+            var footerNode = stack.querySelector('[data-role="mission-toast-footer"]');
+            var toggleNode = stack.querySelector('[data-role="mission-toast-toggle"]');
+
+            function buildToastPresentation(notification) {
+                var data = notification.data || {};
+                var kind = toastKind(notification);
+
+                if (kind === 'completed') {
+                    return {
+                        kind: kind,
+                        kicker: 'Mission reussie',
+                        status: 'Validee',
+                        title: String(notification.title || '').trim().toLowerCase() === 'mission terminee'
+                            ? 'Mission reussie'
+                            : String(notification.title || 'Mission reussie'),
+                    };
+                }
+
+                if (kind === 'claim') {
+                    return {
+                        kind: kind,
+                        kicker: 'Recompense disponible',
+                        status: 'A reclamer',
+                        title: String(notification.title || 'Mission terminee'),
+                    };
+                }
+
+                return {
+                    kind: kind,
+                    kicker: 'Mission ERAH',
+                    status: 'En cours',
+                    title: String(notification.title || 'Mission en progression'),
+                };
+            }
+
+            function updateToastVisibility() {
+                if (!list) {
+                    return;
+                }
+
+                var toasts = Array.prototype.slice.call(list.children || []);
+                var hiddenCount = 0;
+
+                toasts.forEach(function (node, index) {
+                    var shouldHide = !isExpanded && index >= visibleToastLimit;
+                    node.classList.toggle('is-hidden', shouldHide);
+                    if (shouldHide) {
+                        hiddenCount += 1;
+                    }
+                });
+
+                var shouldShowFooter = toasts.length > visibleToastLimit;
+                if (footerNode) {
+                    footerNode.classList.toggle('is-visible', shouldShowFooter);
+                }
+
+                if (toggleNode) {
+                    toggleNode.textContent = isExpanded
+                        ? 'Replier la pile'
+                        : 'Voir les suivantes (' + hiddenCount + ')';
+                }
+            }
 
             var storedCursor = Number(window.localStorage.getItem(cursorKey) || 0);
             var cursor = Number.isNaN(storedCursor) || storedCursor <= 0
@@ -233,12 +484,11 @@
                         return [];
                     }
 
-                    var now = Date.now();
                     var active = pending.filter(function (item) {
                         return item
                             && typeof item === 'object'
                             && item.notification
-                            && Number(item.expires_at || 0) > now;
+                            && Number((item.notification || {}).id || 0) > 0;
                     });
 
                     window.sessionStorage.setItem(pendingKey, JSON.stringify(active));
@@ -249,7 +499,7 @@
                 }
             }
 
-            function rememberToast(notification, expiresAt) {
+            function rememberToast(notification) {
                 if (!notification || !notification.id) {
                     return;
                 }
@@ -260,7 +510,6 @@
 
                 pending.push({
                     notification: notification,
-                    expires_at: Number(expiresAt || 0),
                 });
 
                 window.sessionStorage.setItem(pendingKey, JSON.stringify(pending));
@@ -288,12 +537,27 @@
                 node.classList.add('is-leaving');
                 window.setTimeout(function () {
                     node.remove();
+                    updateStackState();
                 }, 180);
+            }
+
+            function updateStackState() {
+                var count = list ? list.children.length : 0;
+                stack.dataset.empty = count > 0 ? 'false' : 'true';
+                if (countNode) {
+                    countNode.textContent = String(count);
+                }
+                if (count <= visibleToastLimit) {
+                    isExpanded = false;
+                }
+                updateToastVisibility();
             }
 
             function scrollStackToLatest() {
                 window.requestAnimationFrame(function () {
-                    stack.scrollTop = stack.scrollHeight;
+                    if (list) {
+                        list.scrollTop = 0;
+                    }
                 });
             }
 
@@ -339,16 +603,10 @@
                     return;
                 }
 
-                var expiresAt = Number(options.expiresAt || (Date.now() + 7600));
-                var remainingDuration = expiresAt - Date.now();
-                if (remainingDuration <= 250) {
-                    forgetToast(notificationId);
-                    return;
-                }
-
                 var kind = toastKind(notification);
                 var meta = buildMeta(notification);
-                var title = String(notification.title || 'Mission');
+                var presentation = buildToastPresentation(notification);
+                var title = presentation.title;
                 var body = String(notification.message || '');
 
                 var toast = document.createElement('article');
@@ -357,10 +615,13 @@
                 toast.innerHTML =
                     '<div class="mission-live-toast-head">' +
                         '<div>' +
-                            '<span class="mission-live-toast-kicker">Mission ERAH</span>' +
+                            '<span class="mission-live-toast-kicker"></span>' +
                             '<h3 class="mission-live-toast-title"></h3>' +
                         '</div>' +
-                        '<button type="button" class="mission-live-toast-close" aria-label="Fermer">&times;</button>' +
+                        '<div style="display:flex; align-items:center; gap:8px;">' +
+                            '<span class="mission-live-toast-status"></span>' +
+                            '<button type="button" class="mission-live-toast-close" aria-label="Fermer">&times;</button>' +
+                        '</div>' +
                     '</div>' +
                     '<p class="mission-live-toast-body"></p>' +
                     '<div class="mission-live-toast-meta"></div>' +
@@ -368,8 +629,12 @@
                         '<a class="mission-live-toast-link" href="' + bootstrap.missions_url + '">Voir mes missions</a>' +
                     '</div>';
 
+                toast.querySelector('.mission-live-toast-kicker').textContent = presentation.kicker;
                 toast.querySelector('.mission-live-toast-title').textContent = title;
                 toast.querySelector('.mission-live-toast-body').textContent = body;
+                var statusNode = toast.querySelector('.mission-live-toast-status');
+                statusNode.textContent = presentation.status;
+                statusNode.classList.add('is-' + presentation.kind);
 
                 var metaContainer = toast.querySelector('.mission-live-toast-meta');
                 if (meta.length === 0) {
@@ -387,12 +652,10 @@
                     removeToast(toast);
                 });
 
-                rememberToast(notification, expiresAt);
-                stack.appendChild(toast);
+                rememberToast(notification);
+                list.prepend(toast);
+                updateStackState();
                 scrollStackToLatest();
-                window.setTimeout(function () {
-                    removeToast(toast);
-                }, remainingDuration);
             }
 
             async function poll() {
@@ -416,7 +679,9 @@
                     var notifications = Array.isArray(payload.data) ? payload.data : [];
                     var latestId = Number((payload.meta || {}).latest_id || cursor || 0);
 
-                    var notificationsToShow = notifications;
+                    var notificationsToShow = notifications.slice().sort(function (left, right) {
+                        return Number((left || {}).id || 0) - Number((right || {}).id || 0);
+                    });
 
                     notificationsToShow.forEach(function (notification) {
                         showToast(notification);
@@ -435,11 +700,22 @@
                     return Number((left.notification || {}).id || 0) - Number((right.notification || {}).id || 0);
                 });
 
+            if (toggleNode) {
+                toggleNode.addEventListener('click', function () {
+                    isExpanded = !isExpanded;
+                    updateToastVisibility();
+                    if (!isExpanded) {
+                        scrollStackToLatest();
+                    }
+                });
+            }
+
             pendingToasts.forEach(function (item) {
                     showToast(item.notification || {}, {
-                        expiresAt: Number(item.expires_at || 0),
                     });
                 });
+
+            updateStackState();
 
             poll();
             window.setInterval(poll, 3200);

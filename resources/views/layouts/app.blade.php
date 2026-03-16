@@ -29,6 +29,8 @@
     <meta name="twitter:description" content="{{ $metaDescription }}">
     <meta name="twitter:image" content="{{ $socialImage }}">
     <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">
+    <link rel="shortcut icon" href="/template/assets/img/logo.png" type="image/png">
     <link rel="apple-touch-icon" href="/template/assets/img/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

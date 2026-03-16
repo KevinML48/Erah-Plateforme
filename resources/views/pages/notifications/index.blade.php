@@ -14,6 +14,11 @@
             background: linear-gradient(160deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
         }
 
+        .notif-layout {
+            display: grid;
+            gap: 18px;
+        }
+
         .notif-toolbar-head {
             display: flex;
             align-items: center;
@@ -114,6 +119,93 @@
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
             margin-bottom: 20px;
+        }
+
+        .notif-page-card,
+        .notif-stream {
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 14px;
+            padding: 16px;
+            background: linear-gradient(160deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
+        }
+
+        .notif-page-card {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .notif-page-card strong {
+            display: block;
+            font-size: 24px;
+            line-height: 1.1;
+            margin-top: 6px;
+        }
+
+        .notif-page-card p {
+            margin: 8px 0 0;
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.55;
+        }
+
+        .notif-page-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .notif-page-pill,
+        .notif-day-label {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 6px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: rgba(255, 255, 255, .04);
+            color: rgba(255, 255, 255, .84);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .notif-stream {
+            display: grid;
+            gap: 16px;
+        }
+
+        .notif-stream-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .notif-stream-head h2 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.1;
+        }
+
+        .notif-stream-head p {
+            margin: 8px 0 0;
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.55;
+        }
+
+        .notif-stream-count {
+            color: rgba(255, 255, 255, .62);
+            font-size: 13px;
+        }
+
+        .notif-day-group {
+            display: grid;
+            gap: 12px;
         }
 
         .notif-kpi-card {
@@ -229,7 +321,7 @@
 
         .notif-title {
             margin: 0 0 6px;
-            font-size: 22px;
+            font-size: 18px;
             line-height: 1.2;
         }
 
@@ -403,6 +495,15 @@
 
             return $params;
         };
+
+        $notificationRows = collect(($notifications ?? null)?->items() ?? []);
+        $pageUnreadNotifications = $notificationRows
+            ->filter(fn ($notification) => $notification->read_at === null)
+            ->values();
+        $pageReadNotifications = $notificationRows
+            ->reject(fn ($notification) => $notification->read_at === null)
+            ->values();
+        $hasSplitStreams = $currentState === 'all' && $pageUnreadNotifications->isNotEmpty() && $pageReadNotifications->isNotEmpty();
     @endphp
 
     <div id="page-header" class="ph-full ph-full-m ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -459,148 +560,120 @@
     <div id="tt-page-content">
         <div class="tt-section padding-top-60 border-top">
             <div class="tt-section-inner tt-wrap max-width-1800">
-                <section class="notif-toolbar tt-anim-fadeinup">
-                    <div class="notif-toolbar-head">
-                        <div class="notif-state-tabs">
-                            @foreach($stateLabels as $stateKey => $stateLabel)
-                                <a href="{{ route($indexRouteName, $buildParams(['state' => $stateKey])) }}"
-                                    class="notif-tab {{ $currentState === $stateKey ? 'active' : '' }}">
-                                    {{ $stateLabel }}
-                                    <span class="notif-tab-count">{{ (int) ($stateCounts[$stateKey] ?? 0) }}</span>
+                <div class="notif-layout">
+                    <section class="notif-toolbar tt-anim-fadeinup">
+                        <div class="notif-toolbar-head">
+                            <div class="notif-state-tabs">
+                                @foreach($stateLabels as $stateKey => $stateLabel)
+                                    <a href="{{ route($indexRouteName, $buildParams(['state' => $stateKey])) }}"
+                                        class="notif-tab {{ $currentState === $stateKey ? 'active' : '' }}">
+                                        {{ $stateLabel }}
+                                        <span class="notif-tab-count">{{ (int) ($stateCounts[$stateKey] ?? 0) }}</span>
+                                    </a>
+                                @endforeach
+                            </div>
+
+                            <div class="notif-toolbar-actions">
+                                <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                                    <span data-hover="Preferences">Preferences</span>
+                                </a>
+
+                                @if((int) ($summary['unread'] ?? 0) > 0)
+                                    <form method="POST" action="{{ route($readAllRouteName) }}">
+                                        @csrf
+                                        <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">
+                                            <span data-hover="Tout marquer lu">Tout marquer lu</span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm notif-btn-disabled">Aucune non lue</button>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="notif-category-tabs">
+                            <a href="{{ route($indexRouteName, $buildParams(['category' => 'all'])) }}"
+                                class="notif-tab {{ $currentCategory === 'all' ? 'active' : '' }}">
+                                Toutes categories
+                                <span class="notif-tab-count">{{ (int) ($summary['total'] ?? 0) }}</span>
+                            </a>
+
+                            @foreach($categoryLabels as $categoryKey => $categoryLabel)
+                                @php
+                                    $toneClass = $categoryToneMap[$categoryKey] ?? '';
+                                @endphp
+                                <a href="{{ route($indexRouteName, $buildParams(['category' => $categoryKey])) }}"
+                                    class="notif-tab {{ $toneClass }} {{ $currentCategory === $categoryKey ? 'active' : '' }}">
+                                    {{ $categoryLabel }}
+                                    <span class="notif-tab-count">{{ (int) ($categoryCounts->get($categoryKey, 0)) }}</span>
                                 </a>
                             @endforeach
                         </div>
 
-                        <div class="notif-toolbar-actions">
-                            <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                                <span data-hover="Preferences">Preferences</span>
-                            </a>
-
-                            @if((int) ($summary['unread'] ?? 0) > 0)
-                                <form method="POST" action="{{ route($readAllRouteName) }}">
-                                    @csrf
-                                    <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">
-                                        <span data-hover="Tout marquer lu">Tout marquer lu</span>
-                                    </button>
-                                </form>
-                            @else
-                                <button type="button" class="tt-btn tt-btn-outline tt-btn-sm notif-btn-disabled">Aucune non lue</button>
-                            @endif
+                        <div class="notif-toolbar-meta">
+                            Resultats filtres: {{ (int) ($summary['filtered'] ?? 0) }} notification(s) affichee(s).
                         </div>
-                    </div>
-
-                    <div class="notif-category-tabs">
-                        <a href="{{ route($indexRouteName, $buildParams(['category' => 'all'])) }}"
-                            class="notif-tab {{ $currentCategory === 'all' ? 'active' : '' }}">
-                            Toutes categories
-                            <span class="notif-tab-count">{{ (int) ($summary['total'] ?? 0) }}</span>
-                        </a>
-
-                        @foreach($categoryLabels as $categoryKey => $categoryLabel)
-                            @php
-                                $toneClass = $categoryToneMap[$categoryKey] ?? '';
-                            @endphp
-                            <a href="{{ route($indexRouteName, $buildParams(['category' => $categoryKey])) }}"
-                                class="notif-tab {{ $toneClass }} {{ $currentCategory === $categoryKey ? 'active' : '' }}">
-                                {{ $categoryLabel }}
-                                <span class="notif-tab-count">{{ (int) ($categoryCounts->get($categoryKey, 0)) }}</span>
-                            </a>
-                        @endforeach
-                    </div>
-
-                    <div class="notif-toolbar-meta">
-                        Resultats filtres: {{ (int) ($summary['filtered'] ?? 0) }} notification(s) affichee(s).
-                    </div>
-                </section>
-
-                <section class="notif-kpi-grid">
-                    <article class="notif-kpi-card tt-anim-fadeinup">
-                        <strong>{{ (int) ($summary['total'] ?? 0) }}</strong>
-                        <span>Total</span>
-                    </article>
-                    <article class="notif-kpi-card tt-anim-fadeinup">
-                        <strong>{{ (int) ($summary['unread'] ?? 0) }}</strong>
-                        <span>Non lues</span>
-                    </article>
-                    <article class="notif-kpi-card tt-anim-fadeinup">
-                        <strong>{{ (int) ($summary['read'] ?? 0) }}</strong>
-                        <span>Lues</span>
-                    </article>
-                    <article class="notif-kpi-card tt-anim-fadeinup">
-                        <strong>{{ (int) ($summary['filtered'] ?? 0) }}</strong>
-                        <span>Dans le filtre</span>
-                    </article>
-                </section>
-
-                @if(($notifications ?? null) && $notifications->count())
-                    <section class="notif-list">
-                        @foreach($notifications as $notification)
-                            @php
-                                $categoryKey = (string) $notification->category;
-                                $categoryLabel = $categoryLabels[$categoryKey] ?? \Illuminate\Support\Str::headline(str_replace('_', ' ', $categoryKey));
-                                $toneClass = $categoryToneMap[$categoryKey] ?? '';
-                                $iconClass = $categoryIconMap[$categoryKey] ?? 'fa-solid fa-bell';
-                                $isUnread = $notification->read_at === null;
-
-                                $payload = is_array($notification->data) ? $notification->data : [];
-                                $actionUrlRaw = (isset($payload['url']) && is_string($payload['url'])) ? trim((string) $payload['url']) : '';
-                                $actionUrl = '';
-                                if (
-                                    $actionUrlRaw !== ''
-                                    && (
-                                        preg_match('/^https?:\\/\\//i', $actionUrlRaw) === 1
-                                        || str_starts_with($actionUrlRaw, '/')
-                                    )
-                                ) {
-                                    $actionUrl = $actionUrlRaw;
-                                }
-                                $actionLabel = (isset($payload['cta_label']) && is_string($payload['cta_label']) && trim((string) $payload['cta_label']) !== '')
-                                    ? trim((string) $payload['cta_label'])
-                                    : 'Ouvrir';
-                                $isExternalAction = $actionUrl !== '' && preg_match('/^https?:\\/\\//i', $actionUrl) === 1;
-                            @endphp
-                            <article class="notif-item {{ $isUnread ? 'is-unread' : '' }} tt-anim-fadeinup">
-                                <header class="notif-item-head">
-                                    <div class="notif-item-meta">
-                                        <span class="notif-category-badge {{ $toneClass }}">
-                                            <i class="{{ $iconClass }}"></i>
-                                            {{ $categoryLabel }}
-                                        </span>
-                                        @if($isUnread)
-                                            <span class="notif-state-badge">Nouveau</span>
-                                        @endif
-                                    </div>
-                                    <time class="notif-time">{{ optional($notification->created_at)->format('d/m/Y H:i') ?? '-' }}</time>
-                                </header>
-
-                                <h2 class="notif-title">{{ (string) $notification->title }}</h2>
-                                <p class="notif-message">{{ (string) ($notification->message ?: 'Notification sans message detaille.') }}</p>
-
-                                <div class="notif-item-actions">
-                                    @if($actionUrl !== '')
-                                        <a href="{{ $actionUrl }}"
-                                            class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item"
-                                            @if($isExternalAction) target="_blank" rel="noopener" @endif>
-                                            <span data-hover="{{ $actionLabel }}">{{ $actionLabel }}</span>
-                                        </a>
-                                    @endif
-
-                                    @if($isUnread)
-                                        <form method="POST" action="{{ route($readRouteName, $notification->id) }}">
-                                            @csrf
-                                            <button type="submit" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item">
-                                                <span data-hover="Marquer lue">Marquer lue</span>
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="notif-muted">Deja lue</span>
-                                    @endif
-                                </div>
-                            </article>
-                        @endforeach
                     </section>
 
-                    @if($notifications->hasPages())
+                    <section class="notif-kpi-grid">
+                        <article class="notif-kpi-card tt-anim-fadeinup">
+                            <strong>{{ (int) ($summary['total'] ?? 0) }}</strong>
+                            <span>Total</span>
+                        </article>
+                        <article class="notif-kpi-card tt-anim-fadeinup">
+                            <strong>{{ (int) ($summary['unread'] ?? 0) }}</strong>
+                            <span>Non lues</span>
+                        </article>
+                        <article class="notif-kpi-card tt-anim-fadeinup">
+                            <strong>{{ (int) ($summary['read'] ?? 0) }}</strong>
+                            <span>Lues</span>
+                        </article>
+                        <article class="notif-kpi-card tt-anim-fadeinup">
+                            <strong>{{ (int) ($summary['filtered'] ?? 0) }}</strong>
+                            <span>Dans le filtre</span>
+                        </article>
+                    </section>
+
+                    <section class="notif-page-card tt-anim-fadeinup">
+                        <div>
+                            <span class="notif-page-pill">Sur cette page</span>
+                            <strong>{{ $notificationRows->count() }} notification(s) visibles</strong>
+                            <p>
+                                @if(($notifications ?? null) && $notifications->hasPages())
+                                    Page {{ $notifications->currentPage() }} sur {{ $notifications->lastPage() }}. La liste est maintenant separee par priorite et par jour pour faciliter la lecture.
+                                @else
+                                    La liste est separee par priorite et par jour pour faciliter la lecture quand plusieurs notifications s accumulent.
+                                @endif
+                            </p>
+                        </div>
+                        <div class="notif-page-meta">
+                            <span class="notif-page-pill">{{ $pageUnreadNotifications->count() }} a traiter</span>
+                            <span class="notif-page-pill">{{ $pageReadNotifications->count() }} deja lues</span>
+                        </div>
+                    </section>
+
+                    @if(($notifications ?? null) && $notifications->count())
+                        @if($hasSplitStreams)
+                            @include('pages.notifications.partials.stream', [
+                                'items' => $pageUnreadNotifications,
+                                'title' => 'A traiter en priorite',
+                                'subtitle' => 'Les notifications non lues restent en tete pour eviter qu elles se perdent dans le flux.',
+                            ])
+
+                            @include('pages.notifications.partials.stream', [
+                                'items' => $pageReadNotifications,
+                                'title' => 'Historique recent',
+                                'subtitle' => 'Les notifications deja consultees sont rangees separement pour garder une timeline plus claire.',
+                            ])
+                        @else
+                            @include('pages.notifications.partials.stream', [
+                                'items' => $notificationRows,
+                                'title' => $currentState === 'unread' ? 'Notifications a traiter' : 'Timeline des notifications',
+                                'subtitle' => 'Affichage groupe par date pour mieux parcourir les notifications quand le volume augmente.',
+                            ])
+                        @endif
+
+                        @if($notifications->hasPages())
                         @php
                             $windowStart = max(1, $notifications->currentPage() - 1);
                             $windowEnd = min($notifications->lastPage(), $notifications->currentPage() + 1);
@@ -622,15 +695,16 @@
                                 </a>
                             </div>
                         </div>
+                        @endif
+                    @else
+                        <div class="notif-empty tt-anim-fadeinup">
+                            <p>Aucune notification pour ce filtre.</p>
+                            <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
+                                <span data-hover="Verifier preferences">Verifier preferences</span>
+                            </a>
+                        </div>
                     @endif
-                @else
-                    <div class="notif-empty tt-anim-fadeinup">
-                        <p>Aucune notification pour ce filtre.</p>
-                        <a href="{{ route($preferencesRouteName) }}" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item">
-                            <span data-hover="Verifier preferences">Verifier preferences</span>
-                        </a>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>

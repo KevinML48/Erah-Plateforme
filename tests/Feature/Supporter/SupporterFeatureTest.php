@@ -72,6 +72,88 @@ class SupporterFeatureTest extends TestCase
         $this->assertNotNull($subscription->current_period_end);
     }
 
+    public function test_stripe_webhook_deletes_and_deactivates_support_subscription(): void
+    {
+        $user = User::factory()->create(['stripe_id' => 'cus_supporter_delete_1']);
+
+        $this->postJson(route('stripe.webhook'), [
+            'type' => 'customer.subscription.created',
+            'data' => [
+                'object' => [
+                    'id' => 'sub_supporter_delete_1',
+                    'customer' => 'cus_supporter_delete_1',
+                    'status' => 'active',
+                    'start_date' => now()->subDay()->timestamp,
+                    'current_period_start' => now()->startOfMonth()->timestamp,
+                    'current_period_end' => now()->endOfMonth()->timestamp,
+                    'items' => [
+                        'data' => [[
+                            'id' => 'si_supporter_delete_1',
+                            'quantity' => 1,
+                            'price' => [
+                                'id' => 'price_supporter_1',
+                                'product' => 'prod_supporter_1',
+                            ],
+                        ]],
+                    ],
+                    'metadata' => [
+                        'type' => config('supporter.plan.subscription_type'),
+                    ],
+                ],
+            ],
+        ])->assertOk();
+
+        $response = $this->postJson(route('stripe.webhook'), [
+            'type' => 'customer.subscription.deleted',
+            'data' => [
+                'object' => [
+                    'id' => 'sub_supporter_delete_1',
+                    'customer' => 'cus_supporter_delete_1',
+                    'status' => 'canceled',
+                    'cancel_at_period_end' => false,
+                    'canceled_at' => now()->timestamp,
+                    'current_period_start' => now()->startOfMonth()->timestamp,
+                    'current_period_end' => now()->timestamp,
+                    'items' => [
+                        'data' => [[
+                            'id' => 'si_supporter_delete_1',
+                            'quantity' => 1,
+                            'price' => [
+                                'id' => 'price_supporter_1',
+                                'product' => 'prod_supporter_1',
+                            ],
+                        ]],
+                    ],
+                    'metadata' => [
+                        'type' => config('supporter.plan.subscription_type'),
+                    ],
+                ],
+            ],
+        ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('subscriptions', [
+            'user_id' => $user->id,
+            'type' => config('supporter.plan.subscription_type'),
+            'stripe_id' => 'sub_supporter_delete_1',
+            'stripe_status' => 'canceled',
+        ]);
+
+        $subscription = UserSupportSubscription::query()
+            ->where('user_id', $user->id)
+            ->where('provider_subscription_id', 'sub_supporter_delete_1')
+            ->first();
+
+        $this->assertNotNull($subscription);
+        $this->assertContains($subscription->status, [
+            UserSupportSubscription::STATUS_CANCELED,
+            UserSupportSubscription::STATUS_EXPIRED,
+        ]);
+        $this->assertNotNull($subscription->ended_at ?? $subscription->canceled_at);
+        $this->assertFalse($user->fresh()->isSupporterActive());
+    }
+
     public function test_supporter_only_clip_reaction_requires_active_supporter(): void
     {
         $clip = Clip::factory()->create();

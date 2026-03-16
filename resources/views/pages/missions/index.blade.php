@@ -495,9 +495,6 @@
                                 <a href="{{ route('gifts.index') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
                                     <span data-hover="Voir les cadeaux">Voir les cadeaux</span>
                                 </a>
-                                <a href="{{ route($dashboardRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                    <span data-hover="Retour dashboard">Retour dashboard</span>
-                                </a>
                             </div>
                         </div>
 

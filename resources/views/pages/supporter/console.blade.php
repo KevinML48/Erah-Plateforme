@@ -218,6 +218,7 @@
                             @else
                                 <form method="POST" action="{{ route('supporter.checkout') }}">
                                     @csrf
+                                    <input type="hidden" name="plan_key" value="{{ config('supporter.plan.key') }}">
                                     <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
                                         <span data-hover="Activer Supporter">Activer Supporter</span>
                                     </button>

@@ -401,13 +401,12 @@
                     </article>
 
                     <article class="lb-me-card tt-anim-fadeinup">
-                        @php($progressBarAttr = ' style="width: '.e((string) $progressPercent).'%"')
                         <div class="lb-me-progress-head">
                             <span>Progression vers prochaine ligue</span>
                             <strong>{{ $progressPercent }}%</strong>
                         </div>
                         <div class="lb-me-progress-track">
-                            <span{!! $progressBarAttr !!}></span>
+                            <span style="width: {{ $progressPercent }}%"></span>
                         </div>
                         <div class="lb-me-progress-note">
                             @if($nextLeague)
@@ -429,28 +428,23 @@
                         </div>
 
                         @foreach($contextEntries as $entry)
-                            @php
-                                $isMe = (int) ($entry['user_id'] ?? 0) === (int) $user->id;
-                                $avatar = (string) ($entry['avatar_url'] ?? $avatarFallback);
-                                $profileUrl = !empty($entry['user_id']) ? route($publicProfileRouteName, $entry['user_id']) : null;
-                            @endphp
-                            <article class="lb-me-row {{ $isMe ? 'is-me' : '' }}">
+                            <article class="lb-me-row {{ (int) ($entry['user_id'] ?? 0) === (int) $user->id ? 'is-me' : '' }}">
                                 <div class="lb-me-rank">#{{ (int) ($entry['position'] ?? 0) }}</div>
 
                                 <div class="lb-me-user">
-                                    @if($profileUrl)
-                                        <a href="{{ $profileUrl }}" class="lb-me-profile-link">
-                                            <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
+                                    @if(!empty($entry['user_id']))
+                                        <a href="{{ route($publicProfileRouteName, $entry['user_id']) }}" class="lb-me-profile-link">
+                                            <img src="{{ (string) ($entry['avatar_url'] ?? '') !== '' ? $entry['avatar_url'] : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
                                             <div>
                                                 <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
-                                                <small>{{ $isMe ? 'vous' : 'joueur' }}</small>
+                                                <small>{{ (int) ($entry['user_id'] ?? 0) === (int) $user->id ? 'vous' : 'joueur' }}</small>
                                             </div>
                                         </a>
                                     @else
-                                        <img src="{{ $avatar !== '' ? $avatar : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
+                                        <img src="{{ (string) ($entry['avatar_url'] ?? '') !== '' ? $entry['avatar_url'] : $avatarFallback }}" alt="{{ $entry['name'] ?? 'Joueur' }}" class="lb-me-avatar">
                                         <div>
                                             <strong>{{ $entry['name'] ?? 'Joueur inconnu' }}</strong>
-                                            <small>{{ $isMe ? 'vous' : 'joueur' }}</small>
+                                            <small>{{ (int) ($entry['user_id'] ?? 0) === (int) $user->id ? 'vous' : 'joueur' }}</small>
                                         </div>
                                     @endif
                                 </div>

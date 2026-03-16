@@ -6,7 +6,7 @@
             @foreach($comments as $comment)
                 @php
                     $commentAuthor = $comment->user?->name ?? 'Utilisateur';
-                    $avatarUrl = $comment->user?->avatar_url ?? '/template/assets/img/blog/avatar.png';
+                    $avatarUrl = $comment->user?->display_avatar_url ?? \App\Support\MediaStorage::fallbackAvatarUrl();
                     $isSupporterComment = (int) ($comment->supporter_priority ?? 0) === 1;
                     $publicProfileUrl = $comment->user ? route('users.public', $comment->user) : null;
                     $isReplyOpen = auth()->check()

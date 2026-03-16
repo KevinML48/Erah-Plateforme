@@ -1075,7 +1075,7 @@ class HelpCenterService
 
         return [
             'name' => $user->name,
-            'avatar_url' => $user->avatar_url,
+            'avatar_url' => $user->display_avatar_url,
             'profile_url' => route('users.public', $user),
             'dashboard_url' => route('dashboard'),
             'internal_profile_url' => route('profile.show'),

@@ -3,26 +3,27 @@
 namespace App\Http\Controllers\Marketing;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Response;
+use App\Support\MediaStorage;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class GalleryVideoMediaController extends Controller
 {
-    public function thumbnail(string $path): Response
+    public function thumbnail(string $path): StreamedResponse
     {
         return $this->respondWithMedia($path, 'gallery-videos/thumbnails/');
     }
 
-    public function preview(string $path): Response
+    public function preview(string $path): StreamedResponse
     {
         return $this->respondWithMedia($path, 'gallery-videos/previews/');
     }
 
-    private function respondWithMedia(string $path, string $expectedPrefix): Response
+    private function respondWithMedia(string $path, string $expectedPrefix): StreamedResponse
     {
         $normalizedPath = trim($path, '/');
-        $disk = (string) config('filesystems.media_disk', 'public');
+        $disk = MediaStorage::resolveDiskForPath($normalizedPath, (string) config('filesystems.media_disk', MediaStorage::publicDisk()));
 
         if (! Str::startsWith($normalizedPath, $expectedPrefix)) {
             abort(404);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\MigrateLegacyMediaToMediaDisk;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\EnsureSupporterActive;
@@ -16,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        MigrateLegacyMediaToMediaDisk::class,
+    ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             HandleInertiaRequests::class,

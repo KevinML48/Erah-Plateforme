@@ -212,7 +212,7 @@
                         <div class="pcli-inner">
                             @foreach($users as $target)
                                 @php
-                                    $avatar = $target->avatar_url ?: 'https://picsum.photos/seed/duel-target-'.$target->id.'/480/320';
+                                    $avatar = $target->display_avatar_url;
                                     $latest = $latestByUserId[$target->id] ?? null;
                                     $latestStatusClass = match((string) ($latest['status'] ?? '')) {
                                         \App\Models\Duel::STATUS_ACCEPTED => 'is-active',

@@ -599,7 +599,8 @@
 
 @section('content')
     @php
-        $avatarUrl = $userProfile->avatar_url ?: '/template/assets/img/logo.png';
+        $avatarFallbackUrl = \App\Support\MediaStorage::fallbackAvatarUrl();
+        $avatarUrl = $userProfile->display_avatar_url;
         $supporterBadges = collect([
             ($supporterSummary['is_founder'] ?? false) ? 'Supporter fondateur' : null,
             $supporterSummary['loyalty_badge'] ?? null,
@@ -760,7 +761,7 @@
                     <section class="public-profile-top-grid">
                         <div class="public-profile-surface public-profile-identity-card" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
                             <div class="public-profile-panel-head">
-                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
+                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar" onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
 
                                 <div class="public-profile-identity-copy">
                                     <div>

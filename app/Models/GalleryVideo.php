@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaStorage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -138,15 +139,15 @@ class GalleryVideo extends Model
 
     private function buildManagedMediaUrl(string $path, string $type): string
     {
-        $disk = (string) config('filesystems.media_disk', 'public');
+        $disk = MediaStorage::resolveDiskForPath($path, (string) config('filesystems.media_disk', MediaStorage::publicDisk()));
 
-        if ($disk === 'public') {
+        if ($disk === MediaStorage::publicDisk()) {
             return $type === 'thumbnail'
                 ? route('marketing.gallery-video.thumbnail', ['path' => $path])
                 : route('marketing.gallery-video.preview', ['path' => $path]);
         }
 
-        return Storage::disk($disk)->url($path);
+        return (string) MediaStorage::diskUrl($path, $disk);
     }
 
     public function getDisplayCategoryLabelAttribute(): string

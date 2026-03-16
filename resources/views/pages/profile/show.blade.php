@@ -791,7 +791,8 @@
 
 @section('content')
     @php
-        $avatarUrl = $user->avatar_url ?: '/template/assets/img/logo.png';
+        $avatarFallbackUrl = \App\Support\MediaStorage::fallbackAvatarUrl();
+        $avatarUrl = $user->display_avatar_url;
         $isPublicApp = request()->routeIs('app.*');
         $historyRouteName = $isPublicApp ? 'app.profile.transactions' : 'profile.transactions';
         $deleteRouteName = $isPublicApp ? 'app.profile.destroy' : 'profile.destroy';
@@ -1007,7 +1008,7 @@
 
                     <div class="tt-col-xl-5">
                         <div class="profile-side-card margin-bottom-30" data-tour="profile-overview" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
-                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
+                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
                             <h4 class="no-margin" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $user->name }}</h4>
                             @if($activeTitle)
                                 <p class="tt-form-text margin-top-10">

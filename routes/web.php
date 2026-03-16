@@ -26,6 +26,7 @@ use App\Http\Controllers\Web\Admin\GalleryVideoAdminController;
 use App\Http\Controllers\Web\Admin\PublicProfileModerationController;
 use App\Http\Controllers\Web\Admin\SupportersAdminController;
 use App\Http\Controllers\Marketing\ContactController as MarketingContactController;
+use App\Http\Controllers\Marketing\PublicMediaController;
 use App\Http\Controllers\Marketing\GalleryVideoMediaController;
 use App\Http\Controllers\Marketing\GalleryPhotoPageController;
 use App\Http\Controllers\Marketing\GalleryVideoPageController;
@@ -510,6 +511,9 @@ Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketin
 Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
 Route::get('/galerie-video', GalleryVideoPageController::class)->name('marketing.gallery-video');
 Route::get('/galerie-video.html', GalleryVideoPageController::class);
+Route::get('/media/public/{path}', [PublicMediaController::class, 'show'])
+    ->where('path', '.*')
+    ->name('media.public.file');
 Route::get('/media/gallery-videos/thumbnails/{path}', [GalleryVideoMediaController::class, 'thumbnail'])
     ->where('path', '.*')
     ->name('marketing.gallery-video.thumbnail');

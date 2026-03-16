@@ -212,7 +212,7 @@ class DuelsPageController extends Controller
         $opponentId = (int) ($opponent?->id ?? 0);
         $opponentName = (string) ($opponent?->name ?? 'Adversaire inconnu');
         $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
-        $opponentAvatar = (string) ($opponent?->avatar_url ?? '');
+        $opponentAvatar = (string) ($opponent?->display_avatar_url ?? '');
         if ($opponentAvatar === '') {
             $opponentAvatar = $avatarFallback;
         }

@@ -201,6 +201,25 @@ class GalleryPhotosFeatureTest extends TestCase
         Storage::disk('public')->assertMissing($path);
     }
 
+    public function test_gallery_photo_uses_public_media_route_for_public_disk_assets(): void
+    {
+        config(['filesystems.media_disk' => 'public']);
+        Storage::fake('public');
+
+        Storage::disk('public')->put('gallery/photos/public-photo.jpg', 'image');
+
+        $photo = GalleryPhoto::factory()->create([
+            'image_path' => 'gallery/photos/public-photo.jpg',
+            'storage_disk' => 'public',
+            'media_type' => GalleryPhoto::MEDIA_TYPE_IMAGE,
+        ]);
+
+        $this->assertSame(route('media.public.file', ['path' => 'gallery/photos/public-photo.jpg']), $photo->image_url);
+
+        $this->get(route('media.public.file', ['path' => 'gallery/photos/public-photo.jpg']))
+            ->assertOk();
+    }
+
     public function test_legacy_gallery_import_command_is_idempotent(): void
     {
         Artisan::call('gallery-photos:import-legacy');

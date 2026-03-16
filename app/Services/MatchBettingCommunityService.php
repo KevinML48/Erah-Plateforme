@@ -296,7 +296,7 @@ class MatchBettingCommunityService
             'id' => (int) $bet->id,
             'user_id' => (int) $bet->user_id,
             'user_name' => $userName !== '' ? $userName : 'Utilisateur',
-            'user_avatar_url' => $bet->user?->avatar_url,
+            'user_avatar_url' => $bet->user?->display_avatar_url,
             'market_key' => $marketKey,
             'market_label' => $marketLabels[$marketKey] ?? Str::headline(str_replace('_', ' ', $marketKey)),
             'selection_key' => $selectionKey,

@@ -124,6 +124,31 @@ class GalleryVideosFeatureTest extends TestCase
         $response->assertSee(route('marketing.gallery-video.preview', ['path' => $storedPath]), false);
     }
 
+    public function test_public_gallery_uses_legacy_public_preview_route_when_media_disk_is_s3(): void
+    {
+        config(['filesystems.media_disk' => 's3']);
+        Storage::fake('public');
+        Storage::fake('s3');
+
+        $storedPath = UploadedFile::fake()->create('legacy-public-preview.mp4', 2048, 'video/mp4')
+            ->store('gallery-videos/previews', 'public');
+
+        GalleryVideo::factory()->create([
+            'title' => 'Preview legacy public',
+            'status' => GalleryVideo::STATUS_PUBLISHED,
+            'published_at' => now()->subMinute(),
+            'preview_video_url' => $storedPath,
+        ]);
+
+        $response = $this->get(route('marketing.gallery-video'));
+
+        $response->assertOk();
+        $response->assertSee(route('marketing.gallery-video.preview', ['path' => $storedPath]), false);
+
+        $this->get(route('marketing.gallery-video.preview', ['path' => $storedPath]))
+            ->assertOk();
+    }
+
     public function test_admin_gallery_video_route_is_protected(): void
     {
         $regularUser = User::factory()->create();

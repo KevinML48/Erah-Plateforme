@@ -293,7 +293,7 @@ class SupporterAccessResolver
             return [
                 'user_id' => $user->id,
                 'name' => (string) ($profile?->display_name ?: $user->name),
-                'avatar_url' => $user->avatar_url,
+                'avatar_url' => $user->display_avatar_url,
                 'is_founder' => $this->isFoundingSupporter($user),
             ];
         })->values();

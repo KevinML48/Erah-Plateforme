@@ -64,7 +64,7 @@ class LeaderboardQuery
                             'position' => $index + 1,
                             'user_id' => $progress->user_id,
                             'name' => $progress->user?->name,
-                            'avatar_url' => $progress->user?->avatar_url,
+                            'avatar_url' => $progress->user?->display_avatar_url,
                             'total_rank_points' => $progress->total_rank_points,
                             'total_xp' => $progress->total_xp,
                             'is_supporter' => $progress->user?->isSupporterActive() ?? false,

@@ -5,6 +5,7 @@ namespace Tests\Feature\Web;
 use App\Models\SocialAccount;
 use App\Models\User;
 use App\Models\UserProfileCosmetic;
+use App\Support\MediaStorage;
 use Database\Seeders\LeagueSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -49,13 +50,74 @@ class ProfileWebTest extends TestCase
         $this->assertSame('https://tiktok.com/@newpublicname', $user->tiktok_url);
         $this->assertSame('https://discord.gg/newpublicname', $user->discord_url);
         $this->assertNotNull($user->avatar_path);
-        Storage::disk('public')->assertExists($user->avatar_path);
+        Storage::disk((string) config('filesystems.media_disk'))->assertExists($user->avatar_path);
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'profile.updated',
             'actor_id' => $user->id,
             'actor_type' => User::class,
         ]);
+    }
+
+    public function test_authenticated_user_can_store_avatar_on_s3_media_disk(): void
+    {
+        config(['filesystems.media_disk' => 's3']);
+        Storage::fake('s3');
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'avatar_path' => null,
+        ]);
+
+        $this->actingAs($user)->put(route('profile.update'), [
+            'name' => 'S3 Avatar User',
+            'bio' => 'Profil avec media disk S3.',
+            'twitter_url' => '',
+            'instagram_url' => '',
+            'tiktok_url' => '',
+            'discord_url' => '',
+            'avatar' => UploadedFile::fake()->create('avatar-s3.png', 128, 'image/png'),
+        ])->assertRedirect(route('profile.show'));
+
+        $user->refresh();
+
+        $this->assertNotNull($user->avatar_path);
+        Storage::disk('s3')->assertExists((string) $user->avatar_path);
+    }
+
+    public function test_avatar_url_falls_back_to_legacy_public_disk_when_media_disk_is_s3(): void
+    {
+        config(['filesystems.media_disk' => 's3']);
+        Storage::fake('public');
+        Storage::fake('s3');
+        $this->seed(LeagueSeeder::class);
+
+        Storage::disk('public')->put('avatars/legacy-member.png', 'avatar');
+
+        $user = User::factory()->create([
+            'avatar_path' => 'avatars/legacy-member.png',
+        ]);
+
+        $this->assertSame(route('media.public.file', ['path' => 'avatars/legacy-member.png']), $user->avatar_url);
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertSee(route('media.public.file', ['path' => 'avatars/legacy-member.png']), false);
+    }
+
+    public function test_profile_page_uses_placeholder_when_avatar_is_missing(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'avatar_path' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertSee(MediaStorage::fallbackAvatarUrl(), false);
     }
 
     public function test_public_profile_page_displays_profile_links_and_bio(): void

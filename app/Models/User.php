@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -71,15 +70,12 @@ class User extends Authenticatable
 
     public function getAvatarUrlAttribute(): ?string
     {
-        if (blank($this->avatar_path)) {
-            return null;
-        }
+        return MediaStorage::url($this->avatar_path);
+    }
 
-        if (Str::startsWith((string) $this->avatar_path, ['http://', 'https://'])) {
-            return $this->avatar_path;
-        }
-
-        return MediaStorage::url((string) $this->avatar_path);
+    public function getDisplayAvatarUrlAttribute(): string
+    {
+        return $this->avatar_url ?: MediaStorage::fallbackAvatarUrl();
     }
 
     public function socialAccounts(): HasMany

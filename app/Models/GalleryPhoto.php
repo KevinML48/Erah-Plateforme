@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\MediaStorage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class GalleryPhoto extends Model
@@ -118,10 +118,6 @@ class GalleryPhoto extends Model
             return $path;
         }
 
-        if (filled($this->storage_disk)) {
-            return Storage::disk((string) $this->storage_disk)->url($path);
-        }
-
-        return '/'.ltrim($path, '/');
+        return MediaStorage::url($path, filled($this->storage_disk) ? (string) $this->storage_disk : null);
     }
 }

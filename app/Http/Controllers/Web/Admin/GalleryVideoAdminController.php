@@ -380,7 +380,7 @@ class GalleryVideoAdminController extends Controller
             return;
         }
 
-        Storage::disk(MediaStorage::disk())->delete($storagePath);
+        MediaStorage::delete($storagePath);
     }
 
     private function deleteStoredPreviewVideoIfReplaced(?string $currentPreviewVideoUrl, ?string $nextPreviewVideoUrl): void
@@ -395,7 +395,7 @@ class GalleryVideoAdminController extends Controller
             return;
         }
 
-        Storage::disk(MediaStorage::disk())->delete($storagePath);
+        MediaStorage::delete($storagePath);
     }
 
     private function managedGalleryVideoPath(?string $value, string $expectedPrefix): ?string

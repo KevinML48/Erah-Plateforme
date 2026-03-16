@@ -144,7 +144,7 @@ class ClubReviewPresenter
                 'author_name' => $review->authorDisplayName(),
                 'author_url' => $user ? route('users.public', $user) : $review->author_profile_url,
                 'author_cta' => $user ? 'Voir le profil public' : 'Voir la source',
-                'avatar_url' => $user?->avatar_url,
+                'avatar_url' => $user?->display_avatar_url,
                 'initials' => Str::upper(Str::substr(trim($review->authorDisplayName()), 0, 2)),
                 'published_at' => $review->published_at,
                 'is_member' => $user !== null,

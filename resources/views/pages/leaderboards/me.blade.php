@@ -284,8 +284,8 @@
         $denominator = $nextMin !== null ? max(1, $nextMin - $currentMin) : 1;
         $numerator = max(0, $currentXp - $currentMin);
         $progressPercent = $nextMin !== null ? (int) min(100, round(($numerator / $denominator) * 100)) : 100;
-        $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
-        $myAvatar = (string) (($user->avatar_url ?? '') !== '' ? $user->avatar_url : $avatarFallback);
+        $avatarFallback = \App\Support\MediaStorage::fallbackAvatarUrl();
+        $myAvatar = $user->display_avatar_url;
         $publicProfileRouteName = 'users.public';
         $contextEntries = $myPosition > 0
             ? $entries->filter(fn ($entry) => abs(((int) ($entry['position'] ?? 0)) - $myPosition) <= 2)->values()

@@ -24,7 +24,7 @@ class LeaderboardService
             'leaderboards.community.xp.'.$safeLimit,
             now()->addSeconds(90),
             fn (): array => UserProgress::query()
-                ->with(['user:id,name,avatar_path', 'user.rewardWallet:user_id,balance'])
+                ->with(['user:id,name,avatar_path,provider_avatar_url', 'user.rewardWallet:user_id,balance'])
                 ->orderByDesc('total_xp')
                 ->orderByDesc('total_rank_points')
                 ->orderByDesc('duel_score')
@@ -61,7 +61,7 @@ class LeaderboardService
             'leaderboards.community.rank.'.$safeLimit,
             now()->addSeconds(90),
             fn (): array => UserProgress::query()
-                ->with(['user:id,name,avatar_path'])
+                ->with(['user:id,name,avatar_path,provider_avatar_url'])
                 ->orderByDesc('total_xp')
                 ->orderByDesc('total_rank_points')
                 ->limit($safeLimit)
@@ -98,7 +98,7 @@ class LeaderboardService
             'leaderboards.community.duel.'.$safeLimit,
             now()->addSeconds(90),
             fn (): array => UserProgress::query()
-                ->with(['user:id,name,avatar_path'])
+                ->with(['user:id,name,avatar_path,provider_avatar_url'])
                 ->orderByDesc('duel_wins')
                 ->orderByDesc('duel_current_streak')
                 ->orderByRaw('(CASE WHEN duel_losses = 0 THEN duel_wins ELSE CAST(duel_wins AS REAL) / duel_losses END) DESC')

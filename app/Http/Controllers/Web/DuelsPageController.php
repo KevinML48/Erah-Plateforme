@@ -56,7 +56,7 @@ class DuelsPageController extends Controller
             ->when($tab === 'pending', fn ($query) => $query->where('status', Duel::STATUS_PENDING))
             ->when($tab === 'active', fn ($query) => $query->where('status', Duel::STATUS_ACCEPTED))
             ->when($tab === 'finished', fn ($query) => $query->whereIn('status', [Duel::STATUS_REFUSED, Duel::STATUS_EXPIRED]))
-            ->with(['challenger:id,name,avatar_path', 'challenged:id,name,avatar_path'])
+            ->with(['challenger:id,name,avatar_path,provider_avatar_url', 'challenged:id,name,avatar_path,provider_avatar_url'])
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
@@ -86,7 +86,7 @@ class DuelsPageController extends Controller
             })
             ->orderBy('name')
             ->limit(12)
-            ->get(['id', 'name', 'email']);
+            ->get(['id', 'name', 'email', 'avatar_path', 'provider_avatar_url']);
 
         $candidateIds = $users->pluck('id');
         $latestByUserId = [];
@@ -211,7 +211,7 @@ class DuelsPageController extends Controller
         $opponent = $isChallenger ? $duel->challenged : $duel->challenger;
         $opponentId = (int) ($opponent?->id ?? 0);
         $opponentName = (string) ($opponent?->name ?? 'Adversaire inconnu');
-        $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
+        $avatarFallback = MediaStorage::fallbackAvatarUrl();
         $opponentAvatar = (string) ($opponent?->display_avatar_url ?? '');
         if ($opponentAvatar === '') {
             $opponentAvatar = $avatarFallback;

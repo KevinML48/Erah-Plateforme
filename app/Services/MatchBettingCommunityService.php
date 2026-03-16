@@ -57,7 +57,7 @@ class MatchBettingCommunityService
         );
 
         $topStakes = (clone $baseQuery)
-            ->with('user:id,name,avatar_path')
+            ->with('user:id,name,avatar_path,provider_avatar_url')
             ->orderByDesc('stake_points')
             ->orderByDesc('id')
             ->limit(5)
@@ -69,7 +69,7 @@ class MatchBettingCommunityService
         $activeMarketFilter = $this->normalizeMarketFilter($marketFilter, $availableMarketKeys);
 
         $participantsQuery = (clone $baseQuery)
-            ->with('user:id,name,avatar_path')
+            ->with('user:id,name,avatar_path,provider_avatar_url')
             ->when($activeMarketFilter !== 'all', fn ($query) => $query->where('market_key', $activeMarketFilter))
             ->orderByDesc('stake_points')
             ->orderByDesc('id');
@@ -92,7 +92,7 @@ class MatchBettingCommunityService
 
         if ($state === 'settled') {
             $winners = (clone $baseQuery)
-                ->with('user:id,name,avatar_path')
+                ->with('user:id,name,avatar_path,provider_avatar_url')
                 ->where('status', Bet::STATUS_WON)
                 ->orderByDesc('settlement_points')
                 ->orderByDesc('stake_points')
@@ -103,7 +103,7 @@ class MatchBettingCommunityService
                 ->values();
 
             $losers = (clone $baseQuery)
-                ->with('user:id,name,avatar_path')
+                ->with('user:id,name,avatar_path,provider_avatar_url')
                 ->where('status', Bet::STATUS_LOST)
                 ->orderByDesc('stake_points')
                 ->orderByDesc('id')

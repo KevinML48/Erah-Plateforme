@@ -222,6 +222,30 @@ class SupporterFeatureTest extends TestCase
         $response->assertSee('Supporter');
     }
 
+    public function test_leaderboard_page_displays_provider_avatar_when_no_uploaded_avatar_exists(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $league = League::query()->where('key', 'bronze')->firstOrFail();
+        $member = User::factory()->create([
+            'provider_avatar_url' => 'https://cdn.example.com/leaderboard-provider-avatar.png',
+            'provider_avatar_provider' => 'google',
+        ]);
+
+        UserProgress::query()->create([
+            'user_id' => $member->id,
+            'current_league_id' => $league->id,
+            'total_rank_points' => 60,
+            'total_xp' => 180,
+            'last_points_at' => now(),
+        ]);
+
+        $this->actingAs($member)
+            ->get(route('leaderboards.show', $league->key))
+            ->assertOk()
+            ->assertSee('https://cdn.example.com/leaderboard-provider-avatar.png', false);
+    }
+
     public function test_monthly_supporter_rewards_are_granted_once_per_month(): void
     {
         $this->seed(LeagueSeeder::class);

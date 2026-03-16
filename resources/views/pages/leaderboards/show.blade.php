@@ -393,7 +393,7 @@
         $averageXp = $entries->count() > 0 ? (int) round((float) $entries->avg('total_xp')) : 0;
         $totalXp = (int) $entries->sum('total_xp');
         $topThree = $entries->take(3);
-        $avatarFallback = '/app-ui/assets/img/blog/avatar.png';
+        $avatarFallback = \App\Support\MediaStorage::fallbackAvatarUrl();
         $publicProfileRouteName = 'users.public';
     @endphp
 

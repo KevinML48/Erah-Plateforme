@@ -359,7 +359,7 @@ class ProfileController extends Controller
         $checkpoints = [
             ! blank($user->name),
             ! blank($user->bio),
-            ! blank($user->avatar_path),
+            $user->hasAnyAvatar(),
             ! blank($user->twitter_url)
                 || ! blank($user->instagram_url)
                 || ! blank($user->tiktok_url)

@@ -28,10 +28,10 @@ class PrioritizeClipComments
                 DB::raw('COALESCE(supporter_flags.supporter_priority, 0) as supporter_priority'),
             ])
             ->with([
-                'user:id,name,avatar_path',
+                'user:id,name,avatar_path,provider_avatar_url',
                 'replies' => fn ($query) => $query
                     ->where('status', ClipComment::STATUS_PUBLISHED)
-                    ->with('user:id,name,avatar_path')
+                    ->with('user:id,name,avatar_path,provider_avatar_url')
                     ->orderBy('id'),
             ])
             ->orderByDesc('supporter_priority')

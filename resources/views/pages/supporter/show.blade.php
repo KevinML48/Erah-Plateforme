@@ -839,7 +839,7 @@
                             <div class="supporter-wall-grid">
                                 @foreach($wallMembers as $member)
                                     <article class="supporter-wall-item">
-                                        <img src="{{ $member['avatar_url'] ?: '/template/assets/img/logo.png' }}" alt="{{ $member['name'] }}">
+                                        <img src="{{ $member['avatar_url'] }}" alt="{{ $member['name'] }}">
                                         <strong>{{ $member['name'] }}</strong>
                                         <div class="margin-top-8">
                                             <span class="supporter-badge {{ $member['is_founder'] ? 'is-founder' : '' }}">

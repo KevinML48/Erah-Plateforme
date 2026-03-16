@@ -120,6 +120,62 @@ class ProfileWebTest extends TestCase
             ->assertSee(MediaStorage::fallbackAvatarUrl(), false);
     }
 
+    public function test_profile_page_uses_provider_avatar_when_no_uploaded_avatar_exists(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create([
+            'avatar_path' => null,
+            'provider_avatar_url' => 'https://cdn.example.com/provider-profile.png',
+            'provider_avatar_provider' => 'google',
+        ]);
+
+        $this->assertSame('https://cdn.example.com/provider-profile.png', $user->avatar_url);
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertSee('https://cdn.example.com/provider-profile.png', false);
+    }
+
+    public function test_uploaded_avatar_has_priority_over_provider_avatar(): void
+    {
+        config(['filesystems.media_disk' => 'public']);
+        Storage::fake('public');
+        $this->seed(LeagueSeeder::class);
+
+        Storage::disk('public')->put('avatars/custom-priority.png', 'avatar');
+
+        $user = User::factory()->create([
+            'avatar_path' => 'avatars/custom-priority.png',
+            'provider_avatar_url' => 'https://cdn.example.com/provider-should-not-win.png',
+            'provider_avatar_provider' => 'discord',
+        ]);
+
+        $expectedAvatarUrl = route('media.public.file', ['path' => 'avatars/custom-priority.png']);
+
+        $this->assertSame($expectedAvatarUrl, $user->avatar_url);
+        $this->assertSame($expectedAvatarUrl, $user->display_avatar_url);
+
+        $this->actingAs($user)
+            ->get(route('profile.show'))
+            ->assertOk()
+            ->assertSee($expectedAvatarUrl, false)
+            ->assertDontSee('https://cdn.example.com/provider-should-not-win.png', false);
+    }
+
+    public function test_invalid_provider_avatar_falls_back_to_placeholder(): void
+    {
+        $user = User::factory()->create([
+            'avatar_path' => null,
+            'provider_avatar_url' => 'not-a-valid-avatar-url',
+            'provider_avatar_provider' => 'google',
+        ]);
+
+        $this->assertNull($user->avatar_url);
+        $this->assertSame(MediaStorage::fallbackAvatarUrl(), $user->display_avatar_url);
+    }
+
     public function test_public_profile_page_displays_profile_links_and_bio(): void
     {
         $this->seed(LeagueSeeder::class);
@@ -183,6 +239,7 @@ class ProfileWebTest extends TestCase
         $response->assertSee('Compte lie');
         $response->assertSee('Reconnecter Discord');
         $response->assertSee('linked-discord@example.com');
+        $response->assertSee('https://cdn.example.com/discord-profile.png', false);
     }
 
     public function test_profile_page_lists_owned_cosmetics_and_allows_equipping_them(): void

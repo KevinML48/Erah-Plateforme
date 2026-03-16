@@ -43,7 +43,7 @@ class LeaderboardQuery
                         fn ($query) => $query->where('total_xp', '<', (int) $nextLeague->min_rank_points)
                     )
                     ->with([
-                        'user:id,name,avatar_path',
+                        'user:id,name,avatar_path,provider_avatar_url',
                         'user.supportSubscriptions' => fn ($query) => $query->active(),
                     ])
                     ->orderByDesc('total_xp')

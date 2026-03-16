@@ -119,10 +119,10 @@ class ClipsPageController extends Controller
                 ->whereNull('parent_id')
                 ->where('status', ClipComment::STATUS_PUBLISHED)
                 ->with([
-                    'user:id,name,avatar_path',
+                    'user:id,name,avatar_path,provider_avatar_url',
                     'replies' => fn ($query) => $query
                         ->where('status', ClipComment::STATUS_PUBLISHED)
-                        ->with('user:id,name,avatar_path')
+                        ->with('user:id,name,avatar_path,provider_avatar_url')
                         ->orderBy('id'),
                 ])
                 ->orderByDesc('id')

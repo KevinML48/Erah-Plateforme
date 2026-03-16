@@ -117,6 +117,8 @@ class HandleSocialCallbackAction
             ]);
             $socialAccount->save();
 
+            $user->syncProviderAvatar($provider);
+
             $this->storeAuditLogAction->execute(
                 action: $isNewUser ? 'auth.social.registered' : 'auth.social.linked',
                 actor: $user,

@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Mockery;
@@ -70,6 +71,9 @@ class AuthApiTest extends TestCase
 
         $user = User::query()->where('email', 'google-user@example.com')->firstOrFail();
 
+        $this->assertSame('https://cdn.example.com/avatar-google.png', $user->provider_avatar_url);
+        $this->assertSame('google', $user->provider_avatar_provider);
+
         $this->assertDatabaseHas('social_accounts', [
             'user_id' => $user->id,
             'provider' => 'google',
@@ -113,6 +117,10 @@ class AuthApiTest extends TestCase
             ->assertJsonPath('user.id', $existingUser->id)
             ->assertJsonPath('user.email', 'existing@example.com');
 
+        $existingUser->refresh();
+        $this->assertSame('https://cdn.example.com/avatar-discord.png', $existingUser->provider_avatar_url);
+        $this->assertSame('discord', $existingUser->provider_avatar_provider);
+
         $this->assertSame(1, User::query()->count());
 
         $this->assertDatabaseHas('social_accounts', [
@@ -146,6 +154,10 @@ class AuthApiTest extends TestCase
         $response->assertRedirect(route('dashboard'));
         $response->assertSessionHas('success');
         $this->assertAuthenticated();
+
+        $user = User::query()->where('email', 'google-web-user@example.com')->firstOrFail();
+        $this->assertSame('https://cdn.example.com/avatar-google-web.png', $user->provider_avatar_url);
+        $this->assertSame('google', $user->provider_avatar_provider);
 
         $this->assertDatabaseHas('social_accounts', [
             'provider' => 'google',
@@ -187,6 +199,10 @@ class AuthApiTest extends TestCase
         $this->assertAuthenticatedAs($user);
         $this->assertSame(1, User::query()->count());
 
+        $user->refresh();
+        $this->assertSame('https://cdn.example.com/avatar-discord-link.png', $user->provider_avatar_url);
+        $this->assertSame('discord', $user->provider_avatar_provider);
+
         $this->assertDatabaseHas('social_accounts', [
             'user_id' => $user->id,
             'provider' => 'discord',
@@ -199,6 +215,38 @@ class AuthApiTest extends TestCase
             'actor_id' => $user->id,
             'actor_type' => User::class,
         ]);
+    }
+
+    public function test_social_login_updates_provider_avatar_without_overwriting_uploaded_avatar(): void
+    {
+        config(['filesystems.media_disk' => 'public']);
+        Storage::fake('public');
+        Storage::disk('public')->put('avatars/custom-player.png', 'avatar');
+
+        $user = User::factory()->create([
+            'email' => 'kept-avatar@example.com',
+            'avatar_path' => 'avatars/custom-player.png',
+        ]);
+
+        $this->mockSocialiteProvider('google', [
+            'id' => 'google-keep-777',
+            'email' => 'kept-avatar@example.com',
+            'name' => 'Avatar Keeper',
+            'avatar' => 'https://cdn.example.com/avatar-provider-fresh.png',
+            'token' => 'plain-provider-token',
+            'refresh_token' => 'plain-provider-refresh',
+            'expires_in' => 3600,
+        ]);
+
+        $this->getJson('/auth/google/callback')
+            ->assertOk()
+            ->assertJsonPath('user.id', $user->id);
+
+        $user->refresh();
+
+        $this->assertSame('avatars/custom-player.png', $user->avatar_path);
+        $this->assertSame('https://cdn.example.com/avatar-provider-fresh.png', $user->provider_avatar_url);
+        $this->assertSame(route('media.public.file', ['path' => 'avatars/custom-player.png']), $user->display_avatar_url);
     }
 
     public function test_admin_user_seeder_is_idempotent_and_audited(): void

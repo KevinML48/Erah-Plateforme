@@ -201,7 +201,7 @@ class SocialAuthController extends Controller
         $checkpoints = [
             ! blank($user->name),
             ! blank($user->bio),
-            ! blank($user->avatar_path),
+            $user->hasAnyAvatar(),
             $hasSocialPresence,
         ];
 

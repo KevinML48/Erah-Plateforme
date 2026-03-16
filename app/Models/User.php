@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -31,6 +32,8 @@ class User extends Authenticatable
         'role',
         'bio',
         'avatar_path',
+        'provider_avatar_url',
+        'provider_avatar_provider',
         'twitter_url',
         'instagram_url',
         'tiktok_url',
@@ -68,14 +71,67 @@ class User extends Authenticatable
         ];
     }
 
+    public function getCustomAvatarUrlAttribute(): ?string
+    {
+        $avatarPath = (string) ($this->avatar_path ?? '');
+
+        if ($avatarPath === '') {
+            return null;
+        }
+
+        if (! MediaStorage::isManagedPath($avatarPath)) {
+            return MediaStorage::url($avatarPath);
+        }
+
+        if (! MediaStorage::pathExists($avatarPath, MediaStorage::resolveDiskForPath($avatarPath))) {
+            return null;
+        }
+
+        return MediaStorage::url($avatarPath);
+    }
+
+    public function getProviderAvatarUrlAttribute(?string $value): ?string
+    {
+        $resolved = $this->normalizeProviderAvatarUrl($value);
+
+        if ($resolved !== null) {
+            return $resolved;
+        }
+
+        $account = $this->resolveProviderAvatarAccount();
+
+        return $this->normalizeProviderAvatarUrl($account?->avatar_url);
+    }
+
     public function getAvatarUrlAttribute(): ?string
     {
-        return MediaStorage::url($this->avatar_path);
+        return $this->custom_avatar_url ?: $this->provider_avatar_url;
     }
 
     public function getDisplayAvatarUrlAttribute(): string
     {
         return $this->avatar_url ?: MediaStorage::fallbackAvatarUrl();
+    }
+
+    public function hasCustomAvatar(): bool
+    {
+        return $this->custom_avatar_url !== null;
+    }
+
+    public function hasAnyAvatar(): bool
+    {
+        return $this->avatar_url !== null;
+    }
+
+    public function syncProviderAvatar(?string $preferredProvider = null): void
+    {
+        $account = $this->resolveProviderAvatarAccount($preferredProvider);
+        $providerAvatarUrl = $this->normalizeProviderAvatarUrl($account?->avatar_url);
+
+        $this->forceFill([
+            'provider_avatar_url' => $providerAvatarUrl,
+            'provider_avatar_provider' => $providerAvatarUrl !== null ? $account?->provider : null,
+        ])->saveQuietly();
     }
 
     public function socialAccounts(): HasMany
@@ -216,6 +272,71 @@ class User extends Authenticatable
     public function missionProgress(): HasMany
     {
         return $this->hasMany(UserMission::class);
+    }
+
+    private function resolveProviderAvatarAccount(?string $preferredProvider = null): ?SocialAccount
+    {
+        $accounts = $this->providerAvatarAccounts();
+
+        if ($preferredProvider !== null) {
+            $preferred = $accounts->first(fn (SocialAccount $account) => $account->provider === $preferredProvider
+                && $this->normalizeProviderAvatarUrl($account->avatar_url) !== null);
+
+            if ($preferred) {
+                return $preferred;
+            }
+        }
+
+        $storedProvider = trim((string) $this->getRawOriginal('provider_avatar_provider', ''));
+        if ($storedProvider !== '') {
+            $matchingStoredProvider = $accounts->first(fn (SocialAccount $account) => $account->provider === $storedProvider
+                && $this->normalizeProviderAvatarUrl($account->avatar_url) !== null);
+
+            if ($matchingStoredProvider) {
+                return $matchingStoredProvider;
+            }
+        }
+
+        return $accounts->first(fn (SocialAccount $account) => $this->normalizeProviderAvatarUrl($account->avatar_url) !== null);
+    }
+
+    /**
+     * @return Collection<int, SocialAccount>
+     */
+    private function providerAvatarAccounts(): Collection
+    {
+        if ($this->relationLoaded('socialAccounts')) {
+            return $this->socialAccounts
+                ->whereIn('provider', ['discord', 'google'])
+                ->sortByDesc(fn (SocialAccount $account) => $account->updated_at?->getTimestamp() ?? 0)
+                ->values();
+        }
+
+        if (! $this->exists) {
+            return collect();
+        }
+
+        return $this->socialAccounts()
+            ->whereIn('provider', ['discord', 'google'])
+            ->orderByDesc('updated_at')
+            ->get();
+    }
+
+    private function normalizeProviderAvatarUrl(mixed $value): ?string
+    {
+        $url = trim((string) $value);
+
+        if ($url === '' || filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return null;
+        }
+
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+
+        if (! in_array($scheme, ['http', 'https'], true)) {
+            return null;
+        }
+
+        return $url;
     }
 
     public function missionFocuses(): HasMany

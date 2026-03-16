@@ -47,7 +47,7 @@ class ProfileController extends Controller
         $transactions = PointsTransaction::query()
             ->where('user_id', $user->id)
             ->orderByDesc('id')
-            ->limit(5)
+            ->limit(4)
             ->get();
         $recentXpEntries = $this->buildRecentXpEntries($user);
         $rankOverview = $this->buildRankOverview($experience, $progress, $rankService);

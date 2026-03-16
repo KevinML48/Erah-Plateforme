@@ -1592,6 +1592,60 @@
                         </form>
 
                         @include('pages.profile.partials.club-review-panel')
+
+                        <div class="profile-side-card margin-top-30">
+                            <div class="profile-rank-card">
+                                <div class="profile-rank-head">
+                                    <div>
+                                        <span class="profile-rank-kicker">Classement et reperes</span>
+                                        <h5 class="margin-bottom-10">Suivre votre rang sur la plateforme</h5>
+                                        <p class="profile-security-note no-margin">Un bloc rapide pour voir votre rang actuel, votre prochaine marche et les stats competitives utiles.</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-rank-grid">
+                                    <article class="profile-rank-stat">
+                                        <span>Rang actuel</span>
+                                        <strong>{{ $profileRankName }}</strong>
+                                        <small>deverrouille a {{ number_format($currentRankThreshold, 0, ',', ' ') }} XP</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Points classement</span>
+                                        <strong>{{ number_format($profileRankPoints, 0, ',', ' ') }}</strong>
+                                        <small>score competitif cumule sur le compte</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Score duel</span>
+                                        <strong>{{ number_format($duelScore, 0, ',', ' ') }}</strong>
+                                        <small>impact actuel sur vos performances duel</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Meilleure serie</span>
+                                        <strong>{{ number_format($duelBestStreak, 0, ',', ' ') }}</strong>
+                                        <small>meilleure suite de victoires en duel</small>
+                                    </article>
+                                </div>
+
+                                <div class="profile-rank-next">
+                                    @if($hasNextRank && $nextRankName)
+                                        <strong>{{ number_format($xpToNextRank, 0, ',', ' ') }} XP avant le rang {{ $nextRankName }}</strong>
+                                        <p class="no-margin">Le prochain cap communautaire se debloque a {{ number_format((int) $nextRankThreshold, 0, ',', ' ') }} XP.</p>
+                                    @else
+                                        <strong>Vous etes deja au rang communautaire le plus eleve configure.</strong>
+                                        <p class="no-margin">Continuez a accumuler de l XP pour renforcer votre progression generale et vos stats competitives.</p>
+                                    @endif
+
+                                    @if($rankLastPointsAt)
+                                        <small>Derniere mise a jour progression: {{ $rankLastPointsAt }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        @include('pages.profile.partials.cosmetics-manager', [
+                            'profileCosmetics' => $profileCosmetics,
+                            'equipRouteName' => $equipRouteName,
+                        ])
                     </div>
 
                     <div class="tt-col-xl-5">
@@ -1812,60 +1866,6 @@
                                 <a href="{{ route('supporter.console') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
                                     <span data-hover="Espace supporter">Espace supporter</span>
                                 </a>
-                            </div>
-                        </div>
-
-                        @include('pages.profile.partials.cosmetics-manager', [
-                            'profileCosmetics' => $profileCosmetics,
-                            'equipRouteName' => $equipRouteName,
-                        ])
-
-                        <div class="profile-side-card margin-top-30">
-                            <div class="profile-rank-card">
-                                <div class="profile-rank-head">
-                                    <div>
-                                        <span class="profile-rank-kicker">Classement et reperes</span>
-                                        <h5 class="margin-bottom-10">Suivre votre rang sur la plateforme</h5>
-                                        <p class="profile-security-note no-margin">Un bloc rapide pour voir votre rang actuel, votre prochaine marche et les stats competitives utiles.</p>
-                                    </div>
-                                </div>
-
-                                <div class="profile-rank-grid">
-                                    <article class="profile-rank-stat">
-                                        <span>Rang actuel</span>
-                                        <strong>{{ $profileRankName }}</strong>
-                                        <small>deverrouille a {{ number_format($currentRankThreshold, 0, ',', ' ') }} XP</small>
-                                    </article>
-                                    <article class="profile-rank-stat">
-                                        <span>Points classement</span>
-                                        <strong>{{ number_format($profileRankPoints, 0, ',', ' ') }}</strong>
-                                        <small>score competitif cumule sur le compte</small>
-                                    </article>
-                                    <article class="profile-rank-stat">
-                                        <span>Score duel</span>
-                                        <strong>{{ number_format($duelScore, 0, ',', ' ') }}</strong>
-                                        <small>impact actuel sur vos performances duel</small>
-                                    </article>
-                                    <article class="profile-rank-stat">
-                                        <span>Meilleure serie</span>
-                                        <strong>{{ number_format($duelBestStreak, 0, ',', ' ') }}</strong>
-                                        <small>meilleure suite de victoires en duel</small>
-                                    </article>
-                                </div>
-
-                                <div class="profile-rank-next">
-                                    @if($hasNextRank && $nextRankName)
-                                        <strong>{{ number_format($xpToNextRank, 0, ',', ' ') }} XP avant le rang {{ $nextRankName }}</strong>
-                                        <p class="no-margin">Le prochain cap communautaire se debloque a {{ number_format((int) $nextRankThreshold, 0, ',', ' ') }} XP.</p>
-                                    @else
-                                        <strong>Vous etes deja au rang communautaire le plus eleve configure.</strong>
-                                        <p class="no-margin">Continuez a accumuler de l XP pour renforcer votre progression generale et vos stats competitives.</p>
-                                    @endif
-
-                                    @if($rankLastPointsAt)
-                                        <small>Derniere mise a jour progression: {{ $rankLastPointsAt }}</small>
-                                    @endif
-                                </div>
                             </div>
                         </div>
 
@@ -2227,7 +2227,7 @@
                     <h2 class="tt-heading-title">Histoires de transactions</h2>
                 </div>
                 <div class="profile-inline-actions margin-bottom-30">
-                    <span class="tt-form-text">Affichage: 5 dernieres transactions.</span>
+                    <span class="tt-form-text">Affichage: 4 dernieres transactions.</span>
                     <a href="{{ route($historyRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                         <span data-hover="Voir historique complet">Voir historique complet</span>
                     </a>

@@ -226,6 +226,7 @@ class GalleryVideoAdminController extends Controller
     {
         $video = GalleryVideo::query()->findOrFail($videoId);
         $this->deleteStoredThumbnailIfReplaced($video->thumbnail_url, null);
+        $this->deleteStoredPreviewVideoIfReplaced($video->preview_video_url, null);
         $video->delete();
 
         return back()->with('success', 'Video galerie supprimee.');
@@ -327,6 +328,15 @@ class GalleryVideoAdminController extends Controller
 
         $this->deleteStoredThumbnailIfReplaced($video?->thumbnail_url, $thumbnailUrl);
 
+        $previewVideoUrl = $validated['preview_video_url'] ?? $video?->preview_video_url;
+
+        if ($request->hasFile('preview_video_file')) {
+            $previewPath = $request->file('preview_video_file')->store('gallery-videos/previews', 'public');
+            $previewVideoUrl = Storage::url($previewPath);
+        }
+
+        $this->deleteStoredPreviewVideoIfReplaced($video?->preview_video_url, $previewVideoUrl);
+
         $sortOrder = array_key_exists('sort_order', $validated) && $validated['sort_order'] !== null
             ? (int) $validated['sort_order']
             : ($video?->sort_order ?? ((int) GalleryVideo::query()->max('sort_order') + 1));
@@ -346,7 +356,7 @@ class GalleryVideoAdminController extends Controller
             'video_url' => $videoUrl,
             'embed_url' => ($validated['embed_url'] ?? $video?->embed_url) ?: GalleryVideo::buildEmbedUrl($videoUrl, $platform),
             'thumbnail_url' => $thumbnailUrl,
-            'preview_video_url' => $validated['preview_video_url'] ?? $video?->preview_video_url,
+            'preview_video_url' => $previewVideoUrl,
             'preview_video_webm_url' => $validated['preview_video_webm_url'] ?? $video?->preview_video_webm_url,
             'category_key' => $categoryKey !== '' ? $categoryKey : null,
             'category_label' => $categoryLabel !== '' ? $categoryLabel : null,
@@ -380,6 +390,29 @@ class GalleryVideoAdminController extends Controller
     {
         return filled($thumbnailUrl)
             && Str::startsWith((string) $thumbnailUrl, '/storage/gallery-videos/thumbnails/');
+    }
+
+    private function deleteStoredPreviewVideoIfReplaced(?string $currentPreviewVideoUrl, ?string $nextPreviewVideoUrl): void
+    {
+        if (! $this->isStoredPreviewVideoUrl($currentPreviewVideoUrl)) {
+            return;
+        }
+
+        if ($currentPreviewVideoUrl === $nextPreviewVideoUrl) {
+            return;
+        }
+
+        $storagePath = Str::after((string) $currentPreviewVideoUrl, '/storage/');
+
+        if ($storagePath !== '') {
+            Storage::disk('public')->delete($storagePath);
+        }
+    }
+
+    private function isStoredPreviewVideoUrl(?string $previewVideoUrl): bool
+    {
+        return filled($previewVideoUrl)
+            && Str::startsWith((string) $previewVideoUrl, '/storage/gallery-videos/previews/');
     }
 
     private function rebalanceOrder(): void

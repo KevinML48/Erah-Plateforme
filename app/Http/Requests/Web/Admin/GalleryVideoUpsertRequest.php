@@ -38,6 +38,7 @@ class GalleryVideoUpsertRequest extends FormRequest
             'thumbnail_url' => ['nullable', 'url', 'max:2048'],
             'thumbnail_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,avif', 'max:4096'],
             'preview_video_url' => ['nullable', 'url', 'max:2048'],
+            'preview_video_file' => ['nullable', 'file', 'mimetypes:video/mp4,application/mp4', 'max:102400'],
             'preview_video_webm_url' => ['nullable', 'url', 'max:2048'],
             'category_key' => ['nullable', 'string', 'max:64'],
             'category_label' => ['nullable', 'string', 'max:120'],

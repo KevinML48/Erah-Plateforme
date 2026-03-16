@@ -357,36 +357,6 @@
             <div class="adm-shell adm-video-shell">
                 @include('pages.admin.partials.nav')
 
-                <section class="adm-surface">
-                    <div class="adm-video-topbar">
-                        <div>
-                            <h2>Console galerie video</h2>
-                            <p>Cette interface alimente la page publique `/galerie-video`. Les videos du template historique sont reimportees automatiquement si la galerie est vide, puis vous gardez la main sur les titres, categories, previews, ordre, statut et mise en avant.</p>
-                        </div>
-
-                        <div class="adm-filter-actions">
-                            <form method="POST" action="{{ route('admin.gallery-videos.import-legacy') }}">
-                                @csrf
-                                <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Relancer l'import legacy">Relancer l'import legacy</span>
-                                </button>
-                            </form>
-                            <form method="POST" action="{{ route('admin.gallery-videos.import-legacy-if-empty') }}">
-                                @csrf
-                                <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                    <span data-hover="Importer si vide">Importer si vide</span>
-                                </button>
-                            </form>
-                            <a href="{{ route('marketing.gallery-video') }}" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener">
-                                <span data-hover="Voir la page publique">Voir la page publique</span>
-                            </a>
-                            <a href="{{ route('admin.gallery-videos.index') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
-                                <span data-hover="Rafraichir la console">Rafraichir la console</span>
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
                 <section class="adm-video-flashes">
                     @if(session('success'))
                         <article class="adm-video-flash is-success"><p>{{ session('success') }}</p></article>
@@ -492,7 +462,7 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.gallery-videos.store') }}" class="adm-form tt-form tt-form-creative tt-form-lg" data-video-preview-root>
+                    <form method="POST" action="{{ route('admin.gallery-videos.store') }}" class="adm-form tt-form tt-form-creative tt-form-lg" enctype="multipart/form-data" data-video-preview-root>
                         @csrf
 
                         <div class="adm-video-form-shell">
@@ -500,13 +470,13 @@
                                 <div class="tt-form-group"><label for="create-title">Titre</label><input id="create-title" type="text" name="title" class="tt-form-control" value="{{ old('title') }}" required data-preview-field="title"></div>
                                 <div class="tt-form-group"><label for="create-video-url">Lien YouTube</label><input id="create-video-url" type="url" name="video_url" class="tt-form-control" value="{{ old('video_url') }}" required placeholder="https://www.youtube.com/watch?v=..." data-preview-field="video_url"></div>
                                 <div class="tt-form-group adm-span-2"><label for="create-description">Description</label><textarea id="create-description" name="description" class="tt-form-control" rows="6" placeholder="Description de la video" data-preview-field="description">{{ old('description') }}</textarea></div>
-                                <div class="tt-form-group adm-span-2"><label for="create-preview-video-url">Vidéo MP4</label><input id="create-preview-video-url" type="url" name="preview_video_url" class="tt-form-control" value="{{ old('preview_video_url') }}" placeholder="https://.../video.mp4" data-preview-field="preview_video_url"></div>
+                                <div class="tt-form-group adm-span-2"><label for="create-preview-video-file">Fichier MP4</label><input id="create-preview-video-file" type="file" name="preview_video_file" class="tt-form-control" accept="video/mp4" data-preview-field="preview_video_file"></div>
                             </div>
 
                             <aside class="adm-video-preview" aria-live="polite">
                                 <div class="adm-video-card-media" data-preview-media>
                                     <img src="{{ $defaultPoster }}" alt="Apercu miniature" data-preview-image data-preview-fallback-src="{{ $defaultPoster }}">
-                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video></video>
+                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video data-preview-existing-video-src=""></video>
                                 </div>
 
                                 <div class="adm-video-preview-copy">
@@ -579,7 +549,7 @@
                                 </div>
 
                                 <div class="adm-video-grid">
-                                    <form method="POST" action="{{ route('admin.gallery-videos.update', $video->id) }}" class="adm-form tt-form tt-form-creative tt-form-lg" data-video-preview-root>
+                                    <form method="POST" action="{{ route('admin.gallery-videos.update', $video->id) }}" class="adm-form tt-form tt-form-creative tt-form-lg" enctype="multipart/form-data" data-video-preview-root>
                                         @csrf
                                         @method('PUT')
 
@@ -588,13 +558,19 @@
                                                 <div class="tt-form-group"><label for="title-{{ $video->id }}">Titre</label><input id="title-{{ $video->id }}" type="text" name="title" class="tt-form-control" value="{{ $video->title }}" required data-preview-field="title"></div>
                                                 <div class="tt-form-group"><label for="video-url-{{ $video->id }}">Lien YouTube</label><input id="video-url-{{ $video->id }}" type="url" name="video_url" class="tt-form-control" value="{{ $video->video_url }}" required data-preview-field="video_url"></div>
                                                 <div class="tt-form-group adm-span-2"><label for="description-{{ $video->id }}">Description</label><textarea id="description-{{ $video->id }}" name="description" class="tt-form-control" rows="6" data-preview-field="description">{{ $video->description }}</textarea></div>
-                                                <div class="tt-form-group adm-span-2"><label for="preview-url-{{ $video->id }}">Vidéo MP4</label><input id="preview-url-{{ $video->id }}" type="url" name="preview_video_url" class="tt-form-control" value="{{ $video->preview_video_url }}" placeholder="https://.../video.mp4" data-preview-field="preview_video_url"></div>
+                                                <div class="tt-form-group adm-span-2">
+                                                    <label for="preview-file-{{ $video->id }}">Fichier MP4</label>
+                                                    <input id="preview-file-{{ $video->id }}" type="file" name="preview_video_file" class="tt-form-control" accept="video/mp4" data-preview-field="preview_video_file">
+                                                    @if($video->preview_video_url)
+                                                        <small style="display: block; margin-top: 8px; color: var(--adm-text-soft);">MP4 actuel: {{ basename($video->preview_video_url) }}</small>
+                                                    @endif
+                                                </div>
                                             </div>
 
                                             <aside class="adm-video-preview" aria-live="polite">
                                                 <div class="adm-video-card-media" data-preview-media>
                                                     <img src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}" alt="Apercu miniature" data-preview-image data-preview-fallback-src="{{ $video->resolved_thumbnail_url ?: $defaultPoster }}">
-                                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video></video>
+                                                    <video muted playsinline loop preload="metadata" style="display: none;" data-preview-video data-preview-existing-video-src="{{ $video->preview_video_url ?: '' }}"></video>
                                                 </div>
 
                                                 <div class="adm-video-preview-copy">
@@ -700,12 +676,18 @@
                 var link = root.querySelector('[data-preview-link]');
                 var fields = Array.prototype.slice.call(root.querySelectorAll('[data-preview-field]'));
                 var fallbackSrc = image ? (image.getAttribute('data-preview-fallback-src') || '{{ $defaultPoster }}') : '{{ $defaultPoster }}';
+                var existingVideoSrc = video ? (video.getAttribute('data-preview-existing-video-src') || '') : '';
 
                 var syncPreview = function () {
                     var values = {};
 
                     fields.forEach(function (field) {
                         var key = field.getAttribute('data-preview-field');
+
+                        if (field.type === 'file') {
+                            values[key] = field.files && field.files[0] ? field.files[0] : null;
+                            return;
+                        }
 
                         values[key] = field.value || '';
                     });
@@ -716,8 +698,16 @@
 
                     link.setAttribute('href', values.video_url || '#');
 
-                    if (values.preview_video_url) {
-                        video.src = values.preview_video_url;
+                    if (values.preview_video_file instanceof File) {
+                        video.src = URL.createObjectURL(values.preview_video_file);
+                        video.style.display = 'block';
+                        image.style.display = 'none';
+                        video.load();
+                        return;
+                    }
+
+                    if (existingVideoSrc) {
+                        video.src = existingVideoSrc;
                         video.style.display = 'block';
                         image.style.display = 'none';
                         video.load();

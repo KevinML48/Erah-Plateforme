@@ -190,12 +190,13 @@ class GalleryVideosFeatureTest extends TestCase
     public function test_admin_can_create_update_and_change_video_status(): void
     {
         $adminUser = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        Storage::fake('public');
 
         $this->actingAs($adminUser)->post(route('admin.gallery-videos.store'), [
             'title' => 'Interview ERAH',
             'description' => 'Description complete',
             'video_url' => 'https://youtu.be/n_LEo-tp3Jk',
-            'preview_video_url' => 'https://cdn.example.com/videos/interview-erah.mp4',
+            'preview_video_file' => $this->fakePreviewVideo('interview-erah.mp4'),
         ])->assertRedirect()->assertSessionHas('success');
 
         $video = GalleryVideo::query()->where('slug', 'interview-erah')->firstOrFail();
@@ -206,14 +207,17 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertNotNull($video->embed_url);
         $this->assertSame('Description complete', $video->description);
         $this->assertNull($video->excerpt);
-        $this->assertSame('https://cdn.example.com/videos/interview-erah.mp4', $video->preview_video_url);
+        $this->assertStringStartsWith('/storage/gallery-videos/previews/', (string) $video->preview_video_url);
         $this->assertSame(1, $video->sort_order);
+
+        $storedPreview = $video->preview_video_url;
+        Storage::disk('public')->assertExists(str_replace('/storage/', '', (string) $storedPreview));
 
         $this->actingAs($adminUser)->put(route('admin.gallery-videos.update', $video->id), [
             'title' => 'Interview ERAH MAJ',
             'description' => 'Description revue',
             'video_url' => 'https://youtu.be/6-ebq2tKpAs',
-            'preview_video_url' => 'https://cdn.example.com/videos/interview-erah-maj.mp4',
+            'preview_video_file' => $this->fakePreviewVideo('interview-erah-maj.mp4'),
         ])->assertRedirect()->assertSessionHas('success');
 
         $video->refresh();
@@ -224,7 +228,10 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertSame(1, $video->sort_order);
         $this->assertSame('Description revue', $video->description);
         $this->assertNull($video->excerpt);
-        $this->assertSame('https://cdn.example.com/videos/interview-erah-maj.mp4', $video->preview_video_url);
+        $this->assertStringStartsWith('/storage/gallery-videos/previews/', (string) $video->preview_video_url);
+        $this->assertNotSame($storedPreview, $video->preview_video_url);
+        Storage::disk('public')->assertMissing(str_replace('/storage/', '', (string) $storedPreview));
+        Storage::disk('public')->assertExists(str_replace('/storage/', '', (string) $video->preview_video_url));
 
         $this->actingAs($adminUser)
             ->post(route('admin.gallery-videos.archive', $video->id))
@@ -357,5 +364,10 @@ class GalleryVideosFeatureTest extends TestCase
             'title' => 'VCL Split 1 2026',
             'legacy_source' => '_template_site/galerie-video.html',
         ]);
+    }
+
+    private function fakePreviewVideo(string $name): UploadedFile
+    {
+        return UploadedFile::fake()->create($name, 5120, 'video/mp4');
     }
 }

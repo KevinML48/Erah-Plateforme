@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Support\MediaStorage;
 use App\Services\ExperienceService;
 use App\Services\MissionEngine;
+use App\Services\RankService;
 use App\Services\ShortcutService;
 use App\Services\MissionCatalogService;
 use App\Services\MissionFocusService;
@@ -34,6 +35,7 @@ class ProfileController extends Controller
         SupporterAccessResolver $supporterAccessResolver,
         MissionCatalogService $missionCatalogService,
         ExperienceService $experienceService,
+        RankService $rankService,
         ProfileCosmeticService $profileCosmeticService,
     ): View
     {
@@ -48,6 +50,7 @@ class ProfileController extends Controller
             ->limit(5)
             ->get();
         $recentXpEntries = $this->buildRecentXpEntries($user);
+        $rankOverview = $this->buildRankOverview($experience, $progress, $rankService);
 
         $stats = $this->buildStats($user);
         $currentShortcuts = $shortcutService->getForUser($user);
@@ -87,6 +90,7 @@ class ProfileController extends Controller
             'assistantFavorites' => $assistantFavorites,
             'profileCosmetics' => $profileCosmetics,
             'recentXpEntries' => $recentXpEntries,
+            'rankOverview' => $rankOverview,
         ]);
     }
 
@@ -315,6 +319,45 @@ class ProfileController extends Controller
                 ];
             })
             ->all();
+    }
+
+    /**
+     * @param array<string, mixed> $experience
+     * @return array{
+     *     current_rank_name: string,
+     *     current_rank_threshold: int,
+     *     next_rank_name: string|null,
+     *     next_rank_threshold: int|null,
+     *     xp_to_next_rank: int,
+     *     rank_points: int,
+     *     duel_score: int,
+     *     duel_best_streak: int,
+     *     last_points_at: string|null,
+     *     has_next_rank: bool
+     * }
+     */
+    private function buildRankOverview(array $experience, $progress, RankService $rankService): array
+    {
+        $currentRankKey = (string) data_get($experience, 'rank.key', 'bronze');
+        $totalXp = (int) data_get($experience, 'total_xp', 0);
+
+        $nextRank = $rankService->definitions()
+            ->first(fn (array $definition): bool => (int) $definition['xp_threshold'] > $totalXp);
+
+        return [
+            'current_rank_name' => (string) data_get($experience, 'rank.name', 'Bronze'),
+            'current_rank_threshold' => (int) data_get($experience, 'rank.xp_threshold', 0),
+            'next_rank_name' => is_array($nextRank) ? (string) ($nextRank['name'] ?? '') : null,
+            'next_rank_threshold' => is_array($nextRank) ? (int) ($nextRank['xp_threshold'] ?? 0) : null,
+            'xp_to_next_rank' => is_array($nextRank)
+                ? max(0, ((int) ($nextRank['xp_threshold'] ?? 0)) - $totalXp)
+                : 0,
+            'rank_points' => (int) ($progress->total_rank_points ?? 0),
+            'duel_score' => (int) ($progress->duel_score ?? 0),
+            'duel_best_streak' => (int) ($progress->duel_best_streak ?? 0),
+            'last_points_at' => $progress->last_points_at?->format('d/m/Y H:i'),
+            'has_next_rank' => is_array($nextRank) && ((string) ($nextRank['key'] ?? '')) !== $currentRankKey,
+        ];
     }
 
     private function describeXpSourceType(string $sourceType): string

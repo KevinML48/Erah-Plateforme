@@ -59,22 +59,6 @@
 			? ['label' => 'Admin', 'url' => route('admin.dashboard')]
 			: null;
 
-		$mobileSessionLinks = $isAuthenticated
-			? [
-				['label' => 'Mon profil', 'url' => route('app.profile')],
-				['label' => 'Notifications', 'url' => route('notifications.preferences')],
-				['label' => 'Portefeuille', 'url' => route('wallet.index')],
-				['label' => 'Centre d aide', 'url' => route('console.help')],
-			]
-			: [
-				['label' => 'Se connecter', 'url' => route('login')],
-				['label' => 'Inscription', 'url' => route('register')],
-				['label' => 'Explorer la plateforme', 'url' => route('marketing.platform')],
-			];
-
-		if ($desktopAdminAction) {
-			array_unshift($mobileSessionLinks, ['label' => 'Admin dashboard', 'url' => $desktopAdminAction['url']]);
-		}
 	@endphp
 
 	<div class="tt-header-inner tt-noise">
@@ -125,28 +109,6 @@
 									</div>
 								</li>
 
-								@if($isAuthenticated && count($mobileSessionLinks) > 0)
-									<li class="tt-submenu-wrap tt-submenu-master tt-main-menu-mobile-only">
-										<div class="tt-submenu-trigger">
-											<a href="#">Compte</a>
-										</div>
-										<div class="tt-submenu">
-											<ul class="tt-submenu-list">
-												@foreach($mobileSessionLinks as $item)
-													<li><a href="{{ $item['url'] }}">{{ $item['label'] }}</a></li>
-												@endforeach
-												@auth
-													<li class="tt-main-menu-mobile-logout-item">
-														<form method="POST" action="{{ route('auth.logout') }}" class="tt-main-menu-mobile-logout-form">
-															@csrf
-															<button type="submit" class="tt-main-menu-mobile-logout-button">Se deconnecter</button>
-														</form>
-													</li>
-												@endauth
-											</ul>
-										</div>
-									</li>
-								@endif
 							</ul>
 						</div>
 					</div>

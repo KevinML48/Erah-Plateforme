@@ -283,6 +283,92 @@
             text-transform: uppercase;
         }
 
+        .profile-rank-card {
+            display: grid;
+            gap: 18px;
+        }
+
+        .profile-rank-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .profile-rank-kicker {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .05);
+            color: rgba(255, 255, 255, .82);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-rank-head h5 {
+            margin: 10px 0 0;
+        }
+
+        .profile-rank-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .profile-rank-stat {
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .profile-rank-stat span {
+            display: block;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .profile-rank-stat strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 22px;
+            line-height: 1.15;
+        }
+
+        .profile-rank-stat small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255, 255, 255, .68);
+            line-height: 1.45;
+        }
+
+        .profile-rank-next {
+            padding: 18px 20px;
+            border-radius: 18px;
+            border: 1px solid rgba(216, 7, 7, .22);
+            background: linear-gradient(180deg, rgba(216, 7, 7, .12), rgba(255, 255, 255, .03));
+        }
+
+        .profile-rank-next strong {
+            display: block;
+            font-size: 18px;
+            line-height: 1.35;
+        }
+
+        .profile-rank-next p,
+        .profile-rank-next small {
+            margin: 8px 0 0;
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.5;
+        }
+
         .profile-summary-secondary {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -714,7 +800,9 @@
 
         body.tt-lightmode-on .profile-summary-progress-badge,
         body.tt-lightmode-on .profile-summary-progress-threshold,
-        body.tt-lightmode-on .profile-summary-xp-feed-item {
+        body.tt-lightmode-on .profile-summary-xp-feed-item,
+        body.tt-lightmode-on .profile-rank-stat,
+        body.tt-lightmode-on .profile-rank-next {
             border-color: rgba(148, 163, 184, .24);
             background: rgba(255, 255, 255, .86);
             box-shadow: 0 18px 38px rgba(148, 163, 184, .08);
@@ -724,8 +812,18 @@
         body.tt-lightmode-on .profile-summary-progress-threshold span,
         body.tt-lightmode-on .profile-summary-progress-threshold small,
         body.tt-lightmode-on .profile-summary-xp-feed-item p,
-        body.tt-lightmode-on .profile-summary-xp-feed-item small {
+        body.tt-lightmode-on .profile-summary-xp-feed-item small,
+        body.tt-lightmode-on .profile-rank-stat span,
+        body.tt-lightmode-on .profile-rank-stat small,
+        body.tt-lightmode-on .profile-rank-next p,
+        body.tt-lightmode-on .profile-rank-next small {
             color: rgba(51, 65, 85, .72);
+        }
+
+        body.tt-lightmode-on .profile-rank-kicker {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255,255,255,.84);
+            color: #0f172a;
         }
 
         body.tt-lightmode-on .profile-summary-xp-points {
@@ -1216,7 +1314,8 @@
             .profile-summary-secondary,
             .profile-summary-detail-grid,
             .profile-kpi-grid,
-            .profile-summary-progress-thresholds {
+            .profile-summary-progress-thresholds,
+            .profile-rank-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -1261,6 +1360,7 @@
         $assistantFavorites = $assistantFavorites ?? collect();
         $profileCosmetics = $profileCosmetics ?? ['active' => [], 'owned_by_slot' => [], 'slot_labels' => []];
         $recentXpEntries = $recentXpEntries ?? [];
+        $rankOverview = $rankOverview ?? [];
         $activeProfileCosmetics = $profileCosmetics['active'] ?? [];
         $activeBadge = $activeProfileCosmetics['badge'] ?? null;
         $activeAvatarFrame = $activeProfileCosmetics['avatar_frame'] ?? null;
@@ -1282,6 +1382,14 @@
         $profileNextLevel = data_get($experience ?? [], 'next_level');
         $profileXpRemainingToNextLevel = (int) data_get($experience ?? [], 'xp_remaining_to_next_level', 0);
         $profileIsMaxLevel = (bool) data_get($experience ?? [], 'is_max_level', false);
+        $currentRankThreshold = (int) data_get($rankOverview, 'current_rank_threshold', 0);
+        $nextRankName = data_get($rankOverview, 'next_rank_name');
+        $nextRankThreshold = data_get($rankOverview, 'next_rank_threshold');
+        $xpToNextRank = (int) data_get($rankOverview, 'xp_to_next_rank', 0);
+        $rankLastPointsAt = data_get($rankOverview, 'last_points_at');
+        $duelScore = (int) data_get($rankOverview, 'duel_score', 0);
+        $duelBestStreak = (int) data_get($rankOverview, 'duel_best_streak', 0);
+        $hasNextRank = (bool) data_get($rankOverview, 'has_next_rank', false);
         $profileInteractions = (int) ($stats['likes'] ?? 0) + (int) ($stats['comments'] ?? 0);
         $profileRankPoints = (int) ($progress->total_rank_points ?? 0);
         $profileFocusCount = (int) ($missionSummary['focus'] ?? 0);
@@ -1711,6 +1819,55 @@
                             'profileCosmetics' => $profileCosmetics,
                             'equipRouteName' => $equipRouteName,
                         ])
+
+                        <div class="profile-side-card margin-top-30">
+                            <div class="profile-rank-card">
+                                <div class="profile-rank-head">
+                                    <div>
+                                        <span class="profile-rank-kicker">Classement et reperes</span>
+                                        <h5 class="margin-bottom-10">Suivre votre rang sur la plateforme</h5>
+                                        <p class="profile-security-note no-margin">Un bloc rapide pour voir votre rang actuel, votre prochaine marche et les stats competitives utiles.</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-rank-grid">
+                                    <article class="profile-rank-stat">
+                                        <span>Rang actuel</span>
+                                        <strong>{{ $profileRankName }}</strong>
+                                        <small>deverrouille a {{ number_format($currentRankThreshold, 0, ',', ' ') }} XP</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Points classement</span>
+                                        <strong>{{ number_format($profileRankPoints, 0, ',', ' ') }}</strong>
+                                        <small>score competitif cumule sur le compte</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Score duel</span>
+                                        <strong>{{ number_format($duelScore, 0, ',', ' ') }}</strong>
+                                        <small>impact actuel sur vos performances duel</small>
+                                    </article>
+                                    <article class="profile-rank-stat">
+                                        <span>Meilleure serie</span>
+                                        <strong>{{ number_format($duelBestStreak, 0, ',', ' ') }}</strong>
+                                        <small>meilleure suite de victoires en duel</small>
+                                    </article>
+                                </div>
+
+                                <div class="profile-rank-next">
+                                    @if($hasNextRank && $nextRankName)
+                                        <strong>{{ number_format($xpToNextRank, 0, ',', ' ') }} XP avant le rang {{ $nextRankName }}</strong>
+                                        <p class="no-margin">Le prochain cap communautaire se debloque a {{ number_format((int) $nextRankThreshold, 0, ',', ' ') }} XP.</p>
+                                    @else
+                                        <strong>Vous etes deja au rang communautaire le plus eleve configure.</strong>
+                                        <p class="no-margin">Continuez a accumuler de l XP pour renforcer votre progression generale et vos stats competitives.</p>
+                                    @endif
+
+                                    @if($rankLastPointsAt)
+                                        <small>Derniere mise a jour progression: {{ $rankLastPointsAt }}</small>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="profile-side-card margin-top-30">
                             <h5 class="margin-bottom-10">Comptes connectes</h5>

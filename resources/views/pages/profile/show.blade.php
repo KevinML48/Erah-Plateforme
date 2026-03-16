@@ -42,6 +42,237 @@
             margin-top: 10px;
         }
 
+        .profile-summary-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .profile-summary-identity {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .profile-summary-email,
+        .profile-summary-role,
+        .profile-summary-copy,
+        .profile-summary-progress-copy,
+        .profile-summary-footnote {
+            color: rgba(255, 255, 255, .72);
+            line-height: 1.55;
+        }
+
+        .profile-summary-email,
+        .profile-summary-role {
+            margin: 8px 0 0;
+        }
+
+        .profile-summary-role {
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: 11px;
+        }
+
+        .profile-summary-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .profile-summary-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .05);
+            color: rgba(255, 255, 255, .86);
+            font-size: 11px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .profile-summary-pill.is-active {
+            border-color: rgba(91, 214, 143, .36);
+            background: rgba(91, 214, 143, .12);
+            color: #d6ffe6;
+        }
+
+        .profile-summary-pill.is-muted {
+            color: rgba(255, 255, 255, .62);
+        }
+
+        .profile-summary-progress {
+            margin-top: 24px;
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02));
+        }
+
+        .profile-summary-progress-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .profile-summary-progress-head strong {
+            display: block;
+            font-size: 24px;
+            line-height: 1.1;
+        }
+
+        .profile-summary-progress-track {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            margin-top: 16px;
+        }
+
+        .profile-summary-progress-track span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+        }
+
+        .profile-summary-progress-meta {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .profile-summary-progress-meta strong {
+            font-size: 14px;
+        }
+
+        .profile-summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .profile-summary-metric {
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .03);
+        }
+
+        .profile-summary-metric strong {
+            display: block;
+            font-size: 26px;
+            line-height: 1.05;
+            margin-bottom: 6px;
+        }
+
+        .profile-summary-metric span {
+            display: block;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .profile-summary-details {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, .1);
+            padding-top: 18px;
+        }
+
+        .profile-summary-details summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            list-style: none;
+            font-size: 13px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .82);
+        }
+
+        .profile-summary-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .profile-summary-details summary::after {
+            content: '+';
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .profile-summary-details[open] summary::after {
+            content: '-';
+        }
+
+        .profile-summary-details-body {
+            display: grid;
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .profile-summary-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .profile-summary-detail-card {
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .profile-summary-detail-card strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .profile-summary-detail-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            color: rgba(255, 255, 255, .74);
+        }
+
+        .profile-summary-detail-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .profile-summary-detail-list span:last-child {
+            color: rgba(255, 255, 255, .92);
+            font-weight: 600;
+        }
+
+        .profile-summary-social {
+            margin-top: 8px;
+        }
+
+        .profile-summary-actions {
+            margin-top: 18px;
+        }
+
         .profile-kpi-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -268,6 +499,14 @@
             background: rgba(255,255,255,.84);
         }
 
+        body.tt-lightmode-on .profile-summary-email,
+        body.tt-lightmode-on .profile-summary-role,
+        body.tt-lightmode-on .profile-summary-copy,
+        body.tt-lightmode-on .profile-summary-progress-copy,
+        body.tt-lightmode-on .profile-summary-footnote {
+            color: rgba(51, 65, 85, .76);
+        }
+
         body.tt-lightmode-on .profile-avatar-upload .tt-file-info,
         body.tt-lightmode-on .profile-security-note,
         body.tt-lightmode-on .profile-history-extra,
@@ -297,6 +536,7 @@
         body.tt-lightmode-on .profile-history-kind,
         body.tt-lightmode-on .profile-review-status,
         body.tt-lightmode-on .profile-review-counter,
+        body.tt-lightmode-on .profile-summary-pill,
         body.tt-lightmode-on .profile-mission-kicker,
         body.tt-lightmode-on .profile-mission-pill,
         body.tt-lightmode-on .profile-mission-status,
@@ -307,6 +547,35 @@
             border-color: rgba(148, 163, 184, .24);
             background: rgba(255,255,255,.84);
             color: #0f172a;
+        }
+
+        body.tt-lightmode-on .profile-summary-progress,
+        body.tt-lightmode-on .profile-summary-metric,
+        body.tt-lightmode-on .profile-summary-detail-card {
+            border-color: rgba(148, 163, 184, .24);
+            background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .08);
+        }
+
+        body.tt-lightmode-on .profile-summary-pill.is-active {
+            border-color: rgba(34, 197, 94, .24);
+            background: rgba(220, 252, 231, .88);
+            color: #166534;
+        }
+
+        body.tt-lightmode-on .profile-summary-pill.is-muted,
+        body.tt-lightmode-on .profile-summary-metric span,
+        body.tt-lightmode-on .profile-summary-details summary,
+        body.tt-lightmode-on .profile-summary-detail-list {
+            color: rgba(51, 65, 85, .72);
+        }
+
+        body.tt-lightmode-on .profile-summary-detail-list span:last-child {
+            color: #0f172a;
+        }
+
+        body.tt-lightmode-on .profile-summary-progress-track {
+            background: rgba(148, 163, 184, .18);
         }
 
         body.tt-lightmode-on .profile-connected-status.is-linked,
@@ -782,6 +1051,14 @@
                 padding: 20px;
             }
 
+            .profile-summary-head,
+            .profile-summary-progress-head,
+            .profile-summary-progress-meta {
+                display: grid;
+            }
+
+            .profile-summary-metrics,
+            .profile-summary-detail-grid,
             .profile-kpi-grid {
                 grid-template-columns: 1fr;
             }
@@ -827,6 +1104,19 @@
         $profileFeaturedUntil = $activeProfileCosmetics['profile_featured_until'] ?? null;
         $isProfileFeatured = (bool) ($activeProfileCosmetics['is_featured'] ?? false);
         $equipRouteName = request()->routeIs('app.*') ? 'app.profile.cosmetics.equip' : 'profile.cosmetics.equip';
+        $profileRankName = (string) data_get($experience ?? [], 'rank.name', 'Bronze');
+        $profileLevel = (int) data_get($experience ?? [], 'level', 1);
+        $profileTotalXp = (int) data_get($experience ?? [], 'total_xp', 0);
+        $profileProgressPercent = (int) data_get($experience ?? [], 'progress_percent', 0);
+        $profileXpIntoLevel = (int) data_get($experience ?? [], 'xp_into_level', 0);
+        $profileXpForNextLevel = (int) data_get($experience ?? [], 'xp_for_next_level', 1);
+        $profileInteractions = (int) ($stats['likes'] ?? 0) + (int) ($stats['comments'] ?? 0);
+        $activeCosmeticCount = collect([$activeBadge, $activeAvatarFrame, $activeBanner, $activeTitle, $activeUsernameColor, $activeTheme])
+            ->filter()
+            ->count() + ($isProfileFeatured ? 1 : 0);
+        $publicSocialCount = collect([$user->twitter_url, $user->instagram_url, $user->tiktok_url, $user->discord_url])
+            ->filter(fn ($url) => filled($url))
+            ->count();
         $profileNameStyle = collect([
             data_get($activeUsernameColor, 'preview.text_color') ? 'color: '.data_get($activeUsernameColor, 'preview.text_color') : null,
             data_get($activeUsernameColor, 'preview.shadow') ? 'text-shadow: '.data_get($activeUsernameColor, 'preview.shadow') : null,
@@ -1008,83 +1298,165 @@
 
                     <div class="tt-col-xl-5">
                         <div class="profile-side-card margin-bottom-30" data-tour="profile-overview" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
-                            <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
-                            <h4 class="no-margin" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $user->name }}</h4>
-                            @if($activeTitle)
-                                <p class="tt-form-text margin-top-10">
-                                    <span class="profile-cosmetic-pill"
-                                        @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
-                                            style="
-                                                {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
-                                                {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
-                                            "
-                                        @endif
-                                    >
-                                        {{ $activeTitle['label'] }}
-                                    </span>
-                                </p>
-                            @endif
-                            <p class="tt-form-text no-margin">{{ $user->email }}</p>
-                            <p class="tt-form-text margin-top-10">Role: {{ strtoupper((string) $user->role) }}</p>
-                            <p class="tt-form-text margin-top-10">
-                                Supporter: {{ ($supporterSummary['is_active'] ?? false) ? 'Actif' : 'Inactif' }}
+                            <div class="profile-summary-head">
+                                <div class="profile-summary-identity">
+                                    <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
+                                    <h4 class="no-margin" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $user->name }}</h4>
+                                    @if($activeTitle)
+                                        <p class="margin-top-10 no-margin">
+                                            <span class="profile-cosmetic-pill"
+                                                @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
+                                                    style="
+                                                        {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
+                                                        {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
+                                                    "
+                                                @endif
+                                            >
+                                                {{ $activeTitle['label'] }}
+                                            </span>
+                                        </p>
+                                    @endif
+                                    <p class="profile-summary-email">{{ $user->email }}</p>
+                                    <p class="profile-summary-role">{{ strtoupper((string) $user->role) }}</p>
+                                    <p class="profile-summary-copy margin-top-14">Un resume recentre sur votre progression, vos priorites et ce qui compte vraiment sur la plateforme.</p>
+                                </div>
+                            </div>
+
+                            <div class="profile-summary-pills">
+                                <span class="profile-summary-pill {{ ($supporterSummary['is_active'] ?? false) ? 'is-active' : 'is-muted' }}">
+                                    Supporter {{ ($supporterSummary['is_active'] ?? false) ? 'actif' : 'inactif' }}
+                                </span>
                                 @if(!empty($supporterSummary['loyalty_badge']))
-                                    - {{ $supporterSummary['loyalty_badge'] }}
+                                    <span class="profile-summary-pill">{{ $supporterSummary['loyalty_badge'] }}</span>
                                 @endif
-                            </p>
+                                @if($activeCosmeticCount > 0)
+                                    <span class="profile-summary-pill">{{ $activeCosmeticCount }} personnalisation(s)</span>
+                                @endif
+                            </div>
 
-                            <ul class="tt-list margin-top-20">
-                                <li><strong>Rang:</strong> {{ data_get($experience ?? [], 'rank.name', 'Bronze') }}</li>
-                                <li><strong>Niveau:</strong> {{ (int) data_get($experience ?? [], 'level', 1) }}</li>
-                                <li><strong>XP total:</strong> {{ (int) data_get($experience ?? [], 'total_xp', 0) }}</li>
-                            </ul>
+                            <div class="profile-summary-progress">
+                                <div class="profile-summary-progress-head">
+                                    <div>
+                                        <span class="profile-summary-role">Rang actuel</span>
+                                        <strong>{{ $profileRankName }}</strong>
+                                    </div>
+                                    <div>
+                                        <span class="profile-summary-role">Niveau</span>
+                                        <strong>{{ $profileLevel }}</strong>
+                                    </div>
+                                </div>
 
-                            @if($activeBadge || $activeBanner || $activeTheme || $isProfileFeatured)
-                                <div class="profile-cosmetic-badges">
-                                    @if($activeBadge)
-                                        <span class="profile-cosmetic-pill"
-                                            @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
-                                                style="
-                                                    {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
-                                                    {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
-                                                "
-                                            @endif
-                                        >
-                                            {{ $activeBadge['label'] }}
-                                        </span>
+                                <div class="profile-summary-progress-track" aria-hidden="true">
+                                    <span style="width: {{ $profileProgressPercent }}%"></span>
+                                </div>
+
+                                <div class="profile-summary-progress-meta">
+                                    <div>
+                                        <strong>{{ $profileXpIntoLevel }} / {{ $profileXpForNextLevel }} XP</strong>
+                                        <p class="profile-summary-progress-copy no-margin">dans ce niveau</p>
+                                    </div>
+                                    <div>
+                                        <strong>{{ $profileTotalXp }} XP</strong>
+                                        <p class="profile-summary-progress-copy no-margin">cumules au total</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-summary-metrics">
+                                <article class="profile-summary-metric">
+                                    <strong>{{ (int) ($missionSummary['focus'] ?? 0) }}</strong>
+                                    <span>Priorites mission</span>
+                                </article>
+                                <article class="profile-summary-metric">
+                                    <strong>{{ (int) ($stats['duels'] ?? 0) }}</strong>
+                                    <span>Duels joues</span>
+                                </article>
+                                <article class="profile-summary-metric">
+                                    <strong>{{ $profileInteractions }}</strong>
+                                    <span>Interactions</span>
+                                </article>
+                            </div>
+
+                            <details class="profile-summary-details">
+                                <summary>Voir les details secondaires</summary>
+
+                                <div class="profile-summary-details-body">
+                                    <div class="profile-summary-detail-grid">
+                                        <article class="profile-summary-detail-card">
+                                            <strong>Activite</strong>
+                                            <ul class="profile-summary-detail-list">
+                                                <li><span>Likes</span><span>{{ (int) ($stats['likes'] ?? 0) }}</span></li>
+                                                <li><span>Commentaires</span><span>{{ (int) ($stats['comments'] ?? 0) }}</span></li>
+                                                <li><span>Duels</span><span>{{ (int) ($stats['duels'] ?? 0) }}</span></li>
+                                                <li><span>Bets</span><span>{{ (int) ($stats['bets'] ?? 0) }}</span></li>
+                                            </ul>
+                                        </article>
+
+                                        <article class="profile-summary-detail-card">
+                                            <strong>Presence</strong>
+                                            <ul class="profile-summary-detail-list">
+                                                <li><span>Comptes lies</span><span>{{ $discordConnection ? 1 : 0 }}</span></li>
+                                                <li><span>Reseaux publics</span><span>{{ $publicSocialCount }}</span></li>
+                                                <li><span>Profil mis en avant</span><span>{{ $isProfileFeatured ? 'Oui' : 'Non' }}</span></li>
+                                                <li><span>Badge fidelite</span><span>{{ $supporterSummary['loyalty_badge'] ?? 'Aucun' }}</span></li>
+                                            </ul>
+                                        </article>
+                                    </div>
+
+                                    @if($activeBadge || $activeBanner || $activeTheme || $isProfileFeatured)
+                                        <div>
+                                            <p class="profile-summary-footnote no-margin">Personnalisation active</p>
+                                            <div class="profile-cosmetic-badges">
+                                                @if($activeBadge)
+                                                    <span class="profile-cosmetic-pill"
+                                                        @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
+                                                            style="
+                                                                {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
+                                                                {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
+                                                            "
+                                                        @endif
+                                                    >
+                                                        {{ $activeBadge['label'] }}
+                                                    </span>
+                                                @endif
+                                                @if($activeBanner)
+                                                    <span class="profile-cosmetic-pill">Banniere premium active</span>
+                                                @endif
+                                                @if($activeTheme)
+                                                    <span class="profile-cosmetic-pill">Theme profil actif</span>
+                                                @endif
+                                                @if($isProfileFeatured)
+                                                    <span class="profile-cosmetic-pill">Profil en avant jusqu au {{ optional($profileFeaturedUntil)->format('d/m/Y') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
                                     @endif
-                                    @if($activeBanner)
-                                        <span class="profile-cosmetic-pill">Banniere premium active</span>
-                                    @endif
-                                    @if($activeTheme)
-                                        <span class="profile-cosmetic-pill">Theme profil actif</span>
-                                    @endif
-                                    @if($isProfileFeatured)
-                                        <span class="profile-cosmetic-pill">Profil en avant jusqu au {{ optional($profileFeaturedUntil)->format('d/m/Y') }}</span>
+
+                                    @if($user->twitter_url || $user->instagram_url || $user->tiktok_url || $user->discord_url)
+                                        <div class="profile-summary-social">
+                                            <p class="profile-summary-footnote no-margin">Reseaux publics</p>
+                                            <div class="tt-social-buttons margin-top-20">
+                                                <ul>
+                                                    @if($user->twitter_url)
+                                                        <li><a href="{{ $user->twitter_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a></li>
+                                                    @endif
+                                                    @if($user->instagram_url)
+                                                        <li><a href="{{ $user->instagram_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                                                    @endif
+                                                    @if($user->tiktok_url)
+                                                        <li><a href="{{ $user->tiktok_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="TikTok"><i class="fa-brands fa-tiktok"></i></a></li>
+                                                    @endif
+                                                    @if($user->discord_url)
+                                                        <li><a href="{{ $user->discord_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Discord"><i class="fa-brands fa-discord"></i></a></li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </div>
                                     @endif
                                 </div>
-                            @endif
+                            </details>
 
-                            @if($user->twitter_url || $user->instagram_url || $user->tiktok_url || $user->discord_url)
-                                <div class="tt-social-buttons margin-top-20">
-                                    <ul>
-                                        @if($user->twitter_url)
-                                            <li><a href="{{ $user->twitter_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a></li>
-                                        @endif
-                                        @if($user->instagram_url)
-                                            <li><a href="{{ $user->instagram_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
-                                        @endif
-                                        @if($user->tiktok_url)
-                                            <li><a href="{{ $user->tiktok_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="TikTok"><i class="fa-brands fa-tiktok"></i></a></li>
-                                        @endif
-                                        @if($user->discord_url)
-                                            <li><a href="{{ $user->discord_url }}" class="tt-magnetic-item" target="_blank" rel="noopener" title="Discord"><i class="fa-brands fa-discord"></i></a></li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            @endif
-
-                            <div class="profile-inline-actions margin-top-20">
+                            <div class="profile-inline-actions profile-summary-actions">
                                 <a href="{{ route('supporter.show') }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                                     <span data-hover="Page supporter">Page supporter</span>
                                 </a>
@@ -1098,25 +1470,6 @@
                             'profileCosmetics' => $profileCosmetics,
                             'equipRouteName' => $equipRouteName,
                         ])
-
-                        <div class="profile-kpi-grid">
-                            <div class="profile-kpi-card">
-                                <span class="profile-kpi-value">{{ (int) ($stats['likes'] ?? 0) }}</span>
-                                <span class="tt-form-text">Likes</span>
-                            </div>
-                            <div class="profile-kpi-card">
-                                <span class="profile-kpi-value">{{ (int) ($stats['comments'] ?? 0) }}</span>
-                                <span class="tt-form-text">Commentaires</span>
-                            </div>
-                            <div class="profile-kpi-card">
-                                <span class="profile-kpi-value">{{ (int) ($stats['duels'] ?? 0) }}</span>
-                                <span class="tt-form-text">Duels</span>
-                            </div>
-                            <div class="profile-kpi-card">
-                                <span class="profile-kpi-value">{{ (int) ($stats['bets'] ?? 0) }}</span>
-                                <span class="tt-form-text">Bets</span>
-                            </div>
-                        </div>
 
                         <div class="profile-side-card margin-top-30">
                             <h5 class="margin-bottom-10">Comptes connectes</h5>

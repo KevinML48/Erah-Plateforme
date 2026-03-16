@@ -43,9 +43,7 @@
         }
 
         .profile-summary-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
+            display: grid;
             gap: 18px;
         }
 
@@ -77,15 +75,15 @@
         .profile-summary-pills {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
+            gap: 8px;
+            margin-top: 14px;
         }
 
         .profile-summary-pill {
             display: inline-flex;
             align-items: center;
-            min-height: 34px;
-            padding: 8px 12px;
+            min-height: 32px;
+            padding: 7px 11px;
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, .14);
             background: rgba(255, 255, 255, .05);
@@ -106,8 +104,8 @@
         }
 
         .profile-summary-progress {
-            margin-top: 24px;
-            padding: 22px;
+            margin-top: 20px;
+            padding: 20px;
             border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, .12);
             background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02));
@@ -123,7 +121,7 @@
 
         .profile-summary-progress-head strong {
             display: block;
-            font-size: 24px;
+            font-size: 22px;
             line-height: 1.1;
         }
 
@@ -150,35 +148,34 @@
             justify-content: space-between;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         .profile-summary-progress-meta strong {
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .profile-summary-metrics {
+        .profile-summary-secondary {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
             margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
         }
 
-        .profile-summary-metric {
-            padding: 16px 18px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, .1);
-            background: rgba(255, 255, 255, .03);
+        .profile-summary-secondary-item {
+            padding: 12px 0 0;
         }
 
-        .profile-summary-metric strong {
+        .profile-summary-secondary-item strong {
             display: block;
-            font-size: 26px;
+            font-size: 20px;
             line-height: 1.05;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
-        .profile-summary-metric span {
+        .profile-summary-secondary-item span {
             display: block;
             font-size: 12px;
             letter-spacing: .08em;
@@ -186,10 +183,17 @@
             color: rgba(255, 255, 255, .6);
         }
 
+        .profile-summary-secondary-item small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255, 255, 255, .62);
+            line-height: 1.5;
+        }
+
         .profile-summary-details {
-            margin-top: 20px;
+            margin-top: 18px;
             border-top: 1px solid rgba(255, 255, 255, .1);
-            padding-top: 18px;
+            padding-top: 16px;
         }
 
         .profile-summary-details summary {
@@ -199,7 +203,7 @@
             gap: 12px;
             cursor: pointer;
             list-style: none;
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: .08em;
             text-transform: uppercase;
             color: rgba(255, 255, 255, .82);
@@ -221,8 +225,8 @@
 
         .profile-summary-details-body {
             display: grid;
-            gap: 18px;
-            margin-top: 18px;
+            gap: 16px;
+            margin-top: 16px;
         }
 
         .profile-summary-detail-grid {
@@ -270,7 +274,7 @@
         }
 
         .profile-summary-actions {
-            margin-top: 18px;
+            margin-top: 16px;
         }
 
         .profile-kpi-grid {
@@ -550,7 +554,8 @@
         }
 
         body.tt-lightmode-on .profile-summary-progress,
-        body.tt-lightmode-on .profile-summary-metric,
+        body.tt-lightmode-on .profile-summary-detail-card,
+        body.tt-lightmode-on .profile-summary-secondary,
         body.tt-lightmode-on .profile-summary-detail-card {
             border-color: rgba(148, 163, 184, .24);
             background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.94));
@@ -564,7 +569,8 @@
         }
 
         body.tt-lightmode-on .profile-summary-pill.is-muted,
-        body.tt-lightmode-on .profile-summary-metric span,
+        body.tt-lightmode-on .profile-summary-secondary-item span,
+        body.tt-lightmode-on .profile-summary-secondary-item small,
         body.tt-lightmode-on .profile-summary-details summary,
         body.tt-lightmode-on .profile-summary-detail-list {
             color: rgba(51, 65, 85, .72);
@@ -1057,7 +1063,7 @@
                 display: grid;
             }
 
-            .profile-summary-metrics,
+            .profile-summary-secondary,
             .profile-summary-detail-grid,
             .profile-kpi-grid {
                 grid-template-columns: 1fr;
@@ -1111,6 +1117,8 @@
         $profileXpIntoLevel = (int) data_get($experience ?? [], 'xp_into_level', 0);
         $profileXpForNextLevel = (int) data_get($experience ?? [], 'xp_for_next_level', 1);
         $profileInteractions = (int) ($stats['likes'] ?? 0) + (int) ($stats['comments'] ?? 0);
+        $profileRankPoints = (int) ($progress->total_rank_points ?? 0);
+        $profileFocusCount = (int) ($missionSummary['focus'] ?? 0);
         $activeCosmeticCount = collect([$activeBadge, $activeAvatarFrame, $activeBanner, $activeTitle, $activeUsernameColor, $activeTheme])
             ->filter()
             ->count() + ($isProfileFeatured ? 1 : 0);
@@ -1318,20 +1326,16 @@
                                     @endif
                                     <p class="profile-summary-email">{{ $user->email }}</p>
                                     <p class="profile-summary-role">{{ strtoupper((string) $user->role) }}</p>
-                                    <p class="profile-summary-copy margin-top-14">Un resume recentre sur votre progression, vos priorites et ce qui compte vraiment sur la plateforme.</p>
+                                    <p class="profile-summary-copy margin-top-14">Un resume plus synthetique, centre sur votre identite, votre progression et les priorites utiles du moment.</p>
+                                    <div class="profile-summary-pills">
+                                        <span class="profile-summary-pill {{ ($supporterSummary['is_active'] ?? false) ? 'is-active' : 'is-muted' }}">
+                                            Supporter {{ ($supporterSummary['is_active'] ?? false) ? 'actif' : 'inactif' }}
+                                        </span>
+                                        @if(!empty($supporterSummary['loyalty_badge']))
+                                            <span class="profile-summary-pill">{{ $supporterSummary['loyalty_badge'] }}</span>
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="profile-summary-pills">
-                                <span class="profile-summary-pill {{ ($supporterSummary['is_active'] ?? false) ? 'is-active' : 'is-muted' }}">
-                                    Supporter {{ ($supporterSummary['is_active'] ?? false) ? 'actif' : 'inactif' }}
-                                </span>
-                                @if(!empty($supporterSummary['loyalty_badge']))
-                                    <span class="profile-summary-pill">{{ $supporterSummary['loyalty_badge'] }}</span>
-                                @endif
-                                @if($activeCosmeticCount > 0)
-                                    <span class="profile-summary-pill">{{ $activeCosmeticCount }} personnalisation(s)</span>
-                                @endif
                             </div>
 
                             <div class="profile-summary-progress">
@@ -1356,34 +1360,37 @@
                                         <p class="profile-summary-progress-copy no-margin">dans ce niveau</p>
                                     </div>
                                     <div>
-                                        <strong>{{ $profileTotalXp }} XP</strong>
+                                        <strong>{{ number_format($profileTotalXp, 0, ',', ' ') }} XP</strong>
                                         <p class="profile-summary-progress-copy no-margin">cumules au total</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="profile-summary-metrics">
-                                <article class="profile-summary-metric">
-                                    <strong>{{ (int) ($missionSummary['focus'] ?? 0) }}</strong>
-                                    <span>Priorites mission</span>
+                            <div class="profile-summary-secondary" aria-label="Resume secondaire">
+                                <article class="profile-summary-secondary-item">
+                                    <strong>{{ $profileFocusCount }}</strong>
+                                    <span>Missions actives</span>
+                                    <small>missions prioritaires actuellement suivies</small>
                                 </article>
-                                <article class="profile-summary-metric">
-                                    <strong>{{ (int) ($stats['duels'] ?? 0) }}</strong>
-                                    <span>Duels joues</span>
+                                <article class="profile-summary-secondary-item">
+                                    <strong>{{ number_format($profileRankPoints, 0, ',', ' ') }}</strong>
+                                    <span>Points classement</span>
+                                    <small>capital progression sur la plateforme</small>
                                 </article>
-                                <article class="profile-summary-metric">
+                                <article class="profile-summary-secondary-item">
                                     <strong>{{ $profileInteractions }}</strong>
-                                    <span>Interactions</span>
+                                    <span>Activite utile</span>
+                                    <small>likes et commentaires cumules</small>
                                 </article>
                             </div>
 
                             <details class="profile-summary-details">
-                                <summary>Voir les details secondaires</summary>
+                                <summary>Voir plus de statistiques</summary>
 
                                 <div class="profile-summary-details-body">
                                     <div class="profile-summary-detail-grid">
                                         <article class="profile-summary-detail-card">
-                                            <strong>Activite</strong>
+                                            <strong>Activite detaillee</strong>
                                             <ul class="profile-summary-detail-list">
                                                 <li><span>Likes</span><span>{{ (int) ($stats['likes'] ?? 0) }}</span></li>
                                                 <li><span>Commentaires</span><span>{{ (int) ($stats['comments'] ?? 0) }}</span></li>
@@ -1393,7 +1400,7 @@
                                         </article>
 
                                         <article class="profile-summary-detail-card">
-                                            <strong>Presence</strong>
+                                            <strong>Presence et profil</strong>
                                             <ul class="profile-summary-detail-list">
                                                 <li><span>Comptes lies</span><span>{{ $discordConnection ? 1 : 0 }}</span></li>
                                                 <li><span>Reseaux publics</span><span>{{ $publicSocialCount }}</span></li>

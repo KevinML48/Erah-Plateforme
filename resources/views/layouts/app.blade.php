@@ -11,6 +11,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Big+Shoulders+Display:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/template/assets/css/helper.css">
+    <link rel="stylesheet" href="/template/assets/css/theme.css">
+    <link rel="stylesheet" href="/template/assets/css/theme-light.css">
+    <link rel="stylesheet" href="/template/assets/css/platform-responsive.css">
+    <link rel="preload" href="/template/assets/vendor/fontawesome/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="/template/assets/vendor/fontawesome/css/all.min.css">
+    </noscript>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <x-google-analytics />
     <style>
@@ -72,7 +80,11 @@
 @endphp
 
 <body class="platform-app">
-<header class="app-header" data-mobile-nav-root>
+<div class="platform-desktop-header">
+    @include('marketing.partials.header')
+</div>
+
+<header class="app-header app-header-mobile" data-mobile-nav-root>
     <div class="container">
         <div class="header-row">
             <div class="header-main">

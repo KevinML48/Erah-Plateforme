@@ -467,11 +467,11 @@ class GiftCartService
             $this->notifyAction->execute(
                 user: $user,
                 category: NotificationCategory::SYSTEM->value,
-                title: $pendingCount > 0 ? 'Commande cadeaux en attente' : 'Objets de profil livres',
+                title: $pendingCount > 0 ? 'Commande cadeaux en attente' : 'Recompenses attribuees',
                 message: $pendingCount > 0
                     ? 'Ta commande contient '.$pendingCount.' demande(s) en attente'
-                        .($autoDeliveredCount > 0 ? ' et '.$autoDeliveredCount.' objet(s) de profil livres automatiquement.' : '.')
-                    : 'Tes objets de profil achetes sont disponibles sur ton profil.',
+                        .($autoDeliveredCount > 0 ? ' et '.$autoDeliveredCount.' recompense(s) attribuee(s) automatiquement.' : '.')
+                    : 'Tes recompenses achetees sont deja disponibles.',
                 data: [
                     'total_points' => $totalPoints,
                     'redemptions_count' => $redemptions->count(),

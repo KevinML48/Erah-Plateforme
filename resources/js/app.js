@@ -145,9 +145,153 @@ const initMobileNavigation = () => {
     });
 };
 
+const initTemplateMainMenuToggle = () => {
+    const toggleWrap = document.getElementById('tt-m-menu-toggle-btn-wrap');
+    const toggleLink = toggleWrap?.querySelector('.tt-m-menu-toggle-btn');
+    const menu = document.querySelector('.tt-main-menu');
+
+    if (!toggleWrap || !toggleLink || !menu) {
+        return;
+    }
+
+    if (toggleWrap.dataset.menuReady === 'true') {
+        return;
+    }
+
+    const desktopQuery = window.matchMedia('(min-width: 1025px)');
+
+    const closeSubmenus = () => {
+        menu.querySelectorAll('.tt-submenu').forEach((submenu) => {
+            submenu.style.display = '';
+        });
+
+        menu.querySelectorAll('.tt-submenu-trigger').forEach((trigger) => {
+            trigger.classList.remove('tt-m-submenu-open');
+        });
+
+        menu.querySelectorAll('.tt-submenu-wrap').forEach((item) => {
+            item.classList.remove('tt-submenu-open');
+        });
+    };
+
+    const applyState = (open) => {
+        document.documentElement.classList.toggle('tt-no-scroll', open);
+        document.body.classList.toggle('tt-m-menu-open', open);
+        document.body.classList.toggle('tt-m-menu-active', open);
+
+        if (!open) {
+            closeSubmenus();
+        }
+    };
+
+    const ensureSubmenuControls = () => {
+        menu.querySelectorAll('.tt-submenu-trigger').forEach((trigger) => {
+            const submenu = trigger.nextElementSibling;
+            if (!submenu?.classList.contains('tt-submenu')) {
+                return;
+            }
+
+            if (!trigger.querySelector('.tt-submenu-trigger-m')) {
+                const overlay = document.createElement('span');
+                overlay.className = 'tt-submenu-trigger-m';
+                trigger.appendChild(overlay);
+            }
+
+            if (!trigger.querySelector('.tt-m-caret')) {
+                const caret = document.createElement('span');
+                caret.className = 'tt-m-caret';
+                trigger.appendChild(caret);
+            }
+        });
+    };
+
+    toggleWrap.addEventListener('click', (event) => {
+        if (!window.matchMedia('(max-width: 1024px)').matches) {
+            return;
+        }
+
+        event.preventDefault();
+        ensureSubmenuControls();
+        applyState(!document.body.classList.contains('tt-m-menu-open'));
+    });
+
+    menu.addEventListener('click', (event) => {
+        if (!window.matchMedia('(max-width: 1024px)').matches) {
+            return;
+        }
+
+        const submenuToggle = event.target instanceof HTMLElement
+            ? event.target.closest('.tt-submenu-trigger-m, .tt-m-caret')
+            : null;
+
+        if (submenuToggle instanceof HTMLElement) {
+            event.preventDefault();
+
+            const trigger = submenuToggle.parentElement;
+            const submenu = trigger?.nextElementSibling;
+            if (!(trigger instanceof HTMLElement) || !(submenu instanceof HTMLElement)) {
+                return;
+            }
+
+            const isOpen = trigger.classList.contains('tt-m-submenu-open');
+
+            trigger
+                .closest('.tt-submenu-wrap')
+                ?.parentElement
+                ?.querySelectorAll(':scope > .tt-submenu-wrap > .tt-submenu-trigger.tt-m-submenu-open')
+                .forEach((openTrigger) => {
+                    if (openTrigger !== trigger) {
+                        openTrigger.classList.remove('tt-m-submenu-open');
+                        const openSubmenu = openTrigger.nextElementSibling;
+                        if (openSubmenu instanceof HTMLElement) {
+                            openSubmenu.style.display = 'none';
+                        }
+                    }
+                });
+
+            trigger.classList.toggle('tt-m-submenu-open', !isOpen);
+            submenu.style.display = isOpen ? 'none' : 'block';
+            return;
+        }
+
+        const link = event.target instanceof HTMLElement ? event.target.closest('a[href]') : null;
+        if (!(link instanceof HTMLAnchorElement)) {
+            return;
+        }
+
+        const href = (link.getAttribute('href') || '').trim();
+        if (href === '' || href === '#' || href.startsWith('mailto:') || href.startsWith('tel:') || link.target === '_blank') {
+            return;
+        }
+
+        applyState(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && document.body.classList.contains('tt-m-menu-open')) {
+            applyState(false);
+        }
+    });
+
+    const handleViewportChange = (event) => {
+        if (event.matches) {
+            applyState(false);
+        }
+    };
+
+    if (desktopQuery.addEventListener) {
+        desktopQuery.addEventListener('change', handleViewportChange);
+    } else if (desktopQuery.addListener) {
+        desktopQuery.addListener(handleViewportChange);
+    }
+
+    toggleWrap.dataset.menuReady = 'true';
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initTemplateButtons();
     initMobileNavigation();
+    initTemplateMainMenuToggle();
 });
 
 const initPwaRegistration = () => {

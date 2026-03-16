@@ -104,4 +104,23 @@ class LaunchGiftCatalog
             && ($definition['category'] ?? null) === 'profile_digital'
             && ($definition['delivery_type'] ?? null) === 'profile';
     }
+
+    /**
+     * @param array<string, mixed>|null $definition
+     */
+    public static function requiresAdminValidationDefinition(?array $definition): bool
+    {
+        return ! is_array($definition)
+            || (bool) ($definition['requires_admin_validation'] ?? true);
+    }
+
+    /**
+     * @param array<string, mixed>|null $definition
+     */
+    public static function isAutoDeliverableDefinition(?array $definition): bool
+    {
+        return is_array($definition)
+            && ! self::requiresAdminValidationDefinition($definition)
+            && ($definition['delivery_type'] ?? null) === 'profile';
+    }
 }

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Web;
 
 use App\Models\User;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
@@ -29,7 +30,9 @@ class AuthRememberMeWebTest extends TestCase
             'password' => 'Password123!',
         ]);
 
-        $recallerCookie = Auth::guard('web')->getRecallerName();
+        /** @var SessionGuard $guard */
+        $guard = Auth::guard('web');
+        $recallerCookie = $guard->getRecallerName();
 
         $response = $this->post(route('auth.login'), [
             'email' => 'remember@example.com',
@@ -37,7 +40,7 @@ class AuthRememberMeWebTest extends TestCase
             'remember' => '1',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(url('/'));
         $response->assertCookie($recallerCookie);
 
         $this->assertAuthenticatedAs($user);
@@ -46,7 +49,9 @@ class AuthRememberMeWebTest extends TestCase
 
     public function test_register_without_remember_me_does_not_set_recaller_cookie(): void
     {
-        $recallerCookie = Auth::guard('web')->getRecallerName();
+        /** @var SessionGuard $guard */
+        $guard = Auth::guard('web');
+        $recallerCookie = $guard->getRecallerName();
 
         $response = $this->post(route('auth.register'), [
             'name' => 'No Remember',
@@ -56,7 +61,7 @@ class AuthRememberMeWebTest extends TestCase
             'remember' => '0',
         ]);
 
-        $response->assertRedirect(route('onboarding'));
+        $response->assertRedirect(url('/'));
         $response->assertCookieMissing($recallerCookie);
 
         $user = User::query()->where('email', 'no-remember@example.com')->firstOrFail();

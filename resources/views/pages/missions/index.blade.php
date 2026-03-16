@@ -190,18 +190,29 @@
         }
 
         .mission-progress-track {
+            appearance: none;
+            -webkit-appearance: none;
             width: 100%;
             height: 10px;
+            border: 0;
             border-radius: 999px;
             background: rgba(255, 255, 255, .09);
             overflow: hidden;
         }
 
-        .mission-progress-track > span {
-            display: block;
-            height: 100%;
+        .mission-progress-track::-webkit-progress-bar {
+            background: rgba(255, 255, 255, .09);
             border-radius: 999px;
+        }
+
+        .mission-progress-track::-webkit-progress-value {
             background: linear-gradient(90deg, #d80707 0%, #ff6a3d 100%);
+            border-radius: 999px;
+        }
+
+        .mission-progress-track::-moz-progress-bar {
+            background: linear-gradient(90deg, #d80707 0%, #ff6a3d 100%);
+            border-radius: 999px;
         }
 
         .mission-reward-row {
@@ -436,7 +447,7 @@
                         <h2 class="ph-caption-subtitle">ERAH Progression Hub</h2>
                         <h1 class="ph-caption-title">Missions</h1>
                         <div class="ph-caption-description max-width-900">
-                            Un board missions clair, focusable et pret pour monter en charge.
+                            Un board missions clair, personnalisable et pret pour monter en charge.
                         </div>
                     </div>
                 </div>
@@ -507,7 +518,7 @@
                                 <span class="mission-card-kicker">Mes 3 missions favorites</span>
                                 <h2 class="mission-section-title">Garder les priorites visibles.</h2>
                                 <p class="mission-section-note">
-                                    Vous pouvez epingler jusqu a {{ (int) $focusLimit }} missions maximum pour les retrouver ici et dans votre profil.
+                                    Vous pouvez ajouter jusqu a {{ (int) $focusLimit }} missions en favoris pour les retrouver ici et dans votre profil.
                                 </p>
                             </div>
                         </div>

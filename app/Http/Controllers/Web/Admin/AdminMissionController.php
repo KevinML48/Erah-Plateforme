@@ -228,7 +228,7 @@ class AdminMissionController extends Controller
             'success',
             'Reparation missions terminee pour '.$result['users'].' utilisateurs. '
             .$result['expired_marked'].' mission(s) expiree(s) marquee(s), '
-            .$result['pruned_focuses'].' focus nettoye(s).'
+            .$result['pruned_focuses'].' favori(s) nettoye(s).'
         );
     }
 

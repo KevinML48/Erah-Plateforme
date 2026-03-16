@@ -20,6 +20,7 @@ use App\Services\Gifts\GiftFavoriteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
@@ -31,7 +32,7 @@ class GiftPageController extends Controller
         GiftFavoriteService $giftFavoriteService,
         GiftCartService $giftCartService
     ): View {
-        $user = auth()->user();
+        $user = Auth::user();
         $isAuthenticated = $user instanceof User;
 
         $wallet = null;
@@ -185,7 +186,7 @@ class GiftPageController extends Controller
         int $giftId,
         GiftFavoriteService $giftFavoriteService
     ): View {
-        $user = auth()->user();
+        $user = Auth::user();
         $isAuthenticated = $user instanceof User;
 
         $wallet = null;
@@ -390,7 +391,7 @@ class GiftPageController extends Controller
         }
 
         $redemptionsQuery = GiftRedemption::query()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->with('gift');
 
         if ($selectedStatus !== 'all') {
@@ -425,7 +426,7 @@ class GiftPageController extends Controller
     public function redemption(int $redemptionId): View
     {
         $redemption = GiftRedemption::query()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->whereKey($redemptionId)
             ->with([
                 'gift',
@@ -517,6 +518,10 @@ class GiftPageController extends Controller
     {
         if ($availabilityKey !== 'available' && $availabilityKey !== 'low') {
             return 'Retour en stock des que possible';
+        }
+
+        if (LaunchGiftCatalog::isAutoDeliverableDefinition($gift->launchCatalogDefinition())) {
+            return 'Attribution automatique immediate';
         }
 
         return match ($gift->launchCatalogDeliveryType()) {
@@ -617,33 +622,51 @@ class GiftPageController extends Controller
      */
     private function buildRedemptionTimeline(GiftRedemption $redemption): array
     {
-        $steps = [
-            [
-                'key' => GiftRedemption::STATUS_PENDING,
-                'label' => 'Demande envoyee',
-                'at' => $redemption->requested_at?->format('d/m/Y H:i'),
-            ],
-            [
-                'key' => GiftRedemption::STATUS_APPROVED,
-                'label' => 'Demande approuvee',
-                'at' => $redemption->approved_at?->format('d/m/Y H:i'),
-            ],
-            [
-                'key' => GiftRedemption::STATUS_SHIPPED,
-                'label' => 'Commande expediee',
-                'at' => $redemption->shipped_at?->format('d/m/Y H:i'),
-            ],
-            [
-                'key' => GiftRedemption::STATUS_DELIVERED,
-                'label' => 'Commande livree',
-                'at' => $redemption->delivered_at?->format('d/m/Y H:i'),
-            ],
-            [
-                'key' => GiftRedemption::STATUS_REJECTED,
-                'label' => 'Demande rejetee',
-                'at' => $redemption->rejected_at?->format('d/m/Y H:i'),
-            ],
-        ];
+        $steps = $this->isAutomaticRedemption($redemption)
+            ? [
+                [
+                    'key' => GiftRedemption::STATUS_PENDING,
+                    'label' => 'Demande enregistree',
+                    'at' => $redemption->requested_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_DELIVERED,
+                    'label' => 'Recompense attribuee',
+                    'at' => $redemption->delivered_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_REJECTED,
+                    'label' => 'Demande rejetee',
+                    'at' => $redemption->rejected_at?->format('d/m/Y H:i'),
+                ],
+            ]
+            : [
+                [
+                    'key' => GiftRedemption::STATUS_PENDING,
+                    'label' => 'Demande envoyee',
+                    'at' => $redemption->requested_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_APPROVED,
+                    'label' => 'Demande approuvee',
+                    'at' => $redemption->approved_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_SHIPPED,
+                    'label' => 'Commande expediee',
+                    'at' => $redemption->shipped_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_DELIVERED,
+                    'label' => 'Commande livree',
+                    'at' => $redemption->delivered_at?->format('d/m/Y H:i'),
+                ],
+                [
+                    'key' => GiftRedemption::STATUS_REJECTED,
+                    'label' => 'Demande rejetee',
+                    'at' => $redemption->rejected_at?->format('d/m/Y H:i'),
+                ],
+            ];
 
         if ((string) $redemption->status === GiftRedemption::STATUS_CANCELLED) {
             $steps[] = [
@@ -707,6 +730,14 @@ class GiftPageController extends Controller
             return $stepKey === GiftRedemption::STATUS_REFUNDED ? 'current' : 'completed';
         }
 
+        if ($this->isAutomaticRedemption($redemption)) {
+            return match ($stepKey) {
+                GiftRedemption::STATUS_PENDING => 'completed',
+                GiftRedemption::STATUS_DELIVERED => $currentStatus === GiftRedemption::STATUS_DELIVERED ? 'current' : 'upcoming',
+                default => 'skipped',
+            };
+        }
+
         $normalOrder = [
             GiftRedemption::STATUS_PENDING => 0,
             GiftRedemption::STATUS_APPROVED => 1,
@@ -755,11 +786,15 @@ class GiftPageController extends Controller
             'admin_delivered' => 'Commande livree',
             'admin_cancelled' => 'Commande annulee',
             'admin_refunded' => 'Points rembourses',
+            'profile_unlock_granted' => 'Elements de profil attribues',
+            'auto_delivered' => 'Attribution automatique',
             default => Str::headline(str_replace('_', ' ', (string) $event->type)),
         };
 
         $summary = match ($event->type) {
-            'redeem_requested' => 'Votre demande a ete enregistree et transmise a l equipe admin.',
+            'redeem_requested' => $this->isAutomaticRedemption($redemption)
+                ? 'Votre demande a ete enregistree et la recompense est en cours d attribution automatique.'
+                : 'Votre demande a ete enregistree et transmise a l equipe admin.',
             'admin_approved' => 'La commande est validee et en preparation.',
             'admin_rejected' => 'La commande a ete rejetee.'
                 .($data['reason'] ?? $redemption->reason ? ' Motif: '.($data['reason'] ?? $redemption->reason).'.' : ''),
@@ -772,6 +807,8 @@ class GiftPageController extends Controller
             'admin_delivered' => 'La livraison est confirmee.',
             'admin_cancelled' => 'La commande a ete annulee par l equipe admin.',
             'admin_refunded' => 'Les points associes a cette commande ont ete rembourses.',
+            'profile_unlock_granted' => 'Les elements de profil lies a cette recompense ont ete ajoutes a votre compte.',
+            'auto_delivered' => 'Cette recompense ne necessitait pas de validation admin et a ete attribuee automatiquement.',
             default => 'Mise a jour enregistree sur votre commande cadeau.',
         };
 
@@ -798,5 +835,10 @@ class GiftPageController extends Controller
     private function formatOrderNumber(int $id): string
     {
         return 'CMD-'.str_pad((string) $id, 6, '0', STR_PAD_LEFT);
+    }
+
+    private function isAutomaticRedemption(GiftRedemption $redemption): bool
+    {
+        return LaunchGiftCatalog::isAutoDeliverableDefinition($redemption->gift?->launchCatalogDefinition());
     }
 }

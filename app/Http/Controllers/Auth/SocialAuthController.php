@@ -88,8 +88,7 @@ class SocialAuthController extends Controller
             Auth::login($user, true);
             $request->session()->regenerate();
 
-            return redirect()
-                ->route('dashboard')
+            return redirect()->intended(url('/'))
                 ->with('success', 'Connexion '.$provider.' reussie.');
         }
 

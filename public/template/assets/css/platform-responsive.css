@@ -25,6 +25,24 @@ iframe {
     overscroll-behavior: contain;
 }
 
+.tt-main-menu-mobile-only {
+    display: none !important;
+}
+
+.tt-main-menu-mobile-logout-form {
+    margin: 0;
+}
+
+.tt-main-menu-mobile-logout-button {
+    display: inline-block;
+    padding: 5px 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
 @media (pointer: coarse) {
     #magic-cursor {
         display: none !important;
@@ -70,6 +88,29 @@ iframe {
 
     .tt-scroll-down {
         display: none;
+    }
+
+    .tt-main-menu-mobile-only {
+        display: block !important;
+    }
+
+    .tt-main-menu-mobile-logout-button {
+        text-transform: uppercase;
+        font-family: var(--tt-alter-font);
+        font-size: clamp(22px, 5.8vw, 38px);
+        font-weight: 600;
+        line-height: 1.08;
+    }
+}
+
+@media (max-width: 1024px) {
+    #tt-header .tt-header-col-right {
+        gap: 12px;
+    }
+
+    #tt-header #tt-m-menu-toggle-btn-wrap {
+        margin-left: 12px;
+        flex-shrink: 0;
     }
 }
 

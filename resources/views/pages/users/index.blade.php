@@ -112,7 +112,7 @@
 
                                             <div class="adm-user-stat">
                                                 <span class="adm-user-stat-title">Moderation</span>
-                                                <div class="adm-user-stat-value">Acces rapide au profil, au focus et a la mise a jour du role.</div>
+                                                <div class="adm-user-stat-value">Acces rapide au profil, aux favoris et a la mise a jour du role.</div>
                                             </div>
                                         </div>
 
@@ -157,7 +157,7 @@
 
                     <section class="adm-surface" id="user-focus">
                         <div class="tt-heading tt-heading-lg margin-bottom-20">
-                            <h2 class="tt-heading-title tt-text-reveal">Focus utilisateur</h2>
+                            <h2 class="tt-heading-title tt-text-reveal">Favoris utilisateur</h2>
                             <p class="max-width-700 tt-anim-fadeinup text-gray">Selectionnez "Voir" pour afficher un resume rapide du compte.</p>
                         </div>
 

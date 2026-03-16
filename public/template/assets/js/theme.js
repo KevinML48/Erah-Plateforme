@@ -244,48 +244,8 @@
 
 
 			
-		const $ttStyleSwitch = $(".tt-style-switch");
-		let lightMode = localStorage.getItem('tt-lightmode-on'); 
-
-		function syncStyleSwitchState() {
-			const isEnabled = $("body").hasClass("tt-lightmode-on");
-			$ttStyleSwitch.toggleClass("active", isEnabled);
-			$ttStyleSwitch.attr("aria-pressed", isEnabled ? "true" : "false");
-		}
-
-		function enableLightMode() {
-			$('body').addClass('tt-lightmode-on');
-			localStorage.setItem('tt-lightmode-on', 'enabled');
-			syncStyleSwitchState();
-		}
-
-		function disableLightMode() {
-			$('body').removeClass('tt-lightmode-on');
-			localStorage.setItem('tt-lightmode-on', 'disabled');
-			syncStyleSwitchState();
-		}
-
-		if ($('body').hasClass('tt-lightmode-default') && lightMode !== 'enabled') {
-			enableLightMode();
-		}
-
-		if (lightMode === 'enabled') {
-			enableLightMode();
-		} else if (lightMode === 'disabled') {
-			disableLightMode();
-		} else {
-			syncStyleSwitchState();
-		}
-
-		$ttStyleSwitch.on('click', function() {
-			lightMode = localStorage.getItem('tt-lightmode-on'); 
-
-			if (lightMode !== 'enabled') {
-				enableLightMode();
-			} else {  
-				disableLightMode(); 
-			}
-		});
+		$('body').removeClass('tt-lightmode-on tt-lightmode-default');
+		localStorage.removeItem('tt-lightmode-on');
 
 
 

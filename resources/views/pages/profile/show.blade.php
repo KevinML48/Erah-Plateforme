@@ -125,6 +125,36 @@
             line-height: 1.1;
         }
 
+        .profile-summary-progress-badge {
+            min-width: 132px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255, 255, 255, .05);
+            text-align: right;
+        }
+
+        .profile-summary-progress-badge strong {
+            font-size: 26px;
+        }
+
+        .profile-summary-progress-badge small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255, 255, 255, .68);
+            line-height: 1.45;
+        }
+
+        .profile-summary-progress-status {
+            margin-top: 14px;
+        }
+
+        .profile-summary-progress-status strong {
+            display: block;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
         .profile-summary-progress-track {
             position: relative;
             overflow: hidden;
@@ -153,6 +183,104 @@
 
         .profile-summary-progress-meta strong {
             font-size: 13px;
+        }
+
+        .profile-summary-progress-thresholds {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .profile-summary-progress-threshold {
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .profile-summary-progress-threshold span {
+            display: block;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .profile-summary-progress-threshold strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .profile-summary-progress-threshold small {
+            display: block;
+            margin-top: 6px;
+            color: rgba(255, 255, 255, .66);
+            line-height: 1.45;
+        }
+
+        .profile-summary-xp-feed {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .profile-summary-xp-feed-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .profile-summary-xp-feed-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .profile-summary-xp-feed-item {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: rgba(255, 255, 255, .025);
+        }
+
+        .profile-summary-xp-feed-item strong {
+            display: block;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+
+        .profile-summary-xp-feed-item p,
+        .profile-summary-xp-feed-item small {
+            margin: 6px 0 0;
+            color: rgba(255, 255, 255, .68);
+            line-height: 1.45;
+        }
+
+        .profile-summary-xp-points {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(91, 214, 143, .4);
+            background: rgba(91, 214, 143, .1);
+            color: #d6ffe6;
+            font-size: 12px;
+            letter-spacing: .08em;
+            text-transform: uppercase;
         }
 
         .profile-summary-secondary {
@@ -582,6 +710,28 @@
 
         body.tt-lightmode-on .profile-summary-progress-track {
             background: rgba(148, 163, 184, .18);
+        }
+
+        body.tt-lightmode-on .profile-summary-progress-badge,
+        body.tt-lightmode-on .profile-summary-progress-threshold,
+        body.tt-lightmode-on .profile-summary-xp-feed-item {
+            border-color: rgba(148, 163, 184, .24);
+            background: rgba(255, 255, 255, .86);
+            box-shadow: 0 18px 38px rgba(148, 163, 184, .08);
+        }
+
+        body.tt-lightmode-on .profile-summary-progress-badge small,
+        body.tt-lightmode-on .profile-summary-progress-threshold span,
+        body.tt-lightmode-on .profile-summary-progress-threshold small,
+        body.tt-lightmode-on .profile-summary-xp-feed-item p,
+        body.tt-lightmode-on .profile-summary-xp-feed-item small {
+            color: rgba(51, 65, 85, .72);
+        }
+
+        body.tt-lightmode-on .profile-summary-xp-points {
+            border-color: rgba(34, 197, 94, .24);
+            background: rgba(220, 252, 231, .88);
+            color: #166534;
         }
 
         body.tt-lightmode-on .profile-connected-status.is-linked,
@@ -1065,8 +1215,18 @@
 
             .profile-summary-secondary,
             .profile-summary-detail-grid,
-            .profile-kpi-grid {
+            .profile-kpi-grid,
+            .profile-summary-progress-thresholds {
                 grid-template-columns: 1fr;
+            }
+
+            .profile-summary-progress-badge,
+            .profile-summary-xp-points {
+                text-align: left;
+            }
+
+            .profile-summary-xp-feed-item {
+                display: grid;
             }
         }
     </style>
@@ -1100,6 +1260,7 @@
         $missionSummary = $missionSummary ?? [];
         $assistantFavorites = $assistantFavorites ?? collect();
         $profileCosmetics = $profileCosmetics ?? ['active' => [], 'owned_by_slot' => [], 'slot_labels' => []];
+        $recentXpEntries = $recentXpEntries ?? [];
         $activeProfileCosmetics = $profileCosmetics['active'] ?? [];
         $activeBadge = $activeProfileCosmetics['badge'] ?? null;
         $activeAvatarFrame = $activeProfileCosmetics['avatar_frame'] ?? null;
@@ -1116,6 +1277,11 @@
         $profileProgressPercent = (int) data_get($experience ?? [], 'progress_percent', 0);
         $profileXpIntoLevel = (int) data_get($experience ?? [], 'xp_into_level', 0);
         $profileXpForNextLevel = (int) data_get($experience ?? [], 'xp_for_next_level', 1);
+        $profileCurrentLevelThreshold = (int) data_get($experience ?? [], 'current_level_threshold', 0);
+        $profileNextLevelThreshold = (int) data_get($experience ?? [], 'next_level_threshold', 0);
+        $profileNextLevel = data_get($experience ?? [], 'next_level');
+        $profileXpRemainingToNextLevel = (int) data_get($experience ?? [], 'xp_remaining_to_next_level', 0);
+        $profileIsMaxLevel = (bool) data_get($experience ?? [], 'is_max_level', false);
         $profileInteractions = (int) ($stats['likes'] ?? 0) + (int) ($stats['comments'] ?? 0);
         $profileRankPoints = (int) ($progress->total_rank_points ?? 0);
         $profileFocusCount = (int) ($missionSummary['focus'] ?? 0);
@@ -1350,12 +1516,13 @@
                             <div class="profile-summary-progress">
                                 <div class="profile-summary-progress-head">
                                     <div>
-                                        <span class="profile-summary-role">Rang actuel</span>
-                                        <strong>{{ $profileRankName }}</strong>
+                                        <span class="profile-summary-role">Progression joueur</span>
+                                        <strong>Niveau {{ $profileLevel }}</strong>
+                                        <p class="profile-summary-progress-copy no-margin margin-top-10">{{ number_format($profileTotalXp, 0, ',', ' ') }} XP au total • Rang {{ $profileRankName }}</p>
                                     </div>
-                                    <div>
-                                        <span class="profile-summary-role">Niveau</span>
-                                        <strong>{{ $profileLevel }}</strong>
+                                    <div class="profile-summary-progress-badge">
+                                        <strong>{{ $profileProgressPercent }}%</strong>
+                                        <small>{{ $profileIsMaxLevel ? 'Niveau max atteint' : 'vers le niveau '.$profileNextLevel }}</small>
                                     </div>
                                 </div>
 
@@ -1363,15 +1530,80 @@
                                     <span{!! $profileProgressAttr !!}></span>
                                 </div>
 
+                                <div class="profile-summary-progress-status">
+                                    <strong>{{ number_format($profileXpIntoLevel, 0, ',', ' ') }} / {{ number_format($profileXpForNextLevel, 0, ',', ' ') }} XP</strong>
+                                    <p class="profile-summary-progress-copy no-margin">progression dans le niveau actuel</p>
+                                </div>
+
                                 <div class="profile-summary-progress-meta">
                                     <div>
-                                        <strong>{{ $profileXpIntoLevel }} / {{ $profileXpForNextLevel }} XP</strong>
-                                        <p class="profile-summary-progress-copy no-margin">dans ce niveau</p>
+                                        <strong>
+                                            @if($profileIsMaxLevel)
+                                                Niveau max atteint
+                                            @else
+                                                {{ number_format($profileXpRemainingToNextLevel, 0, ',', ' ') }} XP restantes avant le niveau {{ $profileNextLevel }}
+                                            @endif
+                                        </strong>
+                                        <p class="profile-summary-progress-copy no-margin">reste a gagner pour le prochain niveau</p>
                                     </div>
                                     <div>
-                                        <strong>{{ number_format($profileTotalXp, 0, ',', ' ') }} XP</strong>
-                                        <p class="profile-summary-progress-copy no-margin">cumules au total</p>
+                                        <strong>
+                                            @if($profileIsMaxLevel)
+                                                Dernier palier atteint
+                                            @else
+                                                Niveau {{ $profileNextLevel }} a {{ number_format($profileNextLevelThreshold, 0, ',', ' ') }} XP
+                                            @endif
+                                        </strong>
+                                        <p class="profile-summary-progress-copy no-margin">prochain seuil de progression</p>
                                     </div>
+                                </div>
+
+                                <div class="profile-summary-progress-thresholds" aria-label="Seuils de progression">
+                                    <article class="profile-summary-progress-threshold">
+                                        <span>Seuil actuel</span>
+                                        <strong>{{ number_format($profileCurrentLevelThreshold, 0, ',', ' ') }} XP</strong>
+                                        <small>debut du niveau {{ $profileLevel }}</small>
+                                    </article>
+                                    <article class="profile-summary-progress-threshold">
+                                        <span>XP actuelle</span>
+                                        <strong>{{ number_format($profileTotalXp, 0, ',', ' ') }} XP</strong>
+                                        <small>capital cumule sur le profil</small>
+                                    </article>
+                                    <article class="profile-summary-progress-threshold">
+                                        <span>Prochain seuil</span>
+                                        <strong>{{ number_format($profileNextLevelThreshold, 0, ',', ' ') }} XP</strong>
+                                        <small>
+                                            @if($profileIsMaxLevel)
+                                                aucun niveau supplementaire configure
+                                            @else
+                                                objectif pour atteindre le niveau {{ $profileNextLevel }}
+                                            @endif
+                                        </small>
+                                    </article>
+                                </div>
+
+                                <div class="profile-summary-xp-feed">
+                                    <div class="profile-summary-xp-feed-head">
+                                        <span class="profile-summary-role">Derniers gains XP</span>
+                                        <span class="profile-summary-footnote">resume recent de votre progression</span>
+                                    </div>
+
+                                    @if(count($recentXpEntries) > 0)
+                                        <ul class="profile-summary-xp-feed-list">
+                                            @foreach($recentXpEntries as $entry)
+                                                <li class="profile-summary-xp-feed-item">
+                                                    <div>
+                                                        <strong>{{ $entry['title'] }}</strong>
+                                                        <p class="no-margin">Total apres gain: {{ number_format((int) $entry['total_after'], 0, ',', ' ') }} XP</p>
+                                                        <small>{{ $entry['earned_at'] }}</small>
+                                                    </div>
+                                                    <span class="profile-summary-xp-points">+{{ number_format((int) $entry['points'], 0, ',', ' ') }} XP</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <p class="profile-summary-footnote no-margin">Aucun gain XP recent pour le moment.</p>
+                                    @endif
                                 </div>
                             </div>
 

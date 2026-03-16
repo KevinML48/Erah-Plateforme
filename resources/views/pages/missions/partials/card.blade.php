@@ -34,9 +34,12 @@
             <span>Progression</span>
             <strong>{{ (int) ($mission['progress_count'] ?? 0) }} / {{ (int) ($mission['target_count'] ?? 0) }}</strong>
         </div>
-        <div class="mission-progress-track">
-            <span style="width: {{ (int) ($mission['progress_percent'] ?? 0) }}%"></span>
-        </div>
+        <progress
+            class="mission-progress-track"
+            value="{{ (int) ($mission['progress_percent'] ?? 0) }}"
+            max="100"
+            aria-label="Progression mission"
+        ></progress>
     </div>
 
     <div class="mission-reward-row">

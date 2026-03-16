@@ -31,7 +31,7 @@ class GiftRedemptionAutomationService
     public function autoDeliverIfEligible(User $user, Gift $gift, GiftRedemption $redemption): array
     {
         $definition = LaunchGiftCatalog::definitionForGift($gift);
-        if (! LaunchGiftCatalog::isProfileDigitalDefinition($definition)) {
+        if (! LaunchGiftCatalog::isAutoDeliverableDefinition($definition)) {
             return [
                 'auto_delivered' => false,
                 'grant_summary' => null,
@@ -49,7 +49,7 @@ class GiftRedemptionAutomationService
         $redemption->status = GiftRedemption::STATUS_DELIVERED;
         $redemption->approved_at = $redemption->approved_at ?: now();
         $redemption->delivered_at = $redemption->delivered_at ?: now();
-        $redemption->reason = 'Objet numerique ajoute au profil.';
+        $redemption->reason = 'Recompense attribuee automatiquement sur le profil.';
         $redemption->save();
 
         GiftRedemptionEvent::query()->create([
@@ -68,7 +68,7 @@ class GiftRedemptionAutomationService
             'actor_user_id' => null,
             'type' => 'auto_delivered',
             'data' => [
-                'delivery_type' => 'profile',
+                'delivery_type' => $definition['delivery_type'] ?? 'profile',
                 'auto_equipped_slots' => $result['auto_equipped_slots'],
             ],
             'created_at' => now(),

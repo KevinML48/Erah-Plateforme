@@ -138,7 +138,7 @@ class AuthApiTest extends TestCase
         ]);
     }
 
-    public function test_social_callback_on_web_flow_logs_in_user_and_redirects_to_dashboard(): void
+    public function test_social_callback_on_web_flow_logs_in_user_and_redirects_to_home(): void
     {
         $this->mockSocialiteProvider('google', [
             'id' => 'google-web-999',
@@ -152,7 +152,7 @@ class AuthApiTest extends TestCase
 
         $response = $this->get('/auth/google/callback');
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(url('/'));
         $response->assertSessionHas('success');
         $this->assertAuthenticated();
 

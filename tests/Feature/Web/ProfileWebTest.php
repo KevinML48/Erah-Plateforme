@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Web;
 
+use App\Models\PointsTransaction;
 use App\Models\SocialAccount;
 use App\Models\User;
 use App\Models\UserProfileCosmetic;
@@ -222,6 +223,67 @@ class ProfileWebTest extends TestCase
         $response->assertSee('Discord public');
         $response->assertSee('Lier mon compte Discord');
         $response->assertSee('/auth/discord/redirect?intent=link&amp;return_route=profile.show', false);
+    }
+
+    public function test_profile_page_displays_real_xp_progression_and_recent_gains(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create();
+        $user->progress()->create([
+            'total_xp' => 640,
+            'total_rank_points' => 180,
+        ]);
+
+        PointsTransaction::query()->create([
+            'user_id' => $user->id,
+            'kind' => PointsTransaction::KIND_XP,
+            'points' => 120,
+            'source_type' => 'community.missions.daily_bonus',
+            'source_id' => 'mission.daily-bonus.test',
+            'before_xp' => 520,
+            'after_xp' => 640,
+        ]);
+
+        PointsTransaction::query()->create([
+            'user_id' => $user->id,
+            'kind' => PointsTransaction::KIND_XP,
+            'points' => 45,
+            'source_type' => 'community.clips.comment',
+            'source_id' => 'clip.comment.test',
+            'before_xp' => 475,
+            'after_xp' => 520,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('profile.show'));
+
+        $response->assertOk();
+        $response->assertSee('Niveau 3');
+        $response->assertSee('640 XP au total');
+        $response->assertSee('65 / 400 XP');
+        $response->assertSee('335 XP restantes avant le niveau 4');
+        $response->assertSee('575 XP');
+        $response->assertSee('975 XP');
+        $response->assertSee('Derniers gains XP');
+        $response->assertSee('Mission completee');
+        $response->assertSee('Commentaire clip');
+        $response->assertSee('+120 XP');
+    }
+
+    public function test_profile_page_handles_zero_xp_without_progression_bug(): void
+    {
+        $this->seed(LeagueSeeder::class);
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('profile.show'));
+
+        $response->assertOk();
+        $response->assertSee('Niveau 1');
+        $response->assertSee('0 XP au total');
+        $response->assertSee('0 / 250 XP');
+        $response->assertSee('250 XP restantes avant le niveau 2');
+        $response->assertSee('Aucun gain XP recent pour le moment.');
     }
 
     public function test_profile_page_shows_when_discord_is_already_linked(): void

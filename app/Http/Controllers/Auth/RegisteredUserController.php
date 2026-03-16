@@ -48,7 +48,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user, $request->boolean('remember', true));
 
-        return redirect()->route('onboarding')
+        return redirect()->to(url('/'))
             ->with('success', 'Compte cree avec succes.');
     }
 }

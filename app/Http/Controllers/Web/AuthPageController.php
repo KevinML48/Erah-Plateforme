@@ -38,7 +38,7 @@ class AuthPageController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'))
+        return redirect()->intended(url('/'))
             ->with('success', 'Connexion reussie.');
     }
 
@@ -65,7 +65,7 @@ class AuthPageController extends Controller
         Auth::login($user, $request->boolean('remember', true));
         $request->session()->regenerate();
 
-        return redirect()->route('onboarding')
+        return redirect()->to(url('/'))
             ->with('success', 'Compte cree avec succes.');
     }
 

@@ -46,7 +46,7 @@ class MissionFocusService
             $this->pruneUnavailable($user);
 
             if (! $this->isAvailableForUser($user, $template)) {
-                throw new RuntimeException('Cette mission n est pas disponible en focus pour le moment.');
+                throw new RuntimeException('Cette mission n est pas disponible dans vos favoris pour le moment.');
             }
 
             $current = UserMissionFocus::query()
@@ -61,7 +61,7 @@ class MissionFocusService
             }
 
             if ($current->count() >= self::MAX_FOCUS_MISSIONS) {
-                throw new RuntimeException('Vous pouvez garder seulement 3 missions en focus.');
+                throw new RuntimeException('Vous pouvez garder seulement 3 missions en favoris.');
             }
 
             $createdFocus = UserMissionFocus::query()->create([

@@ -660,7 +660,7 @@ body.platform-app .app-dropdown-menu {
     }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1024px) {
     body.platform-app #tt-header.tt-header-platform .tt-header-inner {
         grid-template-columns: auto minmax(0, 1fr) auto;
         gap: 12px;
@@ -677,14 +677,6 @@ body.platform-app .app-dropdown-menu {
 
     body.platform-app #tt-header.tt-header-platform .tt-header-mobile-toggle {
         display: inline-flex;
-    }
-
-    body.platform-app .mobile-nav-backdrop {
-        display: block;
-    }
-
-    body.platform-app .mobile-nav-panel {
-        display: block;
     }
 }
 

@@ -47,6 +47,7 @@ class ProfileController extends Controller
             ->orderByDesc('id')
             ->limit(5)
             ->get();
+        $recentXpEntries = $this->buildRecentXpEntries($user);
 
         $stats = $this->buildStats($user);
         $currentShortcuts = $shortcutService->getForUser($user);
@@ -85,6 +86,7 @@ class ProfileController extends Controller
             'socialConnections' => $socialConnections,
             'assistantFavorites' => $assistantFavorites,
             'profileCosmetics' => $profileCosmetics,
+            'recentXpEntries' => $recentXpEntries,
         ]);
     }
 
@@ -291,6 +293,46 @@ class ProfileController extends Controller
             'duels' => Duel::query()->forUser($user->id)->count(),
             'bets' => Bet::query()->where('user_id', $user->id)->count(),
         ];
+    }
+
+    /**
+     * @return array<int, array{title: string, points: int, total_after: int, earned_at: string}>
+     */
+    private function buildRecentXpEntries(User $user): array
+    {
+        return PointsTransaction::query()
+            ->where('user_id', $user->id)
+            ->where('kind', PointsTransaction::KIND_XP)
+            ->latest('id')
+            ->limit(4)
+            ->get()
+            ->map(function (PointsTransaction $transaction): array {
+                return [
+                    'title' => $this->describeXpSourceType((string) $transaction->source_type),
+                    'points' => (int) $transaction->points,
+                    'total_after' => (int) ($transaction->after_xp ?? 0),
+                    'earned_at' => (string) optional($transaction->created_at)->format('d/m/Y H:i'),
+                ];
+            })
+            ->all();
+    }
+
+    private function describeXpSourceType(string $sourceType): string
+    {
+        return match ($sourceType) {
+            'admin_grant' => 'Attribution manuelle',
+            'community.missions.daily_bonus' => 'Mission completee',
+            'community.duels.win' => 'Duel remporte',
+            'community.duels.loss' => 'Duel dispute',
+            'community.bets.win' => 'Pari gagne',
+            'community.bets.loss' => 'Pari termine',
+            'community.clips.view' => 'Clip regarde',
+            'community.clips.like' => 'Clip like',
+            'community.clips.comment' => 'Commentaire clip',
+            'community.clips.share' => 'Clip partage',
+            'community.streak.login' => 'Connexion quotidienne',
+            default => trim(ucwords(str_replace(['community.', '.', '_', ':'], ['', ' ', ' ', ' '], $sourceType))),
+        };
     }
 
     private function countByCategory(Builder $query, string $category): int

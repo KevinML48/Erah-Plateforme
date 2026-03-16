@@ -38,11 +38,16 @@ class ExperienceService
      * @return array{
      *     total_xp: int,
      *     level: int,
+     *     next_level: int|null,
      *     level_start_xp: int,
      *     level_end_xp: int,
+     *     current_level_threshold: int,
+     *     next_level_threshold: int,
      *     xp_into_level: int,
      *     xp_for_next_level: int,
+     *     xp_remaining_to_next_level: int,
      *     progress_percent: int,
+     *     is_max_level: bool,
      *     rank: array{key: string, name: string, xp_threshold: int}
      * }
      */
@@ -50,19 +55,34 @@ class ExperienceService
     {
         $totalXp = (int) ($user->progress?->total_xp ?? 0);
         $level = $this->levelForXp($totalXp);
+        $isMaxLevel = $level >= $this->maxLevel();
         $levelStartXp = $this->xpRequiredForLevel($level);
-        $levelEndXp = $this->xpRequiredForLevel($level + 1);
+        $levelEndXp = $isMaxLevel
+            ? $levelStartXp
+            : $this->xpRequiredForLevel($level + 1);
         $xpIntoLevel = max(0, $totalXp - $levelStartXp);
-        $xpForNextLevel = max(1, $levelEndXp - $levelStartXp);
+        $xpForNextLevel = $isMaxLevel
+            ? max(1, $xpIntoLevel)
+            : max(1, $levelEndXp - $levelStartXp);
+        $xpRemainingToNextLevel = $isMaxLevel
+            ? 0
+            : max(0, $levelEndXp - $totalXp);
 
         return [
             'total_xp' => $totalXp,
             'level' => $level,
+            'next_level' => $isMaxLevel ? null : $level + 1,
             'level_start_xp' => $levelStartXp,
             'level_end_xp' => $levelEndXp,
+            'current_level_threshold' => $levelStartXp,
+            'next_level_threshold' => $levelEndXp,
             'xp_into_level' => $xpIntoLevel,
             'xp_for_next_level' => $xpForNextLevel,
-            'progress_percent' => (int) min(100, round(($xpIntoLevel / $xpForNextLevel) * 100)),
+            'xp_remaining_to_next_level' => $xpRemainingToNextLevel,
+            'progress_percent' => $isMaxLevel
+                ? 100
+                : (int) min(100, round(($xpIntoLevel / $xpForNextLevel) * 100)),
+            'is_max_level' => $isMaxLevel,
             'rank' => $this->rankService->resolveLeague($totalXp),
         ];
     }

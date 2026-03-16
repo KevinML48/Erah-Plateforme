@@ -1,6 +1,8 @@
 <header id="tt-header" class="tt-header-alter tt-header-scroll tt-header-filled tt-header-platform" data-mobile-nav-root>
 	@php
 		$user = auth()->user();
+		$isAuthenticated = auth()->check();
+		$isAdmin = $isAuthenticated && $user?->role === \App\Models\User::ROLE_ADMIN;
 		$platformShortcuts = app(\App\Services\ShortcutService::class)->getForUser($user);
 
 		$primaryNavigation = [
@@ -33,7 +35,7 @@
 						'label' => $shortcut['label'],
 						'url' => $shortcut['url'],
 					]))
-					->when(auth()->check() && $user?->role === \App\Models\User::ROLE_ADMIN, fn ($items) => $items->push([
+					->when($isAdmin, fn ($items) => $items->push([
 						'label' => 'Admin dashboard',
 						'url' => route('admin.dashboard'),
 					]))
@@ -49,13 +51,15 @@
 			['label' => 'Mende', 'url' => url('/mende')],
 		];
 
-		$desktopPrimaryAccountAction = auth()->check()
+		$desktopPrimaryAccountAction = $isAuthenticated
 			? ['label' => 'Mon profil', 'url' => route('app.profile')]
 			: ['label' => 'Se connecter', 'url' => route('login')];
 
-		$desktopAdminAction = auth()->check() && $user?->role === \App\Models\User::ROLE_ADMIN
+		$desktopAdminAction = $isAdmin
 			? ['label' => 'Admin', 'url' => route('admin.dashboard')]
 			: null;
+
+		$showSettingsShortcut = $isAuthenticated && ! request()->routeIs('settings.*');
 
 		$mobilePrimaryLinks = collect($primaryNavigation)
 			->filter(fn ($item) => !empty($item['url']))
@@ -82,7 +86,7 @@
 			->values()
 			->all();
 
-		$mobileSessionLinks = auth()->check()
+		$mobileSessionLinks = $isAuthenticated
 			? [
 				['label' => 'Mon profil', 'url' => route('app.profile')],
 				['label' => 'Parametres', 'url' => route('settings.index')],
@@ -105,7 +109,7 @@
 			['label' => 'Explorer', 'links' => $mobileExploreLinks],
 			['label' => 'Raccourcis ERAH', 'links' => $mobileShortcutLinks],
 			['label' => 'Plus', 'links' => $secondaryNavigation],
-			['label' => auth()->check() ? 'Session' : 'Compte', 'links' => $mobileSessionLinks],
+			['label' => $isAuthenticated ? 'Session' : 'Compte', 'links' => $mobileSessionLinks],
 		])
 			->filter(fn ($section) => count($section['links']) > 0)
 			->values()
@@ -167,24 +171,36 @@
 		</div>
 
 		<div class="tt-header-col tt-header-col-right">
-			<div class="tt-header-account-cluster" aria-label="Actions utilisateur">
-				<a href="{{ $desktopPrimaryAccountAction['url'] }}"
-					class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item tt-header-account-btn tt-header-account-btn-primary">
-					<span data-hover="{{ $desktopPrimaryAccountAction['label'] }}">{{ $desktopPrimaryAccountAction['label'] }}</span>
-				</a>
-				@if($desktopAdminAction)
-					<a href="{{ $desktopAdminAction['url'] }}"
-						class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item tt-header-account-btn">
-						<span data-hover="Admin">Admin</span>
+			<div class="tt-header-action-stack" aria-label="Actions utilisateur">
+				<div class="tt-header-account-cluster">
+					<a href="{{ $desktopPrimaryAccountAction['url'] }}"
+						class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item tt-header-account-btn tt-header-account-btn-primary">
+						<span class="tt-header-account-label" data-hover="{{ $desktopPrimaryAccountAction['label'] }}">{{ $desktopPrimaryAccountAction['label'] }}</span>
 					</a>
-				@endif
-				@auth
-					<a href="{{ route('settings.index') }}"
-						class="tt-header-account-icon tt-magnetic-item"
-						aria-label="Parametres">
-						<i class="fas fa-cog" aria-hidden="true"></i>
-					</a>
-				@endauth
+					@if($desktopAdminAction)
+						<a href="{{ $desktopAdminAction['url'] }}"
+							class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item tt-header-account-btn tt-header-account-btn-admin">
+							<span class="tt-header-account-label" data-hover="Admin">Admin</span>
+						</a>
+					@endif
+				</div>
+
+				<div class="tt-header-utility-cluster">
+					@if($showSettingsShortcut)
+						<a href="{{ route('settings.index') }}"
+							class="tt-header-account-icon tt-magnetic-item tt-header-settings-shortcut"
+							aria-label="Parametres">
+							<i class="fas fa-cog" aria-hidden="true"></i>
+						</a>
+					@endif
+
+					<div class="tt-style-switch tt-header-style-switch">
+						<div class="tt-style-switch-inner tt-magnetic-item">
+							<div class="tt-stsw-light"><i class="fas fa-sun"></i></div>
+							<div class="tt-stsw-dark"><i class="fas fa-moon"></i></div>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<button
@@ -202,13 +218,6 @@
 				</span>
 				<span>Menu</span>
 			</button>
-
-			<div class="tt-style-switch">
-				<div class="tt-style-switch-inner tt-magnetic-item">
-					<div class="tt-stsw-light"><i class="fas fa-sun"></i></div>
-					<div class="tt-stsw-dark"><i class="fas fa-moon"></i></div>
-				</div>
-			</div>
 		</div>
 	</div>
 

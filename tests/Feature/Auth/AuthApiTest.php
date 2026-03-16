@@ -20,6 +20,7 @@ class AuthApiTest extends TestCase
 
     public function test_user_can_login_with_email_and_password(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'player@example.com',
             'password' => 'secret-pass-123',
@@ -168,6 +169,7 @@ class AuthApiTest extends TestCase
 
     public function test_authenticated_user_can_link_discord_account_from_profile(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'player-profile@example.com',
             'name' => 'Profile Player',

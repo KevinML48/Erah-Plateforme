@@ -1,6 +1,7 @@
-<header id="tt-header" class="tt-header-alter tt-header-scroll tt-header-filled">
+<header id="tt-header" class="tt-header-alter tt-header-scroll tt-header-filled tt-header-platform" data-mobile-nav-root>
 	@php
-		$platformShortcuts = app(\App\Services\ShortcutService::class)->getForUser(auth()->user());
+		$user = auth()->user();
+		$platformShortcuts = app(\App\Services\ShortcutService::class)->getForUser($user);
 
 		$primaryNavigation = [
 			['label' => 'Accueil', 'url' => url('/')],
@@ -32,7 +33,7 @@
 						'label' => $shortcut['label'],
 						'url' => $shortcut['url'],
 					]))
-					->when(auth()->check() && auth()->user()->role === \App\Models\User::ROLE_ADMIN, fn ($items) => $items->push([
+					->when(auth()->check() && $user?->role === \App\Models\User::ROLE_ADMIN, fn ($items) => $items->push([
 						'label' => 'Admin dashboard',
 						'url' => route('admin.dashboard'),
 					]))
@@ -52,17 +53,71 @@
 			? ['label' => 'Mon profil', 'url' => route('app.profile')]
 			: ['label' => 'Se connecter', 'url' => route('login')];
 
-		$desktopAdminAction = auth()->check() && auth()->user()->role === \App\Models\User::ROLE_ADMIN
+		$desktopAdminAction = auth()->check() && $user?->role === \App\Models\User::ROLE_ADMIN
 			? ['label' => 'Admin', 'url' => route('admin.dashboard')]
 			: null;
+
+		$mobilePrimaryLinks = collect($primaryNavigation)
+			->filter(fn ($item) => !empty($item['url']))
+			->map(fn ($item) => [
+				'label' => $item['label'],
+				'url' => $item['url'],
+			])
+			->values()
+			->all();
+
+		$mobileExploreLinks = collect($primaryNavigation)
+			->flatMap(fn ($item) => collect($item['children'] ?? [])->map(fn ($child) => [
+				'label' => $child['label'],
+				'url' => $child['url'],
+			]))
+			->values()
+			->all();
+
+		$mobileShortcutLinks = collect($platformShortcuts)
+			->map(fn ($shortcut) => [
+				'label' => $shortcut['label'],
+				'url' => $shortcut['url'],
+			])
+			->values()
+			->all();
+
+		$mobileSessionLinks = auth()->check()
+			? [
+				['label' => 'Mon profil', 'url' => route('app.profile')],
+				['label' => 'Parametres', 'url' => route('settings.index')],
+				['label' => 'Notifications', 'url' => route('notifications.preferences')],
+				['label' => 'Portefeuille', 'url' => route('wallet.index')],
+				['label' => 'Centre d aide', 'url' => route('console.help')],
+			]
+			: [
+				['label' => 'Se connecter', 'url' => route('login')],
+				['label' => 'Inscription', 'url' => route('register')],
+				['label' => 'Explorer la plateforme', 'url' => route('marketing.platform')],
+			];
+
+		if ($desktopAdminAction) {
+			array_unshift($mobileSessionLinks, ['label' => 'Admin dashboard', 'url' => $desktopAdminAction['url']]);
+		}
+
+		$mobileSections = collect([
+			['label' => 'Navigation principale', 'links' => $mobilePrimaryLinks],
+			['label' => 'Explorer', 'links' => $mobileExploreLinks],
+			['label' => 'Raccourcis ERAH', 'links' => $mobileShortcutLinks],
+			['label' => 'Plus', 'links' => $secondaryNavigation],
+			['label' => auth()->check() ? 'Session' : 'Compte', 'links' => $mobileSessionLinks],
+		])
+			->filter(fn ($section) => count($section['links']) > 0)
+			->values()
+			->all();
 	@endphp
 
 	<div class="tt-header-inner tt-noise">
 		<div class="tt-header-col tt-header-col-left">
 			<div class="tt-logo">
-				<a href="/" class="tt-magnetic-item">
-					<img src="/template/assets/img/logo.png" class="tt-logo-light" alt="Logo">
-					<img src="/template/assets/img/logo.png" class="tt-logo-dark" alt="Logo">
+				<a href="/" class="tt-magnetic-item tt-header-logo-link" aria-label="Retour a l accueil">
+					<img src="/template/assets/img/logo.png" class="tt-logo-light" alt="ERAH">
+					<img src="/template/assets/img/logo.png" class="tt-logo-dark" alt="ERAH">
 				</a>
 			</div>
 		</div>
@@ -112,7 +167,7 @@
 		</div>
 
 		<div class="tt-header-col tt-header-col-right">
-			<div class="tt-header-account-cluster hide-from-xlg" aria-label="Actions utilisateur desktop">
+			<div class="tt-header-account-cluster" aria-label="Actions utilisateur">
 				<a href="{{ $desktopPrimaryAccountAction['url'] }}"
 					class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item tt-header-account-btn tt-header-account-btn-primary">
 					<span data-hover="{{ $desktopPrimaryAccountAction['label'] }}">{{ $desktopPrimaryAccountAction['label'] }}</span>
@@ -132,17 +187,21 @@
 				@endauth
 			</div>
 
-			<div id="tt-m-menu-toggle-btn-wrap">
-				<div class="tt-m-menu-toggle-btn-text">
-					<span class="tt-m-menu-text-menu">Menu</span>
-					<span class="tt-m-menu-text-close">Close</span>
-				</div>
-				<div class="tt-m-menu-toggle-btn-holder">
-					<a href="#" class="tt-m-menu-toggle-btn" aria-label="Ouvrir le menu">
-						<span></span>
-					</a>
-				</div>
-			</div>
+			<button
+				type="button"
+				class="mobile-nav-toggle tt-header-mobile-toggle"
+				data-mobile-nav-toggle
+				aria-expanded="false"
+				aria-controls="app-mobile-nav"
+				aria-label="Ouvrir le menu"
+			>
+				<span class="mobile-nav-toggle-box" aria-hidden="true">
+					<span></span>
+					<span></span>
+					<span></span>
+				</span>
+				<span>Menu</span>
+			</button>
 
 			<div class="tt-style-switch">
 				<div class="tt-style-switch-inner tt-magnetic-item">
@@ -150,6 +209,44 @@
 					<div class="tt-stsw-dark"><i class="fas fa-moon"></i></div>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="mobile-nav-backdrop" data-mobile-nav-backdrop hidden></div>
+
+	<div id="app-mobile-nav" class="mobile-nav-panel tt-header-mobile-panel" data-mobile-nav-panel hidden>
+		<div class="mobile-nav-shell">
+			<div class="mobile-nav-head">
+				<div>
+					<p class="mobile-nav-kicker">Navigation</p>
+					<strong>ERAH sur petit ecran</strong>
+				</div>
+				<button type="button" class="mobile-nav-close" data-mobile-nav-close aria-label="Fermer le menu">
+					Fermer
+				</button>
+			</div>
+
+			@foreach ($mobileSections as $section)
+				<section class="mobile-nav-section">
+					<p class="mobile-nav-section-label">{{ $section['label'] }}</p>
+					<div class="mobile-nav-list">
+						@foreach ($section['links'] as $link)
+							<a href="{{ $link['url'] }}" class="mobile-nav-link" data-mobile-nav-link>
+								{{ $link['label'] }}
+							</a>
+						@endforeach
+					</div>
+				</section>
+			@endforeach
+
+			@auth
+				<form method="POST" action="{{ route('auth.logout') }}" class="mobile-nav-logout">
+					@csrf
+					<button type="submit" class="tt-btn tt-btn-primary tt-btn-full">
+						<span data-hover="Se deconnecter">Se deconnecter</span>
+					</button>
+				</form>
+			@endauth
 		</div>
 	</div>
 </header>

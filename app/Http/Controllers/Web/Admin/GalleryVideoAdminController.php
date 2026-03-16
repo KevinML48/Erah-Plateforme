@@ -10,6 +10,8 @@ use App\Support\MediaStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -130,6 +132,7 @@ class GalleryVideoAdminController extends Controller
     public function importLegacy(GalleryVideoImportService $galleryVideoImportService): RedirectResponse
     {
         $result = $galleryVideoImportService->import();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         $message = sprintf(
             'Import legacy termine : %d creee(s), %d mise(s) a jour, %d ignoree(s).',
@@ -144,6 +147,7 @@ class GalleryVideoAdminController extends Controller
     public function importLegacyIfEmpty(GalleryVideoImportService $galleryVideoImportService): RedirectResponse
     {
         $processed = $galleryVideoImportService->importIfEmpty();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         if ($processed > 0) {
             return back()->with('success', sprintf('Import conditionnel termine : %d video(s) legacy ajoutee(s).', $processed));
@@ -159,6 +163,7 @@ class GalleryVideoAdminController extends Controller
         $payload['updated_by'] = $request->user()->id;
 
         GalleryVideo::query()->create($payload);
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video galerie creee.');
     }
@@ -170,6 +175,7 @@ class GalleryVideoAdminController extends Controller
         $payload['updated_by'] = $request->user()->id;
 
         $video->fill($payload)->save();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video galerie mise a jour.');
     }
@@ -182,8 +188,9 @@ class GalleryVideoAdminController extends Controller
 
         $video->fill([
             'thumbnail_url' => null,
-            'updated_by' => auth()->id(),
+            'updated_by' => Auth::id(),
         ])->save();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Miniature retiree de la video.');
     }
@@ -194,8 +201,9 @@ class GalleryVideoAdminController extends Controller
         $video->fill([
             'status' => GalleryVideo::STATUS_PUBLISHED,
             'published_at' => $video->published_at ?: now(),
-            'updated_by' => auth()->id(),
+            'updated_by' => Auth::id(),
         ])->save();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video publiee.');
     }
@@ -206,8 +214,9 @@ class GalleryVideoAdminController extends Controller
         $video->fill([
             'status' => GalleryVideo::STATUS_DRAFT,
             'published_at' => null,
-            'updated_by' => auth()->id(),
+            'updated_by' => Auth::id(),
         ])->save();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video repassee en brouillon.');
     }
@@ -217,8 +226,9 @@ class GalleryVideoAdminController extends Controller
         $video = GalleryVideo::query()->findOrFail($videoId);
         $video->fill([
             'status' => GalleryVideo::STATUS_ARCHIVED,
-            'updated_by' => auth()->id(),
+            'updated_by' => Auth::id(),
         ])->save();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video archivee.');
     }
@@ -229,6 +239,7 @@ class GalleryVideoAdminController extends Controller
         $this->deleteStoredThumbnailIfReplaced($video->thumbnail_url, null);
         $this->deleteStoredPreviewVideoIfReplaced($video->preview_video_url, null);
         $video->delete();
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Video galerie supprimee.');
     }
@@ -252,6 +263,7 @@ class GalleryVideoAdminController extends Controller
                 ]);
 
             $this->rebalanceOrder();
+            Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
             return back()->with('success', 'Ordre galerie video mis a jour.');
         }
@@ -280,6 +292,7 @@ class GalleryVideoAdminController extends Controller
         array_splice($orderedIds, $targetIndex, 0, [$movedId]);
 
         $this->persistOrder($orderedIds, $request->user()->id, $videoId);
+        Cache::forget(GalleryVideoImportService::PUBLIC_CACHE_KEY);
 
         return back()->with('success', 'Ordre galerie video mis a jour.');
     }
@@ -420,7 +433,7 @@ class GalleryVideoAdminController extends Controller
     private function rebalanceOrder(): void
     {
         $orderedIds = GalleryVideo::query()->orderBy('sort_order')->orderByDesc('id')->pluck('id')->values()->all();
-        $this->persistOrder($orderedIds, auth()->id());
+        $this->persistOrder($orderedIds, Auth::id());
     }
 
     /**

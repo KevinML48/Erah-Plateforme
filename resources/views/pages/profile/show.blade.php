@@ -1142,6 +1142,22 @@
                 : null,
             data_get($activeTheme, 'preview.card_background') ? 'box-shadow: inset 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 18px 42px rgba(0, 0, 0, 0.2)' : null,
         ])->filter()->implode('; ');
+        $activeTitlePillStyle = collect([
+            data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background') : null,
+            data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color') : null,
+        ])->filter()->implode('; ');
+        $activeBadgePillStyle = collect([
+            data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background') : null,
+            data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color') : null,
+        ])->filter()->implode('; ');
+        $profileProgressStyle = 'width: '.$profileProgressPercent.'%';
+        $shortcutUpdateAction = route('app.shortcuts.update');
+        $profileHeroAttr = $profileHeroStyle !== '' ? ' style="'.e($profileHeroStyle).'"' : '';
+        $profileAvatarAttr = $profileAvatarStyle !== '' ? ' style="'.e($profileAvatarStyle).'"' : '';
+        $profileNameAttr = $profileNameStyle !== '' ? ' style="'.e($profileNameStyle).'"' : '';
+        $activeTitlePillAttr = $activeTitlePillStyle !== '' ? ' style="'.e($activeTitlePillStyle).'"' : '';
+        $activeBadgePillAttr = $activeBadgePillStyle !== '' ? ' style="'.e($activeBadgePillStyle).'"' : '';
+        $profileProgressAttr = ' style="'.e($profileProgressStyle).'"';
     @endphp
 
     <div id="page-header" class="ph-cap-xxxxlg ph-center ph-image-parallax ph-caption-parallax">
@@ -1305,21 +1321,14 @@
                     </div>
 
                     <div class="tt-col-xl-5">
-                        <div class="profile-side-card margin-bottom-30" data-tour="profile-overview" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
+                        <div class="profile-side-card margin-bottom-30" data-tour="profile-overview"{!! $profileHeroAttr !!}>
                             <div class="profile-summary-head">
                                 <div class="profile-summary-identity">
-                                    <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
-                                    <h4 class="no-margin" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $user->name }}</h4>
+                                    <img src="{{ $avatarUrl }}" alt="Avatar {{ $user->name }}" class="profile-avatar" data-profile-avatar-preview onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';"{!! $profileAvatarAttr !!}>
+                                    <h4 class="no-margin"{!! $profileNameAttr !!}>{{ $user->name }}</h4>
                                     @if($activeTitle)
                                         <p class="margin-top-10 no-margin">
-                                            <span class="profile-cosmetic-pill"
-                                                @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
-                                                    style="
-                                                        {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
-                                                        {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
-                                                    "
-                                                @endif
-                                            >
+                                            <span class="profile-cosmetic-pill"{!! $activeTitlePillAttr !!}>
                                                 {{ $activeTitle['label'] }}
                                             </span>
                                         </p>
@@ -1351,7 +1360,7 @@
                                 </div>
 
                                 <div class="profile-summary-progress-track" aria-hidden="true">
-                                    <span style="width: {{ $profileProgressPercent }}%"></span>
+                                    <span{!! $profileProgressAttr !!}></span>
                                 </div>
 
                                 <div class="profile-summary-progress-meta">
@@ -1415,14 +1424,7 @@
                                             <p class="profile-summary-footnote no-margin">Personnalisation active</p>
                                             <div class="profile-cosmetic-badges">
                                                 @if($activeBadge)
-                                                    <span class="profile-cosmetic-pill"
-                                                        @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
-                                                            style="
-                                                                {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
-                                                                {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
-                                                            "
-                                                        @endif
-                                                    >
+                                                    <span class="profile-cosmetic-pill"{!! $activeBadgePillAttr !!}>
                                                         {{ $activeBadge['label'] }}
                                                     </span>
                                                 @endif
@@ -1592,7 +1594,7 @@
             </div>
         </div>
 
-        <div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top" id="profile-shortcuts">
+        <div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120 border-top" id="profile-shortcuts" data-min-shortcuts="{{ $minShortcuts }}" data-max-shortcuts="{{ $maxShortcuts }}" data-update-form-action="{{ $shortcutUpdateAction }}">
             <div class="tt-section-inner tt-wrap">
                 <div class="tt-row">
                     <div class="tt-col-xl-5 margin-bottom-40">
@@ -1710,7 +1712,8 @@
                                         <strong>{{ (int) ($mission['progress_count'] ?? 0) }} / {{ (int) ($mission['target_count'] ?? 0) }}</strong>
                                     </div>
                                     <div class="profile-mission-progress-track">
-                                        <span style="width: {{ (int) ($mission['progress_percent'] ?? 0) }}%"></span>
+                                        @php($missionProgressAttr = ' style="width: '.e((string) ((int) ($mission['progress_percent'] ?? 0))).'%"')
+                                        <span{!! $missionProgressAttr !!}></span>
                                     </div>
                                 </div>
 
@@ -1922,8 +1925,9 @@
 
             var toggles = Array.from(shortcutsScope.querySelectorAll('[data-profile-shortcut-toggle]'));
             var countEl = shortcutsScope.querySelector('#profile-shortcuts-count');
-            var minCount = {{ (int) ($minShortcuts ?? 1) }};
-            var maxCount = {{ (int) ($maxShortcuts ?? 5) }};
+            var minCount = Number(shortcutsScope.getAttribute('data-min-shortcuts') || '1');
+            var maxCount = Number(shortcutsScope.getAttribute('data-max-shortcuts') || '5');
+            var updateFormAction = shortcutsScope.getAttribute('data-update-form-action') || '';
 
             function updateCount() {
                 var checkedCount = toggles.filter(function (el) { return el.checked; }).length;
@@ -1941,7 +1945,7 @@
                 toggle.addEventListener('change', updateCount);
             });
 
-            var updateForm = shortcutsScope.querySelector('form[action="{{ route('app.shortcuts.update') }}"]');
+            var updateForm = shortcutsScope.querySelector('form[action="' + updateFormAction + '"]');
             if (updateForm) {
                 updateForm.addEventListener('submit', function (event) {
                     var checkedCount = toggles.filter(function (el) { return el.checked; }).length;

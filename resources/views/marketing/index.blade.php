@@ -2,6 +2,10 @@
 <html lang="fr">
 
 <head>
+  @php
+    $canonicalUrl = url()->current();
+    $socialImage = asset('template/assets/img/logo.png');
+  @endphp
   <!-- Titre et SEO -->
 	<title>ERAH Esport</title>
 	<meta charset="utf-8">
@@ -9,6 +13,19 @@
 	<meta name="description" content="ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.">
 	<meta name="keywords" content="ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique">
 	<meta name="author" content="ERAH Esport">
+	<meta name="robots" content="index,follow,max-image-preview:large">
+	<link rel="canonical" href="{{ $canonicalUrl }}">
+	<meta property="og:locale" content="fr_FR">
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="ERAH Esport">
+	<meta property="og:title" content="ERAH Esport">
+	<meta property="og:description" content="ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.">
+	<meta property="og:url" content="{{ $canonicalUrl }}">
+	<meta property="og:image" content="{{ $socialImage }}">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="ERAH Esport">
+	<meta name="twitter:description" content="ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.">
+	<meta name="twitter:image" content="{{ $socialImage }}">
 
   <!-- Favicon -->
   <link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">

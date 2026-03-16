@@ -789,7 +789,8 @@
                                             <div class="tt-avlist-description">
                                                 <strong>{{ $goal['title'] }}</strong><br>
                                                 {{ $goal['description'] }}
-                                                <div class="supporter-progress-line"><span style="width: {{ $goal['progress_percent'] }}%"></span></div>
+                                                @php($goalProgressAttr = ' style="width: '.e((string) $goal['progress_percent']).'%"')
+                                                <div class="supporter-progress-line"><span{!! $goalProgressAttr !!}></span></div>
                                             </div>
                                         </div>
                                         <div class="tt-avlist-col tt-avlist-col-info">

@@ -8,10 +8,12 @@ use App\Application\Actions\Duels\RefuseDuelAction;
 use App\Http\Controllers\Controller;
 use App\Models\Duel;
 use App\Models\User;
+use App\Support\MediaStorage;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -24,7 +26,7 @@ class DuelsPageController extends Controller
             $tab = 'pending';
         }
 
-        $userId = (int) auth()->id();
+        $userId = (int) Auth::id();
 
         $baseQuery = Duel::query()->forUser($userId);
         $statusCounts = [
@@ -73,7 +75,7 @@ class DuelsPageController extends Controller
 
     public function create(Request $request): View
     {
-        $userId = (int) auth()->id();
+        $userId = (int) Auth::id();
         $search = trim((string) $request->query('q', ''));
 
         $users = User::query()
@@ -134,7 +136,7 @@ class DuelsPageController extends Controller
     public function store(Request $request, CreateDuelAction $createDuelAction): RedirectResponse
     {
         $request->merge([
-            'auth_user_id' => auth()->id(),
+            'auth_user_id' => Auth::id(),
         ]);
 
         $validated = $request->validate([
@@ -146,7 +148,7 @@ class DuelsPageController extends Controller
 
         try {
             $createDuelAction->execute(
-                challenger: auth()->user(),
+                challenger: Auth::user(),
                 challengedUserId: (int) $validated['challenged_user_id'],
                 idempotencyKey: $validated['idempotency_key'],
                 message: $validated['message'] ?? null,
@@ -165,7 +167,7 @@ class DuelsPageController extends Controller
     public function accept(int $duelId, AcceptDuelAction $acceptDuelAction): RedirectResponse
     {
         try {
-            $acceptDuelAction->execute(auth()->user(), $duelId);
+            $acceptDuelAction->execute(Auth::user(), $duelId);
         } catch (AuthorizationException $exception) {
             return back()->with('error', $exception->getMessage());
         } catch (RuntimeException $exception) {
@@ -178,7 +180,7 @@ class DuelsPageController extends Controller
     public function refuse(int $duelId, RefuseDuelAction $refuseDuelAction): RedirectResponse
     {
         try {
-            $refuseDuelAction->execute(auth()->user(), $duelId);
+            $refuseDuelAction->execute(Auth::user(), $duelId);
         } catch (AuthorizationException $exception) {
             return back()->with('error', $exception->getMessage());
         } catch (RuntimeException $exception) {

@@ -33,6 +33,7 @@ class MarketingContactFeatureTest extends TestCase
 
     public function test_authenticated_contact_page_prefills_account_email_and_marks_it_readonly(): void
     {
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'member@erah.test',
         ]);
@@ -174,6 +175,7 @@ class MarketingContactFeatureTest extends TestCase
             'queue.default' => 'sync',
         ]);
 
+        /** @var User $user */
         $user = User::factory()->create([
             'email' => 'secure-user@erah.test',
         ]);
@@ -207,6 +209,7 @@ class MarketingContactFeatureTest extends TestCase
 
     public function test_admin_can_list_view_and_update_contact_messages(): void
     {
+        /** @var User $admin */
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $contactMessage = ContactMessage::query()->create([
             'name' => 'Sonia Vector',
@@ -247,6 +250,7 @@ class MarketingContactFeatureTest extends TestCase
 
     public function test_non_admin_cannot_access_contact_messages_admin_pages(): void
     {
+        /** @var User $member */
         $member = User::factory()->create(['role' => User::ROLE_USER]);
         $contactMessage = ContactMessage::query()->create([
             'name' => 'Member',

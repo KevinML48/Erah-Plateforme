@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\MigrateLegacyMediaToMediaDisk;
+use App\Console\Commands\GenerateSitemap;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdminRole;
 use App\Http\Middleware\EnsureSupporterActive;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withCommands([
+        GenerateSitemap::class,
         MigrateLegacyMediaToMediaDisk::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {

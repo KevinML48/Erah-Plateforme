@@ -67,6 +67,7 @@ use App\Http\Controllers\DevConsoleController;
 use App\Http\Controllers\Web\WalletPageController;
 use App\Http\Controllers\Web\Admin\ClubReviewAdminController;
 use App\Http\Controllers\Web\Admin\AdminHelpCenterController;
+use App\Support\PublicSeo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -489,28 +490,30 @@ Route::get('/aide/categorie/{slug}', [HelpCenterController::class, 'category'])-
 Route::get('/aide/article/{slug}', [HelpCenterController::class, 'article'])->name('help.articles.show');
 Route::get('/u/{user}', PublicProfileController::class)->name('users.public');
 Route::get('/avis', [ClubReviewPageController::class, 'index'])->name('reviews.index');
+Route::get('/robots.txt', function (PublicSeo $publicSeo) {
+    return response($publicSeo->renderRobots())
+        ->header('Content-Type', 'text/plain; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=3600');
+})->name('seo.robots');
+Route::get('/sitemap.xml', function (PublicSeo $publicSeo) {
+    return response($publicSeo->renderSitemap())
+        ->header('Content-Type', 'application/xml; charset=UTF-8')
+        ->header('Cache-Control', 'public, max-age=3600');
+})->name('seo.sitemap');
 Route::get('/', function () {
-    return response()
-        ->view('marketing.index')
-        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-        ->header('Pragma', 'no-cache')
-        ->header('Expires', '0');
+    return response()->view('marketing.index');
 })->name('marketing.index');
 Route::get('/index.html', function () {
-    return response()
-        ->view('marketing.index')
-        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
-        ->header('Pragma', 'no-cache')
-        ->header('Expires', '0');
+    return redirect()->route('marketing.index', status: 301);
 });
 Route::get('/faq', fn () => redirect()->to(route('help.index').'#faq-center'))->name('marketing.faq');
-Route::get('/faq.html', fn () => redirect()->to(route('help.index').'#faq-center'));
+Route::get('/faq.html', fn () => redirect()->to(route('help.index').'#faq-center', 301));
 Route::view('/boutique', 'marketing.boutique')->name('marketing.boutique');
-Route::view('/boutique.html', 'marketing.boutique');
+Route::redirect('/boutique.html', '/boutique', 301);
 Route::get('/galerie-photos', GalleryPhotoPageController::class)->name('marketing.gallery-photos');
-Route::get('/galerie-photos.html', GalleryPhotoPageController::class);
+Route::redirect('/galerie-photos.html', '/galerie-photos', 301);
 Route::get('/galerie-video', GalleryVideoPageController::class)->name('marketing.gallery-video');
-Route::get('/galerie-video.html', GalleryVideoPageController::class);
+Route::redirect('/galerie-video.html', '/galerie-video', 301);
 Route::get('/media/public/{path}', [PublicMediaController::class, 'show'])
     ->where('path', '.*')
     ->name('media.public.file');
@@ -525,7 +528,9 @@ Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('marketing.contact.submit');
 
-Route::get('/{slug}.html', MarketingPageController::class)
+Route::get('/{slug}.html', function (string $slug) {
+    return redirect()->route('marketing.page', ['slug' => $slug], 301);
+})
     ->where('slug', '(?!app$|console$|dev$|api$|index$|contact$)[A-Za-z0-9\-]+')
     ->name('marketing.page.html');
 

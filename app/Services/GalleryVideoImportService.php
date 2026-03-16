@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 class GalleryVideoImportService
 {
     private const LEGACY_SOURCE = '_template_site/galerie-video.html';
+    public const PUBLIC_CACHE_KEY = 'marketing.gallery-videos.payload';
 
     public function legacySourceExists(): bool
     {
@@ -33,11 +34,15 @@ class GalleryVideoImportService
 
     public function import(): array
     {
-        if (! Schema::hasTable('gallery_videos') || ! $this->legacySourceExists()) {
+        if (! Schema::hasTable('gallery_videos')) {
             return ['processed' => 0, 'created' => 0, 'updated' => 0, 'skipped' => 0, 'found' => 0];
         }
 
         $items = $this->extractLegacyItems();
+        if ($items === []) {
+            $items = $this->fallbackItems();
+        }
+
         $created = 0;
         $updated = 0;
         $skipped = 0;
@@ -78,6 +83,10 @@ class GalleryVideoImportService
      */
     public function extractLegacyItems(): array
     {
+        if (! $this->legacySourceExists()) {
+            return [];
+        }
+
         $source = file_get_contents(base_path(self::LEGACY_SOURCE));
         if ($source === false) {
             return [];
@@ -173,6 +182,139 @@ class GalleryVideoImportService
         }
 
         return $items;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function fallbackItems(): array
+    {
+        $videos = [
+            [
+                'title' => 'Présentation',
+                'category_label' => 'Club',
+                'video_url' => 'https://youtu.be/MCh7wI7gMOU',
+                'preview_video_url' => '/template/assets/vids/Presentation ERAH.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Presentation ERAH.webm',
+            ],
+            [
+                'title' => 'VCL Split 1 2026',
+                'category_label' => 'Valorant',
+                'video_url' => 'https://youtu.be/gfKDIPuq2JY',
+                'preview_video_url' => '/template/assets/vids/merci-VCL - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/merci-VCL - Trim.webm',
+            ],
+            [
+                'title' => 'Interview',
+                'category_label' => 'LAN',
+                'video_url' => 'https://youtu.be/n_LEo-tp3Jk',
+                'preview_video_url' => '/template/assets/vids/interview-GA-2025.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-GA-2025.webm',
+            ],
+            [
+                'title' => 'HopLan 2025',
+                'category_label' => 'LAN',
+                'video_url' => 'https://youtu.be/6-ebq2tKpAs',
+                'preview_video_url' => '/template/assets/vids/interview-HopLan-2025.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-HopLan-2025.webm',
+            ],
+            [
+                'title' => 'InfinityUP',
+                'category_label' => 'Event',
+                'video_url' => 'https://youtu.be/7IxK35ld2Pg',
+                'preview_video_url' => '/template/assets/vids/Video InfinityUP presentation.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Video InfinityUP presentation.webm',
+            ],
+            [
+                'title' => 'HopLan 2024',
+                'category_label' => 'LAN',
+                'video_url' => 'https://youtu.be/I1o44CVvCFA',
+                'preview_video_url' => '/template/assets/vids/interview-HopLan-2024.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-HopLan-2024.webm',
+            ],
+            [
+                'title' => 'Gamers Assembly 2025',
+                'category_label' => 'LAN',
+                'video_url' => 'https://youtu.be/I1o44CVvCFA?si=AQtilTw4pJRt3kJu',
+                'preview_video_url' => '/template/assets/vids/interview-GA-2025.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-GA-2025.webm',
+            ],
+            [
+                'title' => 'Bootcamp GC',
+                'category_label' => 'Esport',
+                'video_url' => 'https://youtu.be/80qtJPHgmqY',
+                'preview_video_url' => '/template/assets/vids/bootcamp feminin.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/bootcamp feminin.webm',
+            ],
+            [
+                'title' => 'LAN TGF',
+                'category_label' => 'Esport',
+                'video_url' => 'https://youtu.be/mWA_KWJfFU0',
+                'preview_video_url' => '/template/assets/vids/Interview_Equipe_Rocket-league - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Interview_Equipe_Rocket-league - Trim.webm',
+            ],
+            [
+                'title' => 'Interview',
+                'category_label' => 'Lyon Esport',
+                'video_url' => 'https://youtube.com/shorts/5TNjRatspIc?feature=share',
+                'preview_video_url' => '/template/assets/vids/interview-LyonEsport.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/interview-LyonEsport.webm',
+            ],
+            [
+                'title' => 'Conférence',
+                'category_label' => 'Événement',
+                'video_url' => 'https://youtu.be/iXSCfTEAs_0',
+                'preview_video_url' => '/template/assets/vids/Retour Yusoh (1).mp4',
+                'preview_video_webm_url' => '/template/assets/vids/Retour Yusoh (1).webm',
+            ],
+            [
+                'title' => 'Intervention',
+                'category_label' => 'Talk',
+                'video_url' => 'https://youtu.be/iXSCfTEAs_0',
+                'preview_video_url' => '/template/assets/vids/PYUSOH 1 - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/PYUSOH 1 - Trim.webm',
+            ],
+            [
+                'title' => 'Recap MW3',
+                'category_label' => 'Esport',
+                'video_url' => 'https://youtu.be/KTYwsLZNBqA',
+                'preview_video_url' => '/template/assets/vids/recap mw3 - Trim.mp4',
+                'preview_video_webm_url' => '/template/assets/vids/recap mw3 - Trim.webm',
+            ],
+        ];
+
+        return array_map(function (array $video, int $index): array {
+            $platform = GalleryVideo::resolvePlatform(null, $video['video_url']);
+
+            return [
+                'title' => $video['title'],
+                'slug' => GalleryVideo::uniqueSlug($video['title']),
+                'excerpt' => null,
+                'description' => null,
+                'platform' => $platform,
+                'video_url' => $video['video_url'],
+                'embed_url' => GalleryVideo::buildEmbedUrl($video['video_url'], $platform),
+                'thumbnail_url' => null,
+                'preview_video_url' => $video['preview_video_url'],
+                'preview_video_webm_url' => $video['preview_video_webm_url'],
+                'category_key' => Str::slug($video['category_label']),
+                'category_label' => $video['category_label'],
+                'status' => GalleryVideo::STATUS_PUBLISHED,
+                'sort_order' => $index,
+                'is_featured' => $index === 0,
+                'published_at' => now(),
+                'legacy_source' => self::LEGACY_SOURCE,
+                'imported_hash' => sha1(implode('|', [
+                    self::LEGACY_SOURCE,
+                    $video['title'],
+                    $video['video_url'],
+                    $video['category_label'],
+                    $index,
+                ])),
+                'created_by' => null,
+                'updated_by' => null,
+            ];
+        }, $videos, array_keys($videos));
     }
 
     private function textContent(DOMXPath $xpath, string $expression, DOMElement $context): string

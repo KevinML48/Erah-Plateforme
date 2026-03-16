@@ -18,6 +18,7 @@ use App\Services\PrioritizeClipComments;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -53,7 +54,7 @@ class ClipsPageController extends Controller
             queryString: $request->query(),
         );
         $clipIds = $clips->getCollection()->pluck('id')->all();
-        $userId = auth()->id();
+        $userId = Auth::id();
 
         $likedIds = [];
         $favoriteIds = [];
@@ -100,12 +101,12 @@ class ClipsPageController extends Controller
             $clip->save();
         }
 
-        $userId = auth()->id();
+        $userId = Auth::id();
         $requestedCommentsPage = max(1, (int) $request->integer('comments_page', 1));
         $comments = $prioritizeClipComments->execute($clip, 10, $requestedCommentsPage);
         $clipRewardService->recordView(
             clip: $clip,
-            user: auth()->user(),
+            user: Auth::user(),
             sessionId: $request->session()->getId(),
             ipHash: hash('sha256', (string) $request->ip()),
         );
@@ -135,7 +136,7 @@ class ClipsPageController extends Controller
             });
         }
 
-        $isSupporterActive = $supporterAccessResolver->hasActiveSupport(auth()->user());
+        $isSupporterActive = $supporterAccessResolver->hasActiveSupport(Auth::user());
         $campaigns = ClipVoteCampaign::query()
             ->active()
             ->whereHas('entries', fn ($query) => $query->where('clip_id', $clip->id))
@@ -170,7 +171,7 @@ class ClipsPageController extends Controller
 
     public function favorites(): View
     {
-        $userId = auth()->id();
+        $userId = Auth::id();
         $clips = Clip::query()
             ->published()
             ->with('createdBy:id,name')
@@ -193,7 +194,7 @@ class ClipsPageController extends Controller
         $clip = Clip::query()->published()->whereKey($clipId)->firstOrFail();
 
         try {
-            $toggleClipLikeAction->like(auth()->user(), $clip);
+            $toggleClipLikeAction->like(Auth::user(), $clip);
         } catch (RuntimeException $exception) {
             return back()->with('error', $exception->getMessage());
         }
@@ -206,7 +207,7 @@ class ClipsPageController extends Controller
         $clip = Clip::query()->published()->whereKey($clipId)->firstOrFail();
 
         try {
-            $toggleClipLikeAction->unlike(auth()->user(), $clip);
+            $toggleClipLikeAction->unlike(Auth::user(), $clip);
         } catch (RuntimeException $exception) {
             return back()->with('error', $exception->getMessage());
         }
@@ -219,7 +220,7 @@ class ClipsPageController extends Controller
         $clip = Clip::query()->published()->whereKey($clipId)->firstOrFail();
 
         try {
-            $toggleClipFavoriteAction->favorite(auth()->user(), $clip);
+            $toggleClipFavoriteAction->favorite(Auth::user(), $clip);
         } catch (RuntimeException $exception) {
             return back()->with('error', $exception->getMessage());
         }
@@ -232,7 +233,7 @@ class ClipsPageController extends Controller
         $clip = Clip::query()->published()->whereKey($clipId)->firstOrFail();
 
         try {
-            $toggleClipFavoriteAction->unfavorite(auth()->user(), $clip);
+            $toggleClipFavoriteAction->unfavorite(Auth::user(), $clip);
         } catch (RuntimeException $exception) {
             return back()->with('error', $exception->getMessage());
         }
@@ -254,7 +255,7 @@ class ClipsPageController extends Controller
 
         try {
             $addClipCommentAction->execute(
-                auth()->user(),
+                Auth::user(),
                 $clip,
                 $validated['body'],
                 $validated['parent_id'] ?? null,
@@ -276,7 +277,7 @@ class ClipsPageController extends Controller
             ->whereKey($commentId)
             ->firstOrFail();
 
-        $deleteClipCommentAction->execute(auth()->user(), $comment);
+        $deleteClipCommentAction->execute(Auth::user(), $comment);
 
         return back()->with('success', 'Commentaire supprime.');
     }
@@ -291,7 +292,7 @@ class ClipsPageController extends Controller
         ]);
         $clip = Clip::query()->published()->whereKey($clipId)->firstOrFail();
 
-        $share = $shareClipAction->execute(auth()->user(), $clip, $validated['channel'] ?? 'link');
+        $share = $shareClipAction->execute(Auth::user(), $clip, $validated['channel'] ?? 'link');
 
         return back()->with('success', 'Lien partage: '.$share->shared_url);
     }

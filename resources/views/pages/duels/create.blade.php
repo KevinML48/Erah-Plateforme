@@ -249,7 +249,7 @@
                                                     </div>
                                                 @endif
 
-                                                <form method="POST" action="{{ route('duels.store') }}" class="tt-form duel-create-form" data-duel-create-form data-target-id="{{ $target->id }}">
+                                                <form method="POST" action="{{ route('duels.store') }}" class="tt-form duel-create-form" data-duel-create-form data-target-id="{{ $target->id }}" data-auth-user-id="{{ (int) auth()->id() }}">
                                                     @csrf
                                                     <input type="hidden" name="challenged_user_id" value="{{ $target->id }}">
                                                     <input type="hidden" name="idempotency_key" data-duel-idempotency>
@@ -321,7 +321,8 @@
                     }
 
                     var targetId = form.getAttribute('data-target-id') || '0';
-                    keyInput.value = 'duel-' + {{ (int) auth()->id() }} + '-' + targetId + '-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
+                    var authUserId = form.getAttribute('data-auth-user-id') || '0';
+                    keyInput.value = 'duel-' + authUserId + '-' + targetId + '-' + Date.now() + '-' + Math.floor(Math.random() * 100000);
                 });
             });
         });

@@ -677,6 +677,19 @@
                 : null,
             data_get($activeTheme, 'preview.card_background') ? 'box-shadow: inset 0 0 0 9999px rgba(15, 23, 42, 0.08), 0 24px 60px rgba(0, 0, 0, .22)' : null,
         ])->filter()->implode('; ');
+        $activeTitlePillStyle = collect([
+            data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background') : null,
+            data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color') : null,
+        ])->filter()->implode('; ');
+        $activeBadgePillStyle = collect([
+            data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background') : null,
+            data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color') : null,
+        ])->filter()->implode('; ');
+        $profileHeroAttr = $profileHeroStyle !== '' ? ' style="'.e($profileHeroStyle).'"' : '';
+        $profileAvatarAttr = $profileAvatarStyle !== '' ? ' style="'.e($profileAvatarStyle).'"' : '';
+        $profileNameAttr = $profileNameStyle !== '' ? ' style="'.e($profileNameStyle).'"' : '';
+        $activeTitlePillAttr = $activeTitlePillStyle !== '' ? ' style="'.e($activeTitlePillStyle).'"' : '';
+        $activeBadgePillAttr = $activeBadgePillStyle !== '' ? ' style="'.e($activeBadgePillStyle).'"' : '';
 
         $presenceCards = collect([
             [
@@ -759,24 +772,17 @@
             <div class="tt-section-inner tt-wrap max-width-1800">
                 <div class="public-profile-shell">
                     <section class="public-profile-top-grid">
-                        <div class="public-profile-surface public-profile-identity-card" @if($profileHeroStyle !== '') style="{{ $profileHeroStyle }}" @endif>
+                        <div class="public-profile-surface public-profile-identity-card"{!! $profileHeroAttr !!}>
                             <div class="public-profile-panel-head">
-                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar" onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';" @if($profileAvatarStyle !== '') style="{{ $profileAvatarStyle }}" @endif>
+                                <img src="{{ $avatarUrl }}" alt="Avatar {{ $userProfile->name }}" class="public-profile-avatar" onerror="this.onerror=null;this.src='{{ $avatarFallbackUrl }}';"{!! $profileAvatarAttr !!}>
 
                                 <div class="public-profile-identity-copy">
                                     <div>
                                         <span class="public-profile-eyebrow">Profil public membre</span>
-                                        <h1 class="public-profile-name" @if($profileNameStyle !== '') style="{{ $profileNameStyle }}" @endif>{{ $userProfile->name }}</h1>
+                                        <h1 class="public-profile-name"{!! $profileNameAttr !!}>{{ $userProfile->name }}</h1>
                                         @if($activeTitle)
                                             <div class="public-profile-cosmetic-row" style="margin-top:10px;">
-                                                <span class="public-profile-cosmetic-pill"
-                                                    @if(data_get($activeTitle, 'preview.pill_background') || data_get($activeTitle, 'preview.pill_color'))
-                                                        style="
-                                                            {{ data_get($activeTitle, 'preview.pill_background') ? 'background: '.data_get($activeTitle, 'preview.pill_background').';' : '' }}
-                                                            {{ data_get($activeTitle, 'preview.pill_color') ? 'color: '.data_get($activeTitle, 'preview.pill_color').';' : '' }}
-                                                        "
-                                                    @endif
-                                                >
+                                                <span class="public-profile-cosmetic-pill"{!! $activeTitlePillAttr !!}>
                                                     {{ $activeTitle['label'] }}
                                                 </span>
                                             </div>
@@ -799,14 +805,7 @@
                                     <span class="public-profile-pill">Classement global #{{ $rankPosition }}</span>
                                 @endif
                                 @if($activeBadge)
-                                    <span class="public-profile-cosmetic-pill"
-                                        @if(data_get($activeBadge, 'preview.pill_background') || data_get($activeBadge, 'preview.pill_color'))
-                                            style="
-                                                {{ data_get($activeBadge, 'preview.pill_background') ? 'background: '.data_get($activeBadge, 'preview.pill_background').';' : '' }}
-                                                {{ data_get($activeBadge, 'preview.pill_color') ? 'color: '.data_get($activeBadge, 'preview.pill_color').';' : '' }}
-                                            "
-                                        @endif
-                                    >
+                                    <span class="public-profile-cosmetic-pill"{!! $activeBadgePillAttr !!}>
                                         {{ $activeBadge['label'] }}
                                     </span>
                                 @endif

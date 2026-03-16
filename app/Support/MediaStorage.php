@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
@@ -52,7 +53,10 @@ class MediaStorage
         }
 
         try {
-            return Storage::disk($resolvedDisk)->url($path);
+            /** @var FilesystemAdapter $storage */
+            $storage = Storage::disk($resolvedDisk);
+
+            return $storage->url($path);
         } catch (Throwable) {
             return null;
         }

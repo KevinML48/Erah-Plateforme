@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserProfileCosmetic;
 use App\Support\MediaStorage;
 use Database\Seeders\LeagueSeeder;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -50,7 +51,9 @@ class ProfileWebTest extends TestCase
         $this->assertSame('https://tiktok.com/@newpublicname', $user->tiktok_url);
         $this->assertSame('https://discord.gg/newpublicname', $user->discord_url);
         $this->assertNotNull($user->avatar_path);
-        Storage::disk((string) config('filesystems.media_disk'))->assertExists($user->avatar_path);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk((string) config('filesystems.media_disk'));
+        $storage->assertExists($user->avatar_path);
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'profile.updated',
@@ -82,7 +85,9 @@ class ProfileWebTest extends TestCase
         $user->refresh();
 
         $this->assertNotNull($user->avatar_path);
-        Storage::disk('s3')->assertExists((string) $user->avatar_path);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('s3');
+        $storage->assertExists((string) $user->avatar_path);
     }
 
     public function test_avatar_url_falls_back_to_legacy_public_disk_when_media_disk_is_s3(): void

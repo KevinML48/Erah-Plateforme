@@ -4,6 +4,7 @@ namespace Tests\Feature\Web;
 
 use App\Models\GalleryPhoto;
 use App\Models\User;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -86,7 +87,9 @@ class GalleryPhotosFeatureTest extends TestCase
         $this->assertSame(User::ROLE_ADMIN, $adminUser->role);
         $this->assertNotNull($photo->image_path);
         $this->assertSame('public', $photo->storage_disk);
-        Storage::disk('public')->assertExists($photo->image_path);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertExists($photo->image_path);
     }
 
     public function test_admin_can_update_gallery_photo_and_toggle_state(): void
@@ -122,8 +125,10 @@ class GalleryPhotosFeatureTest extends TestCase
         $this->assertSame('competitions', $photo->filter_key);
         $this->assertSame(9, $photo->sort_order);
         $this->assertNotSame($originalPath, $photo->image_path);
-        Storage::disk('public')->assertMissing($originalPath);
-        Storage::disk('public')->assertExists($photo->image_path);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertMissing($originalPath);
+        $storage->assertExists($photo->image_path);
 
         $this->actingAs($adminUser)->post(route('admin.gallery-photos.toggle', $photo->id))
             ->assertRedirect();
@@ -198,7 +203,9 @@ class GalleryPhotosFeatureTest extends TestCase
             ->assertRedirect();
 
         $this->assertDatabaseMissing('gallery_photos', ['id' => $photo->id]);
-        Storage::disk('public')->assertMissing($path);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertMissing($path);
     }
 
     public function test_gallery_photo_uses_public_media_route_for_public_disk_assets(): void

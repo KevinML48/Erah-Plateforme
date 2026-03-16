@@ -75,7 +75,9 @@ class SupporterFeatureTest extends TestCase
     public function test_supporter_only_clip_reaction_requires_active_supporter(): void
     {
         $clip = Clip::factory()->create();
+        /** @var User $regularUser */
         $regularUser = User::factory()->create();
+        /** @var User $supporter */
         $supporter = User::factory()->create();
         $this->activateSupport($supporter);
 
@@ -96,6 +98,7 @@ class SupporterFeatureTest extends TestCase
 
     public function test_supporter_vote_is_unique_per_campaign_and_user(): void
     {
+        /** @var User $supporter */
         $supporter = User::factory()->create();
         $this->activateSupport($supporter);
 
@@ -133,7 +136,9 @@ class SupporterFeatureTest extends TestCase
     {
         $this->seed(LeagueSeeder::class);
 
+        /** @var User $regularUser */
         $regularUser = User::factory()->create();
+        /** @var User $supporter */
         $supporter = User::factory()->create();
         $this->activateSupport($supporter);
 
@@ -160,6 +165,7 @@ class SupporterFeatureTest extends TestCase
     {
         $this->seed(LeagueSeeder::class);
 
+        /** @var User $user */
         $user = User::factory()->create();
         $this->activateSupport($user);
 
@@ -179,7 +185,9 @@ class SupporterFeatureTest extends TestCase
     public function test_supporter_comments_are_prioritized_in_clip_feed(): void
     {
         $clip = Clip::factory()->create();
+        /** @var User $regularUser */
         $regularUser = User::factory()->create();
+        /** @var User $supporter */
         $supporter = User::factory()->create();
         $this->activateSupport($supporter);
 
@@ -205,6 +213,7 @@ class SupporterFeatureTest extends TestCase
         $this->seed(LeagueSeeder::class);
 
         $league = League::query()->where('key', 'bronze')->firstOrFail();
+        /** @var User $supporter */
         $supporter = User::factory()->create();
         $this->activateSupport($supporter);
 
@@ -227,6 +236,7 @@ class SupporterFeatureTest extends TestCase
         $this->seed(LeagueSeeder::class);
 
         $league = League::query()->where('key', 'bronze')->firstOrFail();
+        /** @var User $member */
         $member = User::factory()->create([
             'provider_avatar_url' => 'https://cdn.example.com/leaderboard-provider-avatar.png',
             'provider_avatar_provider' => 'google',
@@ -250,6 +260,7 @@ class SupporterFeatureTest extends TestCase
     {
         $this->seed(LeagueSeeder::class);
 
+        /** @var User $user */
         $user = User::factory()->create();
         $this->activateSupport($user);
         $month = now()->startOfMonth();

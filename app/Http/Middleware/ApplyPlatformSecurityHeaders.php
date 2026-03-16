@@ -12,9 +12,15 @@ class ApplyPlatformSecurityHeaders
     {
         /** @var Response $response */
         $response = $next($request);
+        $isPrivateHtmlResponse = $this->shouldDisableCaching($request, $response);
 
+        $response->headers->set('Content-Security-Policy', "base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.stripe.com; object-src 'none'");
+        $response->headers->set('Cross-Origin-Opener-Policy', 'same-origin');
+        $response->headers->set('Cross-Origin-Resource-Policy', 'same-site');
+        $response->headers->set('Origin-Agent-Cluster', '?1');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), geolocation=(), microphone=()');
 
@@ -26,6 +32,12 @@ class ApplyPlatformSecurityHeaders
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow, noarchive');
         }
 
+        if ($isPrivateHtmlResponse) {
+            $response->headers->set('Cache-Control', 'private, no-store, max-age=0');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+        }
+
         return $response;
     }
 
@@ -33,6 +45,7 @@ class ApplyPlatformSecurityHeaders
     {
         if ($request->is(
             'api/*',
+            'console/*',
             'login',
             'register',
             'forgot-password',
@@ -61,5 +74,20 @@ class ApplyPlatformSecurityHeaders
         }
 
         return false;
+    }
+
+    private function shouldDisableCaching(Request $request, Response $response): bool
+    {
+        if (! $request->isMethodCacheable()) {
+            return false;
+        }
+
+        $contentType = (string) $response->headers->get('Content-Type', '');
+
+        if (! str_contains($contentType, 'text/html')) {
+            return false;
+        }
+
+        return $request->user() !== null || $this->shouldNoIndex($request);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Clip;
 use App\Models\ClubReview;
 use App\Models\User;
 use Database\Seeders\LeagueSeeder;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -72,7 +73,9 @@ class PublicProfileModerationTest extends TestCase
         $this->assertNull($user->tiktok_url);
         $this->assertNull($user->discord_url);
         $this->assertSame(ClubReview::STATUS_HIDDEN, $review?->status);
-        Storage::disk('public')->assertMissing('avatars/member.png');
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertMissing('avatars/member.png');
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'users.profile_moderated',

@@ -401,12 +401,13 @@
                     </article>
 
                     <article class="lb-me-card tt-anim-fadeinup">
+                        @php($progressBarAttr = ' style="width: '.e((string) $progressPercent).'%"')
                         <div class="lb-me-progress-head">
                             <span>Progression vers prochaine ligue</span>
                             <strong>{{ $progressPercent }}%</strong>
                         </div>
                         <div class="lb-me-progress-track">
-                            <span style="width: {{ $progressPercent }}%"></span>
+                            <span{!! $progressBarAttr !!}></span>
                         </div>
                         <div class="lb-me-progress-note">
                             @if($nextLeague)

@@ -5,6 +5,7 @@ namespace Tests\Feature\Media;
 use App\Models\GalleryPhoto;
 use App\Models\GalleryVideo;
 use App\Models\User;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
@@ -45,10 +46,12 @@ class MigrateLegacyMediaToMediaDiskCommandTest extends TestCase
 
         self::assertSame(0, $exitCode);
 
-        Storage::disk('s3')->assertExists('avatars/legacy-user.png');
-        Storage::disk('s3')->assertExists('gallery/photos/legacy-photo.jpg');
-        Storage::disk('s3')->assertExists('gallery-videos/thumbnails/legacy-thumb.jpg');
-        Storage::disk('s3')->assertExists('gallery-videos/previews/legacy-preview.mp4');
+    /** @var FilesystemAdapter $storage */
+    $storage = Storage::disk('s3');
+    $storage->assertExists('avatars/legacy-user.png');
+    $storage->assertExists('gallery/photos/legacy-photo.jpg');
+    $storage->assertExists('gallery-videos/thumbnails/legacy-thumb.jpg');
+    $storage->assertExists('gallery-videos/previews/legacy-preview.mp4');
 
         self::assertSame('avatar-content', Storage::disk('s3')->get('avatars/legacy-user.png'));
         self::assertSame('photo-content', Storage::disk('s3')->get('gallery/photos/legacy-photo.jpg'));
@@ -73,7 +76,9 @@ class MigrateLegacyMediaToMediaDiskCommandTest extends TestCase
         $exitCode = Artisan::call('media:migrate-legacy-public-to-media-disk');
 
         self::assertSame(0, $exitCode);
-        Storage::disk('s3')->assertMissing('gallery/photos/missing-photo.jpg');
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('s3');
+        $storage->assertMissing('gallery/photos/missing-photo.jpg');
         self::assertSame('public', $photo->fresh()->storage_disk);
     }
 

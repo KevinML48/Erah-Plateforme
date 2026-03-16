@@ -83,13 +83,15 @@
                             </div>
 
                             @foreach(($marketSummary['selections'] ?? []) as $selection)
+                                @php($stakeShareStyle = 'width: '.max(0, min(100, (float) ($selection['stake_share'] ?? 0))).'%;')
+                                @php($stakeShareAttr = ' style="'.e($stakeShareStyle).'"')
                                 <div class="match-community-market-item">
                                     <div class="match-community-market-item-head">
                                         <strong>{{ $selection['selection_label'] ?? 'Camp' }}</strong>
                                         <small>{{ $selection['bettors_count'] ?? 0 }} parieur(s) | {{ $formatPoints((int) ($selection['total_staked'] ?? 0)) }}</small>
                                     </div>
                                     <div class="match-community-bar">
-                                        <span style="width: {{ max(0, min(100, (float) ($selection['stake_share'] ?? 0))) }}%;"></span>
+                                        <span{!! $stakeShareAttr !!}></span>
                                     </div>
                                 </div>
                             @endforeach

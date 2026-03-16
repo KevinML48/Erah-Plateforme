@@ -6,6 +6,7 @@ use App\Models\GalleryVideo;
 use App\Models\User;
 use App\Services\GalleryVideoImportService;
 use Database\Seeders\GalleryVideoLegacySeeder;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -259,7 +260,9 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertSame(1, $video->sort_order);
 
         $storedPreview = $video->preview_video_url;
-        Storage::disk('public')->assertExists((string) $storedPreview);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertExists((string) $storedPreview);
 
         $this->actingAs($adminUser)->put(route('admin.gallery-videos.update', $video->id), [
             'title' => 'Interview ERAH MAJ',
@@ -278,8 +281,8 @@ class GalleryVideosFeatureTest extends TestCase
         $this->assertNull($video->excerpt);
         $this->assertStringStartsWith('gallery-videos/previews/', (string) $video->preview_video_url);
         $this->assertNotSame($storedPreview, $video->preview_video_url);
-        Storage::disk('public')->assertMissing((string) $storedPreview);
-        Storage::disk('public')->assertExists((string) $video->preview_video_url);
+        $storage->assertMissing((string) $storedPreview);
+        $storage->assertExists((string) $video->preview_video_url);
 
         $this->actingAs($adminUser)
             ->post(route('admin.gallery-videos.archive', $video->id))
@@ -326,7 +329,9 @@ class GalleryVideosFeatureTest extends TestCase
             'id' => $video->id,
             'thumbnail_url' => null,
         ]);
-        Storage::disk('public')->assertMissing($storedPath);
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk('public');
+        $storage->assertMissing($storedPath);
     }
 
     public function test_admin_can_reorder_and_delete_gallery_videos(): void

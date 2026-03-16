@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Marketing;
 
 use App\Http\Controllers\Controller;
 use App\Support\MediaStorage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -22,7 +23,10 @@ class PublicMediaController extends Controller
             abort(404);
         }
 
-        return Storage::disk(MediaStorage::publicDisk())->response($normalizedPath, null, [
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk(MediaStorage::publicDisk());
+
+        return $storage->response($normalizedPath, null, [
             'Cache-Control' => 'public, max-age=86400',
         ]);
     }

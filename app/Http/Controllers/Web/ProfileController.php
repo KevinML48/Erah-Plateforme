@@ -37,7 +37,8 @@ class ProfileController extends Controller
         ProfileCosmeticService $profileCosmeticService,
     ): View
     {
-        $user = auth()->user();
+        /** @var User $user */
+        $user = Auth::user();
         $progress = $ensureUserProgressAction->execute($user)->load('league');
         $experience = $experienceService->summaryFor($user);
 

@@ -1,14 +1,40 @@
 ﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
+  @php
+    $metaTitle = trim($__env->yieldContent('title', 'ERAH Esport'));
+    $metaDescription = trim($__env->yieldContent('meta_description', 'ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.'));
+    $metaKeywords = trim($__env->yieldContent('meta_keywords', 'ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique'));
+    $metaAuthor = trim($__env->yieldContent('meta_author', 'ERAH Esport'));
+    $metaRobots = trim($__env->yieldContent('meta_robots', 'index,follow,max-image-preview:large'));
+    $canonicalUrl = trim($__env->yieldContent('canonical', url()->current()));
+    $socialImage = trim($__env->yieldContent('meta_image', asset('template/assets/img/logo.png')));
+
+    if (! \Illuminate\Support\Str::startsWith($socialImage, ['http://', 'https://'])) {
+        $socialImage = asset(ltrim($socialImage, '/'));
+    }
+  @endphp
   <title>@yield('title', 'ERAH Esport')</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="description" content="@yield('meta_description', 'ERAH Esport est une association basée à Mende (Lozère), spécialisée dans la compétition et la promotion du gaming local et national.')">
-  <meta name="keywords" content="@yield('meta_keywords', 'ERAH Esport, esport Lozère, esport Mende, club esport, gaming, compétitions esport, événements esport, association esport, tournois gaming, sport électronique')">
-  <meta name="author" content="@yield('meta_author', 'ERAH Esport')">
+  <meta name="description" content="{{ $metaDescription }}">
+  <meta name="keywords" content="{{ $metaKeywords }}">
+  <meta name="author" content="{{ $metaAuthor }}">
+  <meta name="robots" content="{{ $metaRobots }}">
   <meta name="theme-color" content="#d80707">
+  <link rel="canonical" href="{{ $canonicalUrl }}">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:type" content="@yield('meta_og_type', 'website')">
+  <meta property="og:site_name" content="ERAH Esport">
+  <meta property="og:title" content="{{ $metaTitle }}">
+  <meta property="og:description" content="{{ $metaDescription }}">
+  <meta property="og:url" content="{{ $canonicalUrl }}">
+  <meta property="og:image" content="{{ $socialImage }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ $metaTitle }}">
+  <meta name="twitter:description" content="{{ $metaDescription }}">
+  <meta name="twitter:image" content="{{ $socialImage }}">
   <link rel="manifest" href="/manifest.json">
 
   <link rel="icon" href="/template/assets/img/logo.png" type="image/png" sizes="512x512">

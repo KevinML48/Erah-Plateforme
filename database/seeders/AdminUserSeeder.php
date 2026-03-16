@@ -42,7 +42,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@erah.local'],
             [
                 'name' => 'ERAH Admin',
-                'password' => Hash::make((string) env('ADMIN_SEED_PASSWORD', 'ChangeMe123!')),
+                'password' => (string) env('ADMIN_SEED_PASSWORD', 'ChangeMe123!'),
                 'role' => User::ROLE_ADMIN,
                 'email_verified_at' => now(),
             ]
@@ -51,12 +51,9 @@ class AdminUserSeeder extends Seeder
 
     private function seedPlatformAdmin(): User
     {
-        $email = trim((string) env('PLATFORM_ADMIN_EMAIL', 'erah.association@gmail.com'));
-        $name = trim((string) env('PLATFORM_ADMIN_NAME', 'ERAH Association'));
-        $password = (string) env(
-            'PLATFORM_ADMIN_PASSWORD',
-            app()->environment('production') ? '' : 'SeedAdmin!2026'
-        );
+        $email = trim((string) (getenv('PLATFORM_ADMIN_EMAIL') ?: 'erah.association@gmail.com'));
+        $name = trim((string) (getenv('PLATFORM_ADMIN_NAME') ?: 'ERAH Association'));
+        $password = (string) (getenv('PLATFORM_ADMIN_PASSWORD') ?: (app()->environment('production') ? '' : 'SeedAdmin!2026'));
 
         if ($email === '') {
             throw new RuntimeException('PLATFORM_ADMIN_EMAIL ne peut pas etre vide.');
@@ -68,7 +65,7 @@ class AdminUserSeeder extends Seeder
             ['email' => $email],
             [
                 'name' => $name !== '' ? $name : 'ERAH Association',
-                'password' => Hash::make($password),
+                'password' => $password,
                 'role' => User::ROLE_ADMIN,
                 'email_verified_at' => now(),
             ]

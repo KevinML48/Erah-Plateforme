@@ -216,7 +216,12 @@ class SocialAuthController extends Controller
             throw new NotFoundHttpException();
         }
 
-        $driver = Socialite::driver($provider)->stateless();
+        /** @var mixed $driver */
+        $driver = Socialite::driver($provider);
+
+        if (is_object($driver) && method_exists($driver, 'stateless')) {
+            $driver = $driver->stateless();
+        }
 
         if ($provider === 'google') {
             return $driver->scopes(['openid', 'profile', 'email']);

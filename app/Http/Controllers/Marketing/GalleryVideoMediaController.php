@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Marketing;
 
 use App\Http\Controllers\Controller;
 use App\Support\MediaStorage;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -33,7 +34,10 @@ class GalleryVideoMediaController extends Controller
             abort(404);
         }
 
-        return Storage::disk($disk)->response($normalizedPath, null, [
+        /** @var FilesystemAdapter $storage */
+        $storage = Storage::disk($disk);
+
+        return $storage->response($normalizedPath, null, [
             'Cache-Control' => 'public, max-age=86400',
         ]);
     }

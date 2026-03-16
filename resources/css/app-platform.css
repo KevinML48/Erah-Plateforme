@@ -113,6 +113,7 @@ body.platform-app #tt-header.tt-header-platform .tt-header-utility-cluster {
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+    order: -1;
 }
 
 body.platform-app #tt-header.tt-header-platform .tt-header-account-icon {
@@ -145,6 +146,9 @@ body.platform-app #tt-header.tt-header-platform .tt-header-account-icon:focus-vi
 
 body.platform-app #tt-header.tt-header-platform .tt-header-mobile-toggle {
     display: none;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 12px;
 }
 
 body.platform-app #tt-header.tt-header-platform .tt-header-mobile-panel {

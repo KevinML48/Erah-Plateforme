@@ -169,6 +169,15 @@
 
 		<div class="tt-header-col tt-header-col-right">
 			<div class="tt-header-action-stack" aria-label="Actions utilisateur">
+				<div class="tt-header-utility-cluster">
+					<div class="tt-style-switch tt-header-style-switch">
+						<div class="tt-style-switch-inner tt-magnetic-item">
+							<div class="tt-stsw-light"><i class="fas fa-sun"></i></div>
+							<div class="tt-stsw-dark"><i class="fas fa-moon"></i></div>
+						</div>
+					</div>
+				</div>
+
 				<div class="tt-header-account-cluster">
 					<a href="{{ $desktopPrimaryAccountAction['url'] }}"
 						class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item tt-header-account-btn tt-header-account-btn-primary">
@@ -180,15 +189,6 @@
 							<span class="tt-header-account-label" data-hover="Admin">Admin</span>
 						</a>
 					@endif
-				</div>
-
-				<div class="tt-header-utility-cluster">
-					<div class="tt-style-switch tt-header-style-switch">
-						<div class="tt-style-switch-inner tt-magnetic-item">
-							<div class="tt-stsw-light"><i class="fas fa-sun"></i></div>
-							<div class="tt-stsw-dark"><i class="fas fa-moon"></i></div>
-						</div>
-					</div>
 				</div>
 			</div>
 
@@ -205,7 +205,6 @@
 					<span></span>
 					<span></span>
 				</span>
-				<span>Menu</span>
 			</button>
 		</div>
 	</div>

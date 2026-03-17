@@ -11,7 +11,7 @@
 			[
 				'label' => 'Equipes',
 				'children' => [
-					['label' => 'Valorant VCL', 'url' => url('/valorant-vcl')],
+					['label' => '18/03', 'url' => route('marketing.valorant-vcl-live')],
 					['label' => 'Staff ERAH', 'url' => url('/staff')],
 					['label' => 'Medical', 'url' => url('/medical')],
 				],

@@ -526,6 +526,13 @@ Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('marketing.contact.submit');
 
+Route::redirect('/valorant-vcl', '/18-03-live', 301);
+Route::redirect('/valorant-VCL', '/18-03-live', 301);
+Route::redirect('/valorant-vcl.html', '/18-03-live', 301);
+Route::redirect('/valorant-VCL.html', '/18-03-live', 301);
+Route::redirect('/valorant-vcl-18-03-live', '/18-03-live', 301);
+Route::view('/18-03-live', 'marketing.valorant-vcl')->name('marketing.valorant-vcl-live');
+
 Route::get('/{slug}.html', function (string $slug) {
     return redirect()->route('marketing.page', ['slug' => $slug], 301);
 })

@@ -371,12 +371,12 @@
     <div class="tt-portfolio-compact-list pcl-caption-hover pcl-image-hover">
       <div class="pcli-inner">
 
-        <!-- VALORANT -->
-        <a href="valorant-VCL.html" class="pcli-item tt-anim-fadeinup" data-cursor="Go !">
+		<!-- ANNONCE 18/03 -->
+		<a href="{{ route('marketing.valorant-vcl-live') }}" class="pcli-item tt-anim-fadeinup" data-cursor="Go !">
           <div class="pcli-item-inner">
             <div class="pcli-col pcli-col-image">
               <div class="pcli-image">
-                <img src="/template/assets/img/VCL_LINE_UP.png" loading="lazy" alt="Image">
+				<img src="/template/assets/img/18-03-live.png" loading="lazy" alt="Annonce live 18/03">
               </div>
             </div>
             <div class="pcli-col pcli-col-count">
@@ -384,9 +384,9 @@
             </div>
             <div class="pcli-col pcli-col-caption">
               <div class="pcli-caption">
-                <h2 class="pcli-title">Valorant</h2>
+				<h2 class="pcli-title">18/03</h2>
                 <div class="pcli-categories">
-                  <div class="pcli-category">VCL</div>
+				  <div class="pcli-category">Annonce</div>
                 </div>
               </div>
             </div>

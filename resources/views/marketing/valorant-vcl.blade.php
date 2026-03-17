@@ -1,11 +1,11 @@
 @extends('marketing.layouts.template')
 
 
-@section('title', 'Valorant VCL | ERAH Esport')
+@section('title', 'Annonce Live 18/03 | ERAH Esport')
 
-@section('meta_description', 'Découvrez notre équipe Valorant avec ERAH Esport : compétitions, tournois et performances d’équipes passionnées.')
+@section('meta_description', 'Rendez-vous le 18/03 en live avec ERAH Esport pour une annonce officielle et la présentation du roster.')
 
-@section('meta_keywords', 'Valorant, Valorant VCL, ERAH Esport, esport Valorant, compétitions Valorant, tournois Valorant, équipe esport, gaming Lozère, sport électronique')
+@section('meta_keywords', 'live 18/03, ERAH Esport, annonce officielle, roster, gaming Lozère, sport électronique')
 
 @section('meta_author', 'ERAH Esport')
 
@@ -86,6 +86,105 @@
     width: 100%; /* boutons plein largeur sur mobile */
   }
 }
+
+.live-announcement-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 28px;
+}
+
+.live-announcement-card {
+	padding: 36px;
+	border: 1px solid rgba(255,255,255,0.12);
+	border-radius: 24px;
+	background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+.live-announcement-card h3 {
+	margin-bottom: 18px;
+}
+
+.live-announcement-card p,
+.live-announcement-card li {
+	font-size: 17px;
+	line-height: 1.8;
+	color: rgba(255,255,255,0.82);
+}
+
+.live-announcement-list {
+	margin: 0;
+	padding-left: 18px;
+}
+
+.live-announcement-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 28px;
+}
+
+.live-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 16px;
+	border-radius: 999px;
+	background: rgba(145, 70, 255, 0.18);
+	border: 1px solid rgba(145, 70, 255, 0.35);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.live-date {
+	font-size: clamp(56px, 9vw, 108px);
+	line-height: 0.95;
+	font-weight: 700;
+	margin: 14px 0 18px;
+}
+
+.live-meta {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+	margin-top: 30px;
+}
+
+.live-meta-item {
+	padding: 18px 20px;
+	border-radius: 18px;
+	background: rgba(255,255,255,0.04);
+	border: 1px solid rgba(255,255,255,0.08);
+}
+
+.live-meta-label {
+	display: block;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(255,255,255,0.55);
+	margin-bottom: 8px;
+}
+
+.live-meta-value {
+	display: block;
+	font-size: 18px;
+	font-weight: 600;
+	color: #fff;
+}
+
+@media (max-width: 991px) {
+	.live-announcement-grid,
+	.live-meta {
+		grid-template-columns: 1fr;
+	}
+
+	.live-announcement-card {
+		padding: 28px;
+	}
+}
 </style>
 
 @endverbatim
@@ -102,11 +201,11 @@
 
 		<div class="ph-caption">
 			<div class="ph-caption-inner">
-				<h2 class="ph-caption-subtitle">Présentation officielle</h2>
-				<h1 class="ph-caption-title">Notre équipe VCL</h1>
+				<h2 class="ph-caption-subtitle">Annonce officielle</h2>
+				<h1 class="ph-caption-title">Live roster le 18/03</h1>
 				<div class="ph-caption-description max-width-700">
-					Nous sommes fiers de vous présenter notre nouvelle équipe <strong>VCL</strong>.<br>
-					Une formation talentueuse que nous sommes heureux de compter parmi <strong>ERAH Esport</strong>.
+					Le <strong>18/03</strong>, ERAH Esport présente en <strong>live</strong> son annonce officielle.<br>
+					Le roster sera révélé en direct sur notre chaîne Twitch officielle.
 				</div>
 			</div>
 		</div>
@@ -118,11 +217,11 @@
 
 			<div class="ph-caption">
 				<div class="ph-caption-inner">
-					<h2 class="ph-caption-subtitle">Fiers de nos pilotes</h2>
-					<h1 class="ph-caption-title">Une équipe, une passion</h1>
+					<h2 class="ph-caption-subtitle">Reveal officiel</h2>
+					<h1 class="ph-caption-title">Annonce de l’équipe</h1>
 					<div class="ph-caption-description max-width-700">
-						Nos pilotes porteront haut les couleurs d’<strong>ERAH Esport</strong> sur la scène <strong>VCL</strong>.<br>
-						Nous sommes fiers de les accueillir dans notre aventure.
+						Découvrez en direct les joueurs et le staff qui représenteront <strong>ERAH Esport</strong>.<br>
+						Cette annonce marque le lancement officiel de notre nouvelle communication autour du roster.
 					</div>
 				</div>
 			</div>
@@ -153,7 +252,7 @@
 						id="textcircle"></path>
 				</defs>
 				<text dy="30">
-					<textPath xlink:href="#textcircle">Fiers de notre équipe VCL - ERAH Esport</textPath>
+					<textPath xlink:href="#textcircle">Annonce live 18/03 - ERAH Esport</textPath>
 				</text>
 			</svg>
 		</a>
@@ -165,296 +264,59 @@
 
 			<div id="tt-page-content">
 
-				<div class="tt-section">
-					<div class="tt-section-inner">
-
-						<div class="tt-portfolio-preview-list tt-ppli-portrait tt-ppli-hover">
-							<div class="tt-ppl-items-list">
-
-								<a href="https://x.com/Izanaavlr" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/izana_site.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Izana</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueur
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/PitouVLR" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/Pitou_site.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Pitou</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueur
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/TommyVLRT" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/Tommy_site.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Tommy</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueur
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/robzvlr" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/Robz_site.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Robz</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueur
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/nyshaVLR" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/NYSHA_site.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Nyshaa</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueur
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/Looxievlr" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/looxie.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Looxie</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">VCL</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Joueuse - Sub
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/DraZixFPS" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/drazix.jpg" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Drazix</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">Coach</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Staff
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-								<a href="https://x.com/DalinOff" class="tt-ppl-item" target="_blank" rel="noopener">
-									<div class="tt-ppli-preview">
-										<div class="tt-ppli-preview-image">
-
-											<img src="/template/assets/img/equipe-valorant/dalin.png" alt="Image">
-										</div>
-									</div>
-
-									<div class="tt-ppl-item-inner">
-										<div class="tt-ppl-item-holder">
-											<div class="tt-ppli-col tt-ppli-col-count">
-												<div class="tt-ppli-count"></div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-caption">
-												<div class="tt-ppli-caption">
-													<h2 class="tt-ppli-title">Dalin</h2>
-													<div class="tt-ppli-categories">
-														<div class="tt-ppli-category">Manageuse</div>
-
-													</div>
-												</div>
-											</div>
-											<div class="tt-ppli-col tt-ppli-col-info tt-justify-content-md-end">
-												<div class="tt-ppli-info">
-													Staff
-												</div>
-											</div>
-										</div>
-									</div>
-								</a>
-
-							</div>
-
-
-
-						</div>
-
-
-					</div>
-				</div>
-
 				<div class="tt-section padding-top-xlg-120 padding-bottom-xlg-120">
 					<div class="tt-section-inner tt-wrap">
 
-						<div class="tt-row margin-bottom-40">
-							<div class="tt-col-xl-8">
+						<div class="live-announcement-grid">
+							<div class="live-announcement-card">
+								<span class="live-pill"><i class="fa-brands fa-twitch"></i> Live officiel</span>
+								<div class="live-date">18/03</div>
+								<p>
+									Cette page est dédiée à l’<strong>annonce</strong> d’ERAH Esport.
+									Le <strong>18/03</strong>, le roster officiel sera révélé en direct avec une prise de parole autour du projet et de la saison.
+								</p>
 
-								<div class="tt-heading tt-heading-xxxlg no-margin">
-									<h3 class="tt-heading-subtitle tt-text-reveal">Recrutement</h3>
-									<h2 class="tt-heading-title tt-text-reveal">Rejoins<br> l'Aventure</h2>
+								<div class="live-meta">
+									<div class="live-meta-item">
+										<span class="live-meta-label">Date</span>
+										<span class="live-meta-value">18 mars</span>
+									</div>
+									<div class="live-meta-item">
+										<span class="live-meta-label">Format</span>
+										<span class="live-meta-value">Reveal officiel</span>
+									</div>
+									<div class="live-meta-item">
+										<span class="live-meta-label">Plateforme</span>
+										<span class="live-meta-value">Twitch ERAH</span>
+									</div>
 								</div>
 
-							</div>
-
-							<div class="tt-col-xl-4 tt-align-self-end tt-xl-column-reverse margin-top-40">
-
-								<div class="max-width-600 margin-bottom-10 tt-text-uppercase tt-text-reveal">
-									Tu veux faire partie de notre équipe ?<br>
-									Envoie ta candidature et montre-nous ta motivation !
-								</div>
-
-								<div class="tt-big-round-ptn margin-top-30 margin-bottom-xlg-80 tt-anim-fadeinup">
-									<a href="/contact" class="tt-big-round-ptn-holder tt-magnetic-item">
-										<div class="tt-big-round-ptn-inner">Postuler<br> Maintenant</div>
+								<div class="live-announcement-actions">
+									<a href="https://www.twitch.tv/erah_association" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener">
+										Regarder le live sur Twitch
+									</a>
+									<a href="https://www.twitch.tv/erah_association" class="tt-btn tt-btn-outline tt-magnetic-item" target="_blank" rel="noopener">
+										Suivre la chaine
 									</a>
 								</div>
+							</div>
 
+							<div class="live-announcement-card">
+								<h3 class="tt-heading-title">Annonce</h3>
+								<ul class="live-announcement-list">
+									<li>Révélation officielle de l’équipe d’ERAH Esport.</li>
+									<li>Présentation du projet compétitif et de l’identité du roster.</li>
+									<li>Annonce en direct pensée autour de la saison à venir.</li>
+								</ul>
+
+								<h3 class="tt-heading-title margin-top-40">Diffusion Twitch</h3>
+								<p>
+									L’annonce sera diffusée sur la chaine Twitch officielle d’ERAH Esport :<br>
+									<strong>twitch.tv/erah_association</strong>
+								</p>
+								<p>
+									Revenez le <strong>18/03</strong> pour suivre en direct la révélation complète de cette annonce.
+								</p>
 							</div>
 						</div>
 

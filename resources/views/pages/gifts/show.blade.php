@@ -580,6 +580,14 @@
 
 @section('page_scripts')
     <script src="/template/assets/vendor/jquery/jquery.min.js"></script>
+    <script src="/template/assets/vendor/gsap/gsap.min.js"></script>
+    <script src="/template/assets/vendor/gsap/ScrollToPlugin.min.js"></script>
+    <script src="/template/assets/vendor/gsap/ScrollTrigger.min.js"></script>
+    <script src="/template/assets/vendor/lenis.min.js"></script>
+    <script src="/template/assets/vendor/isotope/imagesloaded.pkgd.min.js"></script>
+    <script src="/template/assets/vendor/isotope/isotope.pkgd.min.js"></script>
+    <script src="/template/assets/vendor/isotope/packery-mode.pkgd.min.js"></script>
     <script src="/template/assets/vendor/fancybox/js/fancybox.umd.js"></script>
+    <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js"></script>
     <script src="/template/assets/js/theme.js"></script>
 @endsection

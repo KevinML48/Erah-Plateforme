@@ -51,15 +51,7 @@
             background: rgba(255, 255, 255, .02);
         }
 
-        .pref-quick-grid {
-            display: grid;
-            grid-template-columns: 1.2fr .9fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .pref-quick-panel,
-        .pref-preset-panel {
+        .pref-quick-panel {
             border: 1px solid rgba(255, 255, 255, .12);
             border-radius: 12px;
             padding: 16px;
@@ -78,35 +70,14 @@
             font-size: 13px;
         }
 
-        .pref-actions-toolbar,
-        .pref-preset-toolbar {
+        .pref-actions-toolbar {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        .pref-action-btn,
-        .pref-preset-btn {
+        .pref-action-btn {
             min-height: 42px;
-        }
-
-        .pref-preset-btn.is-active {
-            border-color: rgba(80, 211, 147, .6);
-            box-shadow: 0 0 0 1px rgba(80, 211, 147, .25) inset;
-        }
-
-        .pref-preset-btn[data-recommended="true"]::after {
-            content: 'Recommande';
-            display: inline-flex;
-            align-items: center;
-            margin-left: 8px;
-            padding: 2px 7px;
-            border-radius: 999px;
-            border: 1px solid rgba(80, 211, 147, .35);
-            background: rgba(80, 211, 147, .14);
-            font-size: 10px;
-            letter-spacing: .06em;
-            text-transform: uppercase;
         }
 
         .pref-helper-note {
@@ -329,9 +300,6 @@
                 grid-template-columns: 1fr;
             }
 
-            .pref-quick-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 991.98px) {
@@ -360,8 +328,6 @@
         $hasActiveDevice = (bool) ($hasActiveDevice ?? false);
 
         $categories = $preferenceCategories ?? [];
-        $presets = $preferencePresets ?? [];
-
         $emailActiveCount = 0;
         $pushActiveCount = 0;
         foreach ($categories as $categoryKey => $categoryMeta) {
@@ -441,7 +407,7 @@
                     </article>
                 </section>
 
-                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup" id="notification-preferences-form" data-has-active-device="{{ $hasActiveDevice ? '1' : '0' }}" data-presets="{{ e(json_encode($presets, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)) }}">
+                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup" id="notification-preferences-form" data-has-active-device="{{ $hasActiveDevice ? '1' : '0' }}">
                     @csrf
 
                     <section class="pref-card">
@@ -496,54 +462,20 @@
 
                     <section class="pref-card">
                         <h3>Actions rapides</h3>
-                        <p>Pilotez vos preferences en un clic, puis ajustez manuellement si besoin avant d enregistrer.</p>
+                        <p>Pilotez toutes les preferences en un clic, puis ajustez manuellement si besoin avant d enregistrer.</p>
 
-                        <div class="pref-quick-grid margin-top-20">
-                            <div class="pref-quick-panel">
-                                <h4 class="pref-section-title">Actions groupees</h4>
-                                <p class="pref-section-copy">Activez ou coupez rapidement tous les reglages, ou un canal complet.</p>
-                                <div class="pref-actions-toolbar">
-                                    <button type="button" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-on">
-                                        <span data-hover="Tout activer">Tout activer</span>
-                                    </button>
-                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-off">
-                                        <span data-hover="Tout desactiver">Tout desactiver</span>
-                                    </button>
-                                    <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="email-on">
-                                        <span data-hover="Tout activer Email">Tout activer Email</span>
-                                    </button>
-                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="email-off">
-                                        <span data-hover="Tout desactiver Email">Tout desactiver Email</span>
-                                    </button>
-                                    <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="push-on" @disabled(! $hasActiveDevice)>
-                                        <span data-hover="Tout activer Push">Tout activer Push</span>
-                                    </button>
-                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="push-off" @disabled(! $hasActiveDevice)>
-                                        <span data-hover="Tout desactiver Push">Tout desactiver Push</span>
-                                    </button>
-                                </div>
+                        <div class="pref-quick-panel margin-top-20">
+                            <h4 class="pref-section-title">Actions groupees</h4>
+                            <p class="pref-section-copy">Ces boutons pilotent uniquement les emails. Les push restent toujours dans leur etat actuel.</p>
+                            <div class="pref-actions-toolbar">
+                                <button type="button" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-on">
+                                    <span data-hover="Tout activer">Tout activer</span>
+                                </button>
+                                <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-off">
+                                    <span data-hover="Tout desactiver">Tout desactiver</span>
+                                </button>
                             </div>
-
-                            <div class="pref-preset-panel">
-                                <h4 class="pref-section-title">Presets intelligents</h4>
-                                <p class="pref-section-copy">Appliquez une base coherente pour limiter le bruit ou suivre l activite en temps reel.</p>
-                                <div class="pref-preset-toolbar">
-                                    @foreach($presets as $presetKey => $preset)
-                                        @if(in_array($presetKey, ['recommended', 'essential'], true))
-                                            <button
-                                                type="button"
-                                                class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-preset-btn"
-                                                data-preset="{{ $presetKey }}"
-                                                data-recommended="{{ !empty($preset['recommended']) ? 'true' : 'false' }}"
-                                                aria-pressed="false"
-                                            >
-                                                <span data-hover="{{ $preset['label'] }}">{{ $preset['label'] }}</span>
-                                            </button>
-                                        @endif
-                                    @endforeach
-                                </div>
-                                <div class="pref-helper-note" id="pref-live-feedback">Recommande pour la plupart des membres : activez surtout le preset Reglages recommandes.</div>
-                            </div>
+                            <div class="pref-helper-note" id="pref-live-feedback">Utilisez un des deux boutons pour gerer rapidement les emails sans modifier les push.</div>
                         </div>
                     </section>
 
@@ -637,207 +569,110 @@
     <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js" defer></script>
     <script src="/template/assets/js/theme.js" defer></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var form = document.getElementById('notification-preferences-form');
-            if (!form) {
+        (function () {
+            function initNotificationPreferences() {
+                var form = document.getElementById('notification-preferences-form');
+                if (!form || form.dataset.bulkBound === '1') {
+                    return;
+                }
+
+                form.dataset.bulkBound = '1';
+
+                var hasActiveDevice = form.dataset.hasActiveDevice === '1';
+                var feedback = document.getElementById('pref-live-feedback');
+                var emailCountNode = document.getElementById('pref-email-count');
+                var pushCountNode = document.getElementById('pref-push-count');
+                var globalEmail = form.querySelector('[data-pref-global="email"]');
+                var globalPush = form.querySelector('[data-pref-global="push"]');
+                var emailInputs = Array.from(form.querySelectorAll('[data-pref-channel="email"]'));
+                var pushInputs = Array.from(form.querySelectorAll('[data-pref-channel="push"]'));
+
+                function updateCounts() {
+                    if (emailCountNode) {
+                        emailCountNode.textContent = String(emailInputs.filter(function (input) { return input.checked; }).length);
+                    }
+
+                    if (pushCountNode) {
+                        pushCountNode.textContent = String(pushInputs.filter(function (input) { return input.checked; }).length);
+                    }
+                }
+
+                function setFeedback(message, tone) {
+                    if (!feedback) {
+                        return;
+                    }
+
+                    feedback.textContent = message;
+                    feedback.classList.remove('is-warning', 'is-success');
+                    if (tone) {
+                        feedback.classList.add(tone);
+                    }
+                }
+
+                function setChannel(inputs, checked) {
+                    inputs.forEach(function (input) {
+                        if (input.disabled && checked) {
+                            input.checked = false;
+                            return;
+                        }
+
+                        input.checked = checked;
+                    });
+                }
+
+                function enableAll() {
+                    if (globalEmail) {
+                        globalEmail.checked = true;
+                    }
+
+                    setChannel(emailInputs, true);
+                    updateCounts();
+                    setFeedback('Tous les emails ont ete actives. Les push restent inchanges.', 'is-success');
+                }
+
+                function disableEmailsOnly() {
+                    if (globalEmail) {
+                        globalEmail.checked = false;
+                    }
+
+                    setChannel(emailInputs, false);
+                    updateCounts();
+                    setFeedback('Tous les emails sont desactives. Les push restent inchanges.', 'is-success');
+                }
+
+                form.querySelectorAll('[data-bulk-action]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        if (button.dataset.bulkAction === 'all-on') {
+                            enableAll();
+                            return;
+                        }
+
+                        disableEmailsOnly();
+                    });
+                });
+
+                emailInputs.concat(pushInputs).concat([globalEmail, globalPush].filter(Boolean)).forEach(function (input) {
+                    input.addEventListener('change', function () {
+                        updateCounts();
+
+                        if (!hasActiveDevice && input.dataset && input.dataset.prefChannel === 'push') {
+                            setFeedback('Le push reste indisponible tant qu aucun appareil actif n est detecte.', 'is-warning');
+                            return;
+                        }
+
+                        setFeedback('Preferences modifiees localement. Enregistrez pour appliquer ces reglages.', 'is-success');
+                    });
+                });
+
+                updateCounts();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initNotificationPreferences, { once: true });
                 return;
             }
 
-            var hasActiveDevice = form.dataset.hasActiveDevice === '1';
-            var feedback = document.getElementById('pref-live-feedback');
-            var emailCountNode = document.getElementById('pref-email-count');
-            var pushCountNode = document.getElementById('pref-push-count');
-            var globalEmail = form.querySelector('[data-pref-global="email"]');
-            var globalPush = form.querySelector('[data-pref-global="push"]');
-            var emailInputs = Array.from(form.querySelectorAll('[data-pref-channel="email"]'));
-            var pushInputs = Array.from(form.querySelectorAll('[data-pref-channel="push"]'));
-            var presetButtons = Array.from(form.querySelectorAll('[data-preset]'));
-            var presetConfig = JSON.parse(form.dataset.presets || '{}');
-
-            function updateCounts() {
-                if (emailCountNode) {
-                    emailCountNode.textContent = String(emailInputs.filter(function (input) { return input.checked; }).length);
-                }
-
-                if (pushCountNode) {
-                    pushCountNode.textContent = String(pushInputs.filter(function (input) { return input.checked; }).length);
-                }
-            }
-
-            function setFeedback(message, tone) {
-                if (!feedback) {
-                    return;
-                }
-
-                feedback.textContent = message;
-                feedback.classList.remove('is-warning', 'is-success');
-                if (tone) {
-                    feedback.classList.add(tone);
-                }
-            }
-
-            function clearPresetState() {
-                presetButtons.forEach(function (button) {
-                    button.classList.remove('is-active');
-                    button.setAttribute('aria-pressed', 'false');
-                });
-            }
-
-            function markPresetActive(presetKey) {
-                clearPresetState();
-
-                var activeButton = form.querySelector('[data-preset="' + presetKey + '"]');
-                if (!activeButton) {
-                    return;
-                }
-
-                activeButton.classList.add('is-active');
-                activeButton.setAttribute('aria-pressed', 'true');
-            }
-
-            function setChannel(inputs, checked) {
-                inputs.forEach(function (input) {
-                    if (input.disabled && checked) {
-                        input.checked = false;
-                        return;
-                    }
-
-                    input.checked = checked;
-                });
-            }
-
-            function applyEmail(checked) {
-                if (globalEmail) {
-                    globalEmail.checked = checked;
-                }
-
-                setChannel(emailInputs, checked);
-            }
-
-            function applyPush(checked) {
-                if (!hasActiveDevice) {
-                    if (globalPush) {
-                        globalPush.checked = false;
-                    }
-
-                    setChannel(pushInputs, false);
-
-                    if (checked) {
-                        setFeedback('Impossible d activer les notifications push sans appareil ou abonnement push actif.', 'is-warning');
-                    }
-
-                    return false;
-                }
-
-                if (globalPush) {
-                    globalPush.checked = checked;
-                }
-
-                setChannel(pushInputs, checked);
-
-                return true;
-            }
-
-            function applyPreset(presetKey) {
-                var preset = presetConfig[presetKey];
-                if (!preset) {
-                    return;
-                }
-
-                var emailTargets = new Set(preset.email || []);
-                var pushTargets = new Set(preset.push || []);
-
-                emailInputs.forEach(function (input) {
-                    input.checked = emailTargets.has(input.dataset.prefCategory);
-                });
-
-                var appliedPush = hasActiveDevice;
-                pushInputs.forEach(function (input) {
-                    input.checked = hasActiveDevice && pushTargets.has(input.dataset.prefCategory);
-                });
-
-                if (globalEmail) {
-                    globalEmail.checked = emailTargets.size > 0;
-                }
-
-                if (globalPush) {
-                    globalPush.checked = hasActiveDevice && pushTargets.size > 0;
-                }
-
-                markPresetActive(presetKey);
-                updateCounts();
-
-                if (!hasActiveDevice && pushTargets.size > 0) {
-                    setFeedback(preset.label + ' applique pour Email. Le push reste indisponible tant qu aucun appareil actif n est detecte.', 'is-warning');
-                    return;
-                }
-
-                setFeedback(preset.hint, 'is-success');
-            }
-
-            form.querySelectorAll('[data-bulk-action]').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var action = button.dataset.bulkAction;
-                    clearPresetState();
-
-                    switch (action) {
-                        case 'all-on':
-                            applyEmail(true);
-                            applyPush(true);
-                            setFeedback(hasActiveDevice
-                                ? 'Tous les canaux modifiables sont actives.'
-                                : 'Email active partout. Le push reste indisponible sans appareil actif.', hasActiveDevice ? 'is-success' : 'is-warning');
-                            break;
-                        case 'all-off':
-                            applyEmail(false);
-                            applyPush(false);
-                            setFeedback('Email et Push sont desactives sur toutes les categories.', 'is-success');
-                            break;
-                        case 'email-on':
-                            applyEmail(true);
-                            setFeedback('Toutes les notifications Email sont activees.', 'is-success');
-                            break;
-                        case 'email-off':
-                            applyEmail(false);
-                            setFeedback('Toutes les notifications Email sont desactivees.', 'is-success');
-                            break;
-                        case 'push-on':
-                            applyPush(true);
-                            if (hasActiveDevice) {
-                                setFeedback('Toutes les notifications Push compatibles sont activees.', 'is-success');
-                            }
-                            break;
-                        case 'push-off':
-                            applyPush(false);
-                            setFeedback('Toutes les notifications Push sont desactivees.', 'is-success');
-                            break;
-                    }
-
-                    updateCounts();
-                });
-            });
-
-            presetButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    applyPreset(button.dataset.preset);
-                });
-            });
-
-            emailInputs.concat(pushInputs).concat([globalEmail, globalPush].filter(Boolean)).forEach(function (input) {
-                input.addEventListener('change', function () {
-                    clearPresetState();
-                    updateCounts();
-
-                    if (!hasActiveDevice && input && input.dataset && input.dataset.prefChannel === 'push') {
-                        setFeedback('Le push reste indisponible tant qu aucun appareil actif n est detecte.', 'is-warning');
-                        return;
-                    }
-
-                    setFeedback('Preferences modifiees localement. Enregistrez pour appliquer ces reglages.', 'is-success');
-                });
-            });
-
-            updateCounts();
-        });
+            initNotificationPreferences();
+        })();
     </script>
 @endsection

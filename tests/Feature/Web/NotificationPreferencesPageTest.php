@@ -7,7 +7,6 @@ use App\Models\NotificationPreference;
 use App\Models\User;
 use App\Models\UserDevice;
 use App\Models\UserNotificationChannel;
-use App\Support\NotificationPreferenceCatalog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +14,7 @@ class NotificationPreferencesPageTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_preferences_page_displays_quick_actions_and_presets(): void
+    public function test_preferences_page_displays_only_all_on_and_all_off_actions(): void
     {
         $user = User::factory()->create();
 
@@ -25,12 +24,12 @@ class NotificationPreferencesPageTest extends TestCase
             ->assertSee('Actions rapides')
             ->assertSee('Tout activer')
             ->assertSee('Tout desactiver')
-            ->assertSee('Tout activer Email')
-            ->assertSee('Tout desactiver Email')
-            ->assertSee('Tout activer Push')
-            ->assertSee('Tout desactiver Push')
-            ->assertSee('Reglages recommandes')
-            ->assertSee('Activer seulement l essentiel');
+                ->assertDontSee('Tout activer Email')
+                ->assertDontSee('Tout desactiver Email')
+                ->assertDontSee('Tout activer Push')
+                ->assertDontSee('Tout desactiver Push')
+                ->assertDontSee('Reglages recommandes')
+                ->assertDontSee('Activer seulement l essentiel');
     }
 
     public function test_all_enable_payload_persists_all_channels_when_push_device_exists(): void
@@ -53,58 +52,6 @@ class NotificationPreferencesPageTest extends TestCase
             ->assertRedirect(route('notifications.preferences'));
 
         $this->assertStoredState($user, false, false, [], []);
-    }
-
-    public function test_email_only_action_payload_can_enable_email_without_reenabling_push(): void
-    {
-        $user = $this->createUserWithActiveDevice();
-
-        $emailCategories = NotificationCategory::values();
-        $pushCategories = ['system', 'match'];
-
-        $this->actingAs($user)
-            ->post(route('notifications.preferences.update'), $this->payload(true, false, $emailCategories, $pushCategories))
-            ->assertRedirect(route('notifications.preferences'));
-
-        $this->assertStoredState($user, true, false, $emailCategories, $pushCategories);
-    }
-
-    public function test_push_only_action_payload_can_enable_push_without_reenabling_email(): void
-    {
-        $user = $this->createUserWithActiveDevice();
-
-        $emailCategories = ['system'];
-        $pushCategories = NotificationCategory::values();
-
-        $this->actingAs($user)
-            ->post(route('notifications.preferences.update'), $this->payload(false, true, $emailCategories, $pushCategories))
-            ->assertRedirect(route('notifications.preferences'));
-
-        $this->assertStoredState($user, false, true, $emailCategories, $pushCategories);
-    }
-
-    public function test_recommended_preset_payload_persists_expected_categories(): void
-    {
-        $user = $this->createUserWithActiveDevice();
-        $preset = NotificationPreferenceCatalog::presets()['recommended'];
-
-        $this->actingAs($user)
-            ->post(route('notifications.preferences.update'), $this->payload(true, true, $preset['email'], $preset['push']))
-            ->assertRedirect(route('notifications.preferences'));
-
-        $this->assertStoredState($user, true, true, $preset['email'], $preset['push']);
-    }
-
-    public function test_essential_preset_payload_persists_expected_categories(): void
-    {
-        $user = $this->createUserWithActiveDevice();
-        $preset = NotificationPreferenceCatalog::presets()['essential'];
-
-        $this->actingAs($user)
-            ->post(route('notifications.preferences.update'), $this->payload(true, true, $preset['email'], $preset['push']))
-            ->assertRedirect(route('notifications.preferences'));
-
-        $this->assertStoredState($user, true, true, $preset['email'], $preset['push']);
     }
 
     public function test_push_preferences_are_forced_off_without_active_device(): void

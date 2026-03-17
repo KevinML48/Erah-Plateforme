@@ -51,6 +51,79 @@
             background: rgba(255, 255, 255, .02);
         }
 
+        .pref-quick-grid {
+            display: grid;
+            grid-template-columns: 1.2fr .9fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .pref-quick-panel,
+        .pref-preset-panel {
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 12px;
+            padding: 16px;
+            background: rgba(0, 0, 0, .14);
+        }
+
+        .pref-section-title {
+            margin: 0 0 6px;
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .pref-section-copy {
+            margin: 0 0 14px;
+            color: rgba(255, 255, 255, .68);
+            font-size: 13px;
+        }
+
+        .pref-actions-toolbar,
+        .pref-preset-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pref-action-btn,
+        .pref-preset-btn {
+            min-height: 42px;
+        }
+
+        .pref-preset-btn.is-active {
+            border-color: rgba(80, 211, 147, .6);
+            box-shadow: 0 0 0 1px rgba(80, 211, 147, .25) inset;
+        }
+
+        .pref-preset-btn[data-recommended="true"]::after {
+            content: 'Recommande';
+            display: inline-flex;
+            align-items: center;
+            margin-left: 8px;
+            padding: 2px 7px;
+            border-radius: 999px;
+            border: 1px solid rgba(80, 211, 147, .35);
+            background: rgba(80, 211, 147, .14);
+            font-size: 10px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+
+        .pref-helper-note {
+            margin-top: 12px;
+            min-height: 20px;
+            color: rgba(255, 255, 255, .72);
+            font-size: 13px;
+        }
+
+        .pref-helper-note.is-warning {
+            color: #ffd7a8;
+        }
+
+        .pref-helper-note.is-success {
+            color: #baf3cf;
+        }
+
         .pref-card h3 {
             margin: 0 0 6px;
             font-size: 28px;
@@ -255,6 +328,10 @@
             .pref-kpi-grid {
                 grid-template-columns: 1fr;
             }
+
+            .pref-quick-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 991.98px) {
@@ -282,74 +359,8 @@
         $prefs = $preferences ?? collect();
         $hasActiveDevice = (bool) ($hasActiveDevice ?? false);
 
-        $categories = [
-            'duel' => [
-                'label' => 'Duels',
-                'description' => 'Invitations, reponses et rappels de duel.',
-                'icon' => 'fa-solid fa-crosshairs',
-                'tone' => 'tone-duel',
-            ],
-            'clips' => [
-                'label' => 'Clips',
-                'description' => 'Likes, commentaires, favoris et tendances.',
-                'icon' => 'fa-solid fa-clapperboard',
-                'tone' => 'tone-clips',
-            ],
-            'comment' => [
-                'label' => 'Commentaires',
-                'description' => 'Reponses, nouvelles discussions et suivi des echanges.',
-                'icon' => 'fa-solid fa-comments',
-                'tone' => 'tone-clips',
-            ],
-            'mission' => [
-                'label' => 'Missions',
-                'description' => 'Validation, progression et bonus journaliers.',
-                'icon' => 'fa-solid fa-list-check',
-                'tone' => 'tone-system',
-            ],
-            'quiz' => [
-                'label' => 'Quiz',
-                'description' => 'Ouverture des quiz, tentatives et validations.',
-                'icon' => 'fa-solid fa-circle-question',
-                'tone' => 'tone-system',
-            ],
-            'live_code' => [
-                'label' => 'Codes live',
-                'description' => 'Codes temporaires, redemptions et campagnes live.',
-                'icon' => 'fa-solid fa-bolt',
-                'tone' => 'tone-system',
-            ],
-            'achievement' => [
-                'label' => 'Succes',
-                'description' => 'Deblocages permanents et badges communautaires.',
-                'icon' => 'fa-solid fa-medal',
-                'tone' => 'tone-system',
-            ],
-            'event' => [
-                'label' => 'Evenements',
-                'description' => 'Fenetres bonus, double XP et operations speciales.',
-                'icon' => 'fa-solid fa-calendar-days',
-                'tone' => 'tone-match',
-            ],
-            'system' => [
-                'label' => 'Systeme',
-                'description' => 'Infos compte, securite et annonces plateforme.',
-                'icon' => 'fa-solid fa-shield-halved',
-                'tone' => 'tone-system',
-            ],
-            'match' => [
-                'label' => 'Matchs',
-                'description' => 'Etat des matchs, timing et resultats.',
-                'icon' => 'fa-solid fa-trophy',
-                'tone' => 'tone-match',
-            ],
-            'bet' => [
-                'label' => 'Paris',
-                'description' => 'Placements, annulations et reglements de paris.',
-                'icon' => 'fa-solid fa-coins',
-                'tone' => 'tone-bet',
-            ],
-        ];
+        $categories = $preferenceCategories ?? [];
+        $presets = $preferencePresets ?? [];
 
         $emailActiveCount = 0;
         $pushActiveCount = 0;
@@ -430,7 +441,7 @@
                     </article>
                 </section>
 
-                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup">
+                <form method="POST" action="{{ route($preferencesUpdateRouteName) }}" class="tt-anim-fadeinup" id="notification-preferences-form" data-has-active-device="{{ $hasActiveDevice ? '1' : '0' }}" data-presets="{{ e(json_encode($presets, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT)) }}">
                     @csrf
 
                     <section class="pref-card">
@@ -449,6 +460,7 @@
                                         type="checkbox"
                                         name="email_opt_in"
                                         value="1"
+                                        data-pref-global="email"
                                         @checked((bool) old('email_opt_in', $channelsData?->email_opt_in ?? false))
                                     >
                                     <span class="pref-switch-slider"></span>
@@ -466,6 +478,7 @@
                                         type="checkbox"
                                         name="push_opt_in"
                                         value="1"
+                                        data-pref-global="push"
                                         @checked((bool) old('push_opt_in', $channelsData?->push_opt_in ?? false))
                                         @disabled(! $hasActiveDevice)
                                     >
@@ -482,8 +495,61 @@
                     </section>
 
                     <section class="pref-card">
+                        <h3>Actions rapides</h3>
+                        <p>Pilotez vos preferences en un clic, puis ajustez manuellement si besoin avant d enregistrer.</p>
+
+                        <div class="pref-quick-grid margin-top-20">
+                            <div class="pref-quick-panel">
+                                <h4 class="pref-section-title">Actions groupees</h4>
+                                <p class="pref-section-copy">Activez ou coupez rapidement tous les reglages, ou un canal complet.</p>
+                                <div class="pref-actions-toolbar">
+                                    <button type="button" class="tt-btn tt-btn-primary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-on">
+                                        <span data-hover="Tout activer">Tout activer</span>
+                                    </button>
+                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="all-off">
+                                        <span data-hover="Tout desactiver">Tout desactiver</span>
+                                    </button>
+                                    <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="email-on">
+                                        <span data-hover="Tout activer Email">Tout activer Email</span>
+                                    </button>
+                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="email-off">
+                                        <span data-hover="Tout desactiver Email">Tout desactiver Email</span>
+                                    </button>
+                                    <button type="button" class="tt-btn tt-btn-secondary tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="push-on" @disabled(! $hasActiveDevice)>
+                                        <span data-hover="Tout activer Push">Tout activer Push</span>
+                                    </button>
+                                    <button type="button" class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-action-btn" data-bulk-action="push-off" @disabled(! $hasActiveDevice)>
+                                        <span data-hover="Tout desactiver Push">Tout desactiver Push</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="pref-preset-panel">
+                                <h4 class="pref-section-title">Presets intelligents</h4>
+                                <p class="pref-section-copy">Appliquez une base coherente pour limiter le bruit ou suivre l activite en temps reel.</p>
+                                <div class="pref-preset-toolbar">
+                                    @foreach($presets as $presetKey => $preset)
+                                        @if(in_array($presetKey, ['recommended', 'essential'], true))
+                                            <button
+                                                type="button"
+                                                class="tt-btn tt-btn-outline tt-btn-sm tt-magnetic-item pref-preset-btn"
+                                                data-preset="{{ $presetKey }}"
+                                                data-recommended="{{ !empty($preset['recommended']) ? 'true' : 'false' }}"
+                                                aria-pressed="false"
+                                            >
+                                                <span data-hover="{{ $preset['label'] }}">{{ $preset['label'] }}</span>
+                                            </button>
+                                        @endif
+                                    @endforeach
+                                </div>
+                                <div class="pref-helper-note" id="pref-live-feedback">Recommande pour la plupart des membres : activez surtout le preset Reglages recommandes.</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="pref-card">
                         <h3>Regles par categorie</h3>
-                        <p>{{ $emailActiveCount }} categorie(s) email actives - {{ $pushActiveCount }} categorie(s) push actives.</p>
+                        <p><span id="pref-email-count">{{ $emailActiveCount }}</span> categorie(s) email actives - <span id="pref-push-count">{{ $pushActiveCount }}</span> categorie(s) push actives.</p>
 
                         <div class="pref-stack">
                             <div class="pref-row" aria-hidden="true">
@@ -513,6 +579,8 @@
                                                 type="checkbox"
                                                 name="{{ $categoryKey }}_email"
                                                 value="1"
+                                                data-pref-channel="email"
+                                                data-pref-category="{{ $categoryKey }}"
                                                 @checked((bool) old($categoryKey.'_email', $pref?->email_enabled ?? true))
                                             >
                                             <span class="pref-switch-slider"></span>
@@ -526,6 +594,8 @@
                                                 type="checkbox"
                                                 name="{{ $categoryKey }}_push"
                                                 value="1"
+                                                data-pref-channel="push"
+                                                data-pref-category="{{ $categoryKey }}"
                                                 @checked((bool) old($categoryKey.'_push', $pref?->push_enabled ?? true))
                                                 @disabled(! $hasActiveDevice)
                                             >
@@ -566,4 +636,208 @@
     <script src="/template/assets/vendor/fancybox/js/fancybox.umd.js" defer></script>
     <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js" defer></script>
     <script src="/template/assets/js/theme.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('notification-preferences-form');
+            if (!form) {
+                return;
+            }
+
+            var hasActiveDevice = form.dataset.hasActiveDevice === '1';
+            var feedback = document.getElementById('pref-live-feedback');
+            var emailCountNode = document.getElementById('pref-email-count');
+            var pushCountNode = document.getElementById('pref-push-count');
+            var globalEmail = form.querySelector('[data-pref-global="email"]');
+            var globalPush = form.querySelector('[data-pref-global="push"]');
+            var emailInputs = Array.from(form.querySelectorAll('[data-pref-channel="email"]'));
+            var pushInputs = Array.from(form.querySelectorAll('[data-pref-channel="push"]'));
+            var presetButtons = Array.from(form.querySelectorAll('[data-preset]'));
+            var presetConfig = JSON.parse(form.dataset.presets || '{}');
+
+            function updateCounts() {
+                if (emailCountNode) {
+                    emailCountNode.textContent = String(emailInputs.filter(function (input) { return input.checked; }).length);
+                }
+
+                if (pushCountNode) {
+                    pushCountNode.textContent = String(pushInputs.filter(function (input) { return input.checked; }).length);
+                }
+            }
+
+            function setFeedback(message, tone) {
+                if (!feedback) {
+                    return;
+                }
+
+                feedback.textContent = message;
+                feedback.classList.remove('is-warning', 'is-success');
+                if (tone) {
+                    feedback.classList.add(tone);
+                }
+            }
+
+            function clearPresetState() {
+                presetButtons.forEach(function (button) {
+                    button.classList.remove('is-active');
+                    button.setAttribute('aria-pressed', 'false');
+                });
+            }
+
+            function markPresetActive(presetKey) {
+                clearPresetState();
+
+                var activeButton = form.querySelector('[data-preset="' + presetKey + '"]');
+                if (!activeButton) {
+                    return;
+                }
+
+                activeButton.classList.add('is-active');
+                activeButton.setAttribute('aria-pressed', 'true');
+            }
+
+            function setChannel(inputs, checked) {
+                inputs.forEach(function (input) {
+                    if (input.disabled && checked) {
+                        input.checked = false;
+                        return;
+                    }
+
+                    input.checked = checked;
+                });
+            }
+
+            function applyEmail(checked) {
+                if (globalEmail) {
+                    globalEmail.checked = checked;
+                }
+
+                setChannel(emailInputs, checked);
+            }
+
+            function applyPush(checked) {
+                if (!hasActiveDevice) {
+                    if (globalPush) {
+                        globalPush.checked = false;
+                    }
+
+                    setChannel(pushInputs, false);
+
+                    if (checked) {
+                        setFeedback('Impossible d activer les notifications push sans appareil ou abonnement push actif.', 'is-warning');
+                    }
+
+                    return false;
+                }
+
+                if (globalPush) {
+                    globalPush.checked = checked;
+                }
+
+                setChannel(pushInputs, checked);
+
+                return true;
+            }
+
+            function applyPreset(presetKey) {
+                var preset = presetConfig[presetKey];
+                if (!preset) {
+                    return;
+                }
+
+                var emailTargets = new Set(preset.email || []);
+                var pushTargets = new Set(preset.push || []);
+
+                emailInputs.forEach(function (input) {
+                    input.checked = emailTargets.has(input.dataset.prefCategory);
+                });
+
+                var appliedPush = hasActiveDevice;
+                pushInputs.forEach(function (input) {
+                    input.checked = hasActiveDevice && pushTargets.has(input.dataset.prefCategory);
+                });
+
+                if (globalEmail) {
+                    globalEmail.checked = emailTargets.size > 0;
+                }
+
+                if (globalPush) {
+                    globalPush.checked = hasActiveDevice && pushTargets.size > 0;
+                }
+
+                markPresetActive(presetKey);
+                updateCounts();
+
+                if (!hasActiveDevice && pushTargets.size > 0) {
+                    setFeedback(preset.label + ' applique pour Email. Le push reste indisponible tant qu aucun appareil actif n est detecte.', 'is-warning');
+                    return;
+                }
+
+                setFeedback(preset.hint, 'is-success');
+            }
+
+            form.querySelectorAll('[data-bulk-action]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var action = button.dataset.bulkAction;
+                    clearPresetState();
+
+                    switch (action) {
+                        case 'all-on':
+                            applyEmail(true);
+                            applyPush(true);
+                            setFeedback(hasActiveDevice
+                                ? 'Tous les canaux modifiables sont actives.'
+                                : 'Email active partout. Le push reste indisponible sans appareil actif.', hasActiveDevice ? 'is-success' : 'is-warning');
+                            break;
+                        case 'all-off':
+                            applyEmail(false);
+                            applyPush(false);
+                            setFeedback('Email et Push sont desactives sur toutes les categories.', 'is-success');
+                            break;
+                        case 'email-on':
+                            applyEmail(true);
+                            setFeedback('Toutes les notifications Email sont activees.', 'is-success');
+                            break;
+                        case 'email-off':
+                            applyEmail(false);
+                            setFeedback('Toutes les notifications Email sont desactivees.', 'is-success');
+                            break;
+                        case 'push-on':
+                            applyPush(true);
+                            if (hasActiveDevice) {
+                                setFeedback('Toutes les notifications Push compatibles sont activees.', 'is-success');
+                            }
+                            break;
+                        case 'push-off':
+                            applyPush(false);
+                            setFeedback('Toutes les notifications Push sont desactivees.', 'is-success');
+                            break;
+                    }
+
+                    updateCounts();
+                });
+            });
+
+            presetButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    applyPreset(button.dataset.preset);
+                });
+            });
+
+            emailInputs.concat(pushInputs).concat([globalEmail, globalPush].filter(Boolean)).forEach(function (input) {
+                input.addEventListener('change', function () {
+                    clearPresetState();
+                    updateCounts();
+
+                    if (!hasActiveDevice && input && input.dataset && input.dataset.prefChannel === 'push') {
+                        setFeedback('Le push reste indisponible tant qu aucun appareil actif n est detecte.', 'is-warning');
+                        return;
+                    }
+
+                    setFeedback('Preferences modifiees localement. Enregistrez pour appliquer ces reglages.', 'is-success');
+                });
+            });
+
+            updateCounts();
+        });
+    </script>
 @endsection

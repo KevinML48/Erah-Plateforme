@@ -9,6 +9,7 @@ use App\Application\Actions\Notifications\UpdateNotificationPreferencesAction;
 use App\Domain\Notifications\Enums\NotificationCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Support\NotificationPreferenceCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -163,6 +164,8 @@ class NotificationsPageController extends Controller
         return view('pages.notifications.preferences', [
             'channels' => $user->notificationChannels,
             'preferences' => $preferences,
+            'preferenceCategories' => NotificationPreferenceCatalog::categories(),
+            'preferencePresets' => NotificationPreferenceCatalog::presets(),
             'hasActiveDevice' => $user->devices()->where('is_active', true)->exists()
                 || $user->pushSubscriptions()->where('is_active', true)->exists(),
         ]);
@@ -192,6 +195,17 @@ class NotificationsPageController extends Controller
                 'email_enabled' => $request->boolean($category.'_email'),
                 'push_enabled' => $request->boolean($category.'_push'),
             ];
+        }
+
+        $hasActiveDevice = auth()->user()->devices()->where('is_active', true)->exists()
+            || auth()->user()->pushSubscriptions()->where('is_active', true)->exists();
+
+        if (! $hasActiveDevice) {
+            $payload['channels']['push_opt_in'] = false;
+
+            foreach ($categories as $category) {
+                $payload['categories'][$category]['push_enabled'] = false;
+            }
         }
 
         $updateNotificationPreferencesAction->execute(auth()->user(), $payload);

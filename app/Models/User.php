@@ -161,6 +161,16 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function sentAdminOutboundEmails(): HasMany
+    {
+        return $this->hasMany(AdminOutboundEmail::class, 'sender_admin_user_id');
+    }
+
+    public function receivedAdminOutboundEmails(): HasMany
+    {
+        return $this->hasMany(AdminOutboundEmail::class, 'recipient_user_id');
+    }
+
     public function notificationPreferences(): HasMany
     {
         return $this->hasMany(NotificationPreference::class);

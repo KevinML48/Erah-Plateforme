@@ -68,6 +68,9 @@
                             <a href="{{ route('users.index', ['user_id' => $userProfile->id]) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
                                 <span data-hover="Retour liste">Retour liste</span>
                             </a>
+                            <a href="{{ route('admin.emails.create', ['recipient_user_id' => $userProfile->id]) }}" class="tt-btn tt-btn-primary tt-magnetic-item">
+                                <span data-hover="Envoyer un email">Envoyer un email</span>
+                            </a>
                             <a href="{{ route('users.public', $userProfile->id) }}" class="tt-btn tt-btn-secondary tt-magnetic-item" target="_blank" rel="noopener">
                                 <span data-hover="Profil public">Profil public</span>
                             </a>

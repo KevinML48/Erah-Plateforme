@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Notification;
+use App\Notifications\UserPlatformNotificationMail;
 use App\Services\PushNotificationService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -21,7 +22,7 @@ class SendNotificationChannelJob implements ShouldQueue
 
     public function handle(PushNotificationService $pushNotificationService): void
     {
-        $notification = Notification::query()->find($this->notificationId);
+        $notification = Notification::query()->with('user')->find($this->notificationId);
         if (! $notification) {
             return;
         }
@@ -32,7 +33,32 @@ class SendNotificationChannelJob implements ShouldQueue
             return;
         }
 
-        Log::info('notifications.channel.stub.sent', [
+        if ($this->channel !== 'email') {
+            Log::warning('notifications.channel.unsupported', [
+                'notification_id' => $notification->id,
+                'user_id' => $notification->user_id,
+                'channel' => $this->channel,
+                'category' => $notification->category,
+            ]);
+
+            return;
+        }
+
+        $user = $notification->user;
+        if (! $user || ! filled($user->email)) {
+            Log::warning('notifications.email.skipped', [
+                'notification_id' => $notification->id,
+                'user_id' => $notification->user_id,
+                'reason' => 'missing_recipient_email',
+                'category' => $notification->category,
+            ]);
+
+            return;
+        }
+
+        $user->notify(new UserPlatformNotificationMail($notification));
+
+        Log::info('notifications.email.sent', [
             'notification_id' => $notification->id,
             'user_id' => $notification->user_id,
             'channel' => $this->channel,

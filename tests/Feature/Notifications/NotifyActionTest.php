@@ -99,4 +99,35 @@ class NotifyActionTest extends TestCase
             return $job->channel === 'email';
         });
     }
+
+    public function test_notify_action_queues_email_channel_when_allowed(): void
+    {
+        $user = User::factory()->create();
+
+        UserNotificationChannel::query()->create([
+            'user_id' => $user->id,
+            'email_opt_in' => true,
+            'push_opt_in' => false,
+        ]);
+
+        NotificationPreference::query()->create([
+            'user_id' => $user->id,
+            'category' => NotificationCategory::SYSTEM->value,
+            'email_enabled' => true,
+            'push_enabled' => false,
+        ]);
+
+        Queue::fake();
+
+        app(NotifyAction::class)->execute(
+            user: $user,
+            category: NotificationCategory::SYSTEM->value,
+            message: 'Email delivery test',
+            title: 'System',
+        );
+
+        Queue::assertPushed(SendNotificationChannelJob::class, function (SendNotificationChannelJob $job) {
+            return $job->channel === 'email';
+        });
+    }
 }

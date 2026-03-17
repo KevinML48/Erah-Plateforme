@@ -12,6 +12,7 @@ use App\Http\Controllers\TestConsole\WalletsConsoleController;
 use App\Http\Controllers\Web\Admin\AdminMatchController;
 use App\Http\Controllers\Web\Admin\AdminDuelResultController;
 use App\Http\Controllers\Web\Admin\AdminDashboardController;
+use App\Http\Controllers\Web\Admin\AdminEmailController;
 use App\Http\Controllers\Web\Admin\AdminContactMessageController;
 use App\Http\Controllers\Web\Admin\AdminLiveCodeController;
 use App\Http\Controllers\Web\Admin\AdminMissionController;
@@ -361,6 +362,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'show'])->name('admin.contact-messages.show');
             Route::put('/contact-messages/{contactMessage}/status', [AdminContactMessageController::class, 'updateStatus'])->name('admin.contact-messages.status');
             Route::delete('/contact-messages/{contactMessage}', [AdminContactMessageController::class, 'destroy'])->name('admin.contact-messages.destroy');
+            Route::get('/emails', [AdminEmailController::class, 'index'])->name('admin.emails.index');
+            Route::get('/emails/create', [AdminEmailController::class, 'create'])->name('admin.emails.create');
+            Route::post('/emails/preview', [AdminEmailController::class, 'preview'])
+                ->middleware('throttle:admin-emails')
+                ->name('admin.emails.preview');
+            Route::post('/emails/{adminEmail}/send', [AdminEmailController::class, 'send'])
+                ->middleware('throttle:admin-emails')
+                ->name('admin.emails.send');
+            Route::post('/emails/{adminEmail}/retry', [AdminEmailController::class, 'retry'])
+                ->middleware('throttle:admin-emails')
+                ->name('admin.emails.retry');
+            Route::get('/emails/{adminEmail}', [AdminEmailController::class, 'show'])->name('admin.emails.show');
             Route::get('/users/{userId}', [UsersConsoleController::class, 'show'])
                 ->whereNumber('userId')
                 ->name('admin.users.show');

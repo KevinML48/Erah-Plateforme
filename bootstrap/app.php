@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\MigrateLegacyMediaToMediaDisk;
+use App\Console\Commands\SendMailSmokeTest;
 use App\Console\Commands\GenerateSitemap;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureAdminRole;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         GenerateSitemap::class,
         MigrateLegacyMediaToMediaDisk::class,
+        SendMailSmokeTest::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [

@@ -51,6 +51,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::policy(Clip::class, ClipPolicy::class);
         Gate::policy(ClipComment::class, CommentPolicy::class);
+        Gate::define('admin-emails.view', fn ($user) => $user->role === 'admin');
+        Gate::define('admin-emails.send', fn ($user) => $user->role === 'admin');
 
         View::composer('marketing.index', function (BladeView $view): void {
             $user = Auth::user();
@@ -216,6 +218,12 @@ class AppServiceProvider extends ServiceProvider
             $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
 
             return Limit::perMinute(24)->by($identifier);
+        });
+
+        RateLimiter::for('admin-emails', function (Request $request) {
+            $identifier = $request->user()?->id ? 'user:'.$request->user()->id : 'ip:'.$request->ip();
+
+            return Limit::perMinute(20)->by($identifier);
         });
 
         RateLimiter::for('stripe-webhook', function (Request $request) {

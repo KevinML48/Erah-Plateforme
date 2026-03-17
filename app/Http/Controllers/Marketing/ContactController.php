@@ -8,10 +8,12 @@ use App\Mail\MarketingContactMailable;
 use App\Models\ContactMessage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Throwable;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use RuntimeException;
 
 class ContactController extends Controller
 {
@@ -63,17 +65,26 @@ class ContactController extends Controller
 
         if (filled($toAddress)) {
             try {
-                $mailable = new MarketingContactMailable($contactMessage);
-
-                if (config('queue.default') !== 'sync') {
-                    Mail::to($toAddress, $toName)->queue($mailable);
-                } else {
-                    Mail::to($toAddress, $toName)->send($mailable);
-                }
+                $this->dispatchContactEmail($contactMessage, (string) $toAddress, $toName);
             } catch (Throwable $exception) {
+                Log::error('marketing.contact.mail_failed', [
+                    'contact_message_id' => $contactMessage->id,
+                    'mailer' => config('mail.default'),
+                    'queue_connection' => config('queue.default'),
+                    'contact_address' => $toAddress,
+                    'error' => $exception->getMessage(),
+                ]);
                 report($exception);
                 $mailFailed = true;
             }
+        } else {
+            Log::warning('marketing.contact.mail_skipped', [
+                'contact_message_id' => $contactMessage->id,
+                'reason' => 'missing_contact_recipient',
+                'mailer' => config('mail.default'),
+            ]);
+            report(new RuntimeException('Contact email recipient is not configured.'));
+            $mailFailed = true;
         }
 
         $response = redirect()
@@ -85,6 +96,34 @@ class ContactController extends Controller
         }
 
         return $response;
+    }
+
+    private function dispatchContactEmail(ContactMessage $contactMessage, string $toAddress, ?string $toName): void
+    {
+        $mailer = Mail::to($toAddress, $toName);
+        $mailable = new MarketingContactMailable($contactMessage);
+
+        if (config('queue.default') !== 'sync') {
+            $mailer->queue($mailable);
+
+            Log::info('marketing.contact.mail_queued', [
+                'contact_message_id' => $contactMessage->id,
+                'mailer' => config('mail.default'),
+                'queue_connection' => config('queue.default'),
+                'contact_address' => $toAddress,
+            ]);
+
+            return;
+        }
+
+        $mailer->send($mailable);
+
+        Log::info('marketing.contact.mail_sent', [
+            'contact_message_id' => $contactMessage->id,
+            'mailer' => config('mail.default'),
+            'queue_connection' => config('queue.default'),
+            'contact_address' => $toAddress,
+        ]);
     }
 
     private function consumeSubmissionToken(Request $request, string $submissionToken): bool

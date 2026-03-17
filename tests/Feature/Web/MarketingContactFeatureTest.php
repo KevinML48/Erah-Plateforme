@@ -101,6 +101,31 @@ class MarketingContactFeatureTest extends TestCase
         Mail::assertSent(MarketingContactMailable::class, 1);
     }
 
+    public function test_contact_form_queues_email_when_queue_is_active(): void
+    {
+        Mail::fake();
+
+        config([
+            'mail.contact.address' => 'contact@erah.local',
+            'queue.default' => 'database',
+        ]);
+
+        $token = $this->freshSubmissionToken();
+
+        $this->post(route('marketing.contact.submit'), [
+            'name' => 'Queue User',
+            'email' => 'queue@example.com',
+            'category' => ContactMessage::CATEGORY_SUPPORT,
+            'subject' => 'Question queue',
+            'message' => 'Ce message doit etre mis en queue.',
+            'website' => '',
+            'submission_token' => $token,
+        ])->assertRedirect(route('marketing.contact'))
+            ->assertSessionHas('success');
+
+        Mail::assertQueued(MarketingContactMailable::class, 1);
+    }
+
     public function test_contact_form_keeps_message_when_email_fails(): void
     {
         config([
@@ -132,6 +157,33 @@ class MarketingContactFeatureTest extends TestCase
             'subject' => 'Support compte',
             'status' => ContactMessage::STATUS_NEW,
         ]);
+    }
+
+    public function test_contact_form_reports_missing_recipient_configuration(): void
+    {
+        Mail::fake();
+
+        config([
+            'mail.contact.address' => null,
+            'mail.from.address' => null,
+            'queue.default' => 'sync',
+        ]);
+
+        $token = $this->freshSubmissionToken();
+
+        $this->post(route('marketing.contact.submit'), [
+            'name' => 'Lina Proxy',
+            'email' => 'lina@example.com',
+            'category' => ContactMessage::CATEGORY_OTHER,
+            'subject' => 'Config test',
+            'message' => 'Ce message doit signaler une configuration email manquante.',
+            'website' => '',
+            'submission_token' => $token,
+        ])->assertRedirect(route('marketing.contact'))
+            ->assertSessionHas('success')
+            ->assertSessionHas('error');
+
+        Mail::assertNothingSent();
     }
 
     public function test_contact_submission_token_prevents_duplicate_submit(): void

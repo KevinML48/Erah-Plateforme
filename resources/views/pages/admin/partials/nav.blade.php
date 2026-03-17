@@ -7,6 +7,7 @@
         ['label' => 'Points', 'route' => route('admin.wallets.grant.create'), 'active' => request()->routeIs('admin.wallets.*')],
         ['label' => 'Cadeaux', 'route' => route('admin.gifts.index'), 'active' => request()->routeIs('admin.gifts.*') || request()->routeIs('admin.redemptions.*')],
         ['label' => 'Contacts', 'route' => route('admin.contact-messages.index'), 'active' => request()->routeIs('admin.contact-messages.*')],
+        ['label' => 'Emails', 'route' => route('admin.emails.index'), 'active' => request()->routeIs('admin.emails.*')],
         ['label' => 'Missions', 'route' => route('admin.missions.index'), 'active' => request()->routeIs('admin.missions.*')],
         ['label' => 'Galerie', 'route' => route('admin.gallery-photos.index'), 'active' => request()->routeIs('admin.gallery-photos.*')],
         ['label' => 'Videos galerie', 'route' => route('admin.gallery-videos.index'), 'active' => request()->routeIs('admin.gallery-videos.*')],

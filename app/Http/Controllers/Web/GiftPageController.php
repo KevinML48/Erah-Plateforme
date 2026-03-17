@@ -16,11 +16,13 @@ use App\Models\User;
 use App\Models\UserRewardWallet;
 use App\Support\LaunchGiftCatalog;
 use App\Services\Gifts\GiftCartService;
+use App\Services\Gifts\GiftEligibilityService;
 use App\Services\Gifts\GiftFavoriteService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
@@ -183,35 +185,23 @@ class GiftPageController extends Controller
     }
 
     public function show(
-        int $giftId,
-        GiftFavoriteService $giftFavoriteService
+        string $giftId,
+        GiftFavoriteService $giftFavoriteService,
+        GiftEligibilityService $giftEligibilityService
     ): View {
         $user = Auth::user();
         $isAuthenticated = $user instanceof User;
+        $gift = $giftEligibilityService->resolvePublicGift($giftId);
+        $purchaseState = $giftEligibilityService->evaluate($isAuthenticated ? $user : null, $gift);
 
-        $wallet = null;
-        $walletBalance = 0;
         $myRecentRedemptions = collect();
         $favoriteGiftIds = [];
         $cartItemQuantity = 0;
+        $latestRedemption = null;
 
         if ($isAuthenticated) {
-            $wallet = UserRewardWallet::query()->firstOrCreate(
-                ['user_id' => $user->id],
-                ['balance' => 0]
-            );
-            $walletBalance = (int) ($wallet->balance ?? 0);
             $favoriteGiftIds = $giftFavoriteService->favoriteGiftIds($user);
-        }
 
-        $gift = Gift::query()->findOrFail($giftId);
-        $categoryKey = $this->resolveCategoryKey($gift);
-        $giftCost = (int) $gift->cost_points;
-        $giftStock = (int) $gift->stock;
-        $isRedeemable = $gift->is_active && $giftStock > 0;
-        $pointsMissing = max(0, $giftCost - $walletBalance);
-
-        if ($isAuthenticated) {
             $myRecentRedemptions = GiftRedemption::query()
                 ->where('user_id', $user->id)
                 ->where('gift_id', $gift->id)
@@ -219,55 +209,132 @@ class GiftPageController extends Controller
                 ->limit(10)
                 ->get();
 
+            $latestRedemption = $myRecentRedemptions->first();
+
             $cartItemQuantity = (int) GiftCartItem::query()
                 ->where('user_id', $user->id)
                 ->where('gift_id', $gift->id)
                 ->value('quantity');
         }
 
+        $categoryKey = $this->resolveCategoryKey($gift);
+        $availabilityKey = $giftEligibilityService->availabilityKey($gift);
+        $giftCost = (int) $gift->cost_points;
+        $giftStock = (int) $gift->stock;
+        $galleryImages = $gift->galleryImages();
+        $primaryImage = $galleryImages[0] ?? $gift->primaryImageUrl();
+
+        $similarGifts = Gift::query()
+            ->where('is_active', true)
+            ->whereKeyNot($gift->id)
+            ->when(
+                $gift->launchCatalogCategory() !== null,
+                fn ($query) => $query->where('category', $gift->launchCatalogCategory())
+            )
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->orderBy('cost_points')
+            ->limit(3)
+            ->get();
+
+        Log::debug('gift.page.viewed', [
+            'gift_id' => $gift->id,
+            'gift_slug' => $gift->slug,
+            'viewer_user_id' => $user?->id,
+            'route_scope' => $isAuthenticated ? 'console' : 'public',
+        ]);
+
         return view('pages.gifts.show', [
-            'wallet' => $wallet,
             'gift' => $gift,
             'giftCategoryKey' => $categoryKey,
             'giftCategoryLabel' => $this->categoryLabel($categoryKey),
-            'giftCover' => $gift->image_url ?: '/template/assets/img/logo.png',
-            'walletBalance' => $walletBalance,
+            'giftTypeLabel' => $gift->publicTypeLabel(),
+            'giftDeliveryLabel' => $gift->launchCatalogDeliveryTypeLabel() ?: 'Traitement manuel',
+            'giftCover' => $primaryImage,
+            'galleryImages' => $galleryImages,
+            'shortDescription' => $gift->shortDescription() !== '' ? $gift->shortDescription() : 'Une recompense membre pensee pour valoriser votre activite et vos points cumules sur ERAH.',
+            'longDescription' => $gift->longDescription() !== '' ? $gift->longDescription() : 'Cette fiche cadeau centralise les informations utiles pour verifier les conditions, le mode de remise et lancer votre achat en toute securite.',
+            'walletBalance' => (int) $purchaseState['wallet_balance'],
             'giftCost' => $giftCost,
             'giftStock' => $giftStock,
-            'isRedeemable' => $isRedeemable,
-            'canAffordGift' => $isAuthenticated && $walletBalance >= $giftCost,
-            'pointsMissing' => $pointsMissing,
+            'isRedeemable' => (bool) $purchaseState['can_redeem'],
+            'canAddToCart' => (bool) $purchaseState['can_add_to_cart'],
+            'canAffordGift' => (int) $purchaseState['points_missing'] === 0,
+            'pointsMissing' => (int) $purchaseState['points_missing'],
+            'availabilityState' => (string) $purchaseState['state'],
+            'availabilityTitle' => (string) $purchaseState['title'],
+            'availabilityCopy' => (string) $purchaseState['message'],
+            'availabilityKey' => $availabilityKey,
             'myRecentRedemptions' => $myRecentRedemptions,
+            'latestRedemption' => $latestRedemption,
             'isAuthenticated' => $isAuthenticated,
             'isFavorited' => in_array((int) $gift->id, $favoriteGiftIds, true),
             'cartItemQuantity' => $cartItemQuantity,
             'giftIndexRouteName' => $isAuthenticated ? 'gifts.index' : 'app.gifts.index',
+            'giftShowRouteName' => $isAuthenticated ? 'gifts.show' : 'app.gifts.show',
+            'similarGifts' => $similarGifts,
+            'giftConditions' => $gift->conditions(),
+            'giftDeliveryDetails' => $gift->deliveryDetails(),
+            'giftEligibilityDetails' => $gift->eligibilityDetails(),
+            'isSupporterOnly' => $gift->supporterOnly(),
             'statusLabels' => GiftRedemption::statusLabels(),
         ]);
     }
 
     public function redeem(
         RedeemGiftRequest $request,
-        int $giftId,
-        RedeemGiftAction $redeemGiftAction
+        string $giftId,
+        RedeemGiftAction $redeemGiftAction,
+        GiftEligibilityService $giftEligibilityService
     ): RedirectResponse {
+        $gift = $giftEligibilityService->resolvePublicGift($giftId);
+
+        Log::info('gift.purchase.attempted', [
+            'gift_id' => $gift->id,
+            'gift_slug' => $gift->slug,
+            'user_id' => $request->user()->id,
+            'idempotency_key' => (string) $request->validated('idempotency_key'),
+        ]);
+
         try {
             $result = $redeemGiftAction->execute(
                 user: $request->user(),
-                giftId: $giftId,
+                giftId: $gift->id,
                 idempotencyKey: (string) $request->validated('idempotency_key')
             );
         } catch (RuntimeException $exception) {
-            return back()->withInput()->with('error', $this->friendlyRedeemError($exception->getMessage()));
+            Log::warning('gift.purchase.failed', [
+                'gift_id' => $gift->id,
+                'gift_slug' => $gift->slug,
+                'user_id' => $request->user()->id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()
+                ->route('gifts.show', $gift->routeIdentifier())
+                ->withInput()
+                ->with('error', $this->friendlyRedeemError($exception->getMessage()));
         }
 
         $orderNumber = $this->formatOrderNumber((int) $result['redemption']->id);
 
+        Log::info('gift.purchase.succeeded', [
+            'gift_id' => $gift->id,
+            'gift_slug' => $gift->slug,
+            'user_id' => $request->user()->id,
+            'redemption_id' => $result['redemption']->id,
+            'idempotent' => (bool) $result['idempotent'],
+        ]);
+
         if ($result['idempotent']) {
-            return back()->with('success', 'Commande '.$orderNumber.' deja enregistree. Retrouvez-la dans "Mes commandes cadeaux".');
+            return redirect()
+                ->route('gifts.redemptions.show', $result['redemption']->id)
+                ->with('success', 'Commande '.$orderNumber.' deja enregistree. Retrouvez-la dans votre suivi cadeau.');
         }
 
-        return back()->with('success', 'Demande enregistree: '.$orderNumber.'. Vous pouvez suivre chaque etape depuis vos commandes cadeaux.');
+        return redirect()
+            ->route('gifts.redemptions.show', $result['redemption']->id)
+            ->with('success', 'Demande enregistree: '.$orderNumber.'. Vous pouvez maintenant suivre chaque etape de votre commande cadeau.');
     }
 
     public function cart(Request $request, GiftCartService $giftCartService): View
@@ -587,6 +654,14 @@ class GiftPageController extends Controller
             return 'Cet objet de profil est deja dans votre collection.';
         }
 
+        if (Str::contains($normalizedMessage, ['une seule fois', 'deja en cours'])) {
+            return 'Ce cadeau ne peut etre commande qu une seule fois avec ce compte.';
+        }
+
+        if (Str::contains($normalizedMessage, ['supporter'])) {
+            return 'Ce cadeau est reserve aux supporters actifs.';
+        }
+
         if (Str::contains($normalizedMessage, ['disponible', 'inactive', 'desactive'])) {
             return 'Ce cadeau est temporairement indisponible.';
         }
@@ -608,6 +683,14 @@ class GiftPageController extends Controller
 
         if (Str::contains($normalizedMessage, ['possede deja', 'profil'])) {
             return 'Un objet de profil du panier est deja dans votre collection.';
+        }
+
+        if (Str::contains($normalizedMessage, ['une seule fois', 'deja en cours'])) {
+            return 'Un cadeau du panier ne peut etre commande qu une seule fois avec ce compte.';
+        }
+
+        if (Str::contains($normalizedMessage, ['supporter'])) {
+            return 'Un cadeau du panier est reserve aux supporters actifs.';
         }
 
         if (Str::contains($normalizedMessage, ['desactive', 'indisponible'])) {

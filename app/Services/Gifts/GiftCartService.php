@@ -27,6 +27,7 @@ class GiftCartService
         private readonly PlatformPointService $platformPointService,
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly NotifyAction $notifyAction,
+        private readonly GiftEligibilityService $giftEligibilityService,
         private readonly GiftRedemptionAutomationService $giftRedemptionAutomationService
     ) {
     }
@@ -122,8 +123,6 @@ class GiftCartService
                 throw new RuntimeException('Ce cadeau est en rupture de stock.');
             }
 
-            $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
-
             $cartItem = GiftCartItem::query()
                 ->where('user_id', $user->id)
                 ->where('gift_id', $gift->id)
@@ -131,6 +130,8 @@ class GiftCartService
                 ->first();
 
             $nextQuantity = ($cartItem ? (int) $cartItem->quantity : 0) + $quantity;
+            $this->giftEligibilityService->assertPurchasable($user, $gift, $nextQuantity);
+
             if ($nextQuantity > (int) $gift->stock) {
                 throw new RuntimeException('Stock insuffisant pour ajouter cette quantite au panier.');
             }
@@ -197,6 +198,8 @@ class GiftCartService
             if ((int) $gift->stock < $quantity) {
                 throw new RuntimeException('Stock insuffisant pour cette quantite.');
             }
+
+            $this->giftEligibilityService->assertPurchasable($user, $gift, $quantity);
 
             $cartItem->quantity = $quantity;
             $cartItem->save();
@@ -334,7 +337,7 @@ class GiftCartService
                     throw new RuntimeException('Stock insuffisant pour "'.$gift->title.'".');
                 }
 
-                $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
+                $this->giftEligibilityService->assertPurchasable($user, $gift, (int) $cartItem->quantity);
 
                 $lineTotal = (int) $gift->cost_points * (int) $cartItem->quantity;
                 $totalPoints += $lineTotal;

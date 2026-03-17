@@ -210,8 +210,8 @@ class MissionsAndGiftsPagesTest extends TestCase
         $this->actingAs($user)->get(route('gifts.show', $gift->id))
             ->assertOk()
             ->assertSee('Sticker Pack ERAH')
-            ->assertSee('Demander ce cadeau')
-            ->assertSee('Mes demandes recentes');
+            ->assertSee('Acheter / echanger ce cadeau')
+            ->assertSee('Historique lie a ce cadeau');
     }
 
     public function test_user_can_filter_gift_catalog_by_category(): void

@@ -120,7 +120,7 @@
                                 <div class="tt-grid-item isotope-item {{ $item['category_key'] }}">
                                     <div class="ttgr-item-inner">
                                         <div class="portfolio-grid-item">
-                                            <a href="{{ route($giftShowRouteName, $gift->id) }}" class="pgi-image-wrap" data-cursor="Voir<br>fiche">
+                                            <a href="{{ route($giftShowRouteName, $gift->routeIdentifier()) }}" class="pgi-image-wrap" data-cursor="Voir<br>fiche">
                                                 <div class="pgi-image-holder">
                                                     <div class="pgi-image-inner tt-anim-zoomin">
                                                         <figure class="pgi-image ttgr-height">
@@ -131,13 +131,13 @@
                                             </a>
                                             <div class="pgi-caption">
                                                 <div class="pgi-caption-inner">
-                                                    <h2 class="pgi-title"><a href="{{ route($giftShowRouteName, $gift->id) }}">{{ $gift->title }}</a></h2>
+                                                    <h2 class="pgi-title"><a href="{{ route($giftShowRouteName, $gift->routeIdentifier()) }}">{{ $gift->title }}</a></h2>
                                                     <div class="pgi-categories-wrap">
                                                         <div class="pgi-category">{{ $item['category_label'] }}</div>
                                                         <div class="pgi-category">{{ (int) $gift->cost_points }} pts</div>
                                                         <div class="pgi-category">{{ (int) $gift->stock }} en stock</div>
                                                     </div>
-                                                    <p class="gift-card-copy">{{ \Illuminate\Support\Str::limit((string) ($gift->description ?: 'Recompense membre accessible avec vos points.'), 120) }}</p>
+                                                    <p class="gift-card-copy">{{ \Illuminate\Support\Str::limit((string) ($gift->shortDescription() !== '' ? $gift->shortDescription() : ($gift->description ?: 'Recompense membre accessible avec vos points.')), 120) }}</p>
                                                     <div class="gift-card-foot">
                                                         <span class="is-{{ $item['availability_key'] }}">{{ $item['availability_label'] }}</span>
                                                         <span>{{ $item['availability_copy'] }}</span>
@@ -147,11 +147,12 @@
                                                         <p class="gift-card-warning">Il vous manque {{ (int) $item['points_missing'] }} points pour demander ce cadeau.</p>
                                                     @endif
                                                     <div class="gift-card-actions">
+                                                        <a href="{{ route($giftShowRouteName, $gift->routeIdentifier()) }}" class="tt-btn tt-btn-secondary"><span data-hover="Voir la fiche">Voir la fiche cadeau</span></a>
                                                         @if($isAuthenticated)
                                                             <form method="POST" action="{{ route('gifts.cart.add', $gift->id) }}">
                                                                 @csrf
                                                                 <input type="hidden" name="quantity" value="1">
-                                                                <button type="submit" class="tt-btn tt-btn-secondary"><span data-hover="Panier">Ajouter au panier</span></button>
+                                                                <button type="submit" class="tt-btn tt-btn-outline"><span data-hover="Panier">Ajouter au panier</span></button>
                                                             </form>
                                                             <form method="POST" action="{{ route('gifts.favorites.toggle', $gift->id) }}">
                                                                 @csrf
@@ -229,7 +230,7 @@
                                             <div class="gift-order-head"><strong>{{ $favorite->gift->title }}</strong></div>
                                             <p>{{ (int) $favorite->gift->cost_points }} pts - stock {{ (int) $favorite->gift->stock }}</p>
                                             <div class="gift-card-actions">
-                                                <a href="{{ route('gifts.show', $favorite->gift->id) }}" class="tt-btn tt-btn-outline"><span data-hover="Ouvrir">Ouvrir la fiche</span></a>
+                                                <a href="{{ route('gifts.show', $favorite->gift->routeIdentifier()) }}" class="tt-btn tt-btn-outline"><span data-hover="Ouvrir">Ouvrir la fiche</span></a>
                                                 <form method="POST" action="{{ route('gifts.cart.add', $favorite->gift->id) }}">
                                                     @csrf
                                                     <input type="hidden" name="quantity" value="1">

@@ -22,6 +22,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -224,14 +225,20 @@ class AdminGiftConsoleController extends Controller
     ): RedirectResponse {
         $validated = $request->validated();
         $gift = Gift::query()->create([
+                'slug' => $this->resolveGiftSlug($validated['title'], $validated['slug'] ?? null),
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
+                'category' => $validated['category'] ?? null,
+                'type' => $validated['type'] ?? null,
+                'delivery_type' => $validated['delivery_type'] ?? null,
             'image_url' => $this->resolveImageUrl($request),
             'cost_points' => (int) $validated['cost_points'],
             'stock' => (int) $validated['stock'],
             'is_active' => $request->boolean('is_active', true),
             'is_featured' => $request->boolean('is_featured', false),
             'sort_order' => (int) ($validated['sort_order'] ?? 0),
+                'requires_admin_validation' => $request->boolean('requires_admin_validation', false),
+                'metadata' => $this->buildGiftMetadata($validated, $request),
         ]);
 
         $storeAuditLogAction->execute(
@@ -256,14 +263,20 @@ class AdminGiftConsoleController extends Controller
         $gift = Gift::query()->findOrFail($giftId);
         $validated = $request->validated();
         $gift->fill([
+                'slug' => $this->resolveGiftSlug($validated['title'], $validated['slug'] ?? $gift->slug, $gift->id),
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
+                'category' => $validated['category'] ?? null,
+                'type' => $validated['type'] ?? null,
+                'delivery_type' => $validated['delivery_type'] ?? null,
             'image_url' => $this->resolveImageUrl($request, $gift->image_url),
             'cost_points' => (int) $validated['cost_points'],
             'stock' => (int) $validated['stock'],
             'is_active' => $request->boolean('is_active', false),
             'is_featured' => $request->boolean('is_featured', false),
             'sort_order' => (int) ($validated['sort_order'] ?? 0),
+                'requires_admin_validation' => $request->boolean('requires_admin_validation', false),
+                'metadata' => $this->buildGiftMetadata($validated, $request, $gift),
         ])->save();
 
         $storeAuditLogAction->execute(
@@ -347,6 +360,7 @@ class AdminGiftConsoleController extends Controller
             'orderNumber' => 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT),
         ]);
     }
+
 
     public function approve(
         Request $request,
@@ -790,5 +804,70 @@ class AdminGiftConsoleController extends Controller
         }
 
         return $fallback;
+    }
+
+    /**
+     * @param array<string, mixed> $validated
+     * @return array<string, mixed>
+     */
+    private function buildGiftMetadata(array $validated, Request $request, ?Gift $gift = null): array
+    {
+        $metadata = is_array($gift?->metadata) ? $gift->metadata : [];
+
+        $metadata['short_description'] = $this->nullableTrim($validated['short_description'] ?? null);
+        $metadata['long_description'] = $this->nullableTrim($validated['long_description'] ?? null);
+        $metadata['delivery_details'] = $this->nullableTrim($validated['delivery_details'] ?? null);
+        $metadata['eligibility_details'] = $this->nullableTrim($validated['eligibility_details'] ?? null);
+        $metadata['meta_title'] = $this->nullableTrim($validated['meta_title'] ?? null);
+        $metadata['meta_description'] = $this->nullableTrim($validated['meta_description'] ?? null);
+        $metadata['supporter_only'] = $request->boolean('supporter_only', false);
+        $metadata['is_repeatable'] = $request->boolean('is_repeatable', true);
+        $metadata['conditions'] = $this->normalizeTextList($validated['conditions'] ?? null);
+        $metadata['gallery'] = $this->normalizeTextList($validated['gallery_urls'] ?? null);
+
+        return collect($metadata)
+            ->reject(function ($value, $key): bool {
+                return in_array($key, ['short_description', 'long_description', 'delivery_details', 'eligibility_details', 'meta_title', 'meta_description'], true)
+                    ? $value === null
+                    : false;
+            })
+            ->all();
+    }
+
+    private function resolveGiftSlug(string $title, ?string $requestedSlug = null, ?int $ignoreGiftId = null): string
+    {
+        $baseSlug = Str::slug(trim((string) ($requestedSlug ?: $title)));
+        $baseSlug = $baseSlug !== '' ? Str::limit($baseSlug, 150, '') : 'gift';
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (Gift::query()
+            ->where('slug', $slug)
+            ->when($ignoreGiftId !== null, fn ($query) => $query->whereKeyNot($ignoreGiftId))
+            ->exists()) {
+            $slug = Str::limit($baseSlug, 145, '').'-'.$suffix;
+            $suffix++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function normalizeTextList(?string $value): array
+    {
+        return collect(preg_split('/\r\n|\r|\n|,/', trim((string) $value)) ?: [])
+            ->map(fn (string $item): string => trim($item))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function nullableTrim(?string $value): ?string
+    {
+        $trimmed = trim((string) $value);
+
+        return $trimmed !== '' ? $trimmed : null;
     }
 }

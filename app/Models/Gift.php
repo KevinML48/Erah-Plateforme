@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Support\LaunchGiftCatalog;
+use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Gift extends Model
 {
@@ -13,6 +15,7 @@ class Gift extends Model
 
     protected $fillable = [
         'key',
+        'slug',
         'title',
         'description',
         'category',
@@ -32,6 +35,7 @@ class Gift extends Model
     {
         return [
             'key' => 'string',
+            'slug' => 'string',
             'cost_points' => 'integer',
             'stock' => 'integer',
             'is_active' => 'boolean',
@@ -63,6 +67,131 @@ class Gift extends Model
     public function launchCatalogDefinition(): ?array
     {
         return LaunchGiftCatalog::definitionForGift($this);
+    }
+
+    public function routeIdentifier(): string
+    {
+        return $this->slug ?: (string) $this->getKey();
+    }
+
+    public function primaryImageUrl(): string
+    {
+        return $this->image_url ?: '/template/assets/img/logo.png';
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function detailMetadata(): array
+    {
+        return is_array($this->metadata) ? $this->metadata : [];
+    }
+
+    public function shortDescription(): string
+    {
+        return trim((string) ($this->detailMetadata()['short_description'] ?? $this->launchCatalogDefinition()['short_description'] ?? $this->description ?? ''));
+    }
+
+    public function longDescription(): string
+    {
+        return trim((string) ($this->detailMetadata()['long_description'] ?? $this->launchCatalogDefinition()['long_description'] ?? $this->description ?? ''));
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function galleryImages(): array
+    {
+        $gallery = $this->detailMetadata()['gallery'] ?? [];
+        $images = collect(is_array($gallery) ? $gallery : [])
+            ->map(fn ($image): string => trim((string) $image))
+            ->filter()
+            ->values();
+
+        if ($images->isEmpty() && $this->image_url) {
+            $images = collect([$this->image_url]);
+        }
+
+        return $images->values()->all();
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function conditions(): array
+    {
+        $rawConditions = $this->detailMetadata()['conditions'] ?? $this->launchCatalogDefinition()['conditions'] ?? [];
+
+        if (is_string($rawConditions)) {
+            $rawConditions = preg_split('/\r\n|\r|\n/', $rawConditions) ?: [];
+        }
+
+        return collect(is_array($rawConditions) ? $rawConditions : [])
+            ->map(fn ($item): string => trim((string) $item))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    public function deliveryDetails(): ?string
+    {
+        $value = trim((string) ($this->detailMetadata()['delivery_details'] ?? $this->launchCatalogDefinition()['delivery_details'] ?? ''));
+
+        return $value !== '' ? $value : null;
+    }
+
+    public function eligibilityDetails(): ?string
+    {
+        $value = trim((string) ($this->detailMetadata()['eligibility_details'] ?? $this->launchCatalogDefinition()['eligibility_details'] ?? ''));
+
+        return $value !== '' ? $value : null;
+    }
+
+    public function metaTitle(): string
+    {
+        $custom = trim((string) ($this->detailMetadata()['meta_title'] ?? ''));
+
+        return $custom !== '' ? $custom : $this->title.' | Cadeaux ERAH';
+    }
+
+    public function metaDescription(): string
+    {
+        $custom = trim((string) ($this->detailMetadata()['meta_description'] ?? ''));
+        if ($custom !== '') {
+            return $custom;
+        }
+
+        $base = $this->shortDescription() ?: $this->longDescription();
+        if ($base === '') {
+            return 'Detail cadeau ERAH, consultation, conditions et achat depuis votre solde points.';
+        }
+
+        return Str::limit($base, 155, '');
+    }
+
+    public function supporterOnly(): bool
+    {
+        return (bool) ($this->detailMetadata()['supporter_only'] ?? $this->launchCatalogDefinition()['supporter_only'] ?? false);
+    }
+
+    public function isRepeatable(): bool
+    {
+        return (bool) ($this->detailMetadata()['is_repeatable'] ?? $this->launchCatalogDefinition()['is_repeatable'] ?? true);
+    }
+
+    public function publicTypeLabel(): string
+    {
+        $type = trim((string) ($this->type ?: ($this->launchCatalogDefinition()['type'] ?? '')));
+
+        return match ($type) {
+            'badge' => 'Badge',
+            'avatar_frame' => 'Contour avatar',
+            'banner' => 'Banniere',
+            'title', 'profile_title' => 'Titre de profil',
+            'profile_style' => 'Style profil',
+            'featured_profile' => 'Mise en avant',
+            default => $type !== '' ? Str::headline(str_replace('_', ' ', $type)) : 'Cadeau membre',
+        };
     }
 
     public function launchCatalogKey(): ?string

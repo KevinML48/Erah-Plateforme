@@ -226,7 +226,7 @@ class AssistantContextService
                 'title' => $gift->title,
                 'cost_points' => (int) $gift->cost_points,
                 'reachable' => $rewardBalance >= (int) $gift->cost_points,
-                'url' => $this->relativeRoute('gifts.show', $gift->id),
+                'url' => $this->relativeRoute('gifts.show', $gift->routeIdentifier()),
             ])
             ->values()
             ->all();

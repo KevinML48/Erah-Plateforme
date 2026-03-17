@@ -392,7 +392,7 @@
                                                 <td data-label="Actions">
                                                     <div class="gift-cart-inline">
                                                         @if($gift)
-                                                            <a href="{{ route('gifts.show', $gift->id) }}" class="tt-btn tt-btn-outline">
+                                                            <a href="{{ route('gifts.show', $gift->routeIdentifier()) }}" class="tt-btn tt-btn-outline">
                                                                 <span data-hover="Voir le cadeau">Voir le cadeau</span>
                                                             </a>
                                                         @endif

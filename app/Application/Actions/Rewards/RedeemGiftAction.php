@@ -10,6 +10,7 @@ use App\Models\GiftRedemption;
 use App\Models\GiftRedemptionEvent;
 use App\Models\RewardWalletTransaction;
 use App\Models\User;
+use App\Services\Gifts\GiftEligibilityService;
 use App\Services\Gifts\GiftRedemptionAutomationService;
 use App\Services\MissionEngine;
 use App\Services\PlatformPointService;
@@ -23,6 +24,7 @@ class RedeemGiftAction
         private readonly StoreAuditLogAction $storeAuditLogAction,
         private readonly NotifyAction $notifyAction,
         private readonly MissionEngine $missionEngine,
+        private readonly GiftEligibilityService $giftEligibilityService,
         private readonly GiftRedemptionAutomationService $giftRedemptionAutomationService
     ) {
     }
@@ -56,15 +58,7 @@ class RedeemGiftAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (! $gift->is_active) {
-                throw new RuntimeException('Ce cadeau n est pas disponible.');
-            }
-
-            if ((int) $gift->stock <= 0) {
-                throw new RuntimeException('Stock indisponible pour ce cadeau.');
-            }
-
-            $this->giftRedemptionAutomationService->assertRedeemable($user, $gift);
+            $this->giftEligibilityService->assertPurchasable($user, $gift);
 
             $redemption = GiftRedemption::query()->create([
                 'user_id' => $user->id,

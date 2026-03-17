@@ -1,890 +1,585 @@
 @extends('marketing.layouts.template')
 
-@section('title', ($gift->title ?? 'Cadeau').' | Cadeaux ERAH')
-@section('meta_description', 'Detail cadeau ERAH, demande et suivi depuis le solde points.')
+@section('title', $gift->metaTitle())
+@section('meta_description', $gift->metaDescription())
 @section('body_class', 'tt-transition tt-noise tt-magic-cursor tt-smooth-scroll')
 
 @section('page_styles')
 <style>
-    .gift-detail-page {
-        --gift-accent: #db0812;
-        --gift-accent-soft: rgba(219, 8, 18, 0.16);
+    .gift-show-page {
         --gift-border: rgba(255, 255, 255, 0.1);
-        --gift-text-muted: rgba(255, 255, 255, 0.64);
-        --gift-card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        --gift-muted: rgba(255, 255, 255, 0.68);
+        --gift-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
     }
 
-    .gift-detail-page #page-header .ph-caption-description {
-        max-width: 720px;
+    .gift-show-page .gift-breadcrumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 22px;
+        color: var(--gift-muted);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
     }
 
-    .gift-detail-header-pills,
-    .gift-detail-inline-pills {
+    .gift-show-page .gift-breadcrumbs a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .gift-show-page .gift-hero-grid,
+    .gift-show-page .gift-content-grid {
+        display: grid;
+        gap: 26px;
+    }
+
+    .gift-show-page .gift-hero-grid {
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        align-items: start;
+    }
+
+    .gift-show-page .gift-content-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+        margin-top: 26px;
+    }
+
+    .gift-show-page .gift-surface {
+        border: 1px solid var(--gift-border);
+        border-radius: 28px;
+        background: var(--gift-surface);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(18px);
+    }
+
+    .gift-show-page .gift-gallery-card,
+    .gift-show-page .gift-summary-card,
+    .gift-show-page .gift-block,
+    .gift-show-page .gift-sidebar-card,
+    .gift-show-page .gift-similar-card,
+    .gift-show-page .gift-history-card {
+        padding: 26px;
+    }
+
+    .gift-show-page .gift-gallery-main {
+        position: relative;
+        overflow: hidden;
+        border-radius: 22px;
+        min-height: 520px;
+        background: radial-gradient(circle at top left, rgba(219, 8, 18, 0.18), transparent 32%), linear-gradient(180deg, rgba(22, 22, 22, 0.88), rgba(8, 8, 8, 0.96));
+    }
+
+    .gift-show-page .gift-gallery-main img {
+        width: 100%;
+        height: 100%;
+        min-height: 520px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .gift-show-page .gift-gallery-badges,
+    .gift-show-page .gift-summary-pills,
+    .gift-show-page .gift-thumb-list,
+    .gift-show-page .gift-cta-stack,
+    .gift-show-page .gift-history-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
     }
 
-    .gift-detail-pill {
+    .gift-show-page .gift-gallery-badges {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        right: 18px;
+        justify-content: space-between;
+    }
+
+    .gift-show-page .gift-badge,
+    .gift-show-page .gift-pill,
+    .gift-show-page .gift-meta-chip,
+    .gift-show-page .gift-status-chip {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 40px;
-        padding: 10px 16px;
-        border: 1px solid var(--gift-border);
+        min-height: 36px;
+        padding: 8px 14px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.04);
-        color: rgba(255, 255, 255, 0.88);
+        border: 1px solid var(--gift-border);
+        background: rgba(0, 0, 0, 0.36);
+        color: #fff;
         font-size: 12px;
         font-weight: 600;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
     }
 
-    .gift-detail-surface {
-        border: 1px solid var(--gift-border);
-        border-radius: 32px;
-        background: var(--gift-card-bg);
-        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.26);
-        backdrop-filter: blur(18px);
+    .gift-show-page .gift-status-chip.is-available {
+        background: rgba(76, 191, 121, 0.18);
+        border-color: rgba(76, 191, 121, 0.34);
     }
 
-    .gift-detail-hero-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
-        gap: 30px;
+    .gift-show-page .gift-status-chip.is-low,
+    .gift-show-page .gift-status-chip.is-insufficient_points,
+    .gift-show-page .gift-status-chip.is-supporter_required {
+        background: rgba(243, 185, 79, 0.18);
+        border-color: rgba(243, 185, 79, 0.32);
     }
 
-    .gift-detail-visual {
-        padding: 26px;
+    .gift-show-page .gift-status-chip.is-unavailable,
+    .gift-show-page .gift-status-chip.is-out,
+    .gift-show-page .gift-status-chip.is-auth_required,
+    .gift-show-page .gift-status-chip.is-already_owned,
+    .gift-show-page .gift-status-chip.is-already_ordered {
+        background: rgba(219, 8, 18, 0.18);
+        border-color: rgba(219, 8, 18, 0.38);
     }
 
-    .gift-detail-visual-stage {
-        position: relative;
-        display: grid;
-        align-items: end;
-        min-height: 620px;
-        overflow: hidden;
-        border-radius: 28px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        background:
-            radial-gradient(circle at 18% 20%, rgba(219, 8, 18, 0.22), transparent 38%),
-            radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 32%),
-            linear-gradient(180deg, rgba(18, 18, 18, 0.78), rgba(8, 8, 8, 0.94));
+    .gift-show-page .gift-thumb-list {
+        margin-top: 14px;
     }
 
-    .gift-detail-visual-stage::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.54));
-        pointer-events: none;
-    }
-
-    .gift-detail-visual-image {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
+    .gift-show-page .gift-thumb-list img {
+        width: 92px;
+        height: 92px;
+        border-radius: 18px;
         object-fit: cover;
-        object-position: center;
-        opacity: 0.94;
-    }
-
-    .gift-detail-visual-badge,
-    .gift-detail-visual-stamp,
-    .gift-detail-visual-copy {
-        position: relative;
-        z-index: 1;
-    }
-
-    .gift-detail-visual-badge {
-        position: absolute;
-        top: 22px;
-        left: 22px;
-        display: inline-flex;
-        padding: 9px 14px;
-        border-radius: 999px;
-        background: rgba(0, 0, 0, 0.42);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #fff;
-        font-size: 12px;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-    }
-
-    .gift-detail-visual-stamp {
-        position: absolute;
-        top: 22px;
-        right: 22px;
-        display: inline-flex;
-        padding: 9px 14px;
-        border-radius: 999px;
-        background: rgba(219, 8, 18, 0.88);
-        color: #fff;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-    }
-
-    .gift-detail-visual-copy {
-        display: grid;
-        gap: 12px;
-        padding: 32px;
-    }
-
-    .gift-detail-visual-copy strong {
-        font-family: "Big Shoulders Display", sans-serif;
-        font-size: clamp(52px, 6vw, 108px);
-        line-height: 0.9;
-        text-transform: uppercase;
-    }
-
-    .gift-detail-visual-copy p {
-        max-width: 32ch;
-        margin: 0;
-        color: rgba(255, 255, 255, 0.74);
-        font-size: 17px;
-        line-height: 1.7;
-    }
-
-    .gift-detail-usp-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 16px;
-    }
-
-    .gift-detail-usp-card {
-        padding: 18px;
         border: 1px solid var(--gift-border);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.03);
     }
 
-    .gift-detail-usp-card strong {
-        display: block;
-        margin-bottom: 6px;
+    .gift-show-page .gift-summary-card h1,
+    .gift-show-page .gift-block h2,
+    .gift-show-page .gift-sidebar-card h3,
+    .gift-show-page .gift-history-card h3 {
         color: #fff;
-        font-size: 14px;
-        font-weight: 600;
     }
 
-    .gift-detail-usp-card p {
-        margin: 0;
-        color: var(--gift-text-muted);
-        font-size: 14px;
-        line-height: 1.6;
+    .gift-show-page .gift-summary-card h1 {
+        margin: 0 0 14px;
+        font-size: clamp(36px, 4vw, 64px);
+        line-height: 0.95;
     }
 
-    .gift-detail-panel {
-        padding: 34px;
-    }
-
-    .gift-detail-eyebrow {
-        display: inline-block;
-        margin-bottom: 14px;
-        color: rgba(255, 255, 255, 0.56);
-        font-size: 12px;
-        letter-spacing: 0.24em;
-        text-transform: uppercase;
-    }
-
-    .gift-detail-panel h2 {
-        margin: 0 0 12px;
-        color: #fff;
-        font-size: clamp(34px, 3.4vw, 60px);
-        line-height: 0.94;
-    }
-
-    .gift-detail-panel > p {
-        margin: 0 0 22px;
-        color: var(--gift-text-muted);
-        font-size: 16px;
+    .gift-show-page .gift-summary-card p,
+    .gift-show-page .gift-block p,
+    .gift-show-page .gift-sidebar-card p,
+    .gift-show-page .gift-history-card p,
+    .gift-show-page .gift-similar-card p,
+    .gift-show-page .gift-empty {
+        color: var(--gift-muted);
         line-height: 1.75;
     }
 
-    .gift-detail-metrics {
+    .gift-show-page .gift-meta-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-        margin-top: 24px;
+        gap: 12px;
+        margin-top: 22px;
     }
 
-    .gift-detail-metric {
+    .gift-show-page .gift-meta-card,
+    .gift-show-page .gift-state-card,
+    .gift-show-page .gift-list-card {
         padding: 18px 20px;
         border: 1px solid var(--gift-border);
         border-radius: 22px;
         background: rgba(255, 255, 255, 0.03);
     }
 
-    .gift-detail-metric span {
+    .gift-show-page .gift-meta-card span,
+    .gift-show-page .gift-state-card span {
         display: block;
         margin-bottom: 8px;
-        color: rgba(255, 255, 255, 0.48);
+        color: rgba(255, 255, 255, 0.52);
         font-size: 11px;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
     }
 
-    .gift-detail-metric strong {
-        display: block;
+    .gift-show-page .gift-meta-card strong,
+    .gift-show-page .gift-state-card strong {
         color: #fff;
-        font-size: clamp(28px, 2vw, 42px);
-        line-height: 1;
+        font-size: clamp(24px, 2vw, 34px);
+        line-height: 1.1;
     }
 
-    .gift-detail-state {
-        margin-top: 20px;
-        padding: 20px 22px;
-        border-radius: 24px;
-        border: 1px solid var(--gift-border);
-        background: rgba(255, 255, 255, 0.03);
+    .gift-show-page .gift-state-card {
+        margin-top: 18px;
     }
 
-    .gift-detail-state.is-limited {
-        border-color: rgba(240, 173, 78, 0.35);
-        background: rgba(240, 173, 78, 0.08);
+    .gift-show-page .gift-cta-stack {
+        margin-top: 24px;
     }
 
-    .gift-detail-state.is-unavailable {
-        border-color: rgba(219, 8, 18, 0.28);
-        background: rgba(219, 8, 18, 0.08);
-    }
-
-    body.tt-lightmode-on .gift-detail-page {
-        --gift-border: rgba(148, 163, 184, 0.24);
-        --gift-text-muted: rgba(51, 65, 85, 0.82);
-        --gift-card-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.9));
-    }
-
-    body.tt-lightmode-on .gift-detail-surface,
-    body.tt-lightmode-on .gift-detail-usp-card,
-    body.tt-lightmode-on .gift-detail-metric,
-    body.tt-lightmode-on .gift-detail-state,
-    body.tt-lightmode-on .gift-detail-latest,
-    body.tt-lightmode-on .gift-detail-history-item,
-    body.tt-lightmode-on .gift-detail-side-card,
-    body.tt-lightmode-on .gift-detail-wallet-highlight {
-        box-shadow: 0 24px 52px rgba(148, 163, 184, 0.16);
-    }
-
-    body.tt-lightmode-on .gift-detail-pill,
-    body.tt-lightmode-on .gift-detail-visual-badge {
-        background: rgba(255, 255, 255, 0.9);
-        color: #0f172a;
-    }
-
-    body.tt-lightmode-on .gift-detail-panel h2,
-    body.tt-lightmode-on .gift-detail-usp-card strong,
-    body.tt-lightmode-on .gift-detail-metric strong,
-    body.tt-lightmode-on .gift-detail-state strong,
-    body.tt-lightmode-on .gift-detail-section-heading h3,
-    body.tt-lightmode-on .gift-detail-history-top strong,
-    body.tt-lightmode-on .gift-detail-wallet-highlight strong {
-        color: #0f172a;
-    }
-
-    body.tt-lightmode-on .gift-detail-visual-stage {
-        border-color: rgba(148, 163, 184, 0.22);
-        background:
-            radial-gradient(circle at 18% 20%, rgba(219, 8, 18, 0.18), transparent 38%),
-            radial-gradient(circle at 82% 78%, rgba(15, 23, 42, 0.05), transparent 32%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.36), rgba(226, 232, 240, 0.56));
-    }
-
-    body.tt-lightmode-on .gift-detail-visual-copy p,
-    body.tt-lightmode-on .gift-detail-history-meta,
-    body.tt-lightmode-on .gift-detail-empty,
-    body.tt-lightmode-on .gift-detail-empty p {
-        color: rgba(51, 65, 85, 0.82);
-    }
-
-    .gift-detail-state strong {
-        display: block;
-        margin-bottom: 8px;
-        color: #fff;
-        font-size: 18px;
-    }
-
-    .gift-detail-state p {
+    .gift-show-page .gift-cta-stack form {
         margin: 0;
-        color: var(--gift-text-muted);
-        font-size: 15px;
-        line-height: 1.7;
     }
 
-    .gift-detail-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 26px;
-    }
-
-    .gift-detail-actions .tt-btn[disabled] {
+    .gift-show-page .gift-cta-stack .tt-btn[disabled] {
         opacity: 0.45;
         pointer-events: none;
     }
 
-    .gift-detail-latest {
-        margin-top: 24px;
-        padding: 20px 22px;
-        border-radius: 24px;
+    .gift-show-page .gift-block + .gift-block,
+    .gift-show-page .gift-sidebar-card + .gift-sidebar-card,
+    .gift-show-page .gift-history-card + .gift-block {
+        margin-top: 22px;
+    }
+
+    .gift-show-page .gift-block ul,
+    .gift-show-page .gift-sidebar-card ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--gift-muted);
+        line-height: 1.8;
+    }
+
+    .gift-show-page .gift-sidebar-sticky {
+        position: sticky;
+        top: 24px;
+    }
+
+    .gift-show-page .gift-history-list,
+    .gift-show-page .gift-similar-grid {
+        display: grid;
+        gap: 14px;
+    }
+
+    .gift-show-page .gift-history-item,
+    .gift-show-page .gift-similar-card {
+        padding: 18px 20px;
         border: 1px solid var(--gift-border);
+        border-radius: 20px;
         background: rgba(255, 255, 255, 0.03);
     }
 
-    .gift-detail-latest-head {
+    .gift-show-page .gift-history-top,
+    .gift-show-page .gift-similar-top {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        gap: 16px;
+        gap: 12px;
+        align-items: center;
         margin-bottom: 10px;
     }
 
-    .gift-detail-latest-head strong {
+    .gift-show-page .gift-similar-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 16px;
+        margin-bottom: 14px;
+    }
+
+    .gift-show-page .gift-similar-card h3 {
+        margin: 0 0 8px;
         color: #fff;
-        font-size: 18px;
+        font-size: 22px;
     }
 
-    .gift-detail-status {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 34px;
-        padding: 8px 13px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.04);
-        color: #fff;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+    body.tt-lightmode-on .gift-show-page {
+        --gift-border: rgba(148, 163, 184, 0.24);
+        --gift-muted: rgba(51, 65, 85, 0.84);
+        --gift-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
     }
 
-    .gift-detail-status.is-pending { background: rgba(255, 255, 255, 0.06); }
-    .gift-detail-status.is-approved { background: rgba(56, 142, 60, 0.16); border-color: rgba(56, 142, 60, 0.28); }
-    .gift-detail-status.is-rejected { background: rgba(219, 8, 18, 0.16); border-color: rgba(219, 8, 18, 0.28); }
-    .gift-detail-status.is-shipped { background: rgba(14, 131, 205, 0.16); border-color: rgba(14, 131, 205, 0.28); }
-    .gift-detail-status.is-delivered { background: rgba(139, 195, 74, 0.18); border-color: rgba(139, 195, 74, 0.3); }
-    .gift-detail-status.is-cancelled { background: rgba(117, 117, 117, 0.18); border-color: rgba(117, 117, 117, 0.3); }
-
-    .gift-detail-latest p,
-    .gift-detail-latest ul,
-    .gift-detail-empty p,
-    .gift-detail-side-card p,
-    .gift-detail-history-item p {
-        margin: 0;
-        color: var(--gift-text-muted);
-        line-height: 1.7;
+    body.tt-lightmode-on .gift-show-page .gift-badge,
+    body.tt-lightmode-on .gift-show-page .gift-pill,
+    body.tt-lightmode-on .gift-show-page .gift-meta-chip,
+    body.tt-lightmode-on .gift-show-page .gift-status-chip {
+        background: rgba(255, 255, 255, 0.94);
+        color: #0f172a;
     }
 
-    .gift-detail-content-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.46fr);
-        gap: 24px;
-    }
-
-    .gift-detail-history,
-    .gift-detail-side-card {
-        padding: 30px;
-    }
-
-    .gift-detail-section-heading {
-        margin-bottom: 20px;
-    }
-
-    .gift-detail-section-heading h3 {
-        margin: 0 0 6px;
-        color: #fff;
-        font-size: clamp(28px, 2.3vw, 44px);
-        line-height: 0.98;
-    }
-
-    .gift-detail-section-heading p {
-        margin: 0;
-        color: var(--gift-text-muted);
-        line-height: 1.7;
-    }
-
-    .gift-detail-history-list {
-        display: grid;
-        gap: 14px;
-    }
-
-    .gift-detail-history-item {
-        padding: 20px 22px;
-        border: 1px solid var(--gift-border);
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.03);
-    }
-
-    .gift-detail-history-top {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 8px;
-    }
-
-    .gift-detail-history-top strong {
-        color: #fff;
-        font-size: 17px;
-    }
-
-    .gift-detail-history-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 14px;
-    }
-
-    .gift-detail-history-meta span {
-        display: inline-flex;
-        align-items: center;
-        min-height: 34px;
-        padding: 8px 12px;
-        border: 1px solid var(--gift-border);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.04);
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 11px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-    }
-
-    .gift-detail-side-stack {
-        display: grid;
-        gap: 24px;
-    }
-
-    .gift-detail-side-card ul {
-        display: grid;
-        gap: 10px;
-        padding-left: 18px;
-        margin: 16px 0 0;
-        color: var(--gift-text-muted);
-    }
-
-    .gift-detail-wallet-highlight {
-        display: grid;
-        gap: 14px;
-        margin-top: 18px;
-    }
-
-    .gift-detail-wallet-highlight strong {
-        color: #fff;
-        font-size: 34px;
-        line-height: 1;
-    }
-
-    .gift-detail-empty {
-        padding: 26px;
-        border: 1px dashed rgba(255, 255, 255, 0.14);
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.025);
-    }
-
-    @media (max-width: 1399.98px) {
-        .gift-detail-hero-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .gift-detail-visual-stage {
-            min-height: 520px;
-        }
+    body.tt-lightmode-on .gift-show-page .gift-summary-card h1,
+    body.tt-lightmode-on .gift-show-page .gift-block h2,
+    body.tt-lightmode-on .gift-show-page .gift-sidebar-card h3,
+    body.tt-lightmode-on .gift-show-page .gift-history-card h3,
+    body.tt-lightmode-on .gift-show-page .gift-meta-card strong,
+    body.tt-lightmode-on .gift-show-page .gift-state-card strong,
+    body.tt-lightmode-on .gift-show-page .gift-similar-card h3 {
+        color: #0f172a;
     }
 
     @media (max-width: 1199.98px) {
-        .gift-detail-content-grid,
-        .gift-detail-usp-grid {
+        .gift-show-page .gift-hero-grid,
+        .gift-show-page .gift-content-grid {
             grid-template-columns: 1fr;
         }
 
-        .gift-detail-visual-copy strong {
-            font-size: clamp(44px, 14vw, 80px);
+        .gift-show-page .gift-sidebar-sticky {
+            position: static;
         }
     }
 
     @media (max-width: 767.98px) {
-        .gift-detail-visual,
-        .gift-detail-panel,
-        .gift-detail-history,
-        .gift-detail-side-card {
-            padding: 22px;
+        .gift-show-page .gift-gallery-main,
+        .gift-show-page .gift-gallery-main img {
+            min-height: 340px;
         }
 
-        .gift-detail-visual-stage {
-            min-height: 380px;
-        }
-
-        .gift-detail-visual-copy {
-            padding: 24px;
-        }
-
-        .gift-detail-metrics {
+        .gift-show-page .gift-meta-grid {
             grid-template-columns: 1fr;
         }
 
-        .gift-detail-actions .tt-btn,
-        .gift-detail-actions a.tt-btn {
-            width: 100%;
+        .gift-show-page .gift-gallery-card,
+        .gift-show-page .gift-summary-card,
+        .gift-show-page .gift-block,
+        .gift-show-page .gift-sidebar-card,
+        .gift-show-page .gift-similar-card,
+        .gift-show-page .gift-history-card {
+            padding: 20px;
         }
     }
 </style>
 @endsection
 
 @section('content')
-@php
-    $statusLabels = $statusLabels ?? \App\Models\GiftRedemption::statusLabels();
-    $isAuthenticated = (bool) ($isAuthenticated ?? false);
-    $giftIndexRouteName = $giftIndexRouteName ?? 'gifts.index';
+    @php
+        $giftIndexRouteName = $giftIndexRouteName ?? 'gifts.index';
+        $giftShowRouteName = $giftShowRouteName ?? 'gifts.show';
+    @endphp
 
-    $availabilityState = ! $gift->is_active || $giftStock < 1 ? 'unavailable' : ($giftStock <= 5 ? 'limited' : 'available');
-    $availabilityTitle = ! $gift->is_active
-        ? 'Cadeau temporairement indisponible'
-        : ($giftStock < 1 ? 'Rupture de stock' : ($giftStock <= 5 ? 'Stock limite' : 'Demande ouverte'));
-    $availabilityCopy = ! $gift->is_active
-        ? 'Ce cadeau est desactive pour le moment. Il redeviendra accessible des sa republication.'
-        : ($giftStock < 1
-            ? 'Le stock actuel est epuise. Revenez plus tard pour verifier un reapprovisionnement.'
-            : ($giftStock <= 5
-                ? 'Il reste peu d exemplaires. Une fois votre demande envoyee, le stock est reserve immediatement.'
-                : 'La demande est disponible. Les points sont debites a la demande et le stock est bloque.'));
-    $latestRedemption = ($myRecentRedemptions ?? collect())->first();
-@endphp
-
-<div class="gift-detail-page">
-    <div id="page-header" class="ph-full ph-full-m ph-cap-xxlg ph-center ph-image-parallax ph-caption-parallax">
-        <div class="ph-image ph-image-cover-6">
-            <div class="ph-image-inner">
-                <img src="{{ $giftCover }}" alt="{{ $gift->title }}">
-            </div>
-        </div>
-
-        <div class="page-header-inner tt-wrap">
-            <div class="ph-caption">
-                <div class="ph-caption-inner">
-                    <h2 class="ph-caption-subtitle">Catalogue cadeaux</h2>
-                    <h1 class="ph-caption-title">{{ $gift->title }}</h1>
-                    <div class="ph-caption-description">
-                        {{ $gift->description ?: 'Une recompense membre a debloquer avec vos points sur la plateforme.' }}
-                    </div>
-                    <div class="gift-detail-header-pills margin-top-30">
-                        <span class="gift-detail-pill">{{ $giftCategoryLabel }}</span>
-                        <span class="gift-detail-pill">{{ $giftCost }} pts</span>
-                        <span class="gift-detail-pill">Stock {{ $giftStock }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="page-header-inner ph-mask">
-            <div class="ph-mask-inner tt-wrap">
-                <div class="ph-caption">
-                    <div class="ph-caption-inner">
-                        <h2 class="ph-caption-subtitle">Catalogue</h2>
-                        <h1 class="ph-caption-title">Cadeau</h1>
-                        <div class="ph-caption-description max-width-700">
-                            Consultez les details, verifiez votre solde et lancez votre demande depuis la fiche cadeau.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tt-scroll-down">
-            <a href="#tt-page-content" class="tt-scroll-down-inner tt-magnetic-item" data-offset="0">
-                <div class="tt-scrd-icon"></div>
-                <svg viewBox="0 0 500 500">
-                    <defs>
-                        <path d="M50,250c0-110.5,89.5-200,200-200s200,89.5,200,200s-89.5,200-200,200S50,360.5,50,250" id="textcircle"></path>
-                    </defs>
-                    <text dy="30">
-                        <textPath xlink:href="#textcircle">Voir la fiche cadeau - Voir la fiche cadeau -</textPath>
-                    </text>
-                </svg>
-            </a>
-        </div>
-    </div>
-
-    <div id="tt-page-content">
-        <div class="tt-section padding-top-xlg-100 padding-bottom-xlg-80">
+    <div id="tt-page-content" class="gift-show-page">
+        <div class="tt-section padding-top-xlg-140 padding-bottom-80">
             <div class="tt-section-inner tt-wrap max-width-1800">
-                <div class="gift-detail-hero-grid">
-                    <div class="gift-detail-surface gift-detail-visual tt-anim-fadeinup">
-                        <div class="gift-detail-visual-stage">
-                            <span class="gift-detail-visual-badge">{{ $giftCategoryLabel }}</span>
-                            <span class="gift-detail-visual-stamp">Cadeau</span>
-                            <img class="gift-detail-visual-image" src="{{ $giftCover }}" alt="{{ $gift->title }}">
+                <nav class="gift-breadcrumbs" aria-label="Fil d Ariane cadeau">
+                    <a href="{{ route($giftIndexRouteName) }}">Catalogue cadeaux</a>
+                    <span>/</span>
+                    <span>{{ $giftCategoryLabel }}</span>
+                    <span>/</span>
+                    <span>{{ $gift->title }}</span>
+                </nav>
 
-                            <div class="gift-detail-visual-copy">
-                                <strong>{{ $gift->title }}</strong>
-                                <p>
-                                    {{ $gift->description ?: 'Une recompense membre pensee pour valoriser votre activite et vos points cumules sur ERAH.' }}
-                                </p>
+                <div class="gift-hero-grid">
+                    <section class="gift-surface gift-gallery-card tt-anim-fadeinup">
+                        <div class="gift-gallery-main">
+                            <div class="gift-gallery-badges">
+                                <span class="gift-badge">{{ $giftCategoryLabel }}</span>
+                                <span class="gift-badge">{{ $giftTypeLabel }}</span>
                             </div>
+                            <img src="{{ $giftCover }}" alt="{{ $gift->title }}">
                         </div>
 
-                        <div class="gift-detail-usp-grid">
-                            <div class="gift-detail-usp-card">
-                                <strong>Debit immediat</strong>
-                                <p>Les points sont preleves au moment de la demande.</p>
+                        @if(count($galleryImages) > 1)
+                            <div class="gift-thumb-list" aria-label="Galerie cadeau">
+                                @foreach($galleryImages as $image)
+                                    <a href="{{ $image }}" data-fancybox="gift-gallery">
+                                        <img src="{{ $image }}" alt="{{ $gift->title }}">
+                                    </a>
+                                @endforeach
                             </div>
-                            <div class="gift-detail-usp-card">
-                                <strong>Stock reserve</strong>
-                                <p>Le stock diminue des que votre demande est envoyee.</p>
-                            </div>
-                            <div class="gift-detail-usp-card">
-                                <strong>Suivi membre</strong>
-                                <p>Vous retrouvez l etat de vos demandes dans votre historique.</p>
-                            </div>
-                        </div>
-                    </div>
+                        @endif
+                    </section>
 
-                    <div class="gift-detail-surface gift-detail-panel tt-anim-fadeinup">
-                        <span class="gift-detail-eyebrow">Fiche cadeau</span>
-                        <h2>{{ $gift->title }}</h2>
-                        <p>{{ $gift->description ?: 'Ce cadeau fait partie du catalogue accessible depuis votre espace membre.' }}</p>
-
-                        <div class="gift-detail-inline-pills">
-                            <span class="gift-detail-pill">{{ $giftCategoryLabel }}</span>
-                            <span class="gift-detail-pill">{{ $giftCost }} points</span>
-                            <span class="gift-detail-pill">{{ $giftStock > 0 ? 'Stock '.$giftStock : 'Rupture' }}</span>
+                    <section class="gift-surface gift-summary-card tt-anim-fadeinup">
+                        <div class="gift-summary-pills">
+                            <span class="gift-pill">{{ $giftCost }} points</span>
+                            <span class="gift-pill">{{ $giftStock > 0 ? 'Stock '.$giftStock : 'Rupture' }}</span>
+                            <span class="gift-pill">{{ $giftDeliveryLabel }}</span>
+                            @if($isSupporterOnly)
+                                <span class="gift-pill">Supporter requis</span>
+                            @endif
+                            @if(! $gift->isRepeatable())
+                                <span class="gift-pill">Achat unique</span>
+                            @endif
                         </div>
 
-                        <div class="gift-detail-metrics">
-                            <div class="gift-detail-metric">
+                        <h1>{{ $gift->title }}</h1>
+                        <p>{{ $shortDescription }}</p>
+
+                        <div class="gift-meta-grid">
+                            <div class="gift-meta-card">
                                 <span>{{ $isAuthenticated ? 'Votre solde' : 'Solde membre' }}</span>
                                 <strong>{{ $walletBalance }}</strong>
                             </div>
-                            <div class="gift-detail-metric">
-                                <span>Cout cadeau</span>
+                            <div class="gift-meta-card">
+                                <span>Cout du cadeau</span>
                                 <strong>{{ $giftCost }}</strong>
                             </div>
-                            <div class="gift-detail-metric">
-                                <span>Stock restant</span>
-                                <strong>{{ $giftStock }}</strong>
+                            <div class="gift-meta-card">
+                                <span>Disponibilite</span>
+                                <strong>{{ $availabilityKey === 'low' ? 'Limitee' : ($giftStock > 0 ? 'Ouverte' : 'Fermee') }}</strong>
                             </div>
-                            <div class="gift-detail-metric">
-                                <span>{{ $isAuthenticated ? ($canAffordGift ? 'Etat achat' : 'Points manquants') : 'Connexion' }}</span>
-                                <strong>{{ $isAuthenticated ? ($canAffordGift ? 'Pret' : $pointsMissing) : 'Requise' }}</strong>
+                            <div class="gift-meta-card">
+                                <span>{{ $pointsMissing > 0 ? 'Points manquants' : 'Etat achat' }}</span>
+                                <strong>{{ $pointsMissing > 0 ? $pointsMissing : ($isRedeemable ? 'Pret' : 'Bloque') }}</strong>
                             </div>
                         </div>
 
-                        <div class="gift-detail-state {{ $availabilityState !== 'available' ? 'is-'.$availabilityState : '' }}">
-                            <strong>{{ $availabilityTitle }}</strong>
-                            <p>
-                                {{ $availabilityCopy }}
-                                @if ($isAuthenticated && ! $canAffordGift)
-                                    Il vous manque actuellement <strong>{{ $pointsMissing }} points</strong> pour lancer la demande.
-                                @endif
-                            </p>
+                        <div class="gift-state-card">
+                            <span>Etat actuel</span>
+                            <div class="gift-history-top">
+                                <strong>{{ $availabilityTitle }}</strong>
+                                <span class="gift-status-chip is-{{ $availabilityState }}">{{ str_replace('_', ' ', $availabilityState) }}</span>
+                            </div>
+                            <p>{{ $availabilityCopy }}</p>
                         </div>
 
-                        <div class="gift-detail-actions">
+                        <div class="gift-cta-stack">
                             @if($isAuthenticated)
                                 <form method="POST" action="{{ route('gifts.redeem', $gift->id) }}">
                                     @csrf
                                     <input type="hidden" name="idempotency_key" value="redeem-{{ auth()->id() }}-{{ $gift->id }}-{{ now()->timestamp }}">
-                                    <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item" {{ (! $isRedeemable || ! $canAffordGift) ? 'disabled' : '' }}>
-                                        <span data-hover="Demander">Demander ce cadeau</span>
+                                    <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item" {{ $isRedeemable ? '' : 'disabled' }}>
+                                        <span data-hover="Acheter / echanger">Acheter / echanger ce cadeau</span>
                                     </button>
                                 </form>
 
                                 <form method="POST" action="{{ route('gifts.cart.add', $gift->id) }}">
                                     @csrf
                                     <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item" {{ (! $isRedeemable) ? 'disabled' : '' }}>
-                                        <span data-hover="Panier">Ajouter au panier {{ (int) ($cartItemQuantity ?? 0) > 0 ? '('.(int) $cartItemQuantity.')' : '' }}</span>
+                                    <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item" {{ $canAddToCart ? '' : 'disabled' }}>
+                                        <span data-hover="Panier">Ajouter au panier{{ $cartItemQuantity > 0 ? ' ('.$cartItemQuantity.')' : '' }}</span>
                                     </button>
                                 </form>
 
                                 <form method="POST" action="{{ route('gifts.favorites.toggle', $gift->id) }}">
                                     @csrf
-                                    <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                        <span data-hover="{{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}">
-                                            {{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}
-                                        </span>
+                                    <button type="submit" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                        <span data-hover="{{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}">{{ $isFavorited ? 'Retirer favoris' : 'Ajouter favoris' }}</span>
                                     </button>
                                 </form>
                             @else
                                 <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                    <span data-hover="Connexion">Se connecter pour commander</span>
+                                    <span data-hover="Connexion">Se connecter pour acheter</span>
                                 </a>
                             @endif
 
-                            <a href="{{ route($giftIndexRouteName) }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                <span data-hover="Catalogue">Retour catalogue</span>
+                            <a href="{{ route($giftIndexRouteName) }}" class="tt-btn tt-btn-outline tt-magnetic-item">
+                                <span data-hover="Retour">Retour vers le shop cadeaux</span>
                             </a>
-
-                            @if($isAuthenticated)
-                                <a href="{{ route('gifts.redemptions') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                    <span data-hover="Demandes">Mes demandes</span>
-                                </a>
-                                <a href="{{ route('gifts.cart') }}" class="tt-btn tt-btn-secondary tt-magnetic-item">
-                                    <span data-hover="Panier">Panier cadeaux</span>
-                                </a>
-                            @endif
                         </div>
 
-                        @if ($isAuthenticated && $latestRedemption)
-                            <div class="gift-detail-latest">
-                                <div class="gift-detail-latest-head">
-                                    <strong>Derniere commande: {{ 'CMD-'.str_pad((string) $latestRedemption->id, 6, '0', STR_PAD_LEFT) }}</strong>
-                                    <span class="gift-detail-status is-{{ $latestRedemption->status }}">
-                                        {{ $statusLabels[$latestRedemption->status] ?? \Illuminate\Support\Str::headline((string) $latestRedemption->status) }}
-                                    </span>
+                        @if($latestRedemption)
+                            <div class="gift-list-card margin-top-30">
+                                <div class="gift-history-top">
+                                    <strong>{{ 'CMD-'.str_pad((string) $latestRedemption->id, 6, '0', STR_PAD_LEFT) }}</strong>
+                                    <span class="gift-status-chip is-{{ $latestRedemption->status }}">{{ $statusLabels[$latestRedemption->status] ?? \Illuminate\Support\Str::headline((string) $latestRedemption->status) }}</span>
                                 </div>
-                                <p>
-                                    Demandee le {{ optional($latestRedemption->requested_at)->format('d/m/Y \\a H:i') ?: '-' }}.
-                                    @if ($latestRedemption->tracking_code)
-                                        Suivi: {{ $latestRedemption->tracking_code }}
-                                        @if ($latestRedemption->tracking_carrier)
-                                            ({{ $latestRedemption->tracking_carrier }})
-                                        @endif.
-                                    @endif
-                                    @if ($latestRedemption->reason)
-                                        Motif: {{ $latestRedemption->reason }}.
-                                    @endif
-                                </p>
+                                <p>Derniere commande liee a ce cadeau, demandee le {{ optional($latestRedemption->requested_at)->format('d/m/Y \a H:i') ?: '-' }}.</p>
                                 <a href="{{ route('gifts.redemptions.show', $latestRedemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
-                                    <span data-hover="Voir le detail">Voir le detail de la commande</span>
+                                    <span data-hover="Suivi">Voir le suivi de commande</span>
                                 </a>
                             </div>
                         @endif
-                    </div>
+                    </section>
                 </div>
-            </div>
-        </div>
 
-        <div class="tt-section padding-bottom-xlg-120 border-top">
-            <div class="tt-section-inner tt-wrap max-width-1800">
-                <div class="gift-detail-content-grid">
-                    <div class="gift-detail-surface gift-detail-history tt-anim-fadeinup">
-                        <div class="gift-detail-section-heading">
-                            <h3>Mes demandes recentes</h3>
-                            <p>Retrouvez le suivi de vos demandes pour ce cadeau, avec les etapes de validation, expedition ou refus.</p>
+                <div class="gift-content-grid">
+                    <div>
+                        <article class="gift-surface gift-block tt-anim-fadeinup">
+                            <h2>Description detaillee</h2>
+                            <p>{{ $longDescription }}</p>
+                        </article>
+
+                        <article class="gift-surface gift-block tt-anim-fadeinup">
+                            <h2>Conditions et eligibilite</h2>
+                            @if(!empty($giftConditions))
+                                <ul>
+                                    @foreach($giftConditions as $condition)
+                                        <li>{{ $condition }}</li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <ul>
+                                    <li>Le cadeau doit etre actif et encore disponible en stock.</li>
+                                    <li>Le debit points est effectue immediatement au moment de la demande.</li>
+                                    <li>Les regles de possession ou d achat unique sont controlees automatiquement.</li>
+                                    @if($isSupporterOnly)
+                                        <li>Un statut supporter actif est requis pour ce cadeau.</li>
+                                    @endif
+                                </ul>
+                            @endif
+
+                            @if($giftEligibilityDetails)
+                                <p class="margin-top-20">{{ $giftEligibilityDetails }}</p>
+                            @endif
+                        </article>
+
+                        <article class="gift-surface gift-block tt-anim-fadeinup">
+                            <h2>Remise et livraison</h2>
+                            <p>{{ $giftDeliveryDetails ?: 'Le mode de remise depend du type du cadeau: attribution immediate sur le profil, traitement manuel par l equipe, ou expedition si le cadeau est physique.' }}</p>
+                        </article>
+
+                        <article class="gift-surface gift-history-card tt-anim-fadeinup">
+                            <h3>Historique lie a ce cadeau</h3>
+                            <p>Retrouvez ici vos commandes deja lancees pour cette fiche cadeau.</p>
+
+                            @if($isAuthenticated && $myRecentRedemptions->count())
+                                <div class="gift-history-list margin-top-20">
+                                    @foreach($myRecentRedemptions as $redemption)
+                                        <article class="gift-history-item">
+                                            <div class="gift-history-top">
+                                                <strong>{{ 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT) }}</strong>
+                                                <span class="gift-status-chip is-{{ $redemption->status }}">{{ $statusLabels[$redemption->status] ?? \Illuminate\Support\Str::headline((string) $redemption->status) }}</span>
+                                            </div>
+                                            <p>Demandee le {{ optional($redemption->requested_at)->format('d/m/Y \a H:i') ?: '-' }}.</p>
+                                            <div class="gift-history-meta">
+                                                <span class="gift-meta-chip">{{ (int) $redemption->cost_points_snapshot }} pts</span>
+                                                @if($redemption->tracking_code)
+                                                    <span class="gift-meta-chip">Suivi {{ $redemption->tracking_code }}</span>
+                                                @endif
+                                                @if($redemption->tracking_carrier)
+                                                    <span class="gift-meta-chip">{{ $redemption->tracking_carrier }}</span>
+                                                @endif
+                                            </div>
+                                            <a href="{{ route('gifts.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
+                                                <span data-hover="Detail">Ouvrir la commande</span>
+                                            </a>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            @elseif($isAuthenticated)
+                                <div class="gift-empty margin-top-20">Aucune commande n a encore ete lancee pour ce cadeau.</div>
+                            @else
+                                <div class="gift-empty margin-top-20">Connectez-vous pour suivre vos commandes et voir votre historique sur cette fiche cadeau.</div>
+                            @endif
+                        </article>
+                    </div>
+
+                    <aside class="gift-sidebar-sticky">
+                        <div class="gift-surface gift-sidebar-card tt-anim-fadeinup">
+                            <h3>Resume achat</h3>
+                            <ul>
+                                <li>Validation metier et stock en base avant creation de la commande.</li>
+                                <li>Debit points et decrement stock realises dans une transaction DB securisee.</li>
+                                <li>Protection contre re-soumission via cle idempotente sur l achat direct.</li>
+                                <li>Historique et suivi disponibles ensuite depuis vos commandes cadeaux.</li>
+                            </ul>
                         </div>
 
-                        @if ($isAuthenticated && ($myRecentRedemptions ?? null) && $myRecentRedemptions->count())
-                            <div class="gift-detail-history-list">
-                                @foreach ($myRecentRedemptions as $redemption)
-                                    <article class="gift-detail-history-item">
-                                        <div class="gift-detail-history-top">
-                                            <strong>
-                                                {{ 'CMD-'.str_pad((string) $redemption->id, 6, '0', STR_PAD_LEFT) }}
-                                                - {{ optional($redemption->requested_at)->format('d/m/Y') ?: '-' }}
-                                            </strong>
-                                            <span class="gift-detail-status is-{{ $redemption->status }}">
-                                                {{ $statusLabels[$redemption->status] ?? \Illuminate\Support\Str::headline((string) $redemption->status) }}
-                                            </span>
-                                        </div>
-
-                                        <p>
-                                            Creee le {{ optional($redemption->requested_at)->format('d/m/Y \\a H:i') ?: '-' }}.
-                                            @if ($redemption->reason)
-                                                Motif communique: {{ $redemption->reason }}.
-                                            @endif
-                                        </p>
-
-                                        <div class="gift-detail-history-meta">
-                                            <span>{{ (int) $redemption->cost_points_snapshot }} pts debites</span>
-                                            @if ($redemption->tracking_code)
-                                                <span>
-                                                    Suivi {{ $redemption->tracking_code }}
-                                                    @if ($redemption->tracking_carrier)
-                                                        {{ $redemption->tracking_carrier }}
-                                                    @endif
-                                                </span>
-                                            @endif
-                                            @if ($redemption->approved_at)
-                                                <span>Validee {{ $redemption->approved_at->format('d/m/Y') }}</span>
-                                            @endif
-                                            @if ($redemption->shipped_at)
-                                                <span>Expediee {{ $redemption->shipped_at->format('d/m/Y') }}</span>
-                                            @endif
-                                            @if ($redemption->delivered_at)
-                                                <span>Livree {{ $redemption->delivered_at->format('d/m/Y') }}</span>
-                                            @endif
-                                        </div>
-
-                                        <a href="{{ route('gifts.redemptions.show', $redemption->id) }}" class="tt-btn tt-btn-outline margin-top-15">
-                                            <span data-hover="Detail">Voir le detail complet</span>
-                                        </a>
-                                    </article>
-                                @endforeach
-                            </div>
-                        @elseif($isAuthenticated)
-                            <div class="gift-detail-empty">
-                                <p>Aucune demande pour ce cadeau pour le moment. Quand vous lancerez votre premiere demande, elle apparaitra ici avec son suivi.</p>
-                            </div>
-                        @else
-                            <div class="gift-detail-empty">
-                                <p>Connectez-vous pour voir votre historique de demandes cadeaux et leur suivi detaille.</p>
-                                <div class="gift-detail-actions margin-top-20">
-                                    <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Connexion">Se connecter</span>
-                                    </a>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="gift-detail-side-stack">
-                        <aside class="gift-detail-surface gift-detail-side-card tt-anim-fadeinup">
-                            <div class="gift-detail-section-heading">
-                                <h3>Comment ca marche</h3>
-                                <p>Le process reste simple et visible depuis votre espace membre.</p>
-                            </div>
-
-                            <ul>
-                                <li>Vous lancez la demande depuis cette fiche cadeau.</li>
-                                <li>Les points sont debites immediatement si le solde est suffisant.</li>
-                                <li>Le stock est reserve des l envoi de la demande.</li>
-                                <li>Un admin peut ensuite valider, refuser, expedier ou marquer la livraison.</li>
-                            </ul>
-                        </aside>
-
-                        <aside class="gift-detail-surface gift-detail-side-card tt-anim-fadeinup">
-                            <div class="gift-detail-section-heading">
-                                <h3>Portefeuille points</h3>
-                                <p>Consultez votre reserve de points avant de confirmer une nouvelle demande.</p>
-                            </div>
-
-                            @if($isAuthenticated)
-                                <div class="gift-detail-wallet-highlight">
-                                    <strong>{{ $walletBalance }} pts</strong>
-                                    <p>
-                                        Votre solde actuel permet
-                                        {{ $canAffordGift ? 'de demander ce cadeau maintenant.' : 'de preparer une prochaine demande.' }}
-                                    </p>
-                                </div>
-
-                                <div class="gift-detail-actions margin-top-30">
-                                    <a href="{{ route('gifts.wallet') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Points">Voir mes points</span>
-                                    </a>
+                        <div class="gift-surface gift-sidebar-card tt-anim-fadeinup">
+                            <h3>Cadeaux similaires</h3>
+                            @if($similarGifts->count())
+                                <div class="gift-similar-grid margin-top-20">
+                                    @foreach($similarGifts as $similarGift)
+                                        <article class="gift-similar-card">
+                                            <img src="{{ $similarGift->primaryImageUrl() }}" alt="{{ $similarGift->title }}">
+                                            <div class="gift-similar-top">
+                                                <span class="gift-meta-chip">{{ $similarGift->launchCatalogCategoryLabel() ?: $giftCategoryLabel }}</span>
+                                                <span class="gift-meta-chip">{{ (int) $similarGift->cost_points }} pts</span>
+                                            </div>
+                                            <h3>{{ $similarGift->title }}</h3>
+                                            <p>{{ $similarGift->shortDescription() !== '' ? $similarGift->shortDescription() : \Illuminate\Support\Str::limit((string) $similarGift->description, 100) }}</p>
+                                            <a href="{{ route($giftShowRouteName, $similarGift->routeIdentifier()) }}" class="tt-btn tt-btn-outline margin-top-15">
+                                                <span data-hover="Fiche">Voir la fiche cadeau</span>
+                                            </a>
+                                        </article>
+                                    @endforeach
                                 </div>
                             @else
-                                <div class="gift-detail-wallet-highlight">
-                                    <strong>Connexion requise</strong>
-                                    <p>Connectez-vous pour consulter votre solde points, ajouter au panier et enregistrer ce cadeau en favori.</p>
-                                </div>
-                                <div class="gift-detail-actions margin-top-30">
-                                    <a href="{{ route('login') }}" class="tt-btn tt-btn-primary tt-magnetic-item">
-                                        <span data-hover="Connexion">Se connecter</span>
-                                    </a>
-                                </div>
+                                <p class="margin-top-20">Aucun cadeau similaire n est remonte pour le moment.</p>
                             @endif
-                        </aside>
-                    </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>
     </div>
-</div>
+@endsection
+
+@section('page_scripts')
+    <script src="/template/assets/vendor/jquery/jquery.min.js"></script>
+    <script src="/template/assets/vendor/fancybox/js/fancybox.umd.js"></script>
+    <script src="/template/assets/js/theme.js"></script>
 @endsection

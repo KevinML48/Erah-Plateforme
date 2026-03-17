@@ -191,7 +191,7 @@
 
                                     <div class="gift-favorites-actions">
                                         @if($gift)
-                                            <a href="{{ route('gifts.show', $gift->id) }}" class="tt-btn tt-btn-outline">
+                                            <a href="{{ route('gifts.show', $gift->routeIdentifier()) }}" class="tt-btn tt-btn-outline">
                                                 <span data-hover="Fiche">Voir la fiche</span>
                                             </a>
                                             <form method="POST" action="{{ route('gifts.cart.add', $gift->id) }}">

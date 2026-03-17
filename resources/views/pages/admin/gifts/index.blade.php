@@ -132,14 +132,29 @@
                             @csrf
                             <div class="adm-form-grid-4">
                                 <div class="tt-form-group"><label>Titre</label><input class="tt-form-control" name="title" value="{{ old('title') }}" required></div>
+                                <div class="tt-form-group"><label>Slug public</label><input class="tt-form-control" name="slug" value="{{ old('slug') }}" placeholder="sticker-pack-erah"></div>
                                 <div class="tt-form-group"><label>Cout points</label><input class="tt-form-control" name="cost_points" type="number" min="1" value="{{ old('cost_points', 1000) }}" required></div>
                                 <div class="tt-form-group"><label>Stock</label><input class="tt-form-control" name="stock" type="number" min="0" value="{{ old('stock', 10) }}" required></div>
                                 <div class="tt-form-group"><label>Ordre affichage</label><input class="tt-form-control" name="sort_order" type="number" min="0" value="{{ old('sort_order', 0) }}"></div>
+                                <div class="tt-form-group"><label>Categorie</label><input class="tt-form-control" name="category" value="{{ old('category') }}" placeholder="digital_reward"></div>
+                                <div class="tt-form-group"><label>Type</label><input class="tt-form-control" name="type" value="{{ old('type') }}" placeholder="badge, physique, supporter..."></div>
+                                <div class="tt-form-group"><label>Remise</label><input class="tt-form-control" name="delivery_type" value="{{ old('delivery_type') }}" placeholder="profile, digital, manual, physical"></div>
                                 <div class="tt-form-group adm-col-span-2"><label>Image fichier</label><input class="tt-form-control" name="image_file" type="file" accept="image/*"></div>
                                 <div class="tt-form-group adm-col-span-2"><label>Ou URL image</label><input class="tt-form-control" name="image_url" type="url" value="{{ old('image_url') }}" placeholder="https://..."></div>
-                                <div class="tt-form-group adm-col-span-4"><label>Description</label><textarea class="tt-form-control" name="description" rows="3">{{ old('description') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-4"><label>Description courte</label><textarea class="tt-form-control" name="short_description" rows="2">{{ old('short_description') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-4"><label>Description longue</label><textarea class="tt-form-control" name="long_description" rows="4">{{ old('long_description') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-4"><label>Description fallback</label><textarea class="tt-form-control" name="description" rows="3">{{ old('description') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Details remise / livraison</label><textarea class="tt-form-control" name="delivery_details" rows="3">{{ old('delivery_details') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Details eligibilite</label><textarea class="tt-form-control" name="eligibility_details" rows="3">{{ old('eligibility_details') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Conditions</label><textarea class="tt-form-control" name="conditions" rows="4" placeholder="Une ligne par condition">{{ old('conditions') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Galerie images</label><textarea class="tt-form-control" name="gallery_urls" rows="4" placeholder="Une URL par ligne">{{ old('gallery_urls') }}</textarea></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Meta title</label><input class="tt-form-control" name="meta_title" value="{{ old('meta_title') }}"></div>
+                                <div class="tt-form-group adm-col-span-2"><label>Meta description</label><textarea class="tt-form-control" name="meta_description" rows="2">{{ old('meta_description') }}</textarea></div>
                                 <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_is_active" name="is_active" value="1" @checked(old('is_active', true))><label for="gift_is_active">Actif</label></div></div>
                                 <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_is_featured" name="is_featured" value="1" @checked(old('is_featured', false))><label for="gift_is_featured">Mise en avant</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_requires_admin_validation" name="requires_admin_validation" value="1" @checked(old('requires_admin_validation', false))><label for="gift_requires_admin_validation">Validation admin requise</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_supporter_only" name="supporter_only" value="1" @checked(old('supporter_only', false))><label for="gift_supporter_only">Reserve supporters</label></div></div>
+                                <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_is_repeatable" name="is_repeatable" value="1" @checked(old('is_repeatable', true))><label for="gift_is_repeatable">Achat repetable</label></div></div>
                             </div>
                             <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item"><span data-hover="Creer le cadeau">Creer le cadeau</span></button>
                         </form>
@@ -150,11 +165,13 @@
                         @if($gifts->count())
                             <div class="adm-gift-grid">
                                 @foreach($gifts as $gift)
+                                    @php($detailMeta = $gift->detailMetadata())
                                     <article class="adm-gift-card">
                                         <div class="adm-gift-media"><img src="{{ $gift->image_url ?: $giftFallbackImage }}" loading="lazy" alt="{{ $gift->title }}"></div>
                                         <div class="adm-gift-copy"><h3 class="adm-gift-title">{{ $gift->title }}</h3><p class="adm-meta">{{ \Illuminate\Support\Str::limit((string) ($gift->description ?? 'Aucune description'), 120) }}</p></div>
                                         <div class="adm-gift-meta">
                                             <span class="adm-pill">ID #{{ $gift->id }}</span>
+                                            <span class="adm-pill">/{{ $gift->slug }}</span>
                                             <span class="adm-pill">{{ (int) $gift->cost_points }} pts</span>
                                             <span class="adm-pill">Stock {{ (int) $gift->stock }}</span>
                                             <span class="adm-pill">{{ $gift->is_active ? 'Actif' : 'Inactif' }}</span>
@@ -169,7 +186,14 @@
                                             @if($gift->launchCatalogRequiresAdminValidation())
                                                 <span class="adm-pill">Validation admin</span>
                                             @endif
+                                            @if($gift->supporterOnly())
+                                                <span class="adm-pill">Supporter uniquement</span>
+                                            @endif
+                                            @if(! $gift->isRepeatable())
+                                                <span class="adm-pill">Achat unique</span>
+                                            @endif
                                         </div>
+                                        <p class="adm-meta">Fiche publique: <a href="{{ route('gifts.show', $gift->routeIdentifier()) }}" target="_blank" rel="noreferrer">{{ route('gifts.show', $gift->routeIdentifier()) }}</a></p>
                                         <details class="adm-advanced">
                                             <summary>Modifier ce cadeau</summary>
                                             <div class="adm-advanced-body">
@@ -178,14 +202,29 @@
                                                     @method('PUT')
                                                     <div class="adm-form-grid-4">
                                                         <div class="tt-form-group"><label>Titre</label><input class="tt-form-control" name="title" value="{{ $gift->title }}" required></div>
+                                                        <div class="tt-form-group"><label>Slug public</label><input class="tt-form-control" name="slug" value="{{ $gift->slug }}"></div>
                                                         <div class="tt-form-group"><label>Cout</label><input class="tt-form-control" name="cost_points" type="number" min="1" value="{{ (int) $gift->cost_points }}" required></div>
                                                         <div class="tt-form-group"><label>Stock</label><input class="tt-form-control" name="stock" type="number" min="0" value="{{ (int) $gift->stock }}" required></div>
                                                         <div class="tt-form-group"><label>Ordre</label><input class="tt-form-control" name="sort_order" type="number" min="0" value="{{ (int) ($gift->sort_order ?? 0) }}"></div>
-                                                        <div class="tt-form-group adm-col-span-4"><label>Description</label><textarea class="tt-form-control" name="description" rows="2">{{ $gift->description }}</textarea></div>
+                                                        <div class="tt-form-group"><label>Categorie</label><input class="tt-form-control" name="category" value="{{ $gift->category }}"></div>
+                                                        <div class="tt-form-group"><label>Type</label><input class="tt-form-control" name="type" value="{{ $gift->type }}"></div>
+                                                        <div class="tt-form-group"><label>Remise</label><input class="tt-form-control" name="delivery_type" value="{{ $gift->delivery_type }}"></div>
+                                                        <div class="tt-form-group adm-col-span-4"><label>Description courte</label><textarea class="tt-form-control" name="short_description" rows="2">{{ $detailMeta['short_description'] ?? '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-4"><label>Description longue</label><textarea class="tt-form-control" name="long_description" rows="4">{{ $detailMeta['long_description'] ?? '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-4"><label>Description fallback</label><textarea class="tt-form-control" name="description" rows="2">{{ $gift->description }}</textarea></div>
                                                         <div class="tt-form-group adm-col-span-2"><label>Image fichier</label><input class="tt-form-control" name="image_file" type="file" accept="image/*"></div>
                                                         <div class="tt-form-group adm-col-span-2"><label>URL image</label><input class="tt-form-control" name="image_url" value="{{ $gift->image_url }}"></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Details remise / livraison</label><textarea class="tt-form-control" name="delivery_details" rows="3">{{ $detailMeta['delivery_details'] ?? '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Details eligibilite</label><textarea class="tt-form-control" name="eligibility_details" rows="3">{{ $detailMeta['eligibility_details'] ?? '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Conditions</label><textarea class="tt-form-control" name="conditions" rows="4">{{ is_array($detailMeta['conditions'] ?? null) ? implode(PHP_EOL, $detailMeta['conditions']) : '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Galerie images</label><textarea class="tt-form-control" name="gallery_urls" rows="4">{{ is_array($detailMeta['gallery'] ?? null) ? implode(PHP_EOL, $detailMeta['gallery']) : '' }}</textarea></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Meta title</label><input class="tt-form-control" name="meta_title" value="{{ $detailMeta['meta_title'] ?? '' }}"></div>
+                                                        <div class="tt-form-group adm-col-span-2"><label>Meta description</label><textarea class="tt-form-control" name="meta_description" rows="2">{{ $detailMeta['meta_description'] ?? '' }}</textarea></div>
                                                         <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_active_{{ $gift->id }}" name="is_active" value="1" {{ $gift->is_active ? 'checked' : '' }}><label for="gift_active_{{ $gift->id }}">Actif</label></div></div>
                                                         <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_featured_{{ $gift->id }}" name="is_featured" value="1" {{ $gift->is_featured ? 'checked' : '' }}><label for="gift_featured_{{ $gift->id }}">Mise en avant</label></div></div>
+                                                        <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_validation_{{ $gift->id }}" name="requires_admin_validation" value="1" {{ $gift->requires_admin_validation ? 'checked' : '' }}><label for="gift_validation_{{ $gift->id }}">Validation admin requise</label></div></div>
+                                                        <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_supporter_{{ $gift->id }}" name="supporter_only" value="1" {{ !empty($detailMeta['supporter_only']) ? 'checked' : '' }}><label for="gift_supporter_{{ $gift->id }}">Reserve supporters</label></div></div>
+                                                        <div class="tt-form-group"><div class="tt-form-check"><input type="checkbox" id="gift_repeatable_{{ $gift->id }}" name="is_repeatable" value="1" {{ array_key_exists('is_repeatable', $detailMeta) ? (!empty($detailMeta['is_repeatable']) ? 'checked' : '') : 'checked' }}><label for="gift_repeatable_{{ $gift->id }}">Achat repetable</label></div></div>
                                                     </div>
                                                     <div class="adm-row-actions">
                                                         <button type="submit" class="tt-btn tt-btn-secondary tt-magnetic-item"><span data-hover="Enregistrer">Enregistrer</span></button>

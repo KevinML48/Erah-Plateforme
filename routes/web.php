@@ -110,6 +110,8 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->middleware('throttle:stripe-webhook')
     ->name('stripe.webhook');
 
+Route::redirect('/gift/{giftId}', '/app/cadeaux/{giftId}', 301);
+
 Route::prefix('app')->middleware('throttle:feed-public')->group(function () {
     Route::get('/classement', [LeaderboardPageController::class, 'index'])->name('app.leaderboards.index');
     Route::get('/classement/{leagueKey}', [LeaderboardPageController::class, 'show'])
@@ -126,8 +128,8 @@ Route::prefix('app')->middleware('throttle:feed-public')->group(function () {
     Route::get('/statistics', StatisticsPageController::class)->name('app.statistics.index');
     Route::get('/duels/classement', DuelLeaderboardPageController::class)->name('app.duels.leaderboard');
     Route::get('/cadeaux', [GiftPageController::class, 'index'])->name('app.gifts.index');
+    Route::redirect('/gift/{giftId}', '/app/cadeaux/{giftId}', 301);
     Route::get('/cadeaux/{giftId}', [GiftPageController::class, 'show'])
-        ->whereNumber('giftId')
         ->name('app.gifts.show');
 });
 
@@ -302,6 +304,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/shop/{shopItemId}/purchase', [ShopPageController::class, 'purchase'])->name('shop.purchase');
 
         Route::get('/gifts', [GiftPageController::class, 'index'])->name('gifts.index');
+        Route::redirect('/gift/{giftId}', '/console/gifts/{giftId}', 301);
         Route::get('/gifts/redemptions', [GiftPageController::class, 'redemptions'])->name('gifts.redemptions');
         Route::get('/gifts/redemptions/{redemptionId}', [GiftPageController::class, 'redemption'])
             ->whereNumber('redemptionId')

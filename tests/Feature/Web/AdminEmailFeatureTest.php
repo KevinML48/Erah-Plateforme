@@ -107,7 +107,8 @@ class AdminEmailFeatureTest extends TestCase
         self::assertNotNull($draft->queued_at);
 
         Queue::assertPushed(SendAdminOutboundEmailJob::class, function (SendAdminOutboundEmailJob $job) use ($draft): bool {
-            return $job->adminOutboundEmailId === $draft->id;
+            return $job->adminOutboundEmailId === $draft->id
+                && $job->queue === 'default';
         });
     }
 

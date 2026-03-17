@@ -83,6 +83,8 @@ class SendAdminOutboundEmailJob implements ShouldQueue
                 'recipient_email' => $email->recipient_email,
                 'record_id' => $email->id,
                 'status' => $email->status,
+                'queue_connection' => config('queue.default'),
+                'queue_name' => $this->queue ?? 'default',
             ]);
         } catch (Throwable $exception) {
             $email->forceFill([
@@ -96,6 +98,9 @@ class SendAdminOutboundEmailJob implements ShouldQueue
                 'recipient_email' => $email->recipient_email,
                 'record_id' => $email->id,
                 'status' => $email->status,
+                'queue_connection' => config('queue.default'),
+                'queue_name' => $this->queue ?? 'default',
+                'error' => $exception->getMessage(),
             ]);
 
             throw $exception;

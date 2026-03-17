@@ -10,6 +10,7 @@ use App\Jobs\SendAdminOutboundEmailJob;
 use App\Models\AdminOutboundEmail;
 use App\Models\User;
 use App\Support\AdminEmailTemplateCatalog;
+use App\Support\QueueRouting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -324,6 +325,9 @@ class AdminEmailController extends Controller
 
     private function dispatchAdminEmail(object $actor, AdminOutboundEmail $adminEmail, StoreAuditLogAction $storeAuditLogAction, string $auditAction = 'admin.emails.queued'): RedirectResponse
     {
+        $queueConnection = QueueRouting::activeConnection();
+        $queueName = QueueRouting::activeQueue();
+
         $adminEmail->forceFill([
             'status' => AdminOutboundEmail::STATUS_QUEUED,
             'queued_at' => now(),
@@ -340,7 +344,8 @@ class AdminEmailController extends Controller
             context: [
                 'record_id' => $adminEmail->id,
                 'recipient_email' => $adminEmail->recipient_email,
-                'queue_connection' => config('queue.default'),
+                'queue_connection' => $queueConnection,
+                'queue_name' => $queueName,
             ],
         );
 
@@ -349,15 +354,17 @@ class AdminEmailController extends Controller
             'recipient_email' => $adminEmail->recipient_email,
             'record_id' => $adminEmail->id,
             'status' => $adminEmail->status,
+            'queue_connection' => $queueConnection,
+            'queue_name' => $queueName,
         ]);
 
         try {
-            if (config('queue.default') !== 'sync') {
-                SendAdminOutboundEmailJob::dispatch($adminEmail->id);
+            if ($queueConnection !== 'sync') {
+                SendAdminOutboundEmailJob::dispatch($adminEmail->id)->onQueue($queueName);
 
                 return redirect()
                     ->route('admin.emails.show', $adminEmail)
-                    ->with('success', 'Email place en queue.');
+                    ->with('success', 'Email place en queue ('.$queueName.').');
             }
 
             SendAdminOutboundEmailJob::dispatchSync($adminEmail->id);

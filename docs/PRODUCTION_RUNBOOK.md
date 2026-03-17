@@ -27,6 +27,8 @@ Ces jobs sont critiques pour le comportement produit:
 
 - `App\Jobs\ExpireDuelJob`: expiration automatique des duels
 - `App\Jobs\SendNotificationChannelJob`: livraison asynchrone des canaux de notification
+- `App\Jobs\SendAdminOutboundEmailJob`: emails admin individuels
+- `Illuminate\Mail\SendQueuedMailable`: emails marketing / contact mis en queue
 
 Sans worker actif, ces traitements sont retardes ou absents.
 

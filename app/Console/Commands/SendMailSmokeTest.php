@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\MailSmokeTestMailable;
+use App\Support\QueueRouting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -31,23 +32,28 @@ class SendMailSmokeTest extends Command
             subjectLine: (string) $this->option('subject'),
             messageLine: (string) $this->option('message'),
         );
+        $queueConnection = QueueRouting::activeConnection();
+        $queueName = QueueRouting::activeQueue();
 
         try {
             $mailer = Mail::to($recipient);
 
             if ((bool) $this->option('queue')) {
-                $mailer->queue($mailable);
+                $mailer->queue($mailable->onQueue($queueName));
 
                 Log::info('mail.smoke_test.queued', [
                     'recipient' => $recipient,
                     'mailer' => config('mail.default'),
-                    'queue_connection' => config('queue.default'),
+                    'queue_connection' => $queueConnection,
+                    'queue_name' => $queueName,
                 ]);
 
                 $this->info('Email de test place en queue.');
                 $this->line('Destinataire: '.$recipient);
                 $this->line('Mailer actif: '.(string) config('mail.default'));
-                $this->line('Worker requis: php artisan queue:work --queue=default');
+                $this->line('Queue connection: '.$queueConnection);
+                $this->line('Queue ecoutee: '.$queueName);
+                $this->line('Worker requis: php artisan queue:work --queue='.$queueName);
 
                 return self::SUCCESS;
             }
@@ -57,7 +63,8 @@ class SendMailSmokeTest extends Command
             Log::info('mail.smoke_test.sent', [
                 'recipient' => $recipient,
                 'mailer' => config('mail.default'),
-                'queue_connection' => config('queue.default'),
+                'queue_connection' => $queueConnection,
+                'queue_name' => $queueName,
             ]);
 
             $this->info('Email de test envoye.');
@@ -69,7 +76,8 @@ class SendMailSmokeTest extends Command
             Log::error('mail.smoke_test.failed', [
                 'recipient' => $recipient,
                 'mailer' => config('mail.default'),
-                'queue_connection' => config('queue.default'),
+                'queue_connection' => $queueConnection,
+                'queue_name' => $queueName,
                 'error' => $exception->getMessage(),
             ]);
 

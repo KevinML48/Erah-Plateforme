@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Marketing\ContactRequest;
 use App\Mail\MarketingContactMailable;
 use App\Models\ContactMessage;
+use App\Support\QueueRouting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -102,14 +103,17 @@ class ContactController extends Controller
     {
         $mailer = Mail::to($toAddress, $toName);
         $mailable = new MarketingContactMailable($contactMessage);
+        $queueConnection = QueueRouting::activeConnection();
+        $queueName = QueueRouting::activeQueue();
 
-        if (config('queue.default') !== 'sync') {
-            $mailer->queue($mailable);
+        if ($queueConnection !== 'sync') {
+            $mailer->queue($mailable->onQueue($queueName));
 
             Log::info('marketing.contact.mail_queued', [
                 'contact_message_id' => $contactMessage->id,
                 'mailer' => config('mail.default'),
-                'queue_connection' => config('queue.default'),
+                'queue_connection' => $queueConnection,
+                'queue_name' => $queueName,
                 'contact_address' => $toAddress,
             ]);
 
@@ -121,7 +125,8 @@ class ContactController extends Controller
         Log::info('marketing.contact.mail_sent', [
             'contact_message_id' => $contactMessage->id,
             'mailer' => config('mail.default'),
-            'queue_connection' => config('queue.default'),
+            'queue_connection' => $queueConnection,
+            'queue_name' => $queueName,
             'contact_address' => $toAddress,
         ]);
     }

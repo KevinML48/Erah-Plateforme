@@ -371,12 +371,16 @@
     <div class="tt-portfolio-compact-list pcl-caption-hover pcl-image-hover">
       <div class="pcli-inner">
 
-		<!-- ANNONCE 18/03 -->
-		<a href="{{ route('marketing.valorant-vcl-live') }}" class="pcli-item tt-anim-fadeinup" data-cursor="Go !">
+		<!-- ROCKET LEAGUE -->
+		<a href="{{ route('marketing.rocket-league') }}" class="pcli-item tt-anim-fadeinup" data-cursor="Go !">
           <div class="pcli-item-inner">
             <div class="pcli-col pcli-col-image">
-              <div class="pcli-image">
-				<img src="/template/assets/img/18-03-live.png" loading="lazy" alt="Annonce live 18/03">
+							<div class="pcli-video">
+
+				<video autoplay loop muted playsinline preload="metadata" poster="/template/assets/img/rocket-league-team.png" aria-label="Presentation Rocket League ERAH">
+				  <source src="/template/assets/img/rocket-league/Rendu%20final.mp4" type="video/mp4">
+				</video>
+
               </div>
             </div>
             <div class="pcli-col pcli-col-count">
@@ -384,9 +388,9 @@
             </div>
             <div class="pcli-col pcli-col-caption">
               <div class="pcli-caption">
-				<h2 class="pcli-title">18/03</h2>
+				<h2 class="pcli-title">Rocket League</h2>
                 <div class="pcli-categories">
-				  <div class="pcli-category">Annonce</div>
+				  <div class="pcli-category">Equipe</div>
                 </div>
               </div>
             </div>

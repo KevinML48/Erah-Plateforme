@@ -542,12 +542,15 @@ Route::post('/contact', [MarketingContactController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('marketing.contact.submit');
 
-Route::redirect('/valorant-vcl', '/18-03-live', 301);
-Route::redirect('/valorant-VCL', '/18-03-live', 301);
-Route::redirect('/valorant-vcl.html', '/18-03-live', 301);
-Route::redirect('/valorant-VCL.html', '/18-03-live', 301);
-Route::redirect('/valorant-vcl-18-03-live', '/18-03-live', 301);
-Route::view('/18-03-live', 'marketing.valorant-vcl')->name('marketing.valorant-vcl-live');
+Route::view('/rocket-league', 'marketing.rocket-league')->name('marketing.rocket-league');
+Route::redirect('/rocket-league.html', '/rocket-league', 301);
+Route::redirect('/valorant-vcl', '/rocket-league', 301);
+Route::redirect('/valorant-VCL', '/rocket-league', 301);
+Route::redirect('/valorant-vcl.html', '/rocket-league', 301);
+Route::redirect('/valorant-VCL.html', '/rocket-league', 301);
+Route::redirect('/valorant-vcl-18-03-live', '/rocket-league', 301);
+Route::get('/18-03-live', fn () => redirect()->route('marketing.rocket-league', status: 301))
+    ->name('marketing.valorant-vcl-live');
 
 Route::get('/{slug}.html', function (string $slug) {
     return redirect()->route('marketing.page', ['slug' => $slug], 301);

@@ -11,7 +11,7 @@
 			[
 				'label' => 'Equipes',
 				'children' => [
-					['label' => '18/03', 'url' => route('marketing.valorant-vcl-live')],
+					['label' => 'Rocket League', 'url' => route('marketing.rocket-league')],
 					['label' => 'Staff ERAH', 'url' => url('/staff')],
 					['label' => 'Medical', 'url' => url('/medical')],
 				],

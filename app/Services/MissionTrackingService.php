@@ -49,7 +49,7 @@ class MissionTrackingService
         $normalizedEventType = MissionTemplate::normalizeEventType($eventType);
         $eventKey = $eventKey ?: $this->defaultEventKey($user, $normalizedEventType, $subjectType, $subjectId, $context);
 
-        $this->ensureCurrentMissionInstancesAction->execute($user);
+        $this->ensureCurrentMissionInstancesAction->execute($user, false);
 
         $completed = DB::transaction(function () use ($user, $normalizedEventType, $amount, $context, $eventKey, $subjectType, $subjectId) {
             $linkedMissionTemplateId = max(0, (int) ($context['linked_mission_template_id'] ?? 0));

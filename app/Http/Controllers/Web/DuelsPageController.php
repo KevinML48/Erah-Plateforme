@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Application\Actions\Duels\AcceptDuelAction;
 use App\Application\Actions\Duels\CreateDuelAction;
+use App\Application\Actions\Duels\ExpireDuelAction;
 use App\Application\Actions\Duels\RefuseDuelAction;
 use App\Http\Controllers\Controller;
 use App\Models\Duel;
@@ -19,7 +20,7 @@ use RuntimeException;
 
 class DuelsPageController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, ExpireDuelAction $expireDuelAction): View
     {
         $tab = (string) $request->query('status', 'pending');
         if (! in_array($tab, ['pending', 'active', 'finished'], true)) {
@@ -27,6 +28,14 @@ class DuelsPageController extends Controller
         }
 
         $userId = (int) Auth::id();
+
+        Duel::query()
+            ->forUser($userId)
+            ->where('status', Duel::STATUS_PENDING)
+            ->whereNotNull('expires_at')
+            ->where('expires_at', '<=', now())
+            ->pluck('id')
+            ->each(fn (int $duelId): array => $expireDuelAction->execute($duelId));
 
         $baseQuery = Duel::query()->forUser($userId);
         $statusCounts = [
@@ -81,14 +90,11 @@ class DuelsPageController extends Controller
         $users = User::query()
             ->where('id', '!=', $userId)
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($builder) use ($search) {
-                    $builder->where('name', 'like', '%'.$search.'%')
-                        ->orWhere('email', 'like', '%'.$search.'%');
-                });
+                $query->where('name', 'like', '%'.$search.'%');
             })
             ->orderBy('name')
             ->limit(12)
-            ->get(['id', 'name', 'email', 'avatar_path', 'provider_avatar_url']);
+            ->get(['id', 'name', 'avatar_path', 'provider_avatar_url']);
 
         $candidateIds = $users->pluck('id');
         $latestByUserId = [];
@@ -219,7 +225,11 @@ class DuelsPageController extends Controller
             $opponentAvatar = $avatarFallback;
         }
 
-        $statusClass = match ($duel->status) {
+        $isActuallyExpired = $duel->status === Duel::STATUS_EXPIRED
+            || ($duel->status === Duel::STATUS_PENDING && $duel->expires_at && now()->greaterThan($duel->expires_at));
+        $status = $isActuallyExpired ? Duel::STATUS_EXPIRED : (string) $duel->status;
+
+        $statusClass = match ($status) {
             Duel::STATUS_ACCEPTED => 'is-active',
             Duel::STATUS_REFUSED => 'is-refused',
             Duel::STATUS_EXPIRED => 'is-expired',
@@ -237,14 +247,14 @@ class DuelsPageController extends Controller
             'title' => 'Duel #'.(int) $duel->id,
             'role_label' => $isChallenger ? 'Lance par vous' : 'Recu',
             'opponent_name' => $opponentName,
-            'status' => (string) $duel->status,
-            'status_label' => $this->duelStatusLabel((string) $duel->status),
+            'status' => $status,
+            'status_label' => $this->duelStatusLabel($status),
             'status_class' => $statusClass,
             'message' => trim((string) ($duel->message ?? '')),
             'created_at' => $duel->created_at,
             'expires_at' => $duel->expires_at,
             'expires_label' => $expiresLabel,
-            'can_respond' => $duel->status === Duel::STATUS_PENDING && (int) $duel->challenged_id === $userId,
+            'can_respond' => ! $isActuallyExpired && $duel->status === Duel::STATUS_PENDING && (int) $duel->challenged_id === $userId,
             'cover_image' => $opponentAvatar,
             'opponent_id' => $opponentId,
         ];

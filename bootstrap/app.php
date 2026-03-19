@@ -1,6 +1,8 @@
 <?php
 
 use App\Console\Commands\MigrateLegacyMediaToMediaDisk;
+use App\Console\Commands\RepairGiftDeliveries;
+use App\Console\Commands\RepairMissionRewards;
 use App\Console\Commands\SendMailSmokeTest;
 use App\Console\Commands\GenerateSitemap;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         GenerateSitemap::class,
         MigrateLegacyMediaToMediaDisk::class,
+        RepairGiftDeliveries::class,
+        RepairMissionRewards::class,
         SendMailSmokeTest::class,
     ])
     ->withMiddleware(function (Middleware $middleware) {

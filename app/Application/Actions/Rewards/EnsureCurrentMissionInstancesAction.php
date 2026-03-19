@@ -6,6 +6,7 @@ use App\Models\MissionInstance;
 use App\Models\MissionTemplate;
 use App\Models\User;
 use App\Models\UserMission;
+use App\Services\MissionStateSyncService;
 use App\Support\MySqlTimestampRange;
 use App\Services\SupporterAccessResolver;
 use Illuminate\Support\Carbon;
@@ -16,14 +17,15 @@ use Illuminate\Support\Facades\Schema;
 class EnsureCurrentMissionInstancesAction
 {
     public function __construct(
-        private readonly SupporterAccessResolver $supporterAccessResolver
+        private readonly SupporterAccessResolver $supporterAccessResolver,
+        private readonly MissionStateSyncService $missionStateSyncService,
     ) {
     }
 
     /**
      * @return array{daily: int, weekly: int, monthly: int, once: int, event_window: int}
      */
-    public function execute(User $user): array
+    public function execute(User $user, bool $syncState = true): array
     {
         if (! $this->missionFoundationReady()) {
             return [
@@ -35,7 +37,7 @@ class EnsureCurrentMissionInstancesAction
             ];
         }
 
-        return DB::transaction(function () use ($user) {
+        $counters = DB::transaction(function () use ($user) {
             $todayStart = now()->copy()->startOfDay();
             $todayEnd = now()->copy()->endOfDay();
             $weekStart = now()->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
@@ -115,6 +117,12 @@ class EnsureCurrentMissionInstancesAction
 
             return $counters;
         });
+
+        if ($syncState) {
+            $this->missionStateSyncService->sync($user);
+        }
+
+        return $counters;
     }
 
     private function missionFoundationReady(): bool

@@ -156,4 +156,25 @@ class DuelApiTest extends TestCase
             ->assertJsonPath('data.0.id', $expiredCandidate->id)
             ->assertJsonPath('data.0.status', Duel::STATUS_EXPIRED);
     }
+
+    public function test_accepting_overdue_pending_duel_normalizes_status_to_expired(): void
+    {
+        $challenger = User::factory()->create();
+        $challenged = User::factory()->create();
+
+        $duel = Duel::factory()->create([
+            'challenger_id' => $challenger->id,
+            'challenged_id' => $challenged->id,
+            'status' => Duel::STATUS_PENDING,
+            'requested_at' => now()->subHour(),
+            'expires_at' => now()->subMinute(),
+        ]);
+
+        Sanctum::actingAs($challenged);
+        $this->postJson('/api/duels/'.$duel->id.'/accept')->assertStatus(422);
+
+        $duel->refresh();
+        $this->assertSame(Duel::STATUS_EXPIRED, $duel->status);
+        $this->assertNotNull($duel->expired_at);
+    }
 }

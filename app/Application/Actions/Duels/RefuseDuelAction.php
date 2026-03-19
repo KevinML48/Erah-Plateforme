@@ -14,6 +14,7 @@ class RefuseDuelAction
 {
     public function __construct(
         private readonly RecordDuelEventAction $recordDuelEventAction,
+        private readonly ExpireDuelAction $expireDuelAction,
         private readonly NotifyAction $notifyAction,
         private readonly StoreAuditLogAction $storeAuditLogAction
     ) {
@@ -24,7 +25,7 @@ class RefuseDuelAction
      */
     public function execute(User $actor, int $duelId): array
     {
-        return DB::transaction(function () use ($actor, $duelId) {
+        $result = DB::transaction(function () use ($actor, $duelId) {
             $duel = Duel::query()
                 ->whereKey($duelId)
                 ->lockForUpdate()
@@ -54,7 +55,13 @@ class RefuseDuelAction
             }
 
             if ($duel->expires_at && now()->greaterThan($duel->expires_at)) {
-                throw new RuntimeException('Duel expired.');
+                $expired = $this->expireDuelAction->executeForLockedDuel($duel);
+
+                return [
+                    'duel' => $expired['duel'],
+                    'idempotent' => true,
+                    'expired' => true,
+                ];
             }
 
             $duel->status = Duel::STATUS_REFUSED;
@@ -106,5 +113,13 @@ class RefuseDuelAction
                 'idempotent' => false,
             ];
         });
+
+        if (($result['expired'] ?? false) === true) {
+            throw new RuntimeException('Duel expired.');
+        }
+
+        unset($result['expired']);
+
+        return $result;
     }
 }

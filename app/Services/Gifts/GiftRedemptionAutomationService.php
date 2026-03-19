@@ -52,27 +52,35 @@ class GiftRedemptionAutomationService
         $redemption->reason = 'Recompense attribuee automatiquement sur le profil.';
         $redemption->save();
 
-        GiftRedemptionEvent::query()->create([
-            'redemption_id' => $redemption->id,
-            'actor_user_id' => null,
-            'type' => 'profile_unlock_granted',
-            'data' => [
-                'gift_key' => $gift->launchCatalogKey(),
-                'items' => $result['granted']->values()->all(),
+        GiftRedemptionEvent::query()->updateOrCreate(
+            [
+                'redemption_id' => $redemption->id,
+                'type' => 'profile_unlock_granted',
             ],
-            'created_at' => now(),
-        ]);
+            [
+                'actor_user_id' => null,
+                'data' => [
+                    'gift_key' => $gift->launchCatalogKey(),
+                    'items' => $result['granted']->values()->all(),
+                ],
+                'created_at' => now(),
+            ],
+        );
 
-        GiftRedemptionEvent::query()->create([
-            'redemption_id' => $redemption->id,
-            'actor_user_id' => null,
-            'type' => 'auto_delivered',
-            'data' => [
-                'delivery_type' => $definition['delivery_type'] ?? 'profile',
-                'auto_equipped_slots' => $result['auto_equipped_slots'],
+        GiftRedemptionEvent::query()->updateOrCreate(
+            [
+                'redemption_id' => $redemption->id,
+                'type' => 'auto_delivered',
             ],
-            'created_at' => now(),
-        ]);
+            [
+                'actor_user_id' => null,
+                'data' => [
+                    'delivery_type' => $definition['delivery_type'] ?? 'profile',
+                    'auto_equipped_slots' => $result['auto_equipped_slots'],
+                ],
+                'created_at' => now(),
+            ],
+        );
 
         $summary = $result['granted']
             ->pluck('label')

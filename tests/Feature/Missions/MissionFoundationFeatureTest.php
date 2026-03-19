@@ -443,6 +443,48 @@ class MissionFoundationFeatureTest extends TestCase
         ]);
     }
 
+    public function test_existing_level_and_rank_state_is_synced_when_missions_are_generated_late(): void
+    {
+        $user = User::factory()->create();
+
+        app(AddPointsAction::class)->execute($user, PointsTransaction::KIND_XP, 1500, 'test.level.preseed', 'xp-late-mission');
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.level.five.late',
+            'title' => 'Cap niveau 5 tardif',
+            'event_type' => 'progress.level.reached',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['min_level' => 5],
+            'rewards' => ['xp' => 120, 'points' => 60],
+            'is_active' => true,
+        ]);
+
+        MissionTemplate::query()->create([
+            'key' => 'mission.rank.argent.late',
+            'title' => 'Cap Argent tardif',
+            'event_type' => 'progress.rank.reached',
+            'target_count' => 1,
+            'scope' => MissionTemplate::SCOPE_ONCE,
+            'constraints' => ['required_rank' => 'argent'],
+            'rewards' => ['xp' => 180, 'points' => 90],
+            'is_active' => true,
+        ]);
+
+        app(EnsureCurrentMissionInstancesAction::class)->execute($user);
+
+        $missions = UserMission::query()
+            ->where('user_id', $user->id)
+            ->with('instance.template')
+            ->get()
+            ->keyBy(fn (UserMission $mission): string => (string) $mission->instance?->template?->key);
+
+        $this->assertNotNull($missions['mission.level.five.late']?->completed_at);
+        $this->assertNotNull($missions['mission.level.five.late']?->rewarded_at);
+        $this->assertNotNull($missions['mission.rank.argent.late']?->completed_at);
+        $this->assertNotNull($missions['mission.rank.argent.late']?->rewarded_at);
+    }
+
     public function test_catalog_can_filter_active_missions_by_status_and_type(): void
     {
         $user = User::factory()->create();

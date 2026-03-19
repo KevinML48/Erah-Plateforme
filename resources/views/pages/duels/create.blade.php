@@ -188,7 +188,7 @@
                         <div class="tt-row tt-lg-row-reverse">
                             <div class="tt-col-lg-8">
                                 <label for="q">Recherche joueur</label>
-                                <input id="q" class="tt-form-control" name="q" value="{{ $currentSearch }}" placeholder="Nom ou email">
+                                <input id="q" class="tt-form-control" name="q" value="{{ $currentSearch }}" placeholder="Nom du joueur">
                             </div>
                             <div class="tt-col-lg-4 tt-align-self-end">
                                 <button type="submit" class="tt-btn tt-btn-primary tt-magnetic-item">
@@ -238,7 +238,7 @@
                                             <div class="pcli-caption">
                                                 <h2 class="pcli-title">{{ $target->name }}</h2>
                                                 <div class="pcli-categories">
-                                                    <div class="pcli-category">{{ $target->email }}</div>
+                                                    <div class="pcli-category">Membre ERAH</div>
                                                 </div>
 
                                                 @if($latest)

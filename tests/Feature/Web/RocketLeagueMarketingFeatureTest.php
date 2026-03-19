@@ -9,6 +9,8 @@ class RocketLeagueMarketingFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const ROCKET_LEAGUE_VIDEO_ASSET = 'template/assets/vids/rocket-league/rendu-final.mp4';
+
     public function test_canonical_rocket_league_page_displays_team_content(): void
     {
         $this->get(route('marketing.rocket-league'))
@@ -23,6 +25,7 @@ class RocketLeagueMarketingFeatureTest extends TestCase
             ->assertSeeText('BeastBound')
             ->assertSeeText('Zhin')
             ->assertSee('https://x.com/17saizen', false)
+            ->assertSee(asset(self::ROCKET_LEAGUE_VIDEO_ASSET), false)
             ->assertSee('/template/assets/img/rocket-league/saizen.jpg', false)
             ->assertSee('/template/assets/img/rocket-league/anoriq.jpg', false)
             ->assertDontSeeText('18/03')
@@ -37,7 +40,7 @@ class RocketLeagueMarketingFeatureTest extends TestCase
             ->assertOk()
             ->assertSee('Rocket League')
             ->assertSee(route('marketing.rocket-league'), false)
-            ->assertSee('/template/assets/img/rocket-league/Rendu%20final.mp4', false)
+            ->assertSee(asset(self::ROCKET_LEAGUE_VIDEO_ASSET), false)
             ->assertDontSee('Annonce live 18/03')
             ->assertDontSee('>18/03<', false);
     }

@@ -300,8 +300,8 @@
                 </div>
 
                 <div class="rocket-preview-media">
-                    <video autoplay loop muted playsinline preload="metadata" poster="/template/assets/img/rocket-league-team.png" aria-label="Presentation Rocket League ERAH">
-                        <source src="/template/assets/img/rocket-league/Rendu%20final.mp4" type="video/mp4">
+                    <video autoplay loop muted playsinline preload="metadata" poster="{{ asset('template/assets/img/rocket-league-team.png') }}" aria-label="Presentation Rocket League ERAH">
+                        <source src="{{ asset('template/assets/vids/rocket-league/rendu-final.mp4') }}" type="video/mp4">
                     </video>
                 </div>
             </div>

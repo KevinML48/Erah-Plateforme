@@ -2922,6 +2922,15 @@
         </div>
       </div>
 
+      <div id="shopify-checkout-modal" style="display: none; position: fixed; inset: 0; z-index: 99999; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 20px;">
+        <div style="position: relative; width: 100%; max-width: 1200px; height: 90vh; max-height: 900px; background: #0b0b0d; border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.1); overflow: hidden;">
+          <button id="close-checkout-modal" style="position: absolute; top: 20px; right: 20px; z-index: 100000; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 300; transition: all 0.2s ease; line-height: 1;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+            ×
+          </button>
+          <iframe id="shopify-checkout-iframe" src="" style="width: 100%; height: 100%; border: none; display: block; background: #fff;"></iframe>
+        </div>
+      </div>
+
 
 @endverbatim
 @endsection
@@ -2942,6 +2951,874 @@
 <script src="/template/assets/vendor/swiper/js/swiper-bundle.min.js" defer></script>
 <script src="/template/assets/js/theme.js" defer></script>
 <script src="/template/assets/js/cookies.js" defer></script>
+
+<script>
+  function switchView(side) {
+    // Images
+    document.querySelectorAll('.shop-mockup-img').forEach(img => img.classList.remove('active'));
+    document.getElementById('img-' + side).classList.add('active');
+    
+    // Buttons
+    document.querySelectorAll('.shop-control-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('btn-' + side).classList.add('active');
+  }
+
+  // 3D Tilt Effect
+  document.addEventListener('DOMContentLoaded', () => {
+    const tiltContainers = document.querySelectorAll('.tt-tilt-effect');
+    initBuyVisualToggle();
+    
+    tiltContainers.forEach(container => {
+      const content = container.querySelector('.tt-tilt-content');
+      if (!content) return;
+
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left; // x position within the element.
+        const y = e.clientY - rect.top;  // y position within the element.
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = ((y - centerY) / centerY) * -10; // Max rotation 10deg
+        const rotateY = ((x - centerX) / centerX) * 10;
+        
+        gsap.to(content, {
+          rotationX: rotateX,
+          rotationY: rotateY,
+          scale: 1.05,
+          duration: 0.5,
+          ease: "power2.out"
+        });
+      });
+      
+      container.addEventListener('mouseleave', () => {
+        gsap.to(content, {
+          rotationX: 0,
+          rotationY: 0,
+          scale: 1,
+          duration: 0.8,
+          ease: "elastic.out(1, 0.5)"
+        });
+      });
+    });
+  });
+</script>
+<script>
+  // Mini toggle Face/Dos pour le visuel dans le bloc Shopify
+  function initBuyVisualToggle() {
+    const faceImg = document.getElementById('buy-visual-face');
+    const backImg = document.getElementById('buy-visual-dos');
+    const buttons = document.querySelectorAll('.shopify-visual-btn');
+    if (!faceImg || !backImg || !buttons.length) return;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.view;
+        const isFace = target === 'face';
+        faceImg.classList.toggle('active', isFace);
+        backImg.classList.toggle('active', !isFace);
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+      });
+    });
+  }
+</script>
+
+<script>
+  (function() {
+    var shopifyDomain = 'erah-shop-2.myshopify.com';
+    var storefrontAccessToken = 'dc06e819fed83c122ae8459a50eef09a';
+    var productId = '10496961577287';
+    var buyButtonTarget = document.getElementById('shopify-buy-button');
+    if (!buyButtonTarget) return;
+
+    var checkoutModal = document.getElementById('shopify-checkout-modal');
+    var checkoutIframe = document.getElementById('shopify-checkout-iframe');
+    var closeModalBtn = document.getElementById('close-checkout-modal');
+    var shopifyClient = null;
+    var cartComponent = null;
+    var flocageFields = document.getElementById('flocage-fields');
+    var flocageNomInput = document.getElementById('flocage-nom');
+    var flocageNumeroInput = document.getElementById('flocage-numero');
+    var flocageObserver = null;
+
+    function cacheFlocageValues() {
+      if (!flocageNomInput || !flocageNumeroInput) return;
+      window.flocageInfo = {
+        nom: flocageNomInput.value.trim(),
+        numero: flocageNumeroInput.value.trim()
+      };
+    }
+
+    function ensureFlocagePosition() {
+      if (!flocageFields) return;
+      var buyButtonNode = document.getElementById('shopify-buy-button');
+      var buyBox = buyButtonNode ? buyButtonNode.parentNode : null;
+      if (buyBox && flocageFields.parentNode !== buyBox) {
+        buyBox.insertBefore(flocageFields, buyButtonNode);
+      }
+      flocageFields.style.display = 'block';
+      // S'assurer que les valeurs saisies sont conservées
+      if (window.flocageInfo) {
+        if (flocageNomInput) flocageNomInput.value = window.flocageInfo.nom || '';
+        if (flocageNumeroInput) flocageNumeroInput.value = window.flocageInfo.numero || '';
+      }
+      document.body.classList.add('custom-sizes-active');
+    }
+
+    function setupFlocagePersistence() {
+      if (!flocageFields) return;
+      cacheFlocageValues();
+      ['input','change','blur'].forEach(function(evt) {
+        if (flocageNomInput) flocageNomInput.addEventListener(evt, cacheFlocageValues);
+        if (flocageNumeroInput) flocageNumeroInput.addEventListener(evt, cacheFlocageValues);
+      });
+
+      var productContainer = document.getElementById('shopify-buy-button');
+      if (productContainer && !flocageObserver) {
+        flocageObserver = new MutationObserver(function() {
+          ensureFlocagePosition();
+        });
+        flocageObserver.observe(productContainer, {
+          childList: true,
+          subtree: true
+        });
+      }
+    }
+
+    // Fermer le modal
+    function closeCheckoutModal() {
+      checkoutModal.style.display = 'none';
+      checkoutIframe.src = '';
+      document.body.style.overflow = '';
+    }
+
+    // Ouvrir le modal avec l'URL du checkout
+    function openCheckoutModal(checkoutUrl) {
+      if (checkoutUrl) {
+        checkoutModal.style.display = 'flex';
+        checkoutIframe.src = checkoutUrl;
+      document.body.style.overflow = 'hidden';
+      
+      // Fermer automatiquement après paiement réussi (détection via URL de l'iframe)
+      var checkInterval = setInterval(function() {
+          try {
+            var iframeUrl = checkoutIframe.contentWindow.location.href;
+            if (iframeUrl && (iframeUrl.indexOf('/thank_you') !== -1 || iframeUrl.indexOf('/orders/') !== -1)) {
+              clearInterval(checkInterval);
+              setTimeout(function() {
+                closeCheckoutModal();
+                // Optionnel: afficher un message de succès
+                alert('Commande confirmée ! Merci pour votre achat.');
+              }, 2000);
+            }
+          } catch (e) {
+            // Cross-origin, on ne peut pas lire l'URL
+          }
+        }, 500);
+
+        // Nettoyer l'interval après 10 minutes
+        setTimeout(function() {
+          clearInterval(checkInterval);
+        }, 600000);
+      }
+    }
+
+    closeModalBtn.addEventListener('click', closeCheckoutModal);
+    checkoutModal.addEventListener('click', function(e) {
+      if (e.target === checkoutModal) {
+        closeCheckoutModal();
+      }
+    });
+
+    // Écouter les messages du checkout pour fermer automatiquement après paiement
+    window.addEventListener('message', function(event) {
+      // Vérifier l'origine pour sécurité (accepter les messages de Shopify)
+      if (event.data && (event.data.type === 'shopify:checkout:close' || event.data === 'closeCheckout')) {
+        closeCheckoutModal();
+      }
+    });
+
+    // Intercepter tous les clics sur les liens/a qui pointent vers checkout.shopify.com
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      // Trouver le lien parent si le clic est sur un élément à l'intérieur
+      while (target && target.tagName !== 'A' && target.tagName !== 'BUTTON') {
+        target = target.parentElement;
+      }
+
+      if (target) {
+        var href = target.href || target.getAttribute('href');
+        var isCheckoutLink = href && (href.indexOf('checkout.shopify.com') !== -1 || href.indexOf('/checkouts/') !== -1);
+        
+        if (isCheckoutLink) {
+          e.preventDefault();
+          e.stopPropagation();
+          openCheckoutModal(href);
+          return false;
+        }
+      }
+    }, true);
+
+    // Reset panier persistant pour éviter d'anciens quantités > 1
+    try {
+      Object.keys(localStorage || {}).forEach(function(key) {
+        if (key.indexOf('shopify-buy') === 0) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (e) {}
+
+    function loadScript() {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+      script.onload = shopifyBuyInit;
+      document.head.appendChild(script);
+    }
+
+    function shopifyBuyInit() {
+      shopifyClient = ShopifyBuy.buildClient({
+        domain: shopifyDomain,
+        storefrontAccessToken: storefrontAccessToken
+      });
+
+      ShopifyBuy.UI.onReady(shopifyClient).then(function(ui) {
+        cartComponent = ui.createComponent('product', {
+          id: productId,
+          node: buyButtonTarget,
+          moneyFormat: '%7B%7Bamount_with_comma_separator%7D%7D €',
+          options: {
+            product: {
+              layout: 'vertical',
+              iframe: false,
+              buttonDestination: 'cart',
+              contents: {
+                img: false,
+                title: false,
+                price: false,
+                options: true,
+                description: false,
+                buttonWithQuantity: false,
+                quantity: false
+              },
+              text: {
+                button: 'Ajouter au panier'
+              },
+              styles: {
+                product: {
+                  'text-align': 'left',
+                  'background': 'transparent',
+                  'color': '#fff'
+                },
+                img: {
+                  'width': '100%',
+                  'max-width': '200px',
+                  'margin': '0 auto 20px',
+                  'border-radius': '12px',
+                  'border': '1px solid rgba(255,255,255,0.1)'
+                },
+                imgWrapper: {
+                  'text-align': 'center'
+                },
+                price: {
+                  'display': 'none'
+                },
+                compareAt: {
+                  'display': 'none'
+                },
+                variantTitle: {
+                  'color': '#fff',
+                  'font-size': '12px',
+                  'margin-bottom': '8px',
+                  'text-transform': 'uppercase',
+                  'letter-spacing': '0.05em',
+                  'font-weight': '700'
+                },
+                option: {
+                  'background-color': 'rgba(0,0,0,0.4)',
+                  'border': '1px solid rgba(255,255,255,0.15)',
+                  'border-radius': '8px',
+                  'color': '#fff',
+                  'padding': '10px 12px',
+                  'font-size': '14px',
+                  'font-weight': '500',
+                  'width': '100%',
+                  'cursor': 'pointer',
+                  'transition': 'border-color 0.2s ease'
+                },
+                button: {
+                  'background-color': '#d00000',
+                  'color': '#fff',
+                  'border-radius': '12px',
+                  'padding': '14px 18px',
+                  'font-weight': '700',
+                  'letter-spacing': '0.06em',
+                  'width': '100%',
+                  'transition': 'transform 0.2s ease, background 0.2s ease',
+                  'text-transform': 'uppercase'
+                },
+                buttonHover: {
+                  'background-color': '#ff1a1a',
+                  'transform': 'translateY(-1px)'
+                }
+              }
+            },
+            cart: {
+              popup: false,
+              startOpen: false,
+              contents: {
+                note: true
+              },
+              text: {
+                title: 'Panier ERAH',
+                empty: 'Votre panier est vide',
+                total: 'Sous-total',
+                button: 'Passer la commande'
+              },
+              styles: {
+                cart: {
+                  'background-color': '#0b0b0d',
+                  'color': '#ffffff',
+                  'max-width': '420px',
+                  'width': '100%',
+                  'box-shadow': '-12px 0 40px rgba(0,0,0,0.55)',
+                  'border': '1px solid rgba(255,255,255,0.08)',
+                  'border-left': 'none',
+                  'border-radius': '0 18px 18px 0',
+                  'backdrop-filter': 'blur(8px)'
+                },
+                footer: {
+                  'background-color': '#0b0b0d',
+                  'border-top': '1px solid rgba(255,255,255,0.08)',
+                  'padding': '18px'
+                },
+                title: {
+                  'color': '#ffffff',
+                  'text-transform': 'uppercase',
+                  'letter-spacing': '0.06em',
+                  'font-weight': '800',
+                  'font-size': '14px',
+                  'padding': '18px'
+                },
+                lineItems: {
+                  'color': '#ffffff'
+                },
+                price: {
+                  'color': '#ffffff',
+                  'font-weight': '700'
+                },
+                quantityInput: {
+                  'border-color': 'rgba(255,255,255,0.25)',
+                  'color': '#ffffff',
+                  'background-color': '#121214',
+                  '-webkit-text-fill-color': '#ffffff',
+                  'border-radius': '8px'
+                },
+                subtotalText: {
+                  'color': '#ffffff',
+                  'text-transform': 'uppercase',
+                  'letter-spacing': '0.02em',
+                  'font-size': '12px'
+                },
+                subtotal: {
+                  'color': '#ffffff',
+                  'font-weight': '800',
+                  'font-size': '20px'
+                },
+                notice: {
+                  'color': 'rgba(255,255,255,0.65)',
+                  'font-size': '11px'
+                },
+                button: {
+                  'background': 'linear-gradient(135deg, #ff2b2b, #d00000)',
+                  'border-radius': '12px',
+                  'font-weight': '800',
+                  'text-transform': 'uppercase',
+                  'color': '#ffffff',
+                  'padding': '16px 24px',
+                  'width': '100%',
+                  'letter-spacing': '0.06em',
+                  'box-shadow': '0 16px 30px rgba(208,0,0,0.32)',
+                  'transition': 'transform 0.2s ease, box-shadow 0.2s ease'
+                },
+                buttonHover: {
+                  'background': 'linear-gradient(135deg, #ff3b3b, #ff1a1a)',
+                  'transform': 'translateY(-1px)',
+                  'box-shadow': '0 20px 40px rgba(255,43,43,0.4)'
+                }
+              }
+            },
+            toggle: {
+              sticky: true,
+              styles: {
+                toggle: {
+                  'background-color': '#d00000',
+                  'border-radius': '999px',
+                  'box-shadow': '0 8px 20px rgba(208,0,0,0.4)'
+                }
+              }
+            },
+            modalProduct: {
+              contents: {
+                img: true,
+                button: true,
+                buttonWithQuantity: false
+              },
+              styles: {
+                button: {
+                  'background-color': '#d00000',
+                  'border-radius': '12px'
+                }
+              }
+            }
+          }
+        });
+
+        setupFlocagePersistence();
+        ensureFlocagePosition();
+
+        // Intercepter les boutons de checkout après un délai pour que le DOM soit prêt
+        setTimeout(function() {
+          interceptCheckoutButtons();
+          forceQuantityStyles();
+          interceptAddToCartButton();
+          injectFlocageFields();
+          ensureFlocagePosition();
+        }, 1500);
+
+        // Fonction pour injecter les champs de flocage dans le widget Shopify
+        function injectFlocageFields() {
+          var injectInterval = setInterval(function() {
+            var productOptions = document.querySelector('.shopify-buy__product');
+            var sizeSelect = document.querySelector('.shopify-buy__option-select');
+            
+            if (productOptions && sizeSelect) {
+              clearInterval(injectInterval);
+
+              // Créer ou récupérer le sélecteur de taille personnalisé
+              var sizeContainer = document.querySelector('.custom-size-selector');
+              if (!sizeContainer) {
+                sizeContainer = document.createElement('div');
+                sizeContainer.className = 'custom-size-selector';
+                var sizeLabel = document.createElement('div');
+                sizeLabel.className = 'custom-size-label';
+                sizeLabel.textContent = 'Taille';
+                sizeContainer.appendChild(sizeLabel);
+                var sizeButtonsContainer = document.createElement('div');
+                sizeButtonsContainer.className = 'custom-size-buttons';
+                sizeContainer.appendChild(sizeButtonsContainer);
+              }
+              var sizeButtonsContainer = sizeContainer.querySelector('.custom-size-buttons');
+              sizeButtonsContainer.innerHTML = '';
+              
+              // Récupérer toutes les tailles disponibles depuis le select Shopify
+              var sizes = [];
+              for (var i = 0; i < sizeSelect.options.length; i++) {
+                var option = sizeSelect.options[i];
+                if (!option.value) continue; // skip placeholders
+                sizes.push({
+                  value: option.value,
+                  label: option.text,
+                  selected: option.selected
+                });
+              }
+
+              // Ordonner les tailles comme sur Shopify (XS -> 4XL)
+              var sizeOrder = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+              sizes.sort(function(a, b) {
+                var aIndex = sizeOrder.indexOf((a.label || '').trim().toUpperCase());
+                var bIndex = sizeOrder.indexOf((b.label || '').trim().toUpperCase());
+                if (aIndex === -1 && bIndex === -1) return 0;
+                if (aIndex === -1) return 1;
+                if (bIndex === -1) return -1;
+                return aIndex - bIndex;
+              });
+
+              var defaultSizeValue = sizeSelect.value || (sizes[0] && sizes[0].value);
+              
+              // Créer un bouton pour chaque taille
+              sizes.forEach(function(size, index) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'custom-size-btn';
+                if (size.value === defaultSizeValue) {
+                  btn.classList.add('active'); // Taille sélectionnée par défaut
+                }
+                btn.textContent = size.label;
+                btn.setAttribute('data-size-value', size.value);
+                
+                btn.addEventListener('click', function() {
+                  // Retirer la classe active de tous les boutons
+                  document.querySelectorAll('.custom-size-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                  });
+                  // Ajouter la classe active au bouton cliqué
+                  this.classList.add('active');
+                  // Mettre à jour le select Shopify caché
+                  sizeSelect.value = this.getAttribute('data-size-value');
+                  // Déclencher l'événement change pour que Shopify détecte le changement
+                  var event = new Event('change', { bubbles: true });
+                  sizeSelect.dispatchEvent(event);
+                });
+                
+                sizeButtonsContainer.appendChild(btn);
+              });
+
+              // Synchroniser les boutons si Shopify modifie le select (par ex. après init)
+              sizeSelect.addEventListener('change', function() {
+                var selectedValue = sizeSelect.value;
+                document.querySelectorAll('.custom-size-btn').forEach(function(b) {
+                  b.classList.toggle('active', b.getAttribute('data-size-value') === selectedValue);
+                });
+              });
+
+              // Forcer une valeur par défaut si rien n'est sélectionné
+              if (!sizeSelect.value && defaultSizeValue) {
+                sizeSelect.value = defaultSizeValue;
+                sizeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+              
+              sizeContainer.appendChild(sizeButtonsContainer);
+              
+              // Insérer le sélecteur de taille personnalisé avant le select Shopify (s'il n'est pas déjà inséré)
+              var selectWrapper = sizeSelect.closest('.shopify-buy__option-select__wrapper') || sizeSelect.parentNode;
+              if (selectWrapper && selectWrapper.parentNode && sizeContainer.parentNode !== selectWrapper.parentNode) {
+                selectWrapper.parentNode.insertBefore(sizeContainer, selectWrapper);
+              }
+              
+              document.body.classList.add('custom-sizes-active');
+              ensureFlocagePosition();
+            }
+          }, 200);
+          
+          // Arrêter après 10 secondes si pas trouvé
+          setTimeout(function() {
+            clearInterval(injectInterval);
+          }, 10000);
+
+          // Fallback : si les boutons n'apparaissent pas, on ré-affiche le select natif pour ne pas bloquer le choix de taille
+          setTimeout(function() {
+            var customPicker = document.querySelector('.custom-size-selector');
+            var sizeSelectFallback = document.querySelector('.shopify-buy__option-select');
+            var customVisible = customPicker && customPicker.offsetParent !== null;
+            if ((!customPicker || !customVisible) && sizeSelectFallback) {
+              document.body.classList.remove('custom-sizes-active');
+              sizeSelectFallback.style.display = '';
+              var wrapper = sizeSelectFallback.closest('.shopify-buy__option-select__wrapper');
+              if (wrapper) wrapper.style.display = '';
+              ensureFlocagePosition();
+            }
+          }, 4000);
+        }
+
+        // Fonction pour intercepter le bouton "Ajouter au panier" et ajouter les infos de flocage
+        function interceptAddToCartButton() {
+          var pseudoInput = document.getElementById('flocage-nom');
+          var numeroInput = document.getElementById('flocage-numero');
+          // Si pas de champs, on ne bloque pas
+          if (!pseudoInput || !numeroInput) return;
+
+          // Observer pour détecter quand le bouton apparaît
+          var addToCartObserver = new MutationObserver(function() {
+            var addToCartBtn = document.querySelector('.shopify-buy__btn[data-element="product.button"]');
+            
+            if (addToCartBtn && !addToCartBtn.hasAttribute('data-flocage-intercepted')) {
+              addToCartBtn.setAttribute('data-flocage-intercepted', 'true');
+              
+              // Intercepter le clic
+              addToCartBtn.addEventListener('click', function(e) {
+                var flocageNom = pseudoInput.value.trim();
+                var flocageNumero = numeroInput.value.trim();
+                
+                // Vérifier que le nom est renseigné
+                if (!flocageNom || !flocageNumero) return;
+                
+                // Stocker temporairement les infos de flocage pour les ajouter au produit
+                window.flocageInfo = {
+                  nom: flocageNom,
+                  numero: flocageNumero
+                };
+                
+                // Le SDK Shopify va gérer l'ajout au panier
+                // On va modifier le produit après l'ajout via un hook
+              }, true);
+            }
+          });
+          
+          // Observer le conteneur du bouton
+          var productContainer = document.getElementById('shopify-buy-button');
+          if (productContainer) {
+            addToCartObserver.observe(productContainer, {
+              childList: true,
+              subtree: true
+            });
+          }
+          
+          // Essayer immédiatement aussi
+          setTimeout(function() {
+            var addToCartBtn = document.querySelector('.shopify-buy__btn[data-element="product.button"]');
+            if (addToCartBtn && !addToCartBtn.hasAttribute('data-flocage-intercepted')) {
+              addToCartBtn.setAttribute('data-flocage-intercepted', 'true');
+              addToCartBtn.addEventListener('click', function(e) {
+                var flocageNom = pseudoInput.value.trim();
+                var flocageNumero = numeroInput.value.trim();
+                
+                if (!flocageNom || !flocageNumero) return;
+                
+                window.flocageInfo = {
+                  nom: flocageNom,
+                  numero: flocageNumero
+                };
+              }, true);
+            }
+          }, 500);
+        }
+
+        // Observer les changements dans le panier pour forcer les styles de quantité
+        var cartObserver = new MutationObserver(function() {
+          forceQuantityStyles();
+          displayFlocageInCart();
+          emphasizeCartNote();
+        });
+
+        // Observer le conteneur du panier
+        setTimeout(function() {
+          var cartElement = document.querySelector('.shopify-buy__cart');
+          if (cartElement) {
+            cartObserver.observe(cartElement, {
+              childList: true,
+              subtree: true,
+              attributes: true,
+              attributeFilter: ['style', 'class']
+            });
+          }
+        }, 2000);
+
+        // Appel périodique pour s'assurer que les styles sont appliqués
+        setInterval(function() {
+          forceQuantityStyles();
+          displayFlocageInCart();
+          emphasizeCartNote();
+        }, 1000);
+        
+        // Fonction pour afficher les infos de flocage dans le panier
+        function displayFlocageInCart() {
+          if (!window.flocageInfo) return;
+          
+          var cartItems = document.querySelectorAll('.shopify-buy__cart-item');
+          cartItems.forEach(function(item) {
+            // Vérifier si on a déjà ajouté les infos de flocage
+            if (item.querySelector('.flocage-info')) return;
+            
+            // Créer l'élément d'info de flocage
+            var flocageDiv = document.createElement('div');
+            flocageDiv.className = 'flocage-info';
+            flocageDiv.style.cssText = 'margin-top: 8px; padding: 8px 10px; background: rgba(208,0,0,0.15); border: 1px solid rgba(208,0,0,0.3); border-radius: 6px; font-size: 11px; color: #fff;';
+            
+            var flocageText = '<strong style="color: #ff5555; text-transform: uppercase; letter-spacing: 0.05em;">🎨 Flocage:</strong><br>';
+            flocageText += '<span style="color: #fff;">Pseudo à floquer: <strong>' + window.flocageInfo.nom + '</strong></span>';
+            
+            if (window.flocageInfo.numero) {
+              flocageText += '<br><span style="color: #fff;">Numéro du flocage: <strong>' + window.flocageInfo.numero + '</strong></span>';
+            }
+            
+            flocageDiv.innerHTML = flocageText;
+            
+            // Trouver où insérer (après le titre du produit)
+            var titleElement = item.querySelector('.shopify-buy__cart-item__title');
+            if (titleElement && titleElement.parentNode) {
+              titleElement.parentNode.insertBefore(flocageDiv, titleElement.nextSibling);
+            }
+          });
+          
+          // Remplir automatiquement le champ de note avec les infos de flocage
+          var noteField = document.querySelector('.shopify-buy__cart-note');
+          if (noteField && !noteField.value) {
+            var noteText = '🎨 FLOCAGE PERSONNALISÉ:\n';
+            noteText += 'Pseudo à floquer: ' + window.flocageInfo.nom;
+            if (window.flocageInfo.numero) {
+              noteText += '\nNuméro du flocage: ' + window.flocageInfo.numero;
+            }
+            noteField.value = noteText;
+            noteField.style.color = '#ffffff';
+            noteField.style.backgroundColor = 'rgba(0,0,0,0.3)';
+            noteField.style.border = '1px solid rgba(255,255,255,0.15)';
+            noteField.style.borderRadius = '8px';
+            noteField.style.padding = '10px';
+          }
+        }
+
+        // Met en avant la zone "Special instructions for seller" pour y mettre pseudo + numéro
+        function emphasizeCartNote() {
+          var noteField = document.querySelector('.shopify-buy__cart-note') ||
+                          document.querySelector('.shopify-buy__cart textarea[name="note"]') ||
+                          document.querySelector('.shopify-buy__cart textarea');
+          if (!noteField) return;
+          noteField.placeholder = 'Pseudo à floquer + Numéro du flocage';
+          noteField.style.background = 'rgba(208,0,0,0.12)';
+          noteField.style.border = '1px solid rgba(255,255,255,0.35)';
+          noteField.style.color = '#fff';
+          noteField.style.borderRadius = '14px';
+          noteField.style.padding = '16px 18px';
+          noteField.style.fontWeight = '700';
+          noteField.style.fontSize = '15px';
+          noteField.style.minHeight = '140px';
+          noteField.style.boxShadow = '0 12px 34px rgba(208,0,0,0.3)';
+          noteField.style.outline = 'none';
+
+          if (!noteField.dataset.enhanced) {
+            var container = document.createElement('div');
+            container.style.cssText = 'margin-bottom:10px; display:flex; align-items:center; gap:10px; color:#fff;';
+            
+            var arrow = document.createElement('span');
+            arrow.textContent = '⬅︎';
+            arrow.style.cssText = 'font-size:20px; color:#ff3b3b; line-height:1;';
+            
+            var text = document.createElement('div');
+            text.innerHTML = '<strong style="text-transform:uppercase; letter-spacing:0.06em;">Ici</strong> : mets <strong>ton pseudo</strong> + <strong>ton numéro</strong> pour le flocage';
+            text.style.cssText = 'font-size:13px; line-height:1.45; color:#fff;';
+
+            container.appendChild(arrow);
+            container.appendChild(text);
+
+            if (noteField.parentNode) {
+              noteField.parentNode.insertBefore(container, noteField);
+            }
+
+            noteField.dataset.enhanced = 'true';
+          }
+        }
+      });
+    }
+
+    // Fonction pour forcer les styles blancs sur les éléments de quantité
+    function forceQuantityStyles() {
+      var quantityElements = document.querySelectorAll(
+        '.shopify-buy__cart .shopify-buy__quantity-input, ' +
+        '.shopify-buy__cart .shopify-buy__cart-item__quantity, ' +
+        '.shopify-buy__cart [class*="quantity"], ' +
+        '.shopify-buy__cart input[type="number"], ' +
+        '.shopify-buy__cart .shopify-buy__quantity-container *'
+      );
+
+      quantityElements.forEach(function(element) {
+        // Forcer la couleur blanche sur tous les éléments de quantité
+        if (element.tagName === 'INPUT' || element.tagName === 'SPAN' || element.tagName === 'DIV') {
+          element.style.color = '#ffffff';
+          element.style.webkitTextFillColor = '#ffffff';
+          if (element.tagName === 'INPUT') {
+            element.style.borderColor = 'rgba(255,255,255,0.2)';
+            element.style.backgroundColor = 'transparent';
+          }
+        }
+
+        // S'assurer que le texte à l'intérieur est aussi blanc
+        var textNodes = element.querySelectorAll('*');
+        textNodes.forEach(function(node) {
+          if (node.tagName !== 'BUTTON' && node.tagName !== 'A') {
+            node.style.color = '#ffffff';
+            node.style.webkitTextFillColor = '#ffffff';
+          }
+        });
+      });
+
+      // Forcer aussi sur les conteneurs de quantité
+      var quantityContainers = document.querySelectorAll(
+        '.shopify-buy__quantity-container, ' +
+        '.shopify-buy__cart .shopify-buy__quantity-container, ' +
+        '.shopify-buy__cart-item__quantity'
+      );
+
+      quantityContainers.forEach(function(container) {
+        container.style.color = '#ffffff';
+        var allChildren = container.querySelectorAll('*');
+        allChildren.forEach(function(child) {
+          if (child.tagName !== 'BUTTON' && child.tagName !== 'A' && child.tagName !== 'INPUT') {
+            child.style.color = '#ffffff';
+          }
+        });
+      });
+    }
+
+    function interceptCheckoutButtons() {
+      // Observer pour détecter les boutons checkout quand ils apparaissent
+      var observer = new MutationObserver(function(mutations) {
+        var checkoutButtons = document.querySelectorAll('.shopify-buy__cart__footer button, a[href*="checkout"]');
+        checkoutButtons.forEach(function(btn) {
+          if (!btn.hasAttribute('data-checkout-intercepted')) {
+            btn.setAttribute('data-checkout-intercepted', 'true');
+            
+            btn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              // Récupérer l'URL du checkout depuis le bouton ou le panier
+              var checkoutUrl = btn.href || btn.getAttribute('href');
+              
+              if (!checkoutUrl && cartComponent && cartComponent.cart) {
+                // Essayer de récupérer depuis le modèle du panier
+                try {
+                  var checkoutId = cartComponent.cart.model.checkoutId;
+                  if (checkoutId) {
+                    checkoutUrl = 'https://checkout.shopify.com/carts/' + checkoutId + '/checkout';
+                  }
+                } catch (err) {
+                  console.error('Erreur lors de la récupération du checkout:', err);
+                }
+              }
+
+              if (checkoutUrl) {
+                openCheckoutModal(checkoutUrl);
+              } else {
+                // Fallback: attendre un peu et réessayer
+                setTimeout(function() {
+                  var fallbackUrl = btn.href || document.querySelector('a[href*="checkout"]')?.href;
+                  if (fallbackUrl) {
+                    openCheckoutModal(fallbackUrl);
+                  }
+                }, 500);
+              }
+              
+              return false;
+            }, true);
+          }
+        });
+      });
+
+      // Observer le document entier pour les nouveaux éléments
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Intercepter immédiatement les boutons existants
+      var existingButtons = document.querySelectorAll('.shopify-buy__cart__footer button, a[href*="checkout"]');
+      existingButtons.forEach(function(btn) {
+        btn.setAttribute('data-checkout-intercepted', 'true');
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var checkoutUrl = btn.href || btn.getAttribute('href');
+          if (checkoutUrl) {
+            openCheckoutModal(checkoutUrl);
+          }
+          return false;
+        }, true);
+      });
+    }
+
+    if (window.ShopifyBuy) {
+      if (window.ShopifyBuy.UI) {
+        shopifyBuyInit();
+      } else {
+        loadScript();
+      }
+    } else {
+      loadScript();
+    }
+  })();
+</script>
 
 @endverbatim
 @endsection
